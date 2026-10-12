@@ -7,7 +7,7 @@ import { late } from '../core/late.js';
 import { $ } from '../core/dom.js';
 import { AU } from './audio.js';
 import { basic, canvasTex } from '../render/kit.js';
-import { CREEK_ROAD, SIWEI, bdZ, swZ } from '../world/layout.js';
+import { CREEK_ROAD, SIWEI, bdZ, swZ, MAP_BOUNDS } from '../world/layout.js';
 import { FZ } from '../world/terrain/fountain.js';
 import { world } from '../world/registry.js';
 import { registerAction } from '../content/index.js';
@@ -21,7 +21,7 @@ import { indoor, pos } from '../core/gameplay.js';
 state.haveMap=false;
 function giveMap(){ state.haveMap=true; $('quest').hidden=false; $('mapItem').hidden=false; AU.sfx('gem'); toast('獲得道具：百年秘寶地圖（按 M 打開）'); }
 function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined) showPlayer=true;
-  const c=cv, g=c.getContext('2d'), W=c.width, H=c.height, X0=-160, X1=170, Z0=40, Z1=-215;
+  const c=cv, g=c.getContext('2d'), W=c.width, H=c.height, {x0:X0,x1:X1,z0:Z0,z1:Z1}=MAP_BOUNDS;
   const mx=x=>(x-X0)/(X1-X0)*W, my=z=>(Z0-z)/(Z0-Z1)*H;
   g.fillStyle='#f3e6c6'; g.fillRect(0,0,W,H);
   for(let i=0;i<900;i++){ g.fillStyle=`rgba(150,110,60,${Math.random()*0.06})`; g.fillRect(Math.random()*W,Math.random()*H,3,3); }

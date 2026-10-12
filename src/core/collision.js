@@ -25,7 +25,7 @@ function resolveCore(p){
   }
   if(p.x>200){ p.x=Math.max(IX-11.2,Math.min(IX+11.2,p.x)); p.z=Math.max(-21.4,Math.min(24.3,p.z));
     if(p.z<-17.7&&p.z>-18.4&&Math.abs(p.x-IX)>7.9){ p.z=p.z>-18.05?-17.7:-18.4; } }
-  else { p.x=Math.max(-245,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(29.5,p.z)); }
+  else { p.x=Math.max(-265,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(29.5,p.z)); }
 }
 
 export { boxC, circC, colliders, obbC, resolve };

@@ -16,6 +16,7 @@ const swZ=x=>-60.2+0.18*x;
 // 室內空間放在遠離校園的 x=300，避免和戶外場景互相看到
 const IX=300;
 const LOTS=[];
+export const MAP_BOUNDS = { x0: -275, x1: 195, z0: 40, z1: -230 };
 function inLot(x,z){ for(const l of LOTS){ const dx=x-l.x, dz=z-l.z; if(Math.abs(dx)<l.w/2&&Math.abs(dz)<l.d/2) return l; } return null; }
 
 // 四維道紅磚段的東西端點（行政大樓西側到環山一道）；超出的部分是一般灰色步道
