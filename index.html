@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>蓋亞造界</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hud">
+  <div class="col">
+    <div class="chip"><span class="ico">●</span><span id="locname">正門前</span></div>
+    <div id="mini"><canvas id="minic" width="256" height="256"></canvas><span class="n">N</span></div>
+    <button id="snd" type="button" class="chip" aria-label="切換音樂"><span class="ico gold">♪</span></button>
+  </div>
+  <div class="col r">
+    <div class="chip"><span class="ico teal">◆</span>校園故事 <b id="fragn">0</b><span class="of">／3</span></div>
+    <div class="chip" id="quest" hidden><span class="tag">MAIN QUEST．主線任務</span><span class="q">收集校園故事，尋找政大百年寶藏</span></div>
+    <button type="button" class="chip" id="mapItem" hidden><span class="ico gold">M</span>百年秘寶地圖</button>
+    <div class="chip" id="item" hidden><span class="ico coral">★</span>親愛精誠徽章</div>
+  </div>
+</div>
+<div id="banner"><div class="b-sub">NATIONAL CHENGCHI UNIVERSITY</div><div class="b-main" id="bannerText">正門前</div></div>
+<div id="prompt"><button id="act" type="button" hidden><kbd>E</kbd><span id="actText">交談</span></button><button id="act2" type="button" hidden><kbd>Q</kbd><span id="act2Text">抓起來</span></button></div>
+<div id="stick"><div id="knob"></div></div>
+<button id="jump" type="button" aria-label="跳躍">跳</button>
+<div id="keys"><span><kbd>WASD</kbd>移動</span><span><kbd>Shift</kbd>奔跑</span><span><kbd>Space</kbd>跳躍</span><span><kbd>E</kbd>互動</span><span><kbd>Q</kbd>其他</span><span><kbd>M</kbd>地圖</span><span>拖曳轉視角</span></div>
+<div id="dlg" hidden><div id="dname"></div><div id="dtext"></div><div class="dnext"></div></div>
+<div id="toast"></div>
+<div id="mapw" hidden><div class="sheet"><button class="close" id="mapClose" type="button" aria-label="關閉地圖">×</button><h2>百年秘寶地圖</h2><div class="sub">政大創校一百週年．收集校園故事，寶藏就會現身</div><canvas id="mapc" width="1040" height="800"></canvas><div class="legend"><span>◆ 校園故事（未找到）</span><span>✔ 已收集</span><span>？ 百年寶藏</span><span>● 你的位置</span></div></div></div>
+<div id="fade"></div>
+<div id="intro">
+  <div class="card">
+    <div class="kicker">NCCU 1927–2027．國立政治大學</div>
+    <h1><span>蓋</span><span>亞</span><span>造</span><span>界</span></h1>
+    <div class="ribbon">政大百年慶版</div>
+    <div class="howto">
+      <div class="hint-key">WASD 移動．Shift 奔跑．Space 跳躍．E 互動．拖曳滑鼠轉視角</div>
+      <div class="hint-touch">左下搖桿移動．右側拖曳轉視角．按鈕跳躍與互動</div>
+    </div>
+    <button id="go" type="button">開始冒險<small>PRESS START</small></button>
+    <div class="note">© 2026 GaiaCraft．依照片手工建模，建築比例與距離為示意</div>
+  </div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

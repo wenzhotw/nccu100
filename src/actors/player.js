@@ -1,0 +1,136 @@
+/**
+ * 主角：Q版小男生的模型與動畫。
+ */
+import * as THREE from 'three';
+import { state } from '../core/state.js';
+import { scene } from '../core/engine.js';
+import { BOX, OUT, SPH, basic, canvasTex, mk, outline, toon } from '../render/kit.js';
+
+/* ---------- player：Q版小男生 ---------- */
+const player=new THREE.Group();
+scene.add(player);
+const rig=new THREE.Group();
+player.add(rig);
+const HC={skin:'#ffe1cc',hair:'#4a3226',hair2:'#5d4030',shirt:'#5aa7e0',shorts:'#2f3e66',shoe:'#f6f5f1',sole:'#d9534a',bag:'#f2b33d',bag2:'#cf8f25',gold:'#e3b75a',white:'#ffffff'};
+const DS={side:THREE.DoubleSide};
+function part(geo,mat,x,y,z,parent,out){ return mk(geo,typeof mat==='string'?toon(mat):mat,x,y,z,{parent,out}); }
+function outlineU(m,k){ const o=new THREE.Mesh(m.geometry,OUT); o.scale.setScalar(k); m.add(o); return o; }
+function ring(r,tube,col,y,parent,sz){ const m=part(new THREE.TorusGeometry(r,tube,6,28),col,0,y,0,parent); m.rotation.x=Math.PI/2; m.scale.y=sz||1; m.castShadow=false; return m; }
+const H={};
+/* 身體：T恤、短褲、書包 */
+H.torso=part(new THREE.CapsuleGeometry(0.17,0.12,6,16),HC.shirt,0,0.5,0,rig,0.014);
+H.torso.scale.z=0.85;
+part(new THREE.CylinderGeometry(0.172,0.18,0.13,18),HC.shorts,0,0.36,0,rig,0.012).scale.z=0.85;
+ring(0.1,0.018,HC.white,0.68,rig,0.9);
+part(BOX,HC.white,0,0.5,0.148,rig).scale.set(0.15,0.028,0.01);
+const bag=part(BOX,HC.bag,0,0.53,-0.2,rig);
+bag.scale.set(0.27,0.3,0.14);
+outline(bag,0).scale.set(1.12,1.1,1.2);
+part(BOX,HC.bag2,0,0.45,-0.28,rig).scale.set(0.2,0.12,0.04);
+[-1,1].forEach(s=>part(BOX,HC.bag2,s*0.1,0.56,0,rig).scale.set(0.035,0.28,0.31));
+function arm(s){
+  const sh=new THREE.Group(); sh.position.set(s*0.19,0.63,0); rig.add(sh);
+  part(new THREE.CapsuleGeometry(0.055,0.06,4,10),HC.shirt,0,-0.05,0,sh,0.012);
+  part(new THREE.CapsuleGeometry(0.046,0.06,4,10),HC.skin,0,-0.14,0,sh,0.01);
+  return sh;
+}
+H.shL=arm(-1);
+H.shR=arm(1);
+function leg(s){
+  const hp=new THREE.Group(); hp.position.set(s*0.085,0.32,0); rig.add(hp);
+  part(new THREE.CapsuleGeometry(0.06,0.08,4,10),HC.skin,0,-0.1,0,hp,0.01);
+  const sh=part(SPH,HC.shoe,0,-0.235,0.03,hp); sh.scale.set(0.075,0.055,0.11); outlineU(sh,1.15);
+  part(BOX,HC.sole,0,-0.275,0.03,hp).scale.set(0.13,0.022,0.2);
+  return hp;
+}
+H.hipL=leg(-1);
+H.hipR=leg(1);
+/* 頭 */
+const headG=new THREE.Group();
+headG.position.set(0,0.72,0);
+rig.add(headG);
+H.head=headG;
+const hc=new THREE.Group();
+hc.position.y=0.27;
+headG.add(hc);
+const HS=[1.05,0.95,1];
+const skull=part(new THREE.SphereGeometry(0.3,32,24),HC.skin,0,0,0,hc);
+skull.scale.set(...HS);
+outlineU(skull,1.045);
+[-1,1].forEach(s=>{ const e=part(SPH,HC.skin,s*0.31,-0.02,0,hc); e.scale.set(0.05,0.07,0.04); outlineU(e,1.2); });
+function drawFace(g,closed){
+  g.clearRect(0,0,256,256);
+  g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0);
+  g.lineCap='round';
+  [82,174].forEach(cx=>{
+    const cy=108;
+    if(closed){ g.strokeStyle='#2a1f2b'; g.lineWidth=5; g.beginPath(); g.moveTo(cx-12,cy+2); g.quadraticCurveTo(cx,cy+9,cx+12,cy+2); g.stroke(); }
+    else {
+      g.fillStyle='#2a1f2b'; g.beginPath(); g.ellipse(cx,cy,12,17,0,0,7); g.fill();
+      g.fillStyle='#6b4636'; g.beginPath(); g.ellipse(cx,cy+7,8,8,0,0,7); g.fill();
+      g.fillStyle='#ffffff'; g.beginPath(); g.ellipse(cx-4,cy-7,4.5,6,0,0,7); g.fill();
+      g.beginPath(); g.arc(cx+4,cy+8,2,0,7); g.fill();
+    }
+    g.strokeStyle='#4a3226'; g.lineWidth=5; g.beginPath(); g.moveTo(cx-10,cy-30); g.lineTo(cx+10,cy-31); g.stroke();
+  });
+  g.fillStyle='rgba(255,120,120,.35)'; [64,192].forEach(x=>{ g.beginPath(); g.ellipse(x,150,16,8,0,0,7); g.fill(); });
+  g.fillStyle='#b5434a'; g.beginPath(); g.moveTo(114,170); g.quadraticCurveTo(128,194,142,170); g.closePath(); g.fill();
+  g.fillStyle='#f08a8a'; g.beginPath(); g.ellipse(128,182,6,3.5,0,0,7); g.fill();
+  g.restore();
+}
+const faceOpen=canvasTex(256,256,g=>drawFace(g,false)), faceClosed=canvasTex(256,256,g=>drawFace(g,true));
+const faceMat=basic({map:faceOpen,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+const face=new THREE.Mesh(new THREE.SphereGeometry(0.3015,32,20,Math.PI/2-0.8,1.6,Math.PI*0.38,Math.PI*0.42),faceMat);
+face.scale.set(...HS);
+hc.add(face);
+/* 短刺刺的頭髮 */
+const hairM=toon(HC.hair,DS), hairM2=toon(HC.hair2,DS);
+const cap=part(new THREE.SphereGeometry(0.315,32,16,0,Math.PI*2,0,Math.PI*0.42),hairM,0,0.01,-0.005,hc);
+cap.scale.set(...HS);
+outlineU(cap,1.04);
+const back=part(new THREE.SphereGeometry(0.318,32,18,Math.PI/2+1.1,Math.PI*2-2.2,0,Math.PI*0.72),hairM,0,0,-0.01,hc);
+back.scale.set(...HS);
+outlineU(back,1.04);
+const SPIKE=new THREE.ConeGeometry(0.075,0.15,5);
+SPIKE.translate(0,0.075,0);
+const up=new THREE.Vector3(0,1,0);
+[[0.55,Math.PI],[1.0,Math.PI*0.75],[1.0,Math.PI*1.25],[1.5,Math.PI*0.62],[1.5,Math.PI*1.38],[1.75,Math.PI],[0.7,0.5],[0.7,-0.5],[0.25,0.1]].forEach(([t,p],i)=>{
+  const n=new THREE.Vector3(Math.sin(t)*Math.sin(p),Math.cos(t),Math.sin(t)*Math.cos(p));
+  const m=part(SPIKE,i%2?hairM2:hairM,n.x*0.28*HS[0],n.y*0.28*HS[1],n.z*0.28*HS[2],hc,0.012);
+  m.quaternion.setFromUnitVectors(up,n);
+});
+const BANG=new THREE.ConeGeometry(0.07,1,5);
+BANG.rotateX(Math.PI);
+BANG.translate(0,-0.5,0);
+[[-0.75,0.13],[-0.4,0.11],[-0.05,0.12],[0.3,0.1],[0.65,0.13]].forEach(([a,len],i)=>{
+  const g=new THREE.Group(); g.position.set(Math.sin(a)*0.27,0.12,Math.cos(a)*0.27); g.rotation.y=a; hc.add(g);
+  const m=part(BANG,i%2?hairM2:hairM,0,0,0,g,0.012); m.scale.set(1,len,0.5); m.rotation.x=-0.35;
+});
+const shadowBlob=new THREE.Mesh(new THREE.CircleGeometry(0.3,20),basic({color:'#000',transparent:true,opacity:0.18,depthWrite:false}));
+shadowBlob.rotation.x=-Math.PI/2;
+scene.add(shadowBlob);
+let blinkT=2.5;
+function animateHero(dt,sp,run){
+  const amt=Math.min(1,sp/4.6), k=n=>Math.min(1,dt*n);
+  state.walkPh+=dt*sp*(run?2.6:3.3);
+  const s=Math.sin(state.walkPh);
+  if(state.grounded){
+    H.hipL.rotation.x=-s*0.8*amt; H.hipR.rotation.x=s*0.8*amt;
+    H.shL.rotation.x=s*0.9*amt; H.shR.rotation.x=-s*0.9*amt;
+    H.shL.rotation.z=-0.15; H.shR.rotation.z=0.15;
+    rig.position.y=Math.abs(Math.cos(state.walkPh))*0.07*amt+Math.sin(state.time*2.4)*0.008;
+    rig.rotation.z=Math.sin(state.walkPh)*0.05*amt;
+  } else {
+    H.hipL.rotation.x=-0.6; H.hipR.rotation.x=0.4;
+    H.shL.rotation.x=H.shR.rotation.x=0; H.shL.rotation.z=-2.5; H.shR.rotation.z=2.5;
+    rig.position.y=0; rig.rotation.z=0;
+  }
+  rig.rotation.x+=(amt*(run?0.18:0.08)-rig.rotation.x)*k(8);
+  H.head.rotation.z=Math.sin(state.time*1.2)*0.04; H.head.rotation.x=-amt*0.05;
+  H.torso.scale.x=1+Math.sin(state.time*2.4)*0.015;
+  blinkT-=dt;
+  if(blinkT<0&&blinkT>-0.12) faceMat.map=faceClosed;
+  else if(blinkT<=-0.12){ faceMat.map=faceOpen; blinkT=2.2+Math.random()*3; }
+}
+
+export { H, HC, animateHero, outlineU, part, player, rig, shadowBlob };

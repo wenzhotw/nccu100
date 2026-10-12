@@ -1,0 +1,35 @@
+/**
+ * 四維道紅磚帶與八德道。
+ */
+import * as THREE from 'three';
+import { scene } from '../../core/engine.js';
+import { GRAD, canvasTex, flat, mk, toon } from '../../render/kit.js';
+import { circC } from '../../core/collision.js';
+import { bdZ, swZ } from '../layout.js';
+
+/* ---------- 四維道：四維堂、圖書館、行政大樓前的東西向紅磚帶 ---------- */
+const diaTex=canvasTex(256,256,(g,w,h)=>{ g.fillStyle='#c26a55'; g.fillRect(0,0,w,h);
+  g.strokeStyle='#a85744'; g.lineWidth=1.5; for(let y=0;y<h;y+=8){ g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); for(let x=(y/8)%2?0:8;x<=w;x+=16){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+8); g.stroke(); } }
+  for(let i=0;i<500;i++){ g.fillStyle='rgba(120,50,30,.15)'; g.fillRect(Math.random()*w,Math.random()*h,2,2); }
+  g.strokeStyle='#5d5f63'; g.lineWidth=16; g.lineCap='square';
+  [[0,0,w,h],[w,0,0,h],[-w,0,w,2*h],[0,-h,2*w,h],[2*w,0,0,2*h],[w,-h,-w,h]].forEach(([x0,y0,x1,y1])=>{ g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke(); }); },[40,4]);
+{ const t=diaTex.clone(); t.repeat.set(48,1.1); t.needsUpdate=true; const g=new THREE.Group(); g.position.set(-20,0,swZ(-20)); g.rotation.y=-Math.atan(0.18); scene.add(g);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(437,10),new THREE.MeshToonMaterial({map:t,gradientMap:GRAD})); m.rotation.x=-Math.PI/2; m.position.y=0.016; m.receiveShadow=true; g.add(m);
+  [-5.1,5.1].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(437,0.35),toon('#9c5446')); e.rotation.x=-Math.PI/2; e.position.set(0,0.018,dz); g.add(e); }); }
+/* 八德道：校門內東西向車道 */
+function roadSeg(x0,x1,zf,w){ const z0=zf(x0), z1=zf(x1), len=Math.hypot(x1-x0,z1-z0), g=new THREE.Group(); g.position.set((x0+x1)/2,0,(z0+z1)/2); g.rotation.y=-Math.atan2(z1-z0,x1-x0); scene.add(g);
+  const r=new THREE.Mesh(new THREE.PlaneGeometry(len,w),toon('#5b6270')); r.rotation.x=-Math.PI/2; r.position.y=0.021; r.receiveShadow=true; g.add(r);
+  for(let k=-len/2+1;k<len/2;k+=4){ const d=new THREE.Mesh(new THREE.PlaneGeometry(2,0.12),toon('#f4f4ee')); d.rotation.x=-Math.PI/2; d.position.set(k+1,0.024,0); g.add(d); }
+  [-w/2,w/2].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(len,0.12),toon('#f4f4ee')); e.rotation.x=-Math.PI/2; e.position.set(0,0.024,dz*0.92); g.add(e); }); }
+roadSeg(-86,0,bdZ,4.4);
+roadSeg(0,94,bdZ,4.4);
+for(let x=-4.5;x<=4.6;x+=1) flat(0.5,3.6,'#f4f4ee',x,0.026,bdZ(x));
+{ const t=diaTex.clone(); t.repeat.set(4,1); t.needsUpdate=true; flat(34,8,new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}),45,0.017,-62); }
+function umbrella(x,z,col){
+  mk(new THREE.CylinderGeometry(0.04,0.04,2.4,6),toon('#dddddd'),x,1.2,z,{out:0.01});
+  mk(new THREE.ConeGeometry(1.3,0.6,8),toon(col),x,2.55,z,{out:0.03});
+  mk(new THREE.CylinderGeometry(0.5,0.5,0.05,12),toon('#f2f2f2'),x,0.75,z,{out:0.02});
+  mk(new THREE.CylinderGeometry(0.05,0.05,0.75,6),toon('#999999'),x,0.37,z);
+  circC(x,z,0.6);
+}
+[[-19,-66.5],[-23,-70.5],[-27,-66.5],[-31,-70.5],[-35,-66.5]].forEach((p,i)=>umbrella(p[0],p[1],i%2?'#f4f1ea':'#d8433f'));

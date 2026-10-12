@@ -1,0 +1,18 @@
+{
+  "name": "nccu100",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "蓋亞造界．政大百年慶版：政大山下校園 3D 冒險遊戲",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.149.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

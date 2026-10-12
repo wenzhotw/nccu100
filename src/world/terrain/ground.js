@@ -1,0 +1,40 @@
+/**
+ * 地面、大道、指南路二段。
+ */
+import * as THREE from 'three';
+import { GRAD, basic, block, canvasTex, flat, hText, plane } from '../../render/kit.js';
+import { stoneMat } from '../props.js';
+
+/* ---------- ground ---------- */
+flat(1400,1400,'#86c35a',0,-0.06,-200);
+flat(79.6,96,'#86c35a',-5.2,0,-36);
+flat(60,96,'#86c35a',71.7,0,-36);
+const brickTex=canvasTex(128,128,(g,w,h)=>{ g.fillStyle='#c77563'; g.fillRect(0,0,w,h);
+  for(let i=0;i<500;i++){ g.fillStyle=['#b9644f','#d48a74','#bd6d5a'][i%3]; g.fillRect(Math.random()*w,Math.random()*h,3,3); }
+  g.strokeStyle='#a95a48'; g.lineWidth=2;
+  for(let y=0;y<h;y+=32){ g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); for(let x=(y/32)%2?0:32;x<=w;x+=64){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+32); g.stroke(); } } },[5,44]);
+const brickMat=(rx,ry)=>{ const t=brickTex.clone(); t.repeat.set(rx,ry); t.needsUpdate=true; return new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}); };
+flat(12,74,stoneMat(6,37),0,0.019,-39);
+// 校門到四維堂的大道（灰色石磚）
+flat(0.3,74,'#8f8e88',-6.1,0.02,-39);
+flat(0.3,74,'#8f8e88',6.1,0.02,-39);
+flat(48,4.4,stoneMat(24,2),0,0.0185,-32);
+// 橫向步道
+{ const st=canvasTex(128,128,(g,w,h)=>{ g.fillStyle='#b9b8b2'; g.fillRect(0,0,w,h); for(let i=0;i<400;i++){ g.fillStyle=['#a9a8a2','#c6c5bf','#b1b0aa'][i%3]; g.fillRect(Math.random()*w,Math.random()*h,3,3); } g.strokeStyle='#9d9c96'; g.lineWidth=1.5; for(let y=0;y<h;y+=16){ g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); for(let x=(y/16)%2?0:16;x<=w;x+=32){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+16); g.stroke(); } } },[12,6]);
+  flat(34,14.6,new THREE.MeshToonMaterial({map:st,gradientMap:GRAD}),0,0.013,5.3); }
+// 校門內
+flat(370,5.4,'#dccdb5',25,0.02,15.3);
+// 人行道
+for(let x=-148;x<198;x+=1.8) flat(0.05,5.4,'#c8b89e',x,0.024,15.3);
+block(25,0.08,18.05,370,0.16,0.3,'#bdb3a3');
+flat(370,14,'#5b6270',25,0.004,25);
+// 指南路二段
+flat(370,4,'#d4c6af',25,0.02,34);
+for(let x=-146;x<196;x+=6) if(Math.abs(x)>7) flat(3,0.18,'#f2f2ea',x,0.01,25);
+flat(370,0.15,'#f2d36b',25,0.01,24.7);
+flat(370,0.15,'#f2d36b',25,0.01,25.3);
+for(let z=18.8;z<31.5;z+=1){ if(Math.abs(z-25)<.4) continue; flat(9,0.5,'#f4f4ee',0,0.012,z); }
+const slowTex=hText('慢慢','#f4f4ee','900 120px "Noto Sans TC",sans-serif',512,160,90);
+plane(3.2,1.1,basic({map:slowTex,transparent:true,depthWrite:false}),-7.5,0.02,20.2,-Math.PI/2);
+
+export { brickMat };
