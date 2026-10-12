@@ -85,7 +85,8 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
   box('白色平屋頂',0,13.70,0,26.7,.38,7.65,mat.white,true);
   box('屋頂陰影線',0,13.47,0,26.45,.08,7.45,mat.trim);
   [12.37,12.65,12.93].forEach(y=>box('中央遮陽百葉',0,y,3.83,6.2,.13,.52,mat.white));
-  ['樓','仁','大'].forEach((char,i)=>{
+  // 招牌由左往右讀「大仁樓」
+  ['大','仁','樓'].forEach((char,i)=>{
     const t=texture(128,128,g=>{g.font='bold 92px "Noto Sans CJK TC","Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle=C.white;g.fillText(char,64,66);});
     const sign=new THREE.Mesh(new THREE.PlaneGeometry(.74,.74),new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false}));
     sign.name='屋簷題字'+char;sign.position.set((i-1)*4.2,13.16,3.693);group.add(sign);
