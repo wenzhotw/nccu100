@@ -6,7 +6,9 @@
  *
  * def 的格式見 src/content/missionaries.json 的 battle 欄位：
  *   enemy／player：{ name, level, hp }
- *   playerMoves／enemyMoves：{ id, name, fx, power:[最小,最大], accuracy, heal, run, gameOver, lines:[...] }
+ *   playerMoves／enemyMoves：{ id, name, fx, power:[最小,最大], accuracy, heal, run, gameOver, skip, lines:[...] }
+ *     skip: true 是什麼都不做的招式（例如睡覺），只播特效和台詞
+ *   enemySVG 可選：對手的圖（SVG 字串），沒給就用學生傳教士
  *   enemyAI(state) 可選：回傳對手這回合要用第幾招；沒給就用內建的簡單策略
  *
  * 招式的 fx 對應下面 FX 裡的特效。新增特效時在 FX 加一個函式就好。
@@ -36,7 +38,7 @@ function build(def) {
   const field = document.createElement('div'); field.className = 'bt-field';
   const clouds = [0, 1, 2].map(i => `<div class="bt-cloud" style="top:${6 + i * 9}%;width:${8 + i * 3}%;animation-duration:${50 + i * 22}s;animation-delay:-${i * 19}s"></div>`).join('');
   field.innerHTML = `<div class="bt-bg">${fieldSVG}</div>${clouds}<div class="bt-plat enemy"></div><div class="bt-plat player"></div>
-    <div class="bt-sprite enemy">${enemySVG}</div><div class="bt-sprite player">${playerSVG}</div><div class="bt-fx"></div>`;
+    <div class="bt-sprite enemy">${def.enemySVG || enemySVG}</div><div class="bt-sprite player">${playerSVG}</div><div class="bt-fx"></div>`;
   field.append(infoBox('enemy', def.enemy), infoBox('player', def.player));
   spr.enemy = field.querySelector('.bt-sprite.enemy'); spr.player = field.querySelector('.bt-sprite.player');
   fxEl = field.querySelector('.bt-fx');
@@ -186,6 +188,32 @@ const FX = {
   },
   async flee(from) { AU.sfx('flee'); spr[from].classList.add(from === 'player' ? 'gone-left' : 'gone-right'); await wait(600); },
   async politics() { AU.sfx('over'); root.classList.add('quake', 'gray'); await wait(1600); root.classList.remove('quake'); },
+  // 甜甜圈：從頭上冒出來再補血
+  async donut(from, to) {
+    const c = center(spr[from]);
+    const d = add('fx-donut', { left: (c.x - 26) + 'px', top: (c.y - 110) + 'px', width: '52px', height: '52px', borderRadius: '50%', position: 'absolute',
+      background: 'radial-gradient(circle,transparent 0 9px,#f39ac0 10px 20px,#c98a4b 21px 26px)', border: '3px solid #2a2c4a', transition: 'transform .5s', transform: 'scale(0)' });
+    await wait(30); d.style.transform = 'scale(1) rotate(20deg)'; AU.sfx('grab'); await wait(650); d.remove();
+    await FX.heal(from, to);
+  },
+  // 紅單：一張紅色罰單飛過去
+  async ticket(from, to) {
+    const a = center(spr[from]), b = center(spr[to]);
+    const t = add('fx-ticket', { left: a.x + 'px', top: a.y + 'px', width: '46px', height: '30px', position: 'absolute', background: '#e8463c', border: '3px solid #2a2c4a',
+      borderRadius: '4px', color: '#fff', font: '900 13px "Noto Sans TC",sans-serif', display: 'grid', placeItems: 'center', transition: 'transform .55s ease-in' });
+    t.textContent = '罰單'; AU.sfx('whistle');
+    await wait(30); t.style.transform = `translate(${b.x - a.x}px,${b.y - a.y}px) rotate(540deg)`; await wait(560); t.remove();
+  },
+  // 睡覺：頭上飄 Zzz
+  async sleep(from) {
+    const c = center(spr[from]);
+    for (let i = 0; i < 3; i++) {
+      const z = add('fx-zzz', { left: (c.x + 20 + i * 18) + 'px', top: (c.y - 70 - i * 22) + 'px', position: 'absolute', font: `900 ${22 + i * 8}px "M PLUS Rounded 1c",sans-serif`,
+        color: '#5b6b9a', opacity: 0, transition: 'opacity .3s, transform 1.4s', transform: 'translateY(10px)' });
+      z.textContent = 'Z'; setTimeout(() => { z.style.opacity = 1; z.style.transform = 'translateY(-20px)'; }, i * 250);
+    }
+    await wait(1500);
+  },
 };
 
 /* ---------- 戰鬥流程 ---------- */
@@ -203,11 +231,12 @@ async function useMove(m, from, to, s, msgs) {
   const fx = FX[m.fx], L = m.lines;
   // 招式前的台詞（最後一句不用按鍵，直接接動畫），招式後的台詞
   let pre = L, post = [];
-  if (m.heal) { pre = L.slice(0, -1); post = L.slice(-1); }
+  if (m.heal || m.skip) { pre = L.slice(0, -1); post = L.slice(-1); }
   if (m.gameOver) { pre = L.slice(0, 1); post = L.slice(1); }
   for (let i = 0; i < pre.length; i++) await say(pre[i], i < pre.length - 1);
   await wait(300);
   if (m.run) { if (fx) await fx(from, to); await wait(500); return 'run'; }
+  if (m.skip) { if (fx) await fx(from, to); clearFx(); await sayAll(post); return 'continue'; }
   if (m.gameOver) { if (fx) await fx(from, to); await sayAll(post); return 'gameOver'; }
   if (m.heal) {
     if (fx) await fx(from, to); clearFx();

@@ -100,9 +100,11 @@ function build() {
     /* 石獅：在第一段階梯上方的平台兩側 */
     const x=LBX+s*10.2, z=-83.6, y0=1.4;
     block(x,y0+0.55,z,1,1.1,1,'#efece6',0.02);
-    const bd=mk(SPH,toon('#efece6'),x,y0+1.45,z-0.1,{}); bd.scale.set(0.42,0.45,0.55); outline(bd,0.08);
-    const hd=mk(SPH,toon('#efece6'),x,y0+1.95,z+0.25,{}); hd.scale.setScalar(0.32); outline(hd,0.1);
-    mk(new THREE.TorusGeometry(0.3,0.1,6,14),toon('#e2ded6'),x,y0+1.9,z+0.22,{}); circC(x,z,0.6);
+    // 獅子本體放在一個群組裡（名稱「石獅-左／右」），天氣系統會讓它跳下台座講話（systems/weather）
+    const lion=new THREE.Group(); lion.name=s>0?'石獅-右':'石獅-左'; lion.position.set(x,y0+1.1,z); scene.add(lion);
+    const bd=mk(SPH,toon('#efece6'),0,0.35,-0.1,{parent:lion}); bd.scale.set(0.42,0.45,0.55); outline(bd,0.08);
+    const hd=mk(SPH,toon('#efece6'),0,0.85,0.25,{parent:lion}); hd.scale.setScalar(0.32); outline(hd,0.1);
+    mk(new THREE.TorusGeometry(0.3,0.1,6,14),toon('#e2ded6'),0,0.8,0.22,{parent:lion}); circC(x,z,0.6);
     /* 紅磚邊帶與草坪上的細磚步道 */
     flat(1.1,18,brickMat(1,9),LBX+s*11.6,0.03,-85);
     [14.5,17.5].forEach(d=>block(LBX+s*d,0.08,-86,0.7,0.16,16,brickMat(1,8),0.01));

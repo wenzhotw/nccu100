@@ -122,3 +122,16 @@
 - `letter`：全對拿到的「精神堡壘任務信函」，`lines` 是點開信函看到的內容
 
 全對時遊戲狀態 `state.haveLetter` 會變成 `true`，之後要做精神堡壘任務可以用這個判斷。
+
+## weather.json：天氣（石獅子、下雨、偷傘、淋雨體力、噴水磁磚）
+
+程式在 `src/systems/weather/`。流程：走到中正圖書館前（`lion.trigger` 範圍內）→ 離主角比較近的那隻石獅子跳下台座講話 → 不管選哪個都會下雨。
+
+- `lion`：石獅子的台詞、兩個選項（`choices`）和各自的回應（`replies`，順序對應選項）、`cooldownSeconds` 雨停之後多久才會再觸發
+- `rain`：下雨秒數、`drainPerSecond` 淋雨時每秒扣多少體力（滿分 100）、`soaked` 體力扣光時的結局
+- `umbrella`：下雨後眼前出現一把雨傘，撐起來就不會淋濕；`copDelaySeconds` 秒後駐校警察衝過來
+- `cop`：警察的台詞、兩個選項。選「跟他走」是結局 `arrested`；選「拒絕」進入戰鬥，`win`、`lose`、`run` 是戰鬥結束後的提示
+- `tile`：下雨時在四維道上走路，每秒有 `chancePerSecond` 的機率踩到噴水磁磚，結局 `ending`
+- `battle`：跟警察的戰鬥，格式同 missionaries.json 的 `battle`。新招式欄位 `skip: true` 表示什麼都不做（例如睡覺）。新特效 `donut`（吃甜甜圈）、`ticket`（紅單）、`sleep`（睡覺）
+
+室內（四維堂）不會淋雨，雨停後沒撐傘也不會再扣體力。
