@@ -33,6 +33,7 @@ while(gi<GN){
   if(x<-36&&z<-16&&z>-66) continue;
   if(Math.abs(x)<17.2&&z>-2.4) continue;
   if(z<swZ(x)+5.4||Math.abs(z-bdZ(x))<2.6||inLot(x,z)) continue;
+  if(x>12&&z-bdZ(x)>-7.4&&z-bdZ(x)<5) continue;   // 八德道兩側的紅磚人行道（bade-road.js）
   if(grassExclusions.some(b=>b.excludeGrassAt(x,z))) continue;
   if(x>-42&&x<-7.5&&z>-12&&z<4.5) continue;
   if(Math.hypot(x,z-FZ)<9.8||(Math.abs(z-FZ)<2.4&&Math.abs(x)<24)) continue;

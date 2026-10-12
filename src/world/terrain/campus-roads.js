@@ -27,12 +27,14 @@ function alongSw(x0,x1,w,mat,y,edge){
 alongSw(SIWEI.x1,176,4.6,stoneMat(30,1),0.015,'#9d9c96');
 alongSw(-238,SIWEI.x0,4.6,stoneMat(36,1),0.015,'#9d9c96');
 /* 八德道：校門內東西向車道 */
-function roadSeg(x0,x1,zf,w){ const z0=zf(x0), z1=zf(x1), len=Math.hypot(x1-x0,z1-z0), g=new THREE.Group(); g.position.set((x0+x1)/2,0,(z0+z1)/2); g.rotation.y=-Math.atan2(z1-z0,x1-x0); scene.add(g);
+function roadSeg(x0,x1,zf,w,plain){ const z0=zf(x0), z1=zf(x1), len=Math.hypot(x1-x0,z1-z0), g=new THREE.Group(); g.position.set((x0+x1)/2,0,(z0+z1)/2); g.rotation.y=-Math.atan2(z1-z0,x1-x0); scene.add(g);
   const r=new THREE.Mesh(new THREE.PlaneGeometry(len,w),toon('#5b6270')); r.rotation.x=-Math.PI/2; r.position.y=0.021; r.receiveShadow=true; g.add(r);
+  if(plain) return;   // 標線另外畫（bade-road.js）
   for(let k=-len/2+1;k<len/2;k+=4){ const d=new THREE.Mesh(new THREE.PlaneGeometry(2,0.12),toon('#f4f4ee')); d.rotation.x=-Math.PI/2; d.position.set(k+1,0.024,0); g.add(d); }
   [-w/2,w/2].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(len,0.12),toon('#f4f4ee')); e.rotation.x=-Math.PI/2; e.position.set(0,0.024,dz*0.92); g.add(e); }); }
 roadSeg(-86,0,bdZ,4.4);
-roadSeg(0,92.5,bdZ,4.4);   // 西端接電算中心後面的校內道路（back-road.js）
+roadSeg(0,12,bdZ,4.4);
+roadSeg(12,92.5,bdZ,4.4,true);   // 樂活館到電算中心這段：雙黃線、紅線、人行道在 bade-road.js；西端接電算中心後面的校內道路
 for(let x=-4.5;x<=4.6;x+=1) flat(0.5,3.6,'#f4f4ee',x,0.026,bdZ(x));
 { const t=diaTex.clone(); t.repeat.set(4,1); t.needsUpdate=true; flat(34,8,new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}),45,0.017,-62); }
 function umbrella(x,z,col){

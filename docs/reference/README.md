@@ -55,6 +55,7 @@
 | 行政大樓旁車道（校園公車）往南過渡賢橋 | `service-road.js`、`river.js` |
 | 四維堂東側車道（圖書館這一側的停車道） | `service-road.js` |
 | 電算中心後面的校內道路、往西彎進集英樓前的路、側門廣場 | `back-road.js`（照片在 `back-road/`） |
+| 八德道樂活館到電算中心那段（雙黃線、兩側紅磚人行道、花台、樹穴行道樹） | `bade-road.js`（照片在 `computer-center/photos/back-*.jpg`） |
 
 ## 電算中心後面的校內道路（照片）
 
