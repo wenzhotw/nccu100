@@ -1,11 +1,11 @@
 /**
- * 體育館與旁邊的球場、跑道看台。
+ * 體育館與旁邊的球場、大榕樹、椰子樹。
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
 import { BOX, GRAD, basic, block, canvasTex, hText, outline, toon } from '../../../render/kit.js';
 import { circC, obbC } from '../../../core/collision.js';
-import { palm } from '../../vegetation.js';
+import { banyan, palm } from '../../vegetation.js';
 import { toW } from '../../building-kit.js';
 import { defineBuilding } from '../../registry.js';
 
@@ -71,11 +71,14 @@ function build() {
   obbL(18.6,24.8,-12,10);
   GCOLS.forEach(x=>{ const w=toW(GYM,x,13.2); circC(w[0],w[1],0.5); });
   /* 旁邊的綠色球場與椰子樹 */
-  { const ct=new THREE.Mesh(new THREE.PlaneGeometry(13,10),toon('#4f9f6a')); ct.rotation.x=-Math.PI/2; ct.position.set(-33,0.03,8); ct.receiveShadow=true; gymG.add(ct);
+  // 綠色小球場（夾在體育館側翼和沿溪道路之間，縮小以免壓到道路）
+  { const CX=-27, CZ=9, CW=6, CD=8;
+    const ct=new THREE.Mesh(new THREE.PlaneGeometry(CW,CD),toon('#4f9f6a')); ct.rotation.x=-Math.PI/2; ct.position.set(CX,0.03,CZ); ct.receiveShadow=true; gymG.add(ct);
     const ln=(w,d,x,z)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),toon('#ffffff')); m.rotation.x=-Math.PI/2; m.position.set(x,0.04,z); gymG.add(m); };
-    ln(12,0.1,-33,12.6); ln(12,0.1,-33,3.4); ln(0.1,9.2,-39,8); ln(0.1,9.2,-27,8); ln(0.1,9.2,-33,8);
-    const cr=new THREE.Mesh(new THREE.RingGeometry(1.4,1.5,32),toon('#ffffff')); cr.rotation.x=-Math.PI/2; cr.position.set(-33,0.04,8); gymG.add(cr);
-    [[-26,18],[-30,16],[26,18],[30,16],[34,14]].forEach(([lx,lz])=>{ const w=toW(GYM,lx,lz); palm(w[0],w[1],8+Math.random()*1.5); }); }
+    ln(CW-0.6,0.1,CX,CZ+CD/2-0.3); ln(CW-0.6,0.1,CX,CZ-CD/2+0.3); ln(0.1,CD-0.6,CX-CW/2+0.3,CZ); ln(0.1,CD-0.6,CX+CW/2-0.3,CZ); ln(CW-0.6,0.1,CX,CZ);
+    // 照片：體育館前大階梯旁（往跑道那側）是一棵大榕樹和草坡，另一側是椰子樹
+    { const w=toW(GYM,-29,19.5); banyan(w[0],w[1],1); }
+    [[26,18],[30,16],[34,14]].forEach(([lx,lz])=>{ const w=toW(GYM,lx,lz); palm(w[0],w[1],8+Math.random()*1.5); }); }
 }
 
 export default defineBuilding({

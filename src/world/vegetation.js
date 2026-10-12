@@ -52,4 +52,21 @@ function palm(x,z,h,fan){
 [[-42,16.9],[-30,16.9],[30,16.9],[42,16.9]].forEach(p=>tree(p[0],p[1],0.95));
 [[-36,7.5],[-29,7.5],[-21.5,7.3],[10,-5],[-10.5,-24.5],[10.5,-24.5],[-10.5,-39.5],[10.5,-39.5],[-9.5,-58],[9.5,-60],[-30,-62],[28,-8],[33,2],[28,-60],[45,-48],[31,-55]].forEach(p=>tree(p[0],p[1],0.9+Math.random()*0.3));
 
-export { FOLIAGE, palm, palms, tree };
+/** 大榕樹：粗樹幹、垂下來的氣根、又寬又扁的樹冠（體育館前那棵） */
+const ROOT=new THREE.CylinderGeometry(0.035,0.05,1,4);
+function banyan(x,z,s){
+  if(inLot(x,z)) return;
+  s=s||1; const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
+  const trunkMat=toon('#8a7a62');
+  mk(new THREE.CylinderGeometry(0.55,0.85,4.2,9),trunkMat,0,2.1*s,0,{parent:g,out:0.05}).scale.setScalar(s);
+  [[1.2,0.4],[-1,0.6],[0.3,-1.2]].forEach(([dx,dz])=>{ const b=mk(new THREE.CylinderGeometry(0.22,0.35,3.2,7),trunkMat,dx*0.9*s,3.6*s,dz*0.9*s,{parent:g,out:0.04}); b.rotation.set(dz*0.45,0,-dx*0.45); b.scale.setScalar(s); });
+  const parts=[];
+  [[0,5.2,0,3.4,0.6],[2.6,4.8,0.6,2.4,0.55],[-2.5,4.9,-0.4,2.5,0.55],[0.6,5,2.4,2.3,0.55],[-0.4,5.1,-2.5,2.3,0.55],[0,6.1,0,2.4,0.6]].forEach(([dx,y,dz,r,sy],i)=>{
+    const m=mk(SPH,toon(['#6f8f4e','#7a9a55','#668548'][i%3]),dx*s,y*s,dz*s,{parent:g,out:0.1}); m.scale.set(r*s,r*sy*s,r*s); parts.push(m); });
+  for(let i=0;i<14;i++){ const a=Math.random()*Math.PI*2, d=(1+Math.random()*3)*s, h=(1.6+Math.random()*2.2)*s;
+    const r=mk(ROOT,toon('#8f8068'),Math.cos(a)*d,4.3*s-h/2,Math.sin(a)*d,{parent:g}); r.scale.y=h; }
+  FOLIAGE.push({x,z,r:4.2*s,y0:3.6*s,y1:7.4*s,parts});
+  circC(x,z,0.9*s);
+}
+
+export { FOLIAGE, banyan, palm, palms, tree };
