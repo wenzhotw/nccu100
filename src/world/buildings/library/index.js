@@ -14,6 +14,46 @@ import { defineBuilding } from '../../registry.js';
 // 這棟建築的位置與尺寸（地圖、碰撞、高度判斷都會用到）
 const LBX=-46;
 
+/**
+ * 石獅（坐姿的傳統石獅，Q 版比例）：大頭、一圈捲毛鬃毛、凸眼、張嘴露牙、頸圈和鈴鐺、前腿直立、後腿蹲坐、捲尾巴。
+ * 右邊那隻腳踩繡球，左邊那隻腳邊有小獅子（傳統一公一母）。原點在台座頂面，臉朝 +z。
+ */
+function makeLion(s){
+  const g=new THREE.Group(), ST=toon('#dcd7cc'), CURL=toon('#aca394'), DARK=toon('#5f584e');
+  const sp=(x,y,z,sx,sy,sz,mat,out)=>{ const m=mk(SPH,mat||ST,x,y,z,{parent:g,out:out??0.025}); m.scale.set(sx,sy??sx,sz??sx); return m; };
+  // 身體：後半蹲坐、胸口挺起
+  sp(0,0.3,-0.12,0.36,0.32,0.4);
+  sp(0,0.58,0.1,0.3,0.36,0.27);
+  // 後腿（兩側鼓起）與後腳掌
+  [-1,1].forEach(k=>{ sp(k*0.22,0.2,-0.08,0.15,0.2,0.27); sp(k*0.22,0.06,0.16,0.1,0.06,0.12); });
+  // 前腿與前腳掌
+  [-1,1].forEach(k=>{ const l=mk(new THREE.CapsuleGeometry(0.075,0.32,4,10),ST,k*0.13,0.25,0.25,{parent:g,out:0.02}); l.rotation.x=0.08;
+    sp(k*0.13,0.06,0.32,0.1,0.07,0.12); });
+  // 腳邊：右獅踩繡球，左獅帶小獅子
+  if(s>0){ sp(0.15,0.11,0.42,0.12,0.12,0.12,CURL); for(let i=0;i<5;i++){ const a=i/5*Math.PI*2; sp(0.15+Math.cos(a)*0.1,0.11+Math.sin(a)*0.1,0.48,0.03,0.03,0.03,CURL,0); } }
+  else { sp(-0.17,0.12,0.42,0.1,0.1,0.11); sp(-0.17,0.24,0.47,0.08,0.08,0.08); }
+  // 頸圈和鈴鐺
+  const col=mk(new THREE.TorusGeometry(0.2,0.035,6,18),CURL,0,0.8,0.12,{parent:g}); col.rotation.x=Math.PI/2-0.25;
+  sp(0,0.7,0.33,0.065,0.065,0.065,CURL);
+  // 頭：大大的，一圈捲毛
+  const head=new THREE.Group(); head.position.set(0,1.02,0.2); g.add(head); g.userData.head=head;
+  const hp=(x,y,z,sx,sy,sz,mat,out)=>{ const m=mk(SPH,mat||ST,x,y,z,{parent:head,out:out??0.025}); m.scale.set(sx,sy??sx,sz??sx); return m; };
+  hp(0,0,0,0.29,0.27,0.27);
+  for(let i=0;i<12;i++){ const a=i/12*Math.PI*2; hp(Math.cos(a)*0.3,Math.sin(a)*0.28+0.02,-0.06,0.09,0.09,0.08,CURL,0.015); }
+  for(let i=0;i<7;i++){ const a=(i/6-0.5)*2.4; hp(Math.sin(a)*0.2,0.24+Math.cos(a)*0.06,-0.14,0.08,0.07,0.08,CURL,0.015); }
+  // 耳朵、眉毛、凸眼、寬鼻、張開的嘴和牙
+  [-1,1].forEach(k=>{ hp(k*0.25,0.18,0.02,0.07,0.06,0.05);
+    hp(k*0.11,0.11,0.21,0.09,0.035,0.05,CURL,0);
+    hp(k*0.11,0.04,0.22,0.075,0.075,0.06);
+    hp(k*0.11,0.04,0.272,0.03,0.03,0.015,DARK,0); });
+  hp(0,-0.04,0.27,0.1,0.06,0.07);
+  hp(0,-0.15,0.22,0.13,0.06,0.05,toon('#a8746e'),0);
+  [-1,1].forEach(k=>hp(k*0.07,-0.12,0.255,0.025,0.03,0.02,toon('#ffffff'),0));
+  // 捲尾巴
+  [[0,0.42,-0.48,0.1],[0,0.6,-0.5,0.11],[0.02,0.76,-0.44,0.1]].forEach(([x,y,z,r])=>sp(x,y,z,r,r,r,CURL,0.015));
+  return g;
+}
+
 function build() {
   /* ---------- 中正圖書館：抬高的基座、四段階梯、梯形正面、格柵牆、直條遮陽頂帶 ---------- */
   const LC='#ece6d8', LC2='#ddd5c4', LTAN='#c9ad84', LPIL='#bdb8ad', LSTEP='#aeadaa', LBRICK='#c4735d';
@@ -101,10 +141,7 @@ function build() {
     const x=LBX+s*10.2, z=-83.6, y0=1.4;
     block(x,y0+0.55,z,1,1.1,1,'#efece6',0.02);
     // 獅子本體放在一個群組裡（名稱「石獅-左／右」），天氣系統會讓它跳下台座講話（systems/weather）
-    const lion=new THREE.Group(); lion.name=s>0?'石獅-右':'石獅-左'; lion.position.set(x,y0+1.1,z); scene.add(lion);
-    const bd=mk(SPH,toon('#efece6'),0,0.35,-0.1,{parent:lion}); bd.scale.set(0.42,0.45,0.55); outline(bd,0.08);
-    const hd=mk(SPH,toon('#efece6'),0,0.85,0.25,{parent:lion}); hd.scale.setScalar(0.32); outline(hd,0.1);
-    mk(new THREE.TorusGeometry(0.3,0.1,6,14),toon('#e2ded6'),0,0.8,0.22,{parent:lion}); circC(x,z,0.6);
+    const lion=makeLion(s); lion.name=s>0?'石獅-右':'石獅-左'; lion.position.set(x,y0+1.1,z); scene.add(lion); circC(x,z,0.6);
     /* 紅磚邊帶與草坪上的細磚步道 */
     flat(1.1,18,brickMat(1,9),LBX+s*11.6,0.03,-85);
     [14.5,17.5].forEach(d=>block(LBX+s*d,0.08,-86,0.7,0.16,16,brickMat(1,8),0.01));

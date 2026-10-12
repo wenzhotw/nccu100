@@ -122,6 +122,7 @@ function npcUpdate(n,dt){
   if(!panic&&n.shout&&dP<=3.6&&n.sp.visible&&n.state!=='chase') n.sp.say('');
   n.spot.x=p.x; n.spot.z=p.z;
   if(n.after) n.after(n,dt);   // 特殊 NPC 自己的動作（例如老校長騎馬），蓋過上面的預設動畫
+  if(n.umbrella&&n.umbrella.visible) n.P.shR.rotation.set(-0.15,0,2.55);   // 下雨撐傘：右手舉起來（傘由 systems/weather 掛上）
 }
 /* 角色：名單與台詞在 src/content/npcs.json */
 NPC_LIST.forEach(o=>addNPC({...o, indoorNPC:!!o.indoor, home:{x:num(o.home.x),z:num(o.home.z)}, face:o.face===undefined?undefined:num(o.face)}));

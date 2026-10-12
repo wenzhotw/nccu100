@@ -57,6 +57,7 @@ function update(dt){
   heroJuice(dt,sp,run); cameraFov(dt,sp,run);
   shadowBlob.position.set(pos.x,gh+0.03,pos.z); shadowBlob.scale.setScalar(1-Math.min(0.5,(pos.y-gh)*0.3));
   if(state.holdPang){ H.shL.rotation.x=-1.35; H.shR.rotation.x=-1.35; H.shL.rotation.z=-0.35; H.shR.rotation.z=0.35; }
+  if(state.holdUmbrella){ H.shR.rotation.set(-0.15,0,2.55); }   // 撐傘：右手舉起來（systems/weather）
   }
 
   updatePangolin(dt);
