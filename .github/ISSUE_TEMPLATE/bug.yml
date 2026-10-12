@@ -1,0 +1,22 @@
+name: 問題回報
+description: 遊戲壞掉、穿模、卡住、顯示不對
+title: "[問題] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 發生了什麼事
+      description: 在哪裡、做了什麼、看到什麼。附截圖最好
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: 位置
+      description: 畫面左上角的區域名稱，或主控台 __game.pos 的座標
+  - type: input
+    id: device
+    attributes:
+      label: 裝置與瀏覽器
+      placeholder: iPhone 15 Safari／Windows Chrome

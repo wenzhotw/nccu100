@@ -11,6 +11,7 @@ import { player, shadowBlob } from '../actors/player.js';
 import { dlg, openDialog, toast } from '../ui/dialog.js';
 import { keys } from '../core/input.js';
 import { groundH, indoor, pos, spots, transition, vel } from '../core/gameplay.js';
+import { DIALOGS } from '../content/index.js';
 import { cop } from '../actors/npc.js';
 
 /* ---------- 搶警車、開警車 ---------- */
@@ -37,7 +38,7 @@ function exitCar(){ state.driving=false; state.carSpeed=0; AU.sfx('door'); AU.si
   pos.x=police.position.x+rx*2.1; pos.z=police.position.z+rz*2.1; resolve(pos); pos.y=groundH(pos.x,pos.z); vel.set(0,0,0);
   player.visible=true; shadowBlob.visible=true; syncPoliceCol();
   cop.state='chase'; cop.chaseT=0; AU.sfx('whistle'); cop.sp.say('站住！'); cop.sayT=2;
-  cop.onCatch=()=>openDialog('駐校警察',['你怎麼可以把警車開走！','警車是執勤用的，不能隨便開，路上的同學都被你嚇壞了。','這次先口頭警告，警車我開回去了。'],()=>transition(()=>{
+  cop.onCatch=()=>openDialog(DIALOGS.copStopsCar.title,DIALOGS.copStopsCar.lines,()=>transition(()=>{
     police.position.set(carHome.x,0,carHome.z); police.rotation.y=carHome.yaw; syncPoliceCol(); cop.g.position.set(cop.home.x,0,cop.home.z); cop.g.rotation.y=cop.face; cop.state='idle'; })); }
 function updateDrive(dt){
   let thr=0, st=0;

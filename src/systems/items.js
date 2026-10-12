@@ -10,6 +10,7 @@ import { basic, canvasTex } from '../render/kit.js';
 import { bdZ, swZ } from '../world/layout.js';
 import { FZ } from '../world/terrain/fountain.js';
 import { world } from '../world/registry.js';
+import { registerAction } from '../content/index.js';
 import { RIV } from '../world/terrain/river.js';
 import { rig } from '../actors/player.js';
 import { crystals } from './stories.js';
@@ -37,7 +38,7 @@ function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined
   g.beginPath(); g.arc(mx(0),my(FZ),9,0,7); g.fillStyle='#9cc7c9'; g.fill(); g.stroke();
   g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-110),my(-128));
   g.fillText('四維道',mx(-120),my(swZ(-120))-12);
-  const spots=[[crystals[0],-15.6,17.4],[crystals[1],-45,-158],[crystals[2],0,-95]];
+  const spots=crystals.map(c=>[c,c.mapAt.x,c.mapAt.z]);
   if(state.haveMap) spots.forEach(([c,x,z])=>{ const X=mx(x), Y=my(z);
     if(c.got){ g.fillStyle='#3f8a4f'; g.beginPath(); g.arc(X,Y,16,0,7); g.fill(); g.strokeStyle='#fff'; g.lineWidth=5; g.beginPath(); g.moveTo(X-8,Y); g.lineTo(X-2,Y+7); g.lineTo(X+9,Y-7); g.stroke(); }
     else { g.fillStyle='#2bb5a3'; g.strokeStyle='#14524a'; g.lineWidth=3; g.beginPath(); g.moveTo(X,Y-18); g.lineTo(X+13,Y); g.lineTo(X,Y+18); g.lineTo(X-13,Y); g.closePath(); g.fill(); g.stroke(); } });
@@ -69,5 +70,7 @@ late.giveMap = giveMap;
 late.openMap = openMap;
 late.closeMap = closeMap;
 late.giveBadge = giveBadge;
+registerAction('giveMap', giveMap);
+registerAction('giveBadge', giveBadge);
 
 export { drawMap };

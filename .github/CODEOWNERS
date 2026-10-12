@@ -1,0 +1,9 @@
+# 每個資料夾的負責人。PR 改到這些檔案時，GitHub 會自動請負責人審查。
+# 認領建築後，把自己加在對應那一行，例如：
+# /src/world/buildings/library/  @wenzhotw @你的帳號
+
+*                               @wenzhotw
+/src/core/                      @wenzhotw
+/src/render/                    @wenzhotw
+/src/world/registry.js          @wenzhotw
+/src/content/                   @wenzhotw

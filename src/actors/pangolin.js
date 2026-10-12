@@ -64,7 +64,7 @@ pang.add(bubble);
 const pPath=[[-3,8],[3,0],[3,-16],[-9,-25],[-9,-39],[0,-45],[9,-39],[9,-25],[-3,-14],[-3,-2]];
 let pIdx=1, pWalk=0;
 function updatePangolin(dt){
-  if(state.holdPang){ const fx=Math.sin(player.rotation.y), fz=Math.cos(player.rotation.y); pang.position.set(late.pos.x+fx*0.42,late.pos.y+0.32,late.pos.z+fz*0.42); pang.rotation.set(0,player.rotation.y+Math.PI/2,0); pBody.scale.setScalar(0.8); pLegs.forEach(l=>l.g.rotation.x=1.1); late.spots[0].x=pang.position.x; late.spots[0].z=pang.position.z; return; }
+  if(state.holdPang){ const fx=Math.sin(player.rotation.y), fz=Math.cos(player.rotation.y); pang.position.set(late.pos.x+fx*0.42,late.pos.y+0.32,late.pos.z+fz*0.42); pang.rotation.set(0,player.rotation.y+Math.PI/2,0); pBody.scale.setScalar(0.8); pLegs.forEach(l=>l.g.rotation.x=1.1); { const s=late.spots.find(q=>q.id==='pangolin'); s.x=pang.position.x; s.z=pang.position.z; } return; }
   const p=pang.position, d2p=Math.hypot(late.pos.x-p.x,late.pos.z-p.z);
   const stay=d2p<3.2||!late.dlg.hidden||late.indoor();
   let moving=false;
@@ -81,7 +81,7 @@ function updatePangolin(dt){
   pHead.rotation.y=moving?Math.sin(state.time*3)*0.15:0; pHead.rotation.x=Math.sin(state.time*1.5)*0.05;
   bubble.position.y=0.95+Math.sin(state.time*2.4)*0.05;
   if(state.dogTalked&&state.found<3) bubble.visible=false;
-  late.spots[0].x=p.x; late.spots[0].z=p.z;
+  { const s=late.spots.find(q=>q.id==='pangolin'); s.x=p.x; s.z=p.z; }
 }
 
 export { bubble, pBody, pang, updatePangolin };

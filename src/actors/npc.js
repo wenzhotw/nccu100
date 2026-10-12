@@ -3,13 +3,12 @@
  */
 import * as THREE from 'three';
 import { state } from '../core/state.js';
-import { late } from '../core/late.js';
 import { scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
 import { BOX, SPH, basic, canvasTex, outline, toon } from '../render/kit.js';
 import { resolve } from '../core/collision.js';
 import { police } from './police-car.js';
-import { IX } from '../world/layout.js';
+import { NPC_LIST, PANIC_LINES, STUDENTS, num, pickDialog, runAction } from '../content/index.js';
 import { outlineU, part } from './player.js';
 import { dlg, openDialog } from '../ui/dialog.js';
 import { groundH, indoor, lerpA, pos, spots } from '../core/gameplay.js';
@@ -79,7 +78,7 @@ function makePerson(o){
   g.scale.setScalar(o.scale||1.2);
   return {g,rig,P};
 }
-const PANIC=['哇啊啊啊！','警車暴衝了！','快跑！','救命啊！','誰在開警車啦！'];
+const PANIC=PANIC_LINES;
 function addNPC(o){
   const b=makePerson(o.look);
   const n=Object.assign({},o,{g:b.g,rig:b.rig,P:b.P,pi:0,fear:0,state:'idle',ph:Math.random()*6,blink:2+Math.random()*3,sayT:Math.random()*2,si:-1,chaseT:0});
@@ -87,7 +86,7 @@ function addNPC(o){
   if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=1.62; n.g.add(n.tag); }
   n.sp=speech(); n.sp.position.y=o.tag?2.12:1.8; n.g.add(n.sp);
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.indoorNPC?indoor():!indoor()),
-    fn:()=>openDialog(o.title||o.tag||'同學',typeof o.lines==='function'?o.lines():o.lines,o.after)};
+    fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
   spots.push(n.spot); NPCS.push(n); return n;
 }
 function npcUpdate(n,dt){
@@ -123,35 +122,10 @@ function npcUpdate(n,dt){
   if(!panic&&n.shout&&dP<=3.6&&n.sp.visible&&n.state!=='chase') n.sp.say('');
   n.spot.x=p.x; n.spot.z=p.z;
 }
-/* 角色 */
-addNPC({tag:'校長　李蔡彥',title:'校長．李蔡彥',indoorNPC:true,home:{x:IX,z:-12.5},face:0,
-  look:{top:'#26304f',pants:'#1f2433',suit:true,tie:'#6b3f8f',pin:true,hair:'#a3a7ab',brow:'#6d6f72',hairStyle:'side',glasses:'#b9bdc3',shoe:'#1c1c20'},
-  lines:()=>!state.haveMap?['你好，我是政大校長李蔡彥。','明年就是政大創校一百週年了。','我想請你幫個忙：走遍校園，收集大家的校園故事。','把故事收集齊全，就能找到政大的百年寶藏。','這張「百年秘寶地圖」交給你，上面標出了故事可能藏著的地方。按 M 就能打開。']
-    :state.found<3?[`目前收集到 ${state.found} 個校園故事，還差 ${3-state.found} 個。`,'打開百年秘寶地圖看看，還有哪裡沒去過。']
-    :['三個校園故事都收集齊了，真了不起！','百年寶藏的線索，就藏在這些故事裡。謝謝你為政大的一百年留下紀錄。'],
-  after:()=>{ if(!state.haveMap) late.giveMap(); }});
-addNPC({tag:'學務長　蔡炎龍',title:'學務長．蔡炎龍',home:{x:-27,z:-56},path:[[-27,-56],[-35,-57.5]],speed:0.9,
-  look:{top:'#1f2a44',pants:'#2e2e36',buttons:true,shortSleeve:true,hair:'#3a2a22',hairStyle:'bowl',glasses:'#4f545b',rect:true,watch:true},
-  lines:['你好，我是學務長蔡炎龍。','學生生活、社團活動、獎助學金和生活輔導，都可以到學務處找我們。','課業之外的經驗也很重要，多參加活動吧！']});
-addNPC({tag:'外交系　蔣學長',title:'外交系．蔣學長',home:{x:4.5,z:-6},path:[[4.5,-6],[4.5,-22]],speed:1.1,
-  look:{top:'#2b3140',pants:'#2b3140',suit:true,tie:'#b23a3a',hair:'#141414',hairStyle:'side',shoe:'#121214'},
-  shout:['輝達！鮮乳！大巨蛋！'],
-  lines:['大巨蛋……','大家都說不可能……','我辦到了……']});
-addNPC({tag:'新聞系　蔻蔻學姊',title:'新聞系．蔻蔻學姊',home:{x:-4.6,z:-45},path:[[-4.6,-45],[-4.6,-57]],speed:0.9,
-  look:{top:'#b8323a',pants:'#2b2b33',suit:true,tie:'#f4f1ea',hair:'#2a1c18',hairStyle:'bowl',shoe:'#1c1c20'},
-  shout:['我們政大也很了不起！'],
-  lines:()=>state.haveBadge?['爛Ｏ大有什麼了不起！','我們政大最了不起！','徽章要好好戴著喔。']:['爛Ｏ大有什麼了不起！','我們政大最了不起！','來，這個給你，戴上它！'],
-  after:()=>{ if(!state.haveBadge) late.giveBadge(); }});
-addNPC({tag:'資管系　方同學',title:'資管系．方同學',home:{x:-60,z:-62.5},face:Math.PI,wave:true,
-  look:{top:'#3f7d6a',pants:'#2e3550',hood:true,hair:'#161616',flyer:true,shoe:'#f2f2ee'},
-  shout:['歡迎加入政大金融科技創新實驗室！'],
-  lines:['嗨！我是資管系的方同學。','歡迎加入政大金融科技創新實驗室！','我們有金融科技的講座、實作和專題活動，有興趣的話歡迎來找我們！']});
-const cop=addNPC({tag:'駐校警察',title:'駐校警察',tagCol:'#9fc3ff',home:{x:-11.3,z:1.2},face:-Math.PI/2,chaseSpd:9.6,
-  look:{top:'#24324f',pants:'#1c2233',police:true,buttons:true,cap:'#1c2a4a',hair:'#1d1a18',shoe:'#111114'},
-  lines:['我是駐校警察，有什麼事都可以找我。','校園裡騎車開車都要放慢，注意安全。']});
-const STU_LINES=[['今天的課好多……'],['圖書館好像還有位子，要不要去？'],['等一下要去社團開會！'],['期中考快到了，好緊張。'],['中午要吃什麼啊？']];
-const STU=[['#e98a6a','#3c4a6b','#2b2220','#f2c94c'],['#7fb3e6','#40444f','#5a3a2a','#d8433f'],['#f2f2ee','#2e3a5a','#151515','#5b8ed6'],['#c9a0dc','#3a3f4a','#3a2a22',null],['#9fd6c2','#4a4036','#151515','#e8a33c'],['#f0c94a','#2e3550','#4a3022',null]];
-[[[-3.2,0],[-3.2,-24]],[[3.5,-40],[3.5,-58]],[[-12,-62.4],[-24,-64.5]],[[30,-55.8],[60,-50.4]],[[-30,-72],[-38,-73.5]],[[-1,-66],[12,-63.6]]].forEach((path,i)=>{
-  const c=STU[i]; addNPC({title:'同學',home:{x:path[0][0],z:path[0][1]},path,speed:1.1+Math.random()*0.5,look:{top:c[0],pants:c[1],hair:c[2],bag:c[3],hairStyle:i%2?'short':'side',scale:1.1},lines:STU_LINES[i%STU_LINES.length]}); });
+/* 角色：名單與台詞在 src/content/npcs.json */
+NPC_LIST.forEach(o=>addNPC({...o, indoorNPC:!!o.indoor, home:{x:num(o.home.x),z:num(o.home.z)}, face:o.face===undefined?undefined:num(o.face)}));
+const cop=NPCS.find(n=>n.id==='cop');
+STUDENTS.paths.forEach((path,i)=>{
+  const c=STUDENTS.colors[i]; addNPC({title:STUDENTS.title,home:{x:path[0][0],z:path[0][1]},path,speed:1.1+Math.random()*0.5,look:{top:c[0],pants:c[1],hair:c[2],bag:c[3],hairStyle:i%2?'short':'side',scale:1.1},dialog:[{lines:STUDENTS.lines[i%STUDENTS.lines.length]}]}); });
 
 export { NPCS, cop, npcUpdate };

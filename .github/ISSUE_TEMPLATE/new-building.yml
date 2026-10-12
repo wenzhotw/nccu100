@@ -1,0 +1,28 @@
+name: 新建築
+description: 提議或認領一棟還沒做的建築
+title: "[新建築] "
+labels: ["新建築"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: 建築名稱
+      placeholder: 學生活動中心
+    validations:
+      required: true
+  - type: input
+    id: folder
+    attributes:
+      label: 資料夾名稱（小寫英文加連字號）
+      placeholder: student-center
+  - type: textarea
+    id: photos
+    attributes:
+      label: 參考照片
+      description: 正面、側面、空拍，越多越好。可以直接拖曳圖片進來
+  - type: checkboxes
+    id: claim
+    attributes:
+      label: 認領
+      options:
+        - label: 我要做這棟

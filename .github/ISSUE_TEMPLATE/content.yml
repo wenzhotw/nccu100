@@ -1,0 +1,12 @@
+name: 台詞與劇情
+description: 新增 NPC、改台詞、新的校園故事
+title: "[內容] "
+labels: ["內容"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: 想法
+      description: 誰在哪裡說什麼，或新的校園故事內容（附來源更好）
+    validations:
+      required: true
