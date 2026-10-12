@@ -4,7 +4,7 @@ import { toon } from '../../../render/kit.js';
 import { boxC } from '../../../core/collision.js';
 import { defineBuilding } from '../../registry.js';
 import { createLohasHall } from './model.js';
-import { LOHAS, localHeightAt, localCollisionBoxes } from './layout.js';
+import { LOHAS, localHeightAt, localCollisionBoxes, localExcludesGrass } from './layout.js';
 
 function build() {
   const model = createLohasHall({ materialFactory: toon });
@@ -18,6 +18,7 @@ export default defineBuilding({
   name: '樂活館',
   build,
   heightAt(x, z) { return localHeightAt(x - LOHAS.x, z - LOHAS.z); },
+  excludeGrassAt(x, z) { return localExcludesGrass(x - LOHAS.x, z - LOHAS.z); },
   zones: [{ priority: 75, test: p => p.x > LOHAS.x + LOHAS.wingLeft - 1 && p.x < LOHAS.x + 14 && p.z > LOHAS.z - 7.2 && p.z < LOHAS.z + 5.8 ? '樂活館' : null }],
   map: [
     { x: LOHAS.x, z: LOHAS.z, w: LOHAS.width, d: LOHAS.depth, color: '#e6e9e2', label: '樂活館' },

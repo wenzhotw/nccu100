@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createLohasHall } from './model.js';
-import { LOHAS, localHeightAt, localCollisionBoxes } from './layout.js';
+import { LOHAS, localHeightAt, localCollisionBoxes, localExcludesGrass } from './layout.js';
 import { boxC, colliders, resolve } from '../../../core/collision.js';
 import { bdZ } from '../../layout.js';
 
@@ -37,6 +37,14 @@ for (let x = LOHAS.wingLeft + .013; x < LOHAS.arcadeRight; x += .047) for (let z
   const e = Math.abs(hit.point.y - h); assert(e < 1e-5, `高度不一致：${x},${z}`); maxError = Math.max(maxError, e); samples++;
 }
 for (const [x, z] of [[0, 0], [-21, 0], [-17, -6.41], [-17, 4.61]]) assert.equal(localHeightAt(x, z), null);
+// 草葉任意朝向及最大風擺的水平半徑小於 0.3 公尺，邊緣亦不可穿出樓板。
+const grassReach = Math.hypot(.05 + .2, .1);
+assert(grassReach < .3);
+for (let x = LOHAS.wingLeft; x <= LOHAS.arcadeRight; x += .1) for (let z = LOHAS.stairFront; z <= LOHAS.wingBack; z += .1) {
+  for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 8) assert(localExcludesGrass(x + Math.cos(angle) * grassReach, z + Math.sin(angle) * grassReach));
+}
+for (const [x, z] of [[0, 0], [-14, 0], [12.9, -5.5], [-20.55, 0], [-17, -6.65]]) assert(localExcludesGrass(x, z));
+for (const [x, z] of [[-21, 0], [-17, -6.71], [-17, 4.91], [14, 0], [0, 5.36], [-17, -15], [-38, -3], [74, -11]]) assert(!localExcludesGrass(x, z));
 for (let i = 0; i <= LOHAS.stairCount; i++) {
   const z = LOHAS.stairFront + i * (LOHAS.wingFront - LOHAS.stairFront) / LOHAS.stairCount;
   const h = localHeightAt(-17.2, z);

@@ -6,6 +6,7 @@ import { scene } from '../../core/engine.js';
 import { GRAD } from '../../render/kit.js';
 import { bdZ, inLot, swZ } from '../layout.js';
 import { FZ } from '../terrain/fountain.js';
+import { world } from '../registry.js';
 
 /* ---------- grass ---------- */
 const grassU={value:0};
@@ -23,6 +24,8 @@ grassMat.onBeforeCompile=sh=>{
 const GN=7000, grass=new THREE.InstancedMesh(bladeGeo,grassMat,GN);
 grass.receiveShadow=true;
 const dm=new THREE.Object3D(), gc=new THREE.Color(), gTones=['#6fb84f','#82c95a','#94d462','#5fa847'];
+// 建築可自行登記除草範圍；未登記的建築與地形維持原有取樣規則。
+const grassExclusions=world.buildings.filter(b=>typeof b.excludeGrassAt==='function');
 let gi=0;
 while(gi<GN){
   const x=-44+Math.random()*88, z=-75+Math.random()*84;
@@ -30,6 +33,7 @@ while(gi<GN){
   if(x<-36&&z<-16&&z>-66) continue;
   if(Math.abs(x)<17.2&&z>-2.4) continue;
   if(z<swZ(x)+5.4||Math.abs(z-bdZ(x))<2.6||inLot(x,z)) continue;
+  if(grassExclusions.some(b=>b.excludeGrassAt(x,z))) continue;
   if(x>-42&&x<-7.5&&z>-12&&z<4.5) continue;
   if(Math.hypot(x,z-FZ)<9.8||(Math.abs(z-FZ)<2.4&&Math.abs(x)<24)) continue;
   { const ax=Math.abs(x); if((ax>24.8&&ax<31.2&&z>-50.2&&z<-13.8)||(ax>11.8&&ax<31.2&&((z>-19.2&&z<-13.8)||(z>-50.2&&z<-44.8)))) continue; }

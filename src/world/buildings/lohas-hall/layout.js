@@ -35,3 +35,13 @@ export function localCollisionBoxes() {
     [s.heartX - .94, s.heartX + .94, s.heartZ - .4, s.heartZ + .4],
   ];
 }
+
+/** 建築占地、柱廊與階梯不種草，另留 0.3 公尺容納草葉寬度及任意轉向的風擺。 */
+export function localExcludesGrass(x, z) {
+  const s = LOHAS, pad = .3;
+  const inside = (x0, x1, z0, z1) => x >= x0 - pad && x <= x1 + pad && z >= z0 - pad && z <= z1 + pad;
+  return inside(-s.width / 2, s.width / 2, s.front, s.back + .05)
+    || inside(8.5, s.width / 2, -5.55, s.back + .05)
+    || inside(s.wingLeft, s.wingRight, s.wingFront, s.wingBack)
+    || inside(s.wingLeft, s.arcadeRight, s.stairFront, s.wingFront);
+}
