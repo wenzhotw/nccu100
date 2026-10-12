@@ -25,6 +25,7 @@ import { camT, groundH, indoor, lerpA, pos, spots, vel, zoneOf } from './gamepla
 import { NPCS, npcUpdate } from '../actors/npc.js';
 import { carSpot, exitCar, sirenB, sirenR, updateDrive } from '../systems/police-drive.js';
 import { buildOccluders, camDir, camRay } from '../systems/camera-occlusion.js';
+import { updateFoliage } from '../systems/foliage-fade.js';
 import { cameraFov, drawMini, heroJuice, placePrompt, puff, updatePuffs } from '../systems/feel.js';
 
 /* ---------- 標題畫面環繞鏡頭 ---------- */
@@ -101,6 +102,7 @@ function update(dt){
   camera.lookAt(camT);
   // 除錯用的自由視角（__game.view），平常不會用到
   if(state.viewCam){ const v=state.viewCam; camera.position.set(v[0],v[1],v[2]); camera.lookAt(v[3],v[4],v[5]); }
+  updateFoliage(dt,camera,camT);   // 擋住視線的樹冠變透明
   sky.position.copy(camera.position);
   sun.position.set(pos.x+SUN.x*70,SUN.y*70,pos.z+SUN.z*70); sun.target.position.set(pos.x,0,pos.z);
   placePrompt();
