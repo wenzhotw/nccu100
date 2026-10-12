@@ -4,6 +4,7 @@
  *
  * priority 越小越先判斷。目前的編號：
  *     0 四維堂室內        10 指南路二段      20 正門          30 指南溪畔（river.js）
+ *    15 側門（back-road.js 的行人廣場）
  *    40 綜合院館          50 田徑場          60 體育館        70 商學院
  *    80 環山一道          90 校內道路       100 預定地       110 噴水池
  *   120 八德道           130 四維道（紅磚段） 131 校園步道  132 醉夢溪畔道路
@@ -15,11 +16,14 @@
 import { registerZone } from './registry.js';
 import { SIWEI, bdZ, creekRoadDist, inLot, swZ } from './layout.js';
 import { FZ } from './terrain/fountain.js';
+import { BACK_BRANCH_HW, BACK_BRANCH_Z, BACK_PLAZA_Z0, BACK_ROAD_HW, BACK_ROAD_X } from './terrain/back-road.js';
 
 registerZone(10, p => p.z > 18 ? '指南路二段' : null);
 registerZone(20, p => p.z > 9 ? '正門' : null);
 registerZone(80, p => (Math.abs(p.x + 88) < 2.8 && p.z < 18) ? '環山一道' : null);
-registerZone(90, p => (Math.abs(p.x - 96) < 2.4 && p.z < 18) ? '校內道路' : null);
+registerZone(15, p => (p.x > BACK_ROAD_X - BACK_ROAD_HW - 1 && p.x < BACK_ROAD_X + BACK_ROAD_HW + 1 && p.z > BACK_PLAZA_Z0 && p.z < 18) ? '側門' : null);
+registerZone(90, p => ((Math.abs(p.x - BACK_ROAD_X) < BACK_ROAD_HW + 2.8 && p.z < BACK_PLAZA_Z0 && p.z > swZ(p.x) + 2)
+  || (Math.abs(p.z - BACK_BRANCH_Z) < BACK_BRANCH_HW + 0.3 && p.x > BACK_ROAD_X && p.x < 178.5)) ? '校內道路' : null);
 registerZone(100, p => { const l = inLot(p.x, p.z); return l ? l.name + '．預定地' : null; });
 registerZone(110, p => Math.hypot(p.x, p.z - FZ) < 10 ? '噴水池' : null);
 registerZone(120, p => Math.abs(p.z - bdZ(p.x)) < 2.4 ? '八德道' : null);
