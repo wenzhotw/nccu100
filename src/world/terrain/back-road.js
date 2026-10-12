@@ -4,7 +4,7 @@
  * - 雙向兩線道，中間雙黃線，兩側紅線，路面有直行、左轉箭頭、「慢」字和斑馬線
  * - 兩側紅磚人行道，靠車道那邊一排水泥花台（種矮灌木），另一邊是灰色路燈和行道樹
  * - 東側是電算中心後棟的方柱框架（在 computer-center 資料夾），行道樹種在柱子前的樹穴；
- *   再往北一段是石砌擋土牆加樹籬，人行道上有白色鐵欄杆、黃黑路緣和「往電算中心」指示牌
+ *   往北接上八德道（bade-road.js），兩條路的人行道和方柱框架在路口轉角相接
  * - 北端：八德道從東邊接進來，往西有一條彎進集英樓前面的路；再往北是灰色棋盤格的行人廣場，
  *   入口一排黃色反光柱，東邊是有綠色鋼構雨遮的店面，西邊是白色圍牆和公告欄，出去就是指南路
  * - 指南路對面的店家和很高的招牌（從路上一路看得到）
@@ -167,40 +167,13 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
   tree(121.8, BZ - BHW - SW / 2, 1.05);
 }
 
-/* ---------- 東側北段（電算中心後棟以北）：擋土牆、樹籬、白色鐵欄杆、指示牌 ---------- */
-{
-  const wx = X - HW - SW - 0.45, z0 = -10.8, z1 = -4.6;
-  const stone = canvasTex(64, 32, (g, w, h) => {
-    g.fillStyle = '#8c8a84'; g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 26; i++) { g.fillStyle = ['#7a7872', '#9d9b95', '#86847e'][i % 3]; g.fillRect(Math.random() * w, Math.random() * h, 6 + Math.random() * 8, 4 + Math.random() * 5); }
-  }, [(z1 - z0) / 2, 1]);
-  block(wx, 0.4, (z0 + z1) / 2, 0.5, 0.8, z1 - z0, new THREE.MeshToonMaterial({ map: stone, gradientMap: GRAD }), 0.02);
-  for (let z = z0 + 0.6; z < z1; z += 1.2) { const s = mk(SPH, toon(shrubCol(z)), wx - 0.5, 1.15, z, { out: 0.04 }); s.scale.set(0.95, 0.7, 0.8); }
-  // 樹籬上點綴紅花（照片上的紅色小花）
-  for (let z = z0 + 1; z < z1; z += 2.3) mk(SPH, toon('#e2574c'), wx - 0.1, 1.55, z + 0.4).scale.setScalar(0.09);
-  boxC(wx - 1.4, wx + 0.25, z0, z1);
-  // 白色鐵欄杆＋黃黑路緣（人行道內側）
-  const rx = wx + 0.55, r0 = -10.3, r1 = -5.5;
-  const kerb = canvasTex(64, 16, (g, w, h) => { for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#2d2d2d' : '#e8c23a'; g.fillRect(i * 16, 0, 16, h); } }, [(r1 - r0) / 1.6, 1]);
-  block(rx, 0.12, (r0 + r1) / 2, 0.25, 0.24, r1 - r0, new THREE.MeshToonMaterial({ map: kerb, gradientMap: GRAD }), 0.01);
-  [0.55, 1.05].forEach(y => mk(new THREE.CylinderGeometry(0.045, 0.045, r1 - r0, 6), toon('#f2f2ee'), rx, y, (r0 + r1) / 2, { out: 0.01 }).rotation.x = Math.PI / 2);
-  for (let z = r0; z <= r1 + 0.01; z += 2) mk(new THREE.CylinderGeometry(0.05, 0.05, 1.1, 6), toon('#f2f2ee'), rx, 0.55, z, { out: 0.01 });
-  boxC(rx - 0.15, rx + 0.15, r0, r1);
-  // 「往電算中心」指示牌（箭頭指向南邊的塔樓正門）
-  const sign = canvasTex(160, 128, (g, w, h) => {
-    g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); g.strokeStyle = '#777'; g.lineWidth = 3; g.strokeRect(2, 2, w - 4, h - 4);
-    g.fillStyle = '#222'; g.font = '700 30px "Noto Sans TC",sans-serif'; g.textAlign = 'center'; g.fillText('往電算中心', w / 2, 44);
-    g.fillStyle = '#d33a35'; g.fillRect(40, 72, 70, 16); g.beginPath(); g.moveTo(110, 60); g.lineTo(140, 80); g.lineTo(110, 100); g.closePath(); g.fill();
-  });
-  plane(0.62, 0.5, basic({ map: sign }), rx + 0.06, 0.8, -7.9, 0, Math.PI / 2);
-  // 黃色立牌（紅白桿）
-  { const x = rx + 0.7, z = -11.6;
-    mk(new THREE.CylinderGeometry(0.035, 0.035, 1.2, 6), toon('#d9473f'), x, 0.6, z, {});
-    block(x, 0.05, z, 0.45, 0.1, 0.45, '#e8c23a', 0.01);
-    block(x, 1.15, z, 0.04, 0.3, 0.5, '#f2d33f', 0.01);
-    mk(new THREE.ConeGeometry(0.2, 0.6, 8), toon('#ef6c35'), x + 0.1, 0.3, z - 0.9, { out: 0.02 });
-    circC(x, z, 0.2); }
-}
+/* ---------- 東側北端：黃色立牌和三角錐（擋土牆的位置現在是八德道的人行道，見 bade-road.js） ---------- */
+{ const x = X - HW - SW + 0.8, z = -11.6;
+  mk(new THREE.CylinderGeometry(0.035, 0.035, 1.2, 6), toon('#d9473f'), x, 0.6, z, {});
+  block(x, 0.05, z, 0.45, 0.1, 0.45, '#e8c23a', 0.01);
+  block(x, 1.15, z, 0.04, 0.3, 0.5, '#f2d33f', 0.01);
+  mk(new THREE.ConeGeometry(0.2, 0.6, 8), toon('#ef6c35'), x + 0.1, 0.3, z - 0.9, { out: 0.02 });
+  circC(x, z, 0.2); }
 
 /* ---------- 側門廣場：棋盤格地磚、黃色反光柱、兩邊的店面和圍牆 ---------- */
 {
@@ -281,4 +254,4 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
   plane(2.1, 3.1, basic({ map: board }), x, 13.6, zz + 0.21);
 }
 
-export { X as BACK_ROAD_X, BZ as BACK_BRANCH_Z, ZN as BACK_PLAZA_Z0, ZG as BACK_PLAZA_Z1, HW as BACK_ROAD_HW, BHW as BACK_BRANCH_HW };
+export { brickMat, lamp, shrubCol, X as BACK_ROAD_X, BZ as BACK_BRANCH_Z, ZN as BACK_PLAZA_Z0, ZG as BACK_PLAZA_Z1, HW as BACK_ROAD_HW, BHW as BACK_BRANCH_HW };
