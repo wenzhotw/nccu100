@@ -14,7 +14,7 @@
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
-import { GRAD, basic, block, canvasTex, hText, mk, plane, toon } from '../../../render/kit.js';
+import { GRAD, SPH, basic, block, canvasTex, hText, mk, plane, toon } from '../../../render/kit.js';
 import { boxC } from '../../../core/collision.js';
 import { tree } from '../../vegetation.js';
 import { defineBuilding } from '../../registry.js';
@@ -24,6 +24,11 @@ const TOWER = { x: 70, z: -30, w: 18, d: 16 };
 const WING = { x: 54, z: -25, w: 14, d: 9, h: 13 };
 const INFO = { x: 40, z: -17, w: 14, d: 12, h: 15.5 };
 const STEPS = { w: 12, depth: 3.6 };   // 塔樓正面台階
+// 背面（西側，面向電算中心後面的校內道路）：沿人行道的一長條後棟，前面一排白磁磚方柱撐著深色石材橫樑
+const BACK = { x0: 80, x1: 87.4, z0: -39.5, z1: -12, h: 11.4 };
+const PILLAR_X = 88.0;                        // 方柱中心線（在人行道邊上）
+const DOOR = { z0: -26.3, z1: -22.7, x0: 85.6 };   // 後門：往裡退，前面五階台階
+const BACK_STEP = 0.48, BACK_RISE = 0.16;
 
 const C = { tile: '#e9eae7', trim: '#a9a8a2', dark: '#3a3d42', glass: '#9eb6c0', shadow: '#d9d8d2' };
 
@@ -161,11 +166,78 @@ function buildInfo() {
   block(-2, 1.5, -d / 2 - 0.05, 4, 3, 0.1, basic({ color: C.glass }), 0, G);
 }
 
+/** 背面後棟（照片：白色馬賽克磁磚、兩層樓高的方柱框架、深色石材橫樑、柱間種竹子的花台、圓形壁燈） */
+function buildBack() {
+  const { x0, x1, z0, z1, h } = BACK, GRANITE = toon('#5b5955'), CAP = toon('#8d8b85');
+  // 背面的馬賽克磁磚格線比正面明顯（照片近看），一格約 30 公分
+  const mosaic = (rx, ry) => new THREE.MeshToonMaterial({ gradientMap: GRAD, map: canvasTex(64, 64, (g, w, hh) => {
+    g.fillStyle = C.tile; g.fillRect(0, 0, w, hh);
+    g.fillStyle = 'rgba(120,122,125,.45)'; for (let i = 0; i < w; i += 8) { g.fillRect(i, 0, 1, hh); g.fillRect(0, i, w, 1); }
+  }, [rx, ry]) });
+  const TILE = mosaic(6, 3), PILLAR = mosaic(1, 8);
+  const win = windowRowMat((z1 - z0) / 3, 2);
+  // 主體：一、二樓是整排窗，三樓以上白牆加帶窗；後門那一格往裡退
+  const body = (za, zb, xe) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(xe - x0, 7.6, zb - za), [windowRowMat((zb - za) / 3, 2), TILE, TILE, TILE, TILE, TILE]);
+    m.position.set((x0 + xe) / 2, 3.8, (za + zb) / 2); m.castShadow = m.receiveShadow = true; scene.add(m);
+    boxC(x0, xe, za, zb);
+  };
+  body(z0, DOOR.z0, x1); body(DOOR.z1, z1, x1); body(DOOR.z0, DOOR.z1, DOOR.x0);
+  block(DOOR.x0 + 0.03, 1.5, (DOOR.z0 + DOOR.z1) / 2, 0.06, 2.6, 2.4, basic({ color: '#8fa3ab' }), 0);
+  block(DOOR.x0 + 0.05, 1.5, (DOOR.z0 + DOOR.z1) / 2, 0.06, 2.6, 0.08, C.dark, 0);
+  // 一樓窗上的深色石材線板
+  block(x1 + 0.08, 3.7, (DOOR.z1 + z1) / 2, 0.25, 0.3, z1 - DOOR.z1, GRANITE, 0.01);
+  block(x1 + 0.08, 3.7, (z0 + DOOR.z0) / 2, 0.25, 0.3, DOOR.z0 - z0, GRANITE, 0.01);
+  // 三樓以上
+  const top = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, h - 7.6, z1 - z0), [win, TILE, TILE, TILE, TILE, TILE]);
+  top.position.set((x0 + x1) / 2, (7.6 + h) / 2, (z0 + z1) / 2); top.castShadow = top.receiveShadow = true; scene.add(top);
+  block((x0 + x1) / 2, h + 0.2, (z0 + z1) / 2, x1 - x0 + 0.4, 0.4, z1 - z0 + 0.4, toon(C.trim), 0.03);
+
+  // 方柱框架：柱子落在人行道邊，柱頂一道連續的石材橫樑，每根柱子再一根短樑接回牆面
+  const n = 8, step = (z1 - z0 - 0.6) / (n - 1), bayMid = [];
+  for (let i = 0; i < n; i++) {
+    const z = z0 + 0.3 + i * step;
+    block(PILLAR_X, 3.7, z, 0.9, 7.4, 0.9, PILLAR, 0.03);
+    block((x1 + PILLAR_X) / 2, 7.2, z, PILLAR_X - x1 + 0.4, 0.55, 0.5, GRANITE, 0.02);
+    // 圓形壁燈（面向道路）
+    const l = mk(SPH, toon('#4a4d52'), PILLAR_X + 0.47, 3.6, z); l.scale.set(0.08, 0.2, 0.2);
+    mk(SPH, toon('#f4efe0', { emissive: '#ffe6a8', emissiveIntensity: 0.4 }), PILLAR_X + 0.52, 3.6, z).scale.set(0.05, 0.14, 0.14);
+    boxC(PILLAR_X - 0.45, PILLAR_X + 0.45, z - 0.45, z + 0.45);
+    if (i) bayMid.push(z - step / 2);
+  }
+  block(PILLAR_X, 7.75, (z0 + z1) / 2, 1.0, 0.6, z1 - z0, GRANITE, 0.03);
+
+  // 柱間的花台：白磁磚矮牆、石材壓頂、裡面是竹子
+  const BAMBOO = ['#4c7a3a', '#5a8a44', '#43703a'];
+  bayMid.forEach(zc => {
+    if (zc > DOOR.z0 && zc < DOOR.z1) return;
+    const len = step - 0.95;
+    block((x1 + PILLAR_X + 0.45) / 2, 0.42, zc, PILLAR_X + 0.45 - x1, 0.84, len, TILE, 0.02);
+    block((x1 + PILLAR_X + 0.45) / 2 + 0.05, 0.9, zc, PILLAR_X + 0.5 - x1, 0.12, len + 0.1, CAP, 0.01);
+    for (let k = 0; k < 4; k++) { const s = mk(SPH, toon(BAMBOO[k % 3]), x1 + 0.45, 1.35 + (k % 2) * 0.3, zc - len / 2 + 0.4 + k * (len - 0.8) / 3, { out: 0.03 }); s.scale.set(0.38, 0.75, 0.55); }
+    boxC(x1, PILLAR_X + 0.45, zc - len / 2, zc + len / 2);
+  });
+
+  // 後門台階
+  for (let k = 0; k < 5; k++) {
+    const xa = 88.4 - (k + 1) * BACK_STEP;
+    block((xa + 88.4) / 2, BACK_RISE * (k + 1) / 2, (DOOR.z0 + DOOR.z1) / 2, 88.4 - xa, BACK_RISE * (k + 1), DOOR.z1 - DOOR.z0, toon('#c9c7c0'), 0.01);
+  }
+  block((DOOR.x0 + 86) / 2, 0.4, (DOOR.z0 + DOOR.z1) / 2, 86 - DOOR.x0, 0.8, DOOR.z1 - DOOR.z0, toon('#c9c7c0'), 0.01);
+  // 「往電算中心」指示牌（貼在門邊的柱子上，箭頭指向南邊的塔樓正門）
+  const sign = canvasTex(160, 128, (g, w, h2) => {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h2); g.strokeStyle = '#777'; g.lineWidth = 3; g.strokeRect(2, 2, w - 4, h2 - 4);
+    g.fillStyle = '#222'; g.font = '700 30px "Noto Sans TC",sans-serif'; g.textAlign = 'center'; g.fillText('往電算中心', w / 2, 44);
+    g.fillStyle = '#d33a35'; g.fillRect(40, 72, 70, 16); g.beginPath(); g.moveTo(110, 60); g.lineTo(140, 80); g.lineTo(110, 100); g.closePath(); g.fill();
+  });
+  plane(0.5, 0.4, basic({ map: sign }), PILLAR_X + 0.46, 1.6, DOOR.z1 + 0.85, 0, Math.PI / 2);
+}
+
 function build() {
-  buildTower(); buildWing(); buildInfo();
+  buildTower(); buildWing(); buildInfo(); buildBack();
   /* 前面廣場：樹和矮花台 */
   const fz = TOWER.z - TOWER.d / 2;
-  [[WING.x - 4, WING.z - WING.d / 2 - 4], [WING.x + 2, WING.z - WING.d / 2 - 5.5], [INFO.x - 3, INFO.z - INFO.d / 2 - 4], [TOWER.x + 17, fz + 4]].forEach(([x, z]) => tree(x, z, 0.85));
+  [[WING.x - 4, WING.z - WING.d / 2 - 4], [WING.x + 2, WING.z - WING.d / 2 - 5.5], [INFO.x - 3, INFO.z - INFO.d / 2 - 4]].forEach(([x, z]) => tree(x, z, 0.85));
   [[TOWER.x - 11, fz - 2.5, 4, 2.2], [WING.x, WING.z - WING.d / 2 - 1.4, WING.w - 2, 1.4]].forEach(([x, z, w, d]) => {
     block(x, 0.35, z, w, 0.7, d, toon('#b9b7b0'), 0.02);
     block(x, 0.75, z, w - 0.4, 0.3, d - 0.4, toon('#5aa04e'), 0);
@@ -184,18 +256,22 @@ export default defineBuilding({
   build,
   // 塔樓正面三階台階
   heightAt(x, z) {
+    // 背面後門的台階和平台
+    if (z > DOOR.z0 && z < DOOR.z1 && x > DOOR.x0 && x < 88.4) return x < 86 ? 0.8 : BACK_RISE * Math.min(5, Math.floor((88.4 - x) / BACK_STEP) + 1);
     const lx = x - TOWER.x, lz = z - TOWER.z, F = -TOWER.d / 2;
     if (Math.abs(lx) > STEPS.w / 2 || lz > F || lz < F - STEPS.depth) return null;
     const k = Math.floor((lz - (F - STEPS.depth)) / 1.2);   // 0, 1, 2
     return 0.2 + Math.min(2, Math.max(0, k)) * 0.2;
   },
   zones: [
+    { priority: 72, test: p => (p.x > BACK.x0 && p.x < PILLAR_X + 0.5 && p.z > BACK.z0 && p.z < BACK.z1) ? '電算中心' : null },
     { priority: 72, test: p => (Math.abs(p.x - TOWER.x) < TOWER.w / 2 + 4 && p.z > TOWER.z - TOWER.d / 2 - 5 && p.z < TOWER.z + TOWER.d / 2 + 2) ? '電算中心' : null },
     { priority: 73, test: p => (p.x > INFO.x - INFO.w / 2 - 2 && p.x < WING.x + WING.w / 2 && p.z > TOWER.z - 4 && p.z < INFO.z + INFO.d / 2 + 1) ? '資訊大樓' : null },
   ],
   map: [
     { x: TOWER.x, z: TOWER.z, w: TOWER.w, d: TOWER.d, color: '#ecebe6', label: '電算中心' },
     { x: WING.x, z: WING.z, w: WING.w, d: WING.d, color: '#ecebe6' },
+    { x: (BACK.x0 + BACK.x1) / 2, z: (BACK.z0 + BACK.z1) / 2, w: BACK.x1 - BACK.x0, d: BACK.z1 - BACK.z0, color: '#ecebe6' },
     { x: INFO.x, z: INFO.z, w: INFO.w, d: INFO.d, color: '#ecebe6', label: '資訊大樓' },
   ],
 });

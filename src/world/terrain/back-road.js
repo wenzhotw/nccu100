@@ -3,7 +3,8 @@
  * 依照片：
  * - 雙向兩線道，中間雙黃線，兩側紅線，路面有直行、左轉箭頭、「慢」字和斑馬線
  * - 兩側紅磚人行道，靠車道那邊一排水泥花台（種矮灌木），另一邊是灰色路燈和行道樹
- * - 東側靠電算中心有一段石砌擋土牆加樹籬，人行道上有白色鐵欄杆、黃黑路緣和「往電算中心」指示牌
+ * - 東側是電算中心後棟的方柱框架（在 computer-center 資料夾），行道樹種在柱子前的樹穴；
+ *   再往北一段是石砌擋土牆加樹籬，人行道上有白色鐵欄杆、黃黑路緣和「往電算中心」指示牌
  * - 北端：八德道從東邊接進來，往西有一條彎進集英樓前面的路；再往北是灰色棋盤格的行人廣場，
  *   入口一排黃色反光柱，東邊是有綠色鋼構雨遮的店面，西邊是白色圍牆和公告欄，出去就是指南路
  * - 指南路對面的店家和很高的招牌（從路上一路看得到）
@@ -119,6 +120,8 @@ const slowTex = hText('慢', WHITE, '900 150px "Noto Sans TC",sans-serif', 160, 
     const arc = new THREE.Mesh(new THREE.RingGeometry(SW - 0.22, SW, 16, 1, Math.PI / 2, Math.PI / 2), toon(RED));
     arc.rotation.x = -Math.PI / 2; arc.position.set(cx, 0.024, cz); scene.add(arc);
     flat(SW, SW, ASPHALT, cx - SW / 2, 0.0205, cz + SW / 2); }
+  // 東側在電算中心後棟前面加寬（柱子外緣到原本的人行道之間也鋪紅磚）
+  { const z1 = -11.2, len = z1 - ZS; flat(E0 - 88.2, len, brickMat(1, len / 1.7), (E0 + 88.2) / 2, 0.0195, (z1 + ZS) / 2); }
   // 路緣石（靠車道那一邊的淺灰色長條）
   [[E0 + SW - 0.1, BZ - BHW, ZS], [X + HW + 0.1, BZ - BHW - SW, ZS]].forEach(([x, z0, z1]) => flat(0.2, z0 - z1, '#a7a7a1', x, 0.022, (z0 + z1) / 2));
 }
@@ -147,21 +150,26 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
   const ex = X - HW - 0.55, wx = X + HW + 0.55;
   [-10, -15.5, -25, -31, -36].forEach(z => planter(ex, z, 'z'));
   [-9.5, -14.5, -25.5, -31, -36].forEach(z => planter(wx, z, 'z'));
-  [-8.2, -17.5, -33, -39.5].forEach(z => lamp(X - HW - SW + 0.4, z, 1));
+  [-17.5, -27.5, -33.6, -39.5].forEach(z => lamp(X - HW - SW + 0.4, z, 1));
   [-12, -23, -33.5].forEach(z => lamp(X + HW + SW - 0.4, z, -1));
   // 集英樓前那條路
   [[106.5, 'n'], [111, 'n'], [118, 'n']].forEach(([x]) => planter(x, ZN + 0.55, 'x'));
   lamp(114.5, ZN + SW - 0.4, 0);
-  // 行道樹：東側在人行道外的草地上、西側集英樓以南
-  [-6.5, -12.5, -17.5, -39].forEach(z => tree(X - HW - SW - 1.1, z, 0.95));
+  // 行道樹：東側種在電算中心後棟前面的樹穴裡（照片），西側在集英樓以南
+  const pit = new THREE.RingGeometry(0.45, 0.68, 16);
+  [-14.6, -20.4, -30.6, -36.6].forEach(z => {
+    tree(X - HW - SW - 0.75, z, 0.95);
+    const r = new THREE.Mesh(pit, toon('#8d8b85')); r.rotation.x = -Math.PI / 2; r.position.set(X - HW - SW - 0.75, 0.03, z); scene.add(r);
+    flat(0.95, 0.95, '#5f5242', X - HW - SW - 0.75, 0.025, z);
+  });
   [-23, -28.5, -40].forEach(z => tree(X + HW + SW + 1.1, z, 0.9));
   palm(X + HW + SW + 2.6, -33, 6.5); palm(X + HW + SW + 4.6, -36.5, 7.2);
   tree(121.8, BZ - BHW - SW / 2, 1.05);
 }
 
-/* ---------- 東側靠電算中心：擋土牆、樹籬、白色鐵欄杆、指示牌 ---------- */
+/* ---------- 東側北段（電算中心後棟以北）：擋土牆、樹籬、白色鐵欄杆、指示牌 ---------- */
 {
-  const wx = X - HW - SW - 0.45, z0 = -35, z1 = -19.5;
+  const wx = X - HW - SW - 0.45, z0 = -10.8, z1 = -4.6;
   const stone = canvasTex(64, 32, (g, w, h) => {
     g.fillStyle = '#8c8a84'; g.fillRect(0, 0, w, h);
     for (let i = 0; i < 26; i++) { g.fillStyle = ['#7a7872', '#9d9b95', '#86847e'][i % 3]; g.fillRect(Math.random() * w, Math.random() * h, 6 + Math.random() * 8, 4 + Math.random() * 5); }
@@ -172,7 +180,7 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
   for (let z = z0 + 1; z < z1; z += 2.3) mk(SPH, toon('#e2574c'), wx - 0.1, 1.55, z + 0.4).scale.setScalar(0.09);
   boxC(wx - 1.4, wx + 0.25, z0, z1);
   // 白色鐵欄杆＋黃黑路緣（人行道內側）
-  const rx = wx + 0.55, r0 = -30.5, r1 = -22.5;
+  const rx = wx + 0.55, r0 = -10.3, r1 = -5.5;
   const kerb = canvasTex(64, 16, (g, w, h) => { for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#2d2d2d' : '#e8c23a'; g.fillRect(i * 16, 0, 16, h); } }, [(r1 - r0) / 1.6, 1]);
   block(rx, 0.12, (r0 + r1) / 2, 0.25, 0.24, r1 - r0, new THREE.MeshToonMaterial({ map: kerb, gradientMap: GRAD }), 0.01);
   [0.55, 1.05].forEach(y => mk(new THREE.CylinderGeometry(0.045, 0.045, r1 - r0, 6), toon('#f2f2ee'), rx, y, (r0 + r1) / 2, { out: 0.01 }).rotation.x = Math.PI / 2);
@@ -184,9 +192,9 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
     g.fillStyle = '#222'; g.font = '700 30px "Noto Sans TC",sans-serif'; g.textAlign = 'center'; g.fillText('往電算中心', w / 2, 44);
     g.fillStyle = '#d33a35'; g.fillRect(40, 72, 70, 16); g.beginPath(); g.moveTo(110, 60); g.lineTo(140, 80); g.lineTo(110, 100); g.closePath(); g.fill();
   });
-  plane(0.62, 0.5, basic({ map: sign }), rx + 0.06, 0.8, -26.5, 0, Math.PI / 2);
+  plane(0.62, 0.5, basic({ map: sign }), rx + 0.06, 0.8, -7.9, 0, Math.PI / 2);
   // 黃色立牌（紅白桿）
-  { const x = rx + 0.7, z = -22;
+  { const x = rx + 0.7, z = -11.6;
     mk(new THREE.CylinderGeometry(0.035, 0.035, 1.2, 6), toon('#d9473f'), x, 0.6, z, {});
     block(x, 0.05, z, 0.45, 0.1, 0.45, '#e8c23a', 0.01);
     block(x, 1.15, z, 0.04, 0.3, 0.5, '#f2d33f', 0.01);
