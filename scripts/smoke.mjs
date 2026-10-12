@@ -35,25 +35,22 @@ try {
   if (await page.locator('#visitDistrict').count()) errors.push('首頁仍有探索捷徑');
   await page.click('#go');
   await page.waitForTimeout(3000);
-  const district = JSON.parse(fs.readFileSync(path.join(root, 'src/world/buildings/law-education-route/district.json'), 'utf8'));
-  const districtChecks = await page.evaluate(data => {
+  const districtChecks = await page.evaluate(() => {
     const g = window.__game;
     const group = g.scene.getObjectByName('法學院－教育學院照片街區');
     const issues = [];
-    if (!group || group.children.filter(c => c.isInstancedMesh).length !== data.batches.length) issues.push('模型批次不完整');
-    if (g.world.buildings.some(b => ['law-school','swimming-hall'].includes(b.id))) issues.push('舊模型仍啟用');
+    // 街區裡的法學院、游泳館略過不載入，改用原本的 law-school、swimming-hall（上面的「沒有載入的建築」會檢查）
+    if (!group || group.children.filter(c => c.isInstancedMesh).length !== group.userData.batchCount) issues.push('模型批次不完整');
     if (Math.hypot(g.pos.x+2,g.pos.z-21) > 1) issues.push('原本的校門起點被改動');
     if (group.children.some(c => c.isInstancedMesh && !c.material.isMeshToonMaterial)) issues.push('未使用原網頁卡通材質');
-    for (const lot of data.lots) {
+    for (const lot of group.userData.lots) {
       const p = {x:lot.entry[0],y:0,z:lot.entry[1]};
       g.resolve(p);
       if (Math.hypot(p.x-lot.entry[0],p.z-lot.entry[1]) > .1) issues.push(lot.name+'入口被碰撞擋住');
       if (!g.world.mapShapes.some(s => s.label === lot.name)) issues.push(lot.name+'缺少地圖標記');
     }
-    const rampHeights = [-106.1,-107,-107.8].map(z => g.heightAt(-132,z));
-    if (!(rampHeights[0] < rampHeights[1] && rampHeights[1] < rampHeights[2])) issues.push('游泳館坡道高度不連續');
-    return {issues, rampHeights, batches:group?.children.filter(c=>c.isInstancedMesh).length};
-  }, district);
+    return {issues, batches:group?.children.filter(c=>c.isInstancedMesh).length};
+  });
   errors.push(...districtChecks.issues);
   console.log('街區檢查：', JSON.stringify(districtChecks));
   fs.mkdirSync(path.join(root,'test-results'),{recursive:true});

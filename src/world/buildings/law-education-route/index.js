@@ -5,7 +5,36 @@ import { toon } from '../../../render/kit.js';
 import { colliders } from '../../../core/collision.js';
 import { LOTS } from '../../layout.js';
 import { defineBuilding } from '../../registry.js';
-import data from './district.json';
+import raw from './district.json';
+
+/*
+ * 街區裡的法學院、游泳館不載入，改用原本的 law-school、swimming-hall 模組。
+ * district.json 是 Godot 轉出的檔案，不直接改它，在這裡過濾：
+ * 這兩個群組的模型、招牌、坡道、預定地，以及落在它們範圍內的碰撞都略過。
+ */
+const SKIP_GROUPS = new Set(['LawCollege', 'SwimmingPool']);
+const SKIP_LOTS = new Set(['法學院', '游泳館']);
+const groupOf = b => b.name.split('_')[0];
+const skipBoxes = [...SKIP_GROUPS].map(g => {
+  const pts = raw.batches.filter(b => groupOf(b) === g).flatMap(b => b.matrices.map(m => [m[12], m[14]]));
+  const xs = pts.map(p => p[0]), zs = pts.map(p => p[1]);
+  return { x0: Math.min(...xs) - 1, x1: Math.max(...xs) + 1, z0: Math.min(...zs) - 1, z1: Math.max(...zs) + 1 };
+});
+const inSkip = (x, z) => skipBoxes.some(b => x > b.x0 && x < b.x1 && z > b.z0 && z < b.z1);
+// 鳳凰林（樹、石牌、長椅）原本落在原版法學院東端裡面，整組往北挪到法學院和四維道步道之間
+const PHOENIX = { x0: -106, x1: -89, z0: -108, z1: -96, dz: 15 };
+const inPhoenix = (x, z) => x > PHOENIX.x0 && x < PHOENIX.x1 && z > PHOENIX.z0 && z < PHOENIX.z1;
+const movedMatrix = m => (inPhoenix(m[12], m[14]) ? m.map((v, i) => (i === 14 ? v + PHOENIX.dz : v)) : m);
+const data = {
+  ...raw,
+  batches: raw.batches.filter(b => !SKIP_GROUPS.has(groupOf(b))).map(b => ({ ...b, matrices: b.matrices.map(movedMatrix) })),
+  labels: raw.labels.filter(l => !inSkip(l.matrix[12], l.matrix[14])).map(l => ({ ...l, matrix: movedMatrix(l.matrix) })),
+  ramps: raw.ramps.filter(r => !inSkip(r.matrix[12], r.matrix[14])),
+  lots: raw.lots.filter(l => !SKIP_LOTS.has(l.name)).map(l => (inPhoenix(l.x, l.z)
+    ? { ...l, z: l.z + PHOENIX.dz, entry: l.entry && [l.entry[0], l.entry[1] + PHOENIX.dz] } : l)),
+  colliders: raw.colliders.filter(c => !inSkip((c.x0 + c.x1) / 2, (c.z0 + c.z1) / 2)).map(c => (inPhoenix((c.x0 + c.x1) / 2, (c.z0 + c.z1) / 2)
+    ? { ...c, z0: c.z0 + PHOENIX.dz, z1: c.z1 + PHOENIX.dz } : c)),
+};
 
 const matrix = new THREE.Matrix4();
 const geometries = {
@@ -83,7 +112,7 @@ function build() {
   for (const label of data.labels) addLabel(label, group);
   colliders.push(...data.colliders.map(c => ({ ...c })));
   LOTS.push(...data.lots.map(l => ({ ...l })));
-  group.userData = { source: 'Godot photo_architecture.tscn', districts: data.groups };
+  group.userData = { source: 'Godot photo_architecture.tscn', districts: data.groups, batchCount: data.batches.length, lots: data.lots };
   scene.add(group);
 }
 
