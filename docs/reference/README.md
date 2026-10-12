@@ -27,6 +27,8 @@
 | --- | --- | --- |
 | A22 | 正門、駐警隊 | `main-gate` |
 | B25 | 研究大樓 | `research-building` |
+| B8 | 果夫樓（四維道西側門字型） | `guofu-hall` |
+| B7 | 志希樓（四維道東側門字型） | `zhixi-hall` |
 | D11 | 四維堂 | `siwei-hall` |
 | A6 | 中正圖書館 | `library` |
 | A16 | 行政大樓 | `admin-building` |
