@@ -12,6 +12,7 @@ import { player } from '../actors/player.js';
 import { dlg } from '../ui/dialog.js';
 import { groundH, indoor, pos } from '../core/gameplay.js';
 import { drawMap } from './items.js';
+import { MAP_BOUNDS } from '../world/layout.js';
 import { enterCar, exitCar } from './police-drive.js';
 
 /* ---------- 手感：塵土粒子、落地壓縮、跑步鏡頭 ---------- */
@@ -60,7 +61,7 @@ miniBase.width=1040;
 miniBase.height=800;
 const minic=$('minic'), mg=minic.getContext('2d');
 let miniT=0, baseT=99;
-const MX0=-160, MX1=170, MZ0=40, MZ1=-215;
+const {x0:MX0,x1:MX1,z0:MZ0,z1:MZ1}=MAP_BOUNDS;
 function drawMini(dt){
   baseT+=dt; miniT+=dt; if(miniT<0.08) return; miniT=0;
   if(baseT>1.5){ baseT=0; drawMap(miniBase,false); }

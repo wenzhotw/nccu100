@@ -5,8 +5,9 @@
 // 4. 內容 JSON 格式正確
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const B = path.join(root, 'src/world/buildings');
 const errs = [];
 const rel = p => path.relative(root, p);

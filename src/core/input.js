@@ -7,9 +7,17 @@ import { $ } from './dom.js';
 import { renderer } from './engine.js';
 import { AU } from '../systems/audio.js';
 import { advance, banner, dlg } from '../ui/dialog.js';
+import { pos, camT } from './gameplay.js';
 
 /* ---------- input ---------- */
 const keys={};
+// 從開場直接前往照片街區；沿用正常開始流程，鍵盤與觸控皆可使用。
+$('visitDistrict').addEventListener('click', () => {
+  $('go').click();
+  pos.set(-80, 0, -57);
+  camT.set(-80, .9, -57);
+  state.yaw = Math.PI / 2;
+});
 state.stickV={x:0,y:0}; state.yaw=0; state.pitch=0.3; state.dist=6; state.started=false; state.busy=false;
 addEventListener('keydown',e=>{
   keys[e.code]=true; if(!state.started||state.busy) return;
@@ -40,6 +48,6 @@ $('jump').addEventListener('pointerdown',e=>{ e.preventDefault(); if(!dlg.hidden
 $('act').addEventListener('click',()=>late.interact());
 $('act2').addEventListener('click',()=>late.interactAlt());
 $('snd').addEventListener('click',()=>{ AU.init(); const m=AU.toggle(); $('snd').classList.toggle('off',m); });
-$('go').addEventListener('click',()=>{ AU.init(); document.body.classList.remove('title'); late.camT.set(late.pos.x,late.pos.y+0.9,late.pos.z); state.camD=state.dist; $('intro').classList.add('gone'); state.started=true; setTimeout(()=>banner('政大正門'),500); });
+$('go').addEventListener('click',()=>{ AU.init(); document.body.classList.remove('title'); late.camT.set(late.pos.x,late.pos.y+0.9,late.pos.z); state.camD=state.dist; $('intro').classList.add('gone'); state.started=true; setTimeout(()=>banner(late.pos.x < -74 ? '法學院－教育學院' : '政大正門'),500); });
 
 export { keys };

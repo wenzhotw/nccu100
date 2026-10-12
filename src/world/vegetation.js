@@ -6,6 +6,7 @@ import { scene } from '../core/engine.js';
 import { SPH, mk, toon } from '../render/kit.js';
 import { circC } from '../core/collision.js';
 import { inLot } from './layout.js';
+import { inPhotoDistrict } from './photo-district.js';
 
 /* ---------- 樹、椰子、路燈 ---------- */
 const TRUNK=new THREE.CylinderGeometry(0.2,0.3,2.6,7);
@@ -16,6 +17,7 @@ const greens=['#4c9a47','#5cb150','#6bc35b'];
  */
 const FOLIAGE=[];
 function tree(x,z,s){
+  if(inPhotoDistrict(x,z)) return;
   if(inLot(x,z)) return;
   s=s||1; const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
   const tr=mk(TRUNK,toon('#7a5a43'),0,1.3,0,{parent:g,out:0.05}); tr.scale.setScalar(s); tr.position.y=1.3*s;
@@ -31,6 +33,7 @@ FROND.rotateX(Math.PI/2);
 FROND.translate(0,0,1.8);
 const palms=[];
 function palm(x,z,h,fan){
+  if(inPhotoDistrict(x,z)) return;
   if(inLot(x,z)) return;
   h=h||9; const g=new THREE.Group(); g.position.set(x,0,z); scene.add(g);
   mk(new THREE.CylinderGeometry(fan?0.22:0.24,fan?0.3:0.34,h,9),toon(fan?'#8f7c66':'#cfc7b8'),0,h/2,0,{parent:g,out:0.04});

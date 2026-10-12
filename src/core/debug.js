@@ -10,11 +10,13 @@
 import { state } from './state.js';
 import { world, heightAt } from '../world/registry.js';
 import { pos, spots, zoneOf } from './gameplay.js';
+import { scene } from './engine.js';
+import { colliders, resolve } from './collision.js';
 
 const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug');
 if (on) {
   window.__game = {
-    state, world, pos, spots, heightAt, zoneOf,
+    state, world, pos, spots, heightAt, zoneOf, scene, colliders, resolve,
     teleport(x, z) { pos.set(x, heightAt(x, z), z); },
     view(...v) { state.viewCam = v.length === 6 ? v : null; },
   };

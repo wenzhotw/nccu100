@@ -10,10 +10,11 @@
  *   3. 建築之間不可以互相 import。共用工具放 world/building-kit.js
  */
 import { installBuilding } from '../registry.js';
+import { replacedBuildings } from '../photo-district.js';
 
 const modules = import.meta.glob('./*/index.js', { eager: true });
 
-const folders = Object.keys(modules).sort();
+const folders = Object.keys(modules).filter(p => !replacedBuildings.has(p.split('/')[1])).sort();
 for (const path of folders) {
   const folder = path.split('/')[1];
   const def = modules[path].default;
