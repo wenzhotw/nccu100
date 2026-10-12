@@ -105,3 +105,20 @@
   - `messages`：沒打中、會心一擊、勝利、倒下、結局的文字
 
 戰鬥引擎在 `src/systems/battle/`，可以給其他 NPC 重複使用：準備一份同樣格式的 `battle` 設定，呼叫 `startBattle(設定)` 就好。
+
+## old-principal.json：老校長（騎馬、歷史問答）
+
+騎馬穿軍裝的老人，在田徑場跑道和八德道上騎馬：快跑一陣子，偶爾停下來或慢慢走。主角離很遠的時候，他偶爾會換到另一個地方騎。追上去按「抓住老校長」就會觸發對話。程式在 `src/systems/old-principal/`。
+
+- `look`、`horse`：人和馬的顏色（格式同 NPC 的 `look`）
+- `speed`：`gallop` 快跑、`walk` 慢走的速度
+- `routes`：騎馬路線。`loop: true` 繞圈，`false` 來回
+- `shout`：騎馬時頭上冒出的話
+- `caught`：被抓住時說的話，說完問「是不是政大學生」（`askStudent`）
+- `notStudent`、`alreadyDone`、`cooldown`、`invite`、`decline`：各種情況的回應
+- `quiz`：題目。`q` 題目、`options` 選項、`answer` 正確答案是第幾個（從 0 開始數）。`shuffle: true` 時每次出題會打亂選項順序
+- `pass`、`fail`：全對、沒全對時說的話。`fail` 裡的 `{score}` 會換成答對題數
+- `retrySeconds`：沒全對之後要等幾秒才能再挑戰
+- `letter`：全對拿到的「精神堡壘任務信函」，`lines` 是點開信函看到的內容
+
+全對時遊戲狀態 `state.haveLetter` 會變成 `true`，之後要做精神堡壘任務可以用這個判斷。

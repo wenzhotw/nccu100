@@ -97,6 +97,8 @@ const AU=(()=>{
     sword:t=>{ noise(t,0.25,0.3,sfxBus,2500); voice('sawtooth',1400,t,0.22,0.06,sfxBus,0.002,0.05,180); },
     heal:t=>[72,76,79,84,79,84,88].forEach((n,i)=>voice('triangle',N(n),t+i*0.07,0.1,0.09,sfxBus,0.003,0.12)),
     flee:t=>[79,74,70,67].forEach((n,i)=>voice('square',N(n),t+i*0.06,0.05,0.07,sfxBus,0.002,0.03)),
+    neigh:t=>{ voice('sawtooth',N(83),t,0.45,0.05,sfxBus,0.01,0.2,N(71)); voice('square',N(90),t+0.05,0.25,0.025,sfxBus,0.01,0.12,N(78)); },
+    clop:t=>noise(t,0.035,0.07,sfxBus,0,1500+Math.random()*500),
     faint:t=>voice('square',N(72),t,0.6,0.09,sfxBus,0.005,0.1,N(48)),
     win:t=>[[72,0],[76,0.12],[79,0.24],[84,0.36],[79,0.6],[84,0.72]].forEach(([n,d])=>voice('square',N(n),t+d,d>0.5?0.3:0.1,0.09,sfxBus,0.003,0.1)),
     lowhp:t=>{ voice('square',N(91),t,0.07,0.05,sfxBus,0.002,0.02); voice('square',N(91),t+0.14,0.07,0.05,sfxBus,0.002,0.02); },
