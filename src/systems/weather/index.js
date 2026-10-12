@@ -15,7 +15,7 @@ import { state } from '../../core/state.js';
 import { scene } from '../../core/engine.js';
 import { AU } from '../audio.js';
 import { SPH, mk, toon } from '../../render/kit.js';
-import { cop } from '../../actors/npc.js';
+import { NPCS, cop } from '../../actors/npc.js';
 import { rig } from '../../actors/player.js';
 import { groundH, indoor, lerpA, pos, spots, vel, zoneOf } from '../../core/gameplay.js';
 import { dlg, openDialog, toast } from '../../ui/dialog.js';
@@ -64,9 +64,9 @@ const tint = $el('div', 'position:absolute;inset:0;pointer-events:none;backgroun
 const flash = $el('div', 'position:fixed;inset:0;z-index:35;background:#fff;opacity:0;pointer-events:none;transition:opacity .5s');
 
 /* ---------- 雨傘：地上那一把、撐起來那一把 ---------- */
-function makeUmbrella() {
+function makeUmbrella(color = '#5b8ed6') {
   const g = new THREE.Group();
-  const can = mk(new THREE.ConeGeometry(0.78, 0.36, 8, 1, true), toon('#5b8ed6', { side: THREE.DoubleSide }), 0, 0, 0, { parent: g, out: 0.02 });
+  const can = mk(new THREE.ConeGeometry(0.78, 0.36, 8, 1, true), toon(color, { side: THREE.DoubleSide }), 0, 0, 0, { parent: g, out: 0.02 });
   for (let i = 0; i < 8; i += 2) { const s = mk(new THREE.ConeGeometry(0.79, 0.37, 8, 1, true, i * Math.PI / 4, Math.PI / 4), toon('#f4f4ee', { side: THREE.DoubleSide }), 0, 0, 0, { parent: g }); s.castShadow = false; }
   mk(SPH, toon('#3a3d45'), 0, 0.2, 0, { parent: g }).scale.setScalar(0.04);
   mk(new THREE.CylinderGeometry(0.018, 0.018, 1.0, 6), toon('#3a3d45'), 0, -0.5, 0, { parent: g });
@@ -74,10 +74,21 @@ function makeUmbrella() {
   can.castShadow = true;
   return g;
 }
-const held = makeUmbrella(); held.position.set(0.18, 1.78, 0.05); held.visible = false; rig.add(held);
+const held = makeUmbrella(); held.position.set(0.31, 1.72, 0.03); held.rotation.z = 0.12; held.visible = false; rig.add(held);
 const ground = makeUmbrella(); ground.visible = false; scene.add(ground);
 const umbrellaSpot = { x: 0, z: 0, r: 2.2, label: W.umbrella.label, ok: () => ground.visible && !state.driving && !state.holdPang, fn: takeUmbrella };
 spots.push(umbrellaSpot);
+
+/* ---------- 下雨時路上的人都撐傘（騎馬的老校長和室內的人除外） ---------- */
+const NPC_COLORS = ['#e8463c', '#f0c94a', '#5b8ed6', '#9fd6c2', '#f39ac0', '#2f7a4f', '#8a6ad0'];
+let npcUmbrellas = [];
+function giveNpcUmbrellas() {
+  NPCS.forEach((n, i) => {
+    if (n.umbrella || n.id === 'old-principal' || n.indoorNPC) return;
+    const u = makeUmbrella(NPC_COLORS[i % NPC_COLORS.length]); u.position.set(0.34, 1.74, 0.03); u.rotation.z = 0.12; u.visible = false; n.rig.add(u); n.umbrella = u;
+    npcUmbrellas.push(u);
+  });
+}
 
 /* ---------- 狀態 ---------- */
 let raining = false, rainT = 0, hp = 100, holding = false, over = false, lionNext = 0, rainTick = 0, tileT = 0;
@@ -145,8 +156,9 @@ function copAI(s, moves) {
 const lions = ['石獅-左', '石獅-右'].map(n => scene.getObjectByName(n)).filter(Boolean);
 let lion = null, lionT = 0, lionMode = null, from = new THREE.Vector3(), to = new THREE.Vector3();
 const eyes = lions.map(l => {
-  const g = new THREE.Group(); g.visible = false; l.add(g);
-  [-1, 1].forEach(s => { mk(SPH, toon('#2a1f2b'), s * 0.12, 0.92, 0.52, { parent: g }).scale.set(0.05, 0.07, 0.04); mk(SPH, toon('#ffffff'), s * 0.12 + 0.02, 0.95, 0.555, { parent: g }).scale.setScalar(0.018); });
+  // 活過來時凸眼裡出現黑眼珠（加在石獅頭上，頭部群組由 library 模型提供）
+  const g = new THREE.Group(); g.visible = false; (l.userData.head || l).add(g);
+  [-1, 1].forEach(s => { mk(SPH, toon('#2a1f2b'), s * 0.11, 0.045, 0.285, { parent: g }).scale.set(0.04, 0.05, 0.02); mk(SPH, toon('#ffffff'), s * 0.11 + 0.015, 0.065, 0.302, { parent: g }).scale.setScalar(0.013); });
   return g;
 });
 lions.forEach(l => { l.userData.home = { p: l.position.clone(), r: l.rotation.y }; });
@@ -182,10 +194,11 @@ function updateLion(dt) {
     if (k >= 1) {
       AU.sfx('land');
       if (lionMode === 'jump') { lionMode = 'talk'; lionT = 0; state.busy = false; lionTalk(); }
-      else { lion.rotation.y = lion.userData.home.r; eyes[lions.indexOf(lion)].visible = false; lionMode = null; toast(W.lion.back); lion = null; }
+      else { lion.rotation.y = lion.userData.home.r; if (lion.userData.head) lion.userData.head.rotation.z = 0; eyes[lions.indexOf(lion)].visible = false; lionMode = null; toast(W.lion.back); lion = null; }
     }
   } else if (lionMode === 'talk') {
     lion.position.y = to.y + Math.abs(Math.sin(lionT * 3)) * 0.05;
+    if (lion.userData.head) lion.userData.head.rotation.z = Math.sin(lionT * 2.2) * 0.12;
     lion.rotation.y = lerpA(lion.rotation.y, Math.atan2(pos.x - lion.position.x, pos.z - lion.position.z), 1 - Math.exp(-dt * 6));
   }
 }
@@ -208,6 +221,9 @@ function tick(now) {
   requestAnimationFrame(tick);
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   if (!state.started) return;
+  state.holdUmbrella = holding && held.visible && !indoor();
+  if (!npcUmbrellas.length) giveNpcUmbrellas();
+  const open = gloom > 0.35; npcUmbrellas.forEach(u => { u.visible = open; });
   updateLion(dt);
   // 雨滴噴濺
   for (let i = drops.length - 1; i >= 0; i--) { const d = drops[i]; d.v.y -= 18 * dt; d.m.position.addScaledVector(d.v, dt); if (d.m.position.y < 0) { scene.remove(d.m); drops.splice(i, 1); } }
