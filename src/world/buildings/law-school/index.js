@@ -6,7 +6,7 @@
  *   - 西端窄面：深灰牆，北半部有白色大框，框內兩個橘色凸盒，框頂立「College of LAW」字牌
  *   - 北面：一樓深色退縮加白柱，二三樓玻璃帷幕，白色挑出厚板，上面五層是白色橫線板加橘色直格柵
  *   - 白色挑出平屋頂，屋頂上有深灰色機房
- *   - 北側入口有台階，旁邊是清水混凝土「法學院」石碑
+ *   - 北側入口有兩層樓高的白色門廊、台階，旁邊是清水混凝土「法學院」石碑
  *
  * 座標：建築自己的座標 lx 往西為正（朝環山一道），lz 往北為正（朝四維道）。
  */
@@ -91,8 +91,13 @@ function build() {
   // 北面入口：玻璃門
   block(STEP.lx, 1.6, D / 2 - 1.45, 6, 3.2, 0.12, basic({ color: '#9fb9c4' }), 0, G);
   block(STEP.lx, 3.5, D / 2 - 1.4, 7, 0.5, 0.3, W, 0, G);
-  // 入口白色門框，門框上方的白帶寫「College of Law」
-  [-1, 1].forEach(s => block(STEP.lx + s * 4.2, GROUND / 2, D / 2 - 0.2, 0.9, GROUND, 1.2, W, 0.03, G));
+  // 入口門廊：凸出的兩層樓高白色框，框頂寫「法學院」，門上方白帶寫「College of Law」
+  const PW = 11, PD = 2.4, PH = BAND - 0.9;
+  [-1, 1].forEach(s => block(STEP.lx + s * (PW / 2 - 0.45), PH / 2, D / 2 + PD / 2 - 0.4, 0.9, PH, PD, W, 0.04, G));
+  block(STEP.lx, PH - 0.7, D / 2 + PD / 2 - 0.4, PW, 1.4, PD, W, 0.04, G);
+  block(STEP.lx, (GROUND + PH - 1.4) / 2, D / 2 + 0.35, PW - 1.8, PH - 1.4 - GROUND, 0.12, curtainTex(3, 2), 0, G);
+  const pw = plane(4.2, 1.1, basic({ map: hText('法學院', '#4a4d52', '900 120px "Noto Serif TC", "Noto Sans TC", serif', 520, 160, 80), transparent: true }), 0, 0, 0);
+  scene.remove(pw); pw.position.set(STEP.lx, PH - 0.7, D / 2 + PD - 0.38); G.add(pw);
   const cl = plane(9, 1.1, basic({ map: hText('College of Law', '#ffffff', '900 64px Arial, sans-serif', 1024, 120, 40), transparent: true }), 0, 0, 0);
   scene.remove(cl); cl.position.set(STEP.lx, GROUND + 0.25, D / 2 + 0.32); G.add(cl);
 
@@ -152,6 +157,8 @@ function build() {
   /* 碰撞：整棟外框；石碑另外一塊 */
   boxC(LAW.x - L / 2 - 1, LAW.x + L / 2 + 1, LAW.z - D / 2 - 0.5, LAW.z + D / 2 + 0.5);
   boxC(LAW.x + stoneX - 3.6, LAW.x + stoneX + 3.6, LAW.z + D / 2 + 2.8, LAW.z + D / 2 + 3.6);
+  // 門廊兩側的牆
+  [-1, 1].forEach(sx => { const px = LAW.x + STEP.lx + sx * 5.05; boxC(px - 0.45, px + 0.45, LAW.z + D / 2, LAW.z + D / 2 + 2); });
 }
 
 export default defineBuilding({
