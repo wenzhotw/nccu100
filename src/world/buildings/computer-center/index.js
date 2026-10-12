@@ -16,11 +16,12 @@ import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
 import { GRAD, basic, block, canvasTex, hText, mk, plane, toon } from '../../../render/kit.js';
 import { boxC } from '../../../core/collision.js';
+import { tree } from '../../vegetation.js';
 import { defineBuilding } from '../../registry.js';
 
 // 三個部位的中心（世界座標）與尺寸
-const TOWER = { x: 64, z: -30, w: 18, d: 16 };
-const WING = { x: 51, z: -25, w: 8, d: 9, h: 13 };
+const TOWER = { x: 70, z: -30, w: 18, d: 16 };
+const WING = { x: 54, z: -25, w: 14, d: 9, h: 13 };
 const INFO = { x: 40, z: -17, w: 14, d: 12, h: 15.5 };
 const STEPS = { w: 12, depth: 3.6 };   // 塔樓正面台階
 
@@ -92,16 +93,27 @@ function buildTower() {
   });
   diamond(G, -1.6, 13.4, fz - 0.1); diamond(G, 1.6, 13.4, fz - 0.1);
   block(0, 18.95, 0, W + 0.6, 0.3, D + 0.6, TRIM, 0.02, G);
-  /* 頂部兩層：往內退，前面三個格柵框 */
+  /* 頂部兩層：往內退。左右兩格是白框窗，中間兩根高柱一路伸到帽頂 */
   block(0, 22.3, 1.2, W, 6.4, D - 2.4, windowRowMat(W / 3, 2), 0.04, G);
-  [-W / 2 + 0.6, -3, 3, W / 2 - 0.6].forEach(lx => block(lx, 22.3, F + 0.6, 1.2, 6.4, 1.2, TILE, 0.03, G));
-  block(0, 21.8, F + 0.7, W, 0.9, 1.3, TILE, 0.02, G);
-  for (let lx = -1.5; lx <= 1.5; lx += 1.5) block(lx, 23.3, F + 1.2, 0.35, 3.4, 0.35, TILE, 0, G);
+  [-W / 2 + 0.6, W / 2 - 0.6].forEach(lx => block(lx, 22.3, F + 0.6, 1.2, 6.4, 1.2, TILE, 0.03, G));
+  [-1, 1].forEach(sx => {
+    const bx = sx * 6.1;   // 左右兩格的中心
+    block(bx, 20.1, F + 0.8, 4.6, 0.5, 1, TILE, 0.02, G);
+    block(bx, 22.6, F + 0.9, 4.6, 0.25, 0.6, TILE, 0, G);
+    block(bx, 22.3, F + 0.9, 0.25, 4.8, 0.6, TILE, 0, G);
+  });
+  // 中央：疊兩層的線腳托住上面
+  block(0, 19.4, F - 0.15, 8.6, 0.5, 0.9, TILE, 0.02, G);
+  block(0, 19.85, F + 0.05, 7.8, 0.4, 0.7, TILE, 0.02, G);
+  block(0, 21.6, F + 0.7, 7.2, 0.9, 1.3, TILE, 0.02, G);
+  for (let lx = -2.2; lx <= 2.2; lx += 2.2) block(lx, 23.6, F + 1.2, 0.35, 3.4, 0.35, TILE, 0, G);
+  [-3.6, 3.6].forEach(lx => block(lx, 24.1, F + 0.6, 1.3, 10, 1.3, TILE, 0.03, G));
   block(0, 25.65, 0, W, 0.7, D, TILE, 0.04, G);
-  /* 帽頂：中央凸起的方塊，下緣通風格柵，上緣挑出的蓋板 */
-  block(0, 27.3, 0, 7, 2.6, D - 4, TILE, 0.04, G);
-  block(0, 26.5, F + 2 - 0.06, 6, 0.6, 0.1, toon('#55585d'), 0, G);
-  block(0, 28.85, 0, 8.2, 0.5, D - 2.8, TILE, 0.04, G);
+  /* 帽頂：兩根高柱之間的凸起量體，下緣通風格柵，上緣挑出的蓋板 */
+  block(0, 27.3, 0.4, 7.2, 2.6, D - 3.2, TILE, 0.04, G);
+  block(0, 26.6, F + 1.12, 6.2, 0.7, 0.1, toon('#55585d'), 0, G);
+  for (let lx = -2.8; lx <= 2.8; lx += 0.4) block(lx, 26.6, F + 1.08, 0.1, 0.6, 0.06, TILE, 0, G);
+  block(0, 29.15, 0.4, 9, 0.6, D - 2, TILE, 0.04, G);
   /* 東南角的圓柱：整棟高，頂端扇形窗，下面一個圓形裝飾 */
   const CX = -W / 2 - 0.6, CZ = F + 2.4, CR = 2.2;
   mk(new THREE.CylinderGeometry(CR, CR, 27.4, 24), TILE, CX, 13.7, CZ, { parent: G, out: 0.04 });
@@ -151,6 +163,14 @@ function buildInfo() {
 
 function build() {
   buildTower(); buildWing(); buildInfo();
+  /* 前面廣場：樹和矮花台 */
+  const fz = TOWER.z - TOWER.d / 2;
+  [[WING.x - 4, WING.z - WING.d / 2 - 4], [WING.x + 2, WING.z - WING.d / 2 - 5.5], [INFO.x - 3, INFO.z - INFO.d / 2 - 4], [TOWER.x + 17, fz + 4]].forEach(([x, z]) => tree(x, z, 0.85));
+  [[TOWER.x - 11, fz - 2.5, 4, 2.2], [WING.x, WING.z - WING.d / 2 - 1.4, WING.w - 2, 1.4]].forEach(([x, z, w, d]) => {
+    block(x, 0.35, z, w, 0.7, d, toon('#b9b7b0'), 0.02);
+    block(x, 0.75, z, w - 0.4, 0.3, d - 0.4, toon('#5aa04e'), 0);
+    boxC(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
+  });
   const box = (o, pad) => boxC(o.x - o.w / 2 - pad, o.x + o.w / 2 + pad, o.z - o.d / 2 - pad, o.z + o.d / 2 + pad);
   box(TOWER, 0.3); box(WING, 0.2); box(INFO, 0.2);
   boxC(TOWER.x + TOWER.w / 2, TOWER.x + TOWER.w / 2 + 5, TOWER.z - TOWER.d / 2 + 2, TOWER.z + TOWER.d / 2);   // 西側階梯量體
