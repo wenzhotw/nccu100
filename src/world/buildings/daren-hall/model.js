@@ -11,7 +11,10 @@ const C = { wall:'#9fa5aa', white:'#efefea', trim:'#d6d8d4', dark:'#434b51', can
 function texture(width, height, draw) {
   const c = document.createElement('canvas'); c.width=width; c.height=height;
   draw(c.getContext('2d'), width, height);
-  const t = new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t;
+  const t = new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4;
+  // 與既有 canvasTex 一致，字型載入後由遊戲迴圈重畫題字。
+  t.redraw=()=>{const g=c.getContext('2d');g.clearRect(0,0,width,height);draw(g,width,height);t.needsUpdate=true;};
+  return t;
 }
 
 // 與遊戲既有建築一樣，窗戶是乾淨的平面色塊，沒有幾何小窗框或顆粒貼圖。
@@ -41,15 +44,22 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
   group.userData={name:'大仁樓',style:'game-matched-simplified',reference:'two-facade-photos-and-two-game-style-references',inferred:['rear','sides','roof','dimensions']};
   const mat={};for(const [key,color] of Object.entries(C))mat[key]=materialFactory(color);
   const batches=new Map();
-  function box(name,x,y,z,w,h,d,m){
+  let boxCount=0;
+  function box(name,x,y,z,w,h,d,m,occluder=false){
+    boxCount++;
+    // 遊戲鏡頭只偵測一般 Mesh，主量體保留為獨立方塊以免鏡頭穿牆。
+    if(occluder){
+      const mesh=new THREE.Mesh(BOX,m);mesh.name=name;mesh.position.set(x,y,z);mesh.scale.set(w,h,d);
+      mesh.castShadow=mesh.receiveShadow=true;group.add(mesh);return;
+    }
     if(!batches.has(m))batches.set(m,[]);
     batches.get(m).push({name,x,y,z,w,h,d});
   }
   const bodyH=13.1, front=3.5;
   // 三個主量體與中央上方橋接量體，保留凹入門廊。
-  box('後方主體',0,bodyH/2,-.45,26,bodyH,6.1,mat.wall);
-  [-1,1].forEach(s=>box('正面側翼',s*7.95,bodyH/2,3.05,10.1,bodyH,.9,mat.wall));
-  box('入口上方',0,9.7,3.05,5.8,6.8,.9,mat.wall);
+  box('後方主體',0,bodyH/2,-.45,26,bodyH,6.1,mat.wall,true);
+  [-1,1].forEach(s=>box('正面側翼',s*7.95,bodyH/2,3.05,10.1,bodyH,.9,mat.wall,true));
+  box('入口上方',0,9.7,3.05,5.8,6.8,.9,mat.wall,true);
 
   function face(name,w,h,t,x,y,z,ry=0){
     const material=materialFactory('#ffffff',{map:t,alphaTest:.5});
@@ -72,7 +82,7 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
   });
   // 平頂與大面積白色收邊，與遊戲其他校舍使用相同視覺語言。
   box('灰色題字帶',0,13.15,3.54,26.1,.83,.28,mat.canopy);
-  box('白色平屋頂',0,13.70,0,26.7,.38,7.65,mat.white);
+  box('白色平屋頂',0,13.70,0,26.7,.38,7.65,mat.white,true);
   box('屋頂陰影線',0,13.47,0,26.45,.08,7.45,mat.trim);
   [12.37,12.65,12.93].forEach(y=>box('中央遮陽百葉',0,y,3.83,6.2,.13,.52,mat.white));
   ['樓','仁','大'].forEach((char,i)=>{
@@ -82,7 +92,7 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
   });
 
   // 雨棚、入口採幾個寬厚的色塊，遠看也能辨認。
-  box('大雨棚',0,6.18,4.76,7.4,.48,3.45,mat.canopy);
+  box('大雨棚',0,6.18,4.76,7.4,.48,3.45,mat.canopy,true);
   box('雨棚白色收邊',0,6.45,4.76,7.65,.15,3.6,mat.trim);
   box('入口陰影',0,4.65,2.64,5.2,3.1,.09,mat.dark);
   [-2.55,2.55].forEach(x=>box('入口方柱',x,4.7,3.28,.46,3.2,.72,mat.white));
@@ -93,7 +103,7 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
   // 階梯縮減為九個清楚的造型階，不再繪製數百片小磁磚。
   const sd=(DAREN.stairStart-DAREN.stairEnd)/DAREN.stairCount;
   const sh=DAREN.landingHeight/DAREN.stairCount;
-  box('入口平台',0,DAREN.landingHeight/2,3.715,5.8,DAREN.landingHeight,2.07,mat.step);
+  box('入口平台',0,DAREN.landingHeight/2,3.715,5.8,DAREN.landingHeight,2.07,mat.step,true);
   for(let i=0;i<DAREN.stairCount;i++){
     const h=(i+1)*sh,z=DAREN.stairStart-(i+.5)*sd;
     box('大階梯',0,h/2,z,5.8,h,sd+.004,mat.step);
@@ -113,6 +123,6 @@ export function createDarenHall({materialFactory=(color,extra)=>new THREE.MeshTo
     pieces.forEach((p,i)=>{transform.position.set(p.x,p.y,p.z);transform.scale.set(p.w,p.h,p.d);transform.updateMatrix();batch.setMatrixAt(i,transform.matrix);});
     batch.instanceMatrix.needsUpdate=true;batch.userData.partCount=pieces.length;group.add(batch);
   }
-  group.userData.parts=[...batches.values()].reduce((n,b)=>n+b.length,0);group.userData.drawables=group.children.length;
+  group.userData.parts=boxCount;group.userData.drawables=group.children.length;
   return group;
 }
