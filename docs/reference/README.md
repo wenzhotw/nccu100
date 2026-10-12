@@ -38,6 +38,7 @@
 | B27 | 綜合院館 | `zonghe` |
 | D3 | 法學院（憩賢樓原址，2025 年啟用） | `law-school` |
 | A14、B14 | 電子計算機中心、資訊大樓 | `computer-center` |
+| D17 | 集英樓（福利社、書城、餐廳） | `jiying-hall` |
 | F5 | 四維道 | 地形（`src/world/terrain/avenue.js`） |
 
 ## Google Earth 截圖（道路參考）
@@ -53,3 +54,19 @@
 | 環山一道往南過濟賢橋上山 | `outer-roads.js`、`river.js` |
 | 行政大樓旁車道（校園公車）往南過渡賢橋 | `service-road.js`、`river.js` |
 | 四維堂東側車道（圖書館這一側的停車道） | `service-road.js` |
+| 電算中心後面的校內道路、往西彎進集英樓前的路、側門廣場 | `back-road.js`（照片在 `back-road/`） |
+
+## 電算中心後面的校內道路（照片）
+
+`back-road/` 是 2026 年 10 月在現場拍的照片，`src/world/terrain/back-road.js` 依照這些照片做。
+
+| 檔案 | 內容 |
+| --- | --- |
+| `south-from-junction.jpg` | 從北端路口往南看：斑馬線、左轉箭頭、雙黃線、兩側紅磚人行道和花台 |
+| `north-toward-gate.jpg` | 往北看：右手邊電算中心的擋土牆、樹籬、白鐵欄杆和「往電算中心」指示牌 |
+| `computer-center-railing.jpg` | 同一段的另一個角度，可以看到挑出的白色大樓 |
+| `north-planters.jpg` | 往北看：路邊水泥花台、灰色路燈、行道樹 |
+| `side-gate-plaza.jpg` | 北端的側門廣場：棋盤格地磚、黃色反光柱、綠色鋼構雨遮店面，出去是指南路 |
+| `post-office-building.jpg` | 白色馬賽克磁磚大樓，一樓有郵局（還沒確定是哪一棟，所以遊戲裡還沒做） |
+
+集英樓的照片在 `src/world/buildings/jiying-hall/photos/`。
