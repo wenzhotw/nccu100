@@ -23,6 +23,8 @@ import './world/terrain/service-road.js';
 import './actors/campus-bus.js';
 import './world/lots.js';
 import './world/terrain/outer-roads.js';
+import './world/terrain/back-road.js';
+import './world/terrain/bade-road.js';
 import './world/terrain/river.js';
 import './world/terrain/creek-road.js';
 import './world/environment/mountains.js';

@@ -1,12 +1,12 @@
 /**
- * 環山一道、校內道路、指南路轉彎，以及外圍樹木。
+ * 環山一道、最西側道路、指南路轉彎，以及外圍樹木。電算中心後面的校內道路在 back-road.js。
  */
 import * as THREE from 'three';
 import { scene } from '../../core/engine.js';
 import { basic, canvasTex, flat, mk, toon } from '../../render/kit.js';
 import { circC } from '../../core/collision.js';
 import { tree } from '../vegetation.js';
-import { creekRoadZ, swZ } from '../layout.js';
+import { creekRoadZ } from '../layout.js';
 
 /* ---------- 地圖擴展：依實際地圖新增道路與預定地 ---------- */
 function nsRoad(x,z0,z1,w,name){ const len=z0-z1, c=(z0+z1)/2;
@@ -21,7 +21,6 @@ function nsRoad(x,z0,z1,w,name){ const len=z0-z1, c=(z0+z1)/2;
 nsRoad(-88,15,creekRoadZ(-88),5,'環山一道');
 // 過了濟賢橋之後往山上校區
 nsRoad(-88,-153.3,-176,5,null);
-nsRoad(96,15,swZ(96)+2.3,4.4,null);   // 往南接到四維道延伸的步道
 nsRoad(176,15,creekRoadZ(176),5,null);   // 往南接到沿溪道路
 /* 指南路往東南轉彎 */
 { const x0=-151, z0=25, x1=-240, z1=-95, len=Math.hypot(x1-x0,z1-z0), g=new THREE.Group(); g.position.set((x0+x1)/2,0,(z0+z1)/2); g.rotation.y=Math.atan2(x1-x0,z1-z0); scene.add(g);

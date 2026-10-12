@@ -33,7 +33,7 @@ function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined
   road([[SIWEI.x0,swZ(SIWEI.x0)],[SIWEI.x1,swZ(SIWEI.x1)]],16,'#d79b7b'); road([[0,12],[0,-76]],14,'#d9c49b');
   road(CREEK_ROAD,9,'#d9c49b');   // 沿溪道路
   road([[-88,15],[-88,-176]],10,'#d9c49b'); road([[23.5,-60],[23.5,-172]],10,'#d9c49b'); road([[-16,-68],[-16,-158]],7,'#d9c49b');
-  road([[96,15],[96,swZ(96)]],8,'#d9c49b');
+  road([[96,-1.5],[96,swZ(96)]],12,'#d9c49b'); road([[96,-1.5],[176,-1.5]],8,'#d9c49b'); road([[96,-1.5],[96,15]],10,'#e6dcc6');   // 電算中心後面的校內道路、往西的路、側門廣場
   const bld=(x,z,w,d,col,name,dy)=>{ g.fillStyle=col; g.strokeStyle='#6b4a2a'; g.lineWidth=3; g.fillRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H); g.strokeRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H);
     if(name){ g.fillStyle='#4a3520'; g.font='700 22px "Noto Sans TC",sans-serif'; g.textAlign='center'; g.fillText(name,mx(x),my(z)+(dy||7)); } };
   // 建築圖示由各建築的 index.js 登記（map 欄位）

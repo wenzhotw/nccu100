@@ -5,6 +5,12 @@
 /* ---------- 依實際地圖：道路中心線與尚未建置的空地 ---------- */
 // 八德道
 const bdZ=x=>x<0?-12.8:-12.8+0.12*x;
+// 八德道 x>0 那一段是斜的：沿著道路排東西時用這兩個函式換算
+const BD_TH=Math.atan(0.12);   // 道路與 x 軸的夾角
+/** 八德道中心線上 x 那一點，往南（遠離樂活館、靠電算中心那一側）偏 v 公尺的世界座標 */
+const alongBd=(x,v)=>[x+v*Math.sin(BD_TH), bdZ(x)-v*Math.cos(BD_TH)];
+/** 反過來：世界座標 → { x 對應的中心線 x、v 往南的偏移 }（只適用 x>0 那一段） */
+function bdLocal(wx,wz){ const dx=wx, dz=wz+12.8, s=dx*Math.cos(BD_TH)+dz*Math.sin(BD_TH), v=dx*Math.sin(BD_TH)-dz*Math.cos(BD_TH); return { x:s*Math.cos(BD_TH), v }; }
 // 四維道（東西向、斜向）
 const swZ=x=>-60.2+0.18*x;
 // 室內空間放在遠離校園的 x=300，避免和戶外場景互相看到
@@ -22,4 +28,4 @@ function creekRoadDist(x,z){ let best=1e9; for(let i=0;i<CREEK_ROAD.length-1;i++
 /** 沿溪道路在某個 x 的 z（給南北向道路接上用） */
 function creekRoadZ(x){ for(let i=0;i<CREEK_ROAD.length-1;i++){ const [x0,z0]=CREEK_ROAD[i],[x1,z1]=CREEK_ROAD[i+1]; if(x>=x0&&x<=x1) return z0+(z1-z0)*(x-x0)/(x1-x0); } return null; }
 
-export { CREEK_ROAD, IX, LOTS, SIWEI, bdZ, creekRoadDist, creekRoadZ, inLot, swZ };
+export { BD_TH, CREEK_ROAD, IX, LOTS, SIWEI, alongBd, bdLocal, bdZ, creekRoadDist, creekRoadZ, inLot, swZ };
