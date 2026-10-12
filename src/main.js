@@ -38,6 +38,7 @@ import './core/gameplay.js';
 import './actors/npc.js';
 import './systems/items.js';
 import './systems/pangolin-grab.js';
+import './systems/missionaries/index.js'; // 學生傳教士與寶可夢式戰鬥
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';

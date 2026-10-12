@@ -128,4 +128,4 @@ const cop=NPCS.find(n=>n.id==='cop');
 STUDENTS.paths.forEach((path,i)=>{
   const c=STUDENTS.colors[i]; addNPC({title:STUDENTS.title,home:{x:path[0][0],z:path[0][1]},path,speed:1.1+Math.random()*0.5,look:{top:c[0],pants:c[1],hair:c[2],bag:c[3],hairStyle:i%2?'short':'side',scale:1.1},dialog:[{lines:STUDENTS.lines[i%STUDENTS.lines.length]}]}); });
 
-export { NPCS, cop, npcUpdate };
+export { NPCS, addNPC, cop, npcUpdate };

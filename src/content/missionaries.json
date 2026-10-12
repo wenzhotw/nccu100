@@ -1,0 +1,57 @@
+{
+  "_說明": "學生傳教士的遭遇事件與寶可夢式回合制戰鬥。台詞、選項、招式數值都可以在這裡改。招式 fx 是特效名稱（rain、sand、holy、sword、heal、flee、politics），power 是傷害範圍，accuracy 是命中率（0～1）。",
+  "title": "學生傳教士",
+  "pair": [
+    { "id": "missionary-a", "tag": "學生傳教士", "home": { "x": -30, "z": -65.6 }, "path": [[-30, -65.6], [-44, -68.1]],
+      "look": { "top": "#f7f6f1", "pants": "#2e3a5a", "hair": "#2a1c18", "hairStyle": "side", "flyer": true, "shoe": "#f2f2ee" } },
+    { "id": "missionary-b", "home": { "x": -30.4, "z": -64.4 }, "path": [[-30.4, -64.4], [-44.4, -66.9]],
+      "look": { "top": "#cfe3f5", "pants": "#3c4a6b", "hair": "#151515", "hairStyle": "bowl", "glasses": "#4f545b", "shoe": "#1c1c20" } }
+  ],
+  "spot": "！",
+  "greeting": ["你好，我們是學校的基督徒，想跟你介紹耶穌。"],
+  "choices": [
+    { "id": "no", "label": "我沒有興趣耶" },
+    { "id": "yes", "label": "好啊，我願意接受耶穌" },
+    { "id": "fight", "label": "發出戰鬥邀請！" }
+  ],
+  "replies": {
+    "no": ["那你就下地獄去吧！"],
+    "yes": ["哈利路亞！歡迎你！"],
+    "fight": ["什麼？你要跟我們對戰？", "好吧，主會與我們同在！"]
+  },
+  "saved": { "title": "你已經得救了", "sub": "你離開了遊戲，展開新的人生。" },
+  "battle": {
+    "enemy": { "name": "學生傳教士", "level": 20, "hp": 100 },
+    "player": { "name": "你", "level": 21, "hp": 100 },
+    "intro": ["學生傳教士 想要對戰！", "去吧！上啊！"],
+    "prompt": "你要怎麼做？",
+    "playerMoves": [
+      { "id": "rain", "name": "召喚下雨天", "fx": "rain", "power": [24, 32], "accuracy": 0.95,
+        "lines": ["你使出了 召喚下雨天！", "指南山下又下雨了，水柱衝了過去！"] },
+      { "id": "sand", "name": "美食沙漠", "fx": "sand", "power": [20, 30], "accuracy": 0.85,
+        "lines": ["你使出了 美食沙漠！", "校園附近什麼都沒得吃，沙塵暴捲了起來！"] },
+      { "id": "politics", "name": "政治退出校園", "fx": "politics", "gameOver": true,
+        "lines": ["你使出了 政治退出校園！", "沒有政治，就沒有政治大學……", "政治大學從地圖上消失了。"] },
+      { "id": "run", "name": "逃跑", "fx": "flee", "run": true,
+        "lines": ["順利逃走了！"] }
+    ],
+    "enemyMoves": [
+      { "id": "holy", "name": "聖光攻擊", "fx": "holy", "power": [16, 24], "accuracy": 0.9,
+        "lines": ["學生傳教士 使出了 聖光攻擊！"] },
+      { "id": "sword", "name": "聖靈寶劍", "fx": "sword", "power": [20, 28], "accuracy": 0.85,
+        "lines": ["學生傳教士 使出了 聖靈寶劍！"] },
+      { "id": "heal", "name": "自我回血", "fx": "heal", "heal": 28,
+        "lines": ["學生傳教士 開始禱告……", "學生傳教士 恢復了體力！"] },
+      { "id": "run", "name": "逃跑", "fx": "flee", "run": true,
+        "lines": ["學生傳教士 逃跑了！"] }
+    ],
+    "messages": {
+      "miss": "可是沒有打中！",
+      "crit": "會心一擊！",
+      "enemyFaint": ["學生傳教士 倒下了！", "你贏得了勝利！"],
+      "playerFaint": ["你的眼前一片黑暗……"],
+      "wakeUp": "你在正門醒了過來",
+      "gameOver": { "title": "GAME OVER", "sub": "沒有政治，就沒有政治大學。" }
+    }
+  }
+}

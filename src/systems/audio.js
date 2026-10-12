@@ -24,8 +24,17 @@ const AU=(()=>{
     g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); s.connect(f); f.connect(g); g.connect(bus); s.start(t); s.stop(t+dur+0.02); }
   function kick(t){ const o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(45,t+0.12);
     g.gain.setValueAtTime(0.55,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.2); o.connect(g); g.connect(musicBus); o.start(t); o.stop(t+0.22); }
+  /* 戰鬥曲：A 小調、節奏較快（Am – F – G – E），低音八分音符推進 */
+  const B_PROG=[[45,48,52],[41,45,48],[43,47,50],[40,44,47],[45,48,52],[41,45,48],[38,41,45],[40,44,47]];
+  const B_MEL=[
+    [76,0,76,77,76,0,74,72, 74,0,72,71,72,0,69,0],[72,0,72,74,72,0,71,69, 71,0,72,74,76,0,0,0],
+    [74,0,74,76,74,0,72,71, 72,0,71,69,71,0,67,0],[68,0,71,0,74,0,76,0, 80,0,79,0,76,0,74,0],
+    [81,0,79,0,77,0,76,0, 77,0,76,0,74,0,72,0],[77,0,76,0,74,0,72,0, 74,0,76,0,77,0,0,0],
+    [74,0,76,0,77,0,79,0, 81,0,77,0,74,0,0,0],[76,0,80,0,83,0,80,0, 76,0,74,0,71,0,68,0]];
+  let track='field';
   function schedule(){
     while(nextT<ctx.currentTime+0.15){
+      if(track==='battle'){ scheduleBattle(); continue; }
       const bar=Math.floor(step/16)%8, s=step%16, t=nextT, ch=PROG[bar];
       const m=MEL[bar][s]; if(m) voice('square',N(m),t,S16*1.6,0.07,musicBus,0.004,0.06);
       if(m&&s%4===0) voice('triangle',N(m+12),t,S16*0.8,0.025,musicBus);
@@ -38,6 +47,19 @@ const AU=(()=>{
       nextT+=S16; step++;
     }
   }
+  function scheduleBattle(){
+    const S=60/164/4, bar=Math.floor(step/16)%8, s=step%16, t=nextT, ch=B_PROG[bar];
+    const m=B_MEL[bar][s]; if(m) voice('square',N(m),t,S*1.5,0.065,musicBus,0.003,0.04);
+    if(m&&s%4===0) voice('sawtooth',N(m-12),t,S*0.9,0.02,musicBus);
+    voice('triangle',N(ch[0]-12+(s%2?12:0)),t,S*0.9,0.24,musicBus,0.003,0.03);
+    if(s%8===4) ch.forEach(n=>voice('square',N(n+12),t,S*0.6,0.016,musicBus,0.002,0.04));
+    if(s%4===0) kick(t);
+    if(s===4||s===12) noise(t,0.1,0.2,musicBus,1600);
+    noise(t,0.025,s%2?0.035:0.06,musicBus,8000);
+    nextT+=S; step++;
+  }
+  /** 切換背景音樂：'field'（校園）或 'battle'（戰鬥） */
+  function music(name){ if(name===track) return; track=name; step=0; if(ctx) nextT=Math.max(nextT,ctx.currentTime+0.05); }
   function init(){
     if(ctx) { if(ctx.state==='suspended') ctx.resume(); return; }
     try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
@@ -63,10 +85,25 @@ const AU=(()=>{
     door:t=>{ noise(t,0.08,0.25,sfxBus,0,400); voice('square',120,t,0.05,0.12,sfxBus,0.002,0.04,70); },
     scream:t=>voice('sawtooth',900+Math.random()*300,t,0.35,0.05,sfxBus,0.01,0.1,380),
     horn:t=>{ voice('sawtooth',392,t,0.35,0.07,sfxBus,0.01,0.05); voice('sawtooth',494,t,0.35,0.06,sfxBus,0.01,0.05); },
-    toot:t=>{ voice('square',523,t,0.08,0.06,sfxBus); voice('square',659,t+0.09,0.12,0.06,sfxBus); }
+    toot:t=>{ voice('square',523,t,0.08,0.06,sfxBus); voice('square',659,t+0.09,0.12,0.06,sfxBus); },
+    /* 戰鬥用 */
+    encounter:t=>{ voice('square',N(88),t,0.07,0.1,sfxBus,0.002,0.03); voice('square',N(95),t+0.08,0.16,0.1,sfxBus,0.002,0.06); },
+    select:t=>voice('square',N(84),t,0.04,0.07,sfxBus,0.002,0.02),
+    hit:t=>{ noise(t,0.16,0.35,sfxBus,0,1200); voice('square',200,t,0.1,0.12,sfxBus,0.002,0.05,60); },
+    crit:t=>{ noise(t,0.22,0.4,sfxBus,0,2200); voice('sawtooth',300,t,0.18,0.1,sfxBus,0.002,0.05,50); },
+    water:t=>{ noise(t,0.9,0.22,sfxBus,0,2600); for(let i=0;i<6;i++) voice('sine',N(84+i*2),t+i*0.07,0.08,0.05,sfxBus,0.002,0.05,N(96+i*2)); },
+    sand:t=>{ noise(t,1.1,0.28,sfxBus,0,700); noise(t+0.3,0.8,0.18,sfxBus,3000); },
+    holy:t=>[84,88,91,96,100].forEach((n,i)=>voice('sine',N(n),t+i*0.05,0.5,0.06,sfxBus,0.01,0.4)),
+    sword:t=>{ noise(t,0.25,0.3,sfxBus,2500); voice('sawtooth',1400,t,0.22,0.06,sfxBus,0.002,0.05,180); },
+    heal:t=>[72,76,79,84,79,84,88].forEach((n,i)=>voice('triangle',N(n),t+i*0.07,0.1,0.09,sfxBus,0.003,0.12)),
+    flee:t=>[79,74,70,67].forEach((n,i)=>voice('square',N(n),t+i*0.06,0.05,0.07,sfxBus,0.002,0.03)),
+    faint:t=>voice('square',N(72),t,0.6,0.09,sfxBus,0.005,0.1,N(48)),
+    win:t=>[[72,0],[76,0.12],[79,0.24],[84,0.36],[79,0.6],[84,0.72]].forEach(([n,d])=>voice('square',N(n),t+d,d>0.5?0.3:0.1,0.09,sfxBus,0.003,0.1)),
+    over:t=>[[67,0],[63,0.35],[60,0.7],[55,1.05]].forEach(([n,d])=>voice('triangle',N(n),t+d,0.4,0.12,sfxBus,0.005,0.3))
   };
   return {
     init,
+    music,
     sfx(n){ if(!ctx||muted||!SFX[n]) return; SFX[n](ctx.currentTime+0.005); },
     engine(on,speed){ if(!ctx) return;
       if(on&&!eng){ const o=ctx.createOscillator(), o2=ctx.createOscillator(), f=ctx.createBiquadFilter(), g=ctx.createGain(); o.type='sawtooth'; o2.type='square'; f.type='lowpass'; f.frequency.value=600; g.gain.value=0;
