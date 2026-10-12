@@ -117,8 +117,8 @@
 - `caught`：被抓住時說的話，說完問「是不是政大學生」（`askStudent`）
 - `notStudent`、`alreadyDone`、`cooldown`、`invite`、`decline`：各種情況的回應
 - `quiz`：題目。`q` 題目、`options` 選項、`answer` 正確答案是第幾個（從 0 開始數）。`shuffle: true` 時每次出題會打亂選項順序
-- `pass`、`fail`：全對、沒全對時說的話。`fail` 裡的 `{score}` 會換成答對題數
-- `retrySeconds`：沒全對之後要等幾秒才能再挑戰
+- `pass`、`fail`：全對、答錯時說的話。每題選完當場顯示答對或答錯，答錯就直接結束挑戰，老校長騎馬跑掉。`fail` 裡的 `{wrong}` 會換成第幾題答錯、`{score}` 換成答對題數
+- `retrySeconds`：答錯之後要等幾秒才能再挑戰
 - `letter`：全對拿到的「精神堡壘任務信函」，`lines` 是點開信函看到的內容
 
 全對時遊戲狀態 `state.haveLetter` 會變成 `true`，之後要做精神堡壘任務可以用這個判斷。

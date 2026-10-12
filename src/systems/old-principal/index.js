@@ -155,6 +155,13 @@ $('letterItem').addEventListener('click', () => { if (state.busy) return; AU.sfx
 
 const say = (lines, then) => openDialog(D.title, lines, then);
 function release() { busy = false; npc.state = 'idle'; mode = 'gallop'; modeT = 6 + Math.random() * 4; }
+/** 答錯：往離主角比較遠的方向騎走 */
+function rideAway() {
+  AU.sfx('neigh');
+  const pts = route.points; let best = wp, far = -1;
+  pts.forEach(([x, z], i) => { const d = Math.hypot(x - pos.x, z - pos.z); if (d > far) { far = d; best = i; } });
+  wp = best; mode = 'gallop'; modeT = 10;
+}
 
 function shuffled(q) {
   const order = q.options.map((_, i) => i);
@@ -165,7 +172,7 @@ function shuffled(q) {
 async function challenge() {
   const score = await openQuiz({ title: '老校長的歷史問答', questions: D.quiz.map(shuffled) });
   if (score === D.quiz.length) { AU.sfx('win'); say(D.pass, () => { giveLetter(); release(); }); }
-  else { AU.sfx('faint'); retryAt = performance.now() + D.retrySeconds * 1000; say(D.fail.map(l => l.replace('{score}', score)), release); }
+  else { AU.sfx('faint'); retryAt = performance.now() + D.retrySeconds * 1000; say(D.fail.map(l => l.replace('{score}', score).replace('{wrong}', score + 1)), () => { release(); rideAway(); }); }
 }
 
 function encounter() {

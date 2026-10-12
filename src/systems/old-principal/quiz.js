@@ -4,7 +4,7 @@
  *   const score = await openQuiz({ title: '老校長的歷史問答', questions: [{ q, options, answer }] })
  *
  * 鍵盤：上下鍵或 W／S 移動，Enter／Space／E 確定，數字鍵直接選。也可以用滑鼠或手指點。
- * 開啟期間 state.busy = true，角色不會移動。答對答錯不會當場公布，最後只告訴老校長分數。
+ * 開啟期間 state.busy = true，角色不會移動。每題選完當場顯示答對或答錯；答錯就直接結束，回傳答對的題數。
  */
 import { state } from '../../core/state.js';
 import { AU } from '../audio.js';
@@ -23,6 +23,12 @@ const css = `
 #quiz button{all:unset;cursor:pointer;padding:9px 12px 9px 40px;border-radius:12px;border:3px solid #e2d3b6;background:#fff;position:relative}
 #quiz button b{position:absolute;left:10px;top:50%;margin-top:-11px;width:22px;height:22px;border-radius:50%;background:#3e2c1a;color:#fffaf0;font-size:13px;line-height:22px;text-align:center}
 #quiz button.on{background:#ffe7b3;border-color:#3e2c1a}
+#quiz button.ok{background:#d6f2c8;border-color:#3f8a4f}
+#quiz button.ng{background:#f8d2cc;border-color:#b23a3a;animation:qzShake .35s}
+#quiz .fb{min-height:1.5em;margin-top:10px;text-align:center;font-weight:900;font-size:1.1em}
+#quiz .fb.ok{color:#3f8a4f}
+#quiz .fb.ng{color:#b23a3a}
+@keyframes qzShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes qzIn{from{transform:translateY(14px) scale(.98);opacity:0}to{transform:none;opacity:1}}`;
 const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
 
@@ -31,15 +37,16 @@ export function openQuiz({ title, questions }) {
     let i = 0, cur = 0, score = 0;
     state.busy = true;
     const box = document.createElement('div'); box.id = 'quiz';
-    box.innerHTML = '<div class="card"><div class="head"><span class="t"></span><span class="dots"></span></div><div class="q"></div><div class="opts"></div></div>';
+    box.innerHTML = '<div class="card"><div class="head"><span class="t"></span><span class="dots"></span></div><div class="q"></div><div class="opts"></div><div class="fb"></div></div>';
     box.querySelector('.t').textContent = title;
-    const dots = box.querySelector('.dots'), qEl = box.querySelector('.q'), opts = box.querySelector('.opts');
+    const dots = box.querySelector('.dots'), qEl = box.querySelector('.q'), opts = box.querySelector('.opts'), fb = box.querySelector('.fb');
+    let locked = false;
     questions.forEach(() => dots.appendChild(document.createElement('i')));
     document.body.appendChild(box);
 
     const mark = () => [...opts.children].forEach((b, k) => b.classList.toggle('on', k === cur));
     function show() {
-      const Q = questions[i]; cur = 0;
+      const Q = questions[i]; cur = 0; locked = false; fb.textContent = ''; fb.className = 'fb';
       [...dots.children].forEach((d, k) => { d.className = k < i ? 'done' : k === i ? 'cur' : ''; });
       qEl.textContent = `第 ${i + 1} 題．${Q.q}`;
       opts.innerHTML = '';
@@ -52,14 +59,20 @@ export function openQuiz({ title, questions }) {
       });
       mark();
     }
+    function finish() { removeEventListener('keydown', onKey, true); box.remove(); state.busy = false; done(score); }
     function pick(k) {
-      AU.sfx('select');
-      if (k === questions[i].answer) score++;
-      i++;
-      if (i < questions.length) { show(); return; }
-      removeEventListener('keydown', onKey, true); box.remove(); state.busy = false; done(score);
+      if (locked) return;
+      locked = true;
+      const right = k === questions[i].answer, b = opts.children[k];
+      b.classList.remove('on'); b.classList.add(right ? 'ok' : 'ng');
+      fb.className = 'fb ' + (right ? 'ok' : 'ng'); fb.textContent = right ? '答對了！' : '答錯了！';
+      AU.sfx(right ? 'gem' : 'hit');
+      if (!right) { setTimeout(finish, 1300); return; }
+      score++; i++;
+      setTimeout(() => { if (i < questions.length) show(); else finish(); }, 800);
     }
     function onKey(e) {
+      if (locked) { e.preventDefault(); e.stopPropagation(); return; }
       const n = questions[i].options.length;
       if (['ArrowUp', 'KeyW'].includes(e.code)) { cur = (cur + n - 1) % n; AU.sfx('blip'); mark(); }
       else if (['ArrowDown', 'KeyS'].includes(e.code)) { cur = (cur + 1) % n; AU.sfx('blip'); mark(); }
