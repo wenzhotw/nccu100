@@ -26,4 +26,4 @@ nsRoad(176,15,-200,5,null);
   [-0.3,0.3].forEach(d=>{ const l=new THREE.Mesh(new THREE.PlaneGeometry(0.15,len),toon('#f2d36b')); l.rotation.x=-Math.PI/2; l.position.set(d,0.012,0); g.add(l); });
   const sw=new THREE.Mesh(new THREE.PlaneGeometry(5,len),toon('#dccdb5')); sw.rotation.x=-Math.PI/2; sw.position.set(-9.5,0.02,0); g.add(sw);
   const ar=new THREE.Mesh(new THREE.CircleGeometry(7,24),toon('#5b6270')); ar.rotation.x=-Math.PI/2; ar.position.set(x0,0.005,z0); scene.add(ar); }
-[[-100,-30],[-104,-50],[-140,-100],[-175,-45],[-190,-75],[-200,-30],[-120,5],[-170,0],[125,-60],[160,-30],[165,-70],[100,-60],[188,-110],[150,-120],[130,-150],[-95,-118],[-135,-140],[-180,-150]].forEach(([x,z])=>tree(x,z,0.95+Math.random()*0.3));
+[[-100,-30],[-104,-50],[-175,-45],[-190,-75],[-200,-30],[-120,5],[-170,0],[125,-60],[160,-30],[165,-70],[100,-60],[188,-110],[150,-120],[130,-150],[-95,-118],[-135,-140],[-180,-150]].forEach(([x,z])=>tree(x,z,0.95+Math.random()*0.3));
