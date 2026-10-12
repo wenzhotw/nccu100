@@ -40,13 +40,14 @@ function person({ x, shirt, pants, hair, bowl, glasses, book }) {
 /** 對手：兩人一組的學生傳教士 */
 export const enemySVG = `
 <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" aria-label="兩位學生傳教士">
-  ${person({ x: 150, shirt: '#cfe3f5', pants: '#3c4a6b', hair: '#151515', bowl: true, glasses: '#4f545b' })}
-  ${person({ x: 72, shirt: '#f7f6f1', pants: '#2e3a5a', hair: '#2a1c18', book: true })}
+  <ellipse cx="150" cy="182" rx="34" ry="7" fill="rgba(40,60,30,.28)"/><ellipse cx="72" cy="182" rx="34" ry="7" fill="rgba(40,60,30,.28)"/>
+  <g class="pB">${person({ x: 150, shirt: '#cfe3f5', pants: '#3c4a6b', hair: '#151515', bowl: true, glasses: '#4f545b' })}</g>
+  <g class="pA">${person({ x: 72, shirt: '#f7f6f1', pants: '#2e3a5a', hair: '#2a1c18', book: true })}</g>
 </svg>`;
 
 /** 主角背面：咖啡色刺刺頭、藍上衣、黃背包 */
 export const playerSVG = `
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="主角的背影">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="主角的背影"><g class="pA">
   <path d="M40 200 Q42 132 100 126 Q158 132 160 200 Z" fill="#5aa7e0" stroke="${OUT}" stroke-width="4"/>
   <path d="M70 136 L64 200 M130 136 L136 200" stroke="#cf8f25" stroke-width="9" stroke-linecap="round"/>
   <rect x="62" y="140" width="76" height="66" rx="20" fill="#f2b33d" stroke="${OUT}" stroke-width="4"/>
@@ -56,7 +57,7 @@ export const playerSVG = `
   <path d="M70 60 L80 46 M100 52 L104 36 M126 58 L134 46" stroke="#5d4030" stroke-width="5" stroke-linecap="round"/>
   <ellipse cx="50" cy="92" rx="8" ry="11" fill="#ffe1cc" stroke="${OUT}" stroke-width="3"/>
   <ellipse cx="150" cy="92" rx="8" ry="11" fill="#ffe1cc" stroke="${OUT}" stroke-width="3"/>
-</svg>`;
+</g></svg>`;
 
 /** 聖靈寶劍 */
 export const swordSVG = `
@@ -65,4 +66,36 @@ export const swordSVG = `
   <rect x="4" y="94" width="32" height="8" rx="3" fill="#e8b931"/>
   <rect x="16" y="102" width="8" height="26" rx="3" fill="#8a5a2a"/>
   <circle cx="20" cy="132" r="6" fill="#e8b931"/>
+</svg>`;
+
+/**
+ * 戰鬥背景：指南山、遠方的四維堂、一排樹、紅磚地面（四維道）。
+ * viewBox 1600×900，用 preserveAspectRatio="xMidYMid slice" 填滿畫面。
+ */
+export const fieldSVG = `
+<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="btSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0ff"/><stop offset=".7" stop-color="#d9f1ff"/><stop offset="1" stop-color="#f4fbff"/></linearGradient>
+    <linearGradient id="btBrick" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3a58c"/><stop offset="1" stop-color="#cf7a5f"/></linearGradient>
+    <pattern id="btTiles" width="80" height="40" patternUnits="userSpaceOnUse"><path d="M0 0 H80 M0 20 H80 M0 0 V20 M40 20 V40" stroke="#b9664e" stroke-width="3" opacity=".45"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#btSky)"/>
+  <path d="M0 380 Q160 250 330 320 Q470 200 640 300 Q800 210 960 300 Q1140 190 1300 290 Q1450 240 1600 300 V470 H0 Z" fill="#8cc7a0"/>
+  <path d="M0 420 Q200 330 420 390 Q620 320 820 390 Q1040 330 1240 395 Q1420 350 1600 390 V480 H0 Z" fill="#6fb487"/>
+  <g transform="translate(250 330)">
+    <rect x="0" y="40" width="250" height="110" fill="#f2efe6" stroke="#9aa39a" stroke-width="4"/>
+    <rect x="-10" y="28" width="270" height="16" fill="#e1ddd2" stroke="#9aa39a" stroke-width="4"/>
+    <rect x="80" y="10" width="90" height="22" fill="#e1ddd2" stroke="#9aa39a" stroke-width="4"/>
+    <g fill="#b8c9d2">${[20, 62, 104, 146, 188].map(x => `<rect x="${x}" y="64" width="30" height="70"/>`).join('')}</g>
+  </g>
+  <g transform="translate(1180 300)">
+    <rect x="0" y="40" width="200" height="140" fill="#efe9dc" stroke="#9aa39a" stroke-width="4"/>
+    <rect x="-8" y="30" width="216" height="14" fill="#e1ddd2" stroke="#9aa39a" stroke-width="4"/>
+    <g fill="#b8c9d2">${[0, 1, 2, 3].map(r => [16, 64, 112, 160].map(x => `<rect x="${x}" y="${58 + r * 30}" width="26" height="18"/>`).join('')).join('')}</g>
+  </g>
+  <g fill="#4f9a5e" stroke="#2f6a3e" stroke-width="4">${[60, 170, 560, 690, 820, 1000, 1110, 1450, 1540].map((x, i) => `<circle cx="${x}" cy="${445 - (i % 3) * 8}" r="${46 + (i % 2) * 10}"/>`).join('')}</g>
+  <rect x="0" y="470" width="1600" height="430" fill="#8fd17a"/>
+  <path d="M520 470 L1080 470 L1600 900 L0 900 Z" fill="url(#btBrick)"/>
+  <path d="M520 470 L1080 470 L1600 900 L0 900 Z" fill="url(#btTiles)"/>
+  <path d="M520 470 L0 900 M1080 470 L1600 900" stroke="#9c9c94" stroke-width="10"/>
 </svg>`;
