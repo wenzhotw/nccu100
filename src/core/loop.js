@@ -13,7 +13,7 @@ import { waterU } from '../render/water.js';
 import { palms } from '../world/vegetation.js';
 import { police } from '../actors/police-car.js';
 import { driveCar, updateCar } from '../actors/campus-bus.js';
-import { IX } from '../world/buildings/siwei-hall/interior.js';
+import { IX } from '../world/layout.js';
 import { grassU } from '../world/environment/grass.js';
 import { PN, dGeo, pGeo } from '../world/environment/particles.js';
 import { H, animateHero, player, shadowBlob } from '../actors/player.js';

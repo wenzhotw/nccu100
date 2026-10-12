@@ -6,6 +6,7 @@ import { scene } from '../../core/engine.js';
 import { block } from '../../render/kit.js';
 import { circC } from '../../core/collision.js';
 import { WV, waterU } from '../../render/water.js';
+import { registerHeight, registerZone } from '../registry.js';
 
 /* ---------- 醉夢溪（地圖上的指南溪），在四維堂與圖書館後方 ---------- */
 const RIV=[[-250,-126],[-185,-136],[-115,-143],[-70,-152],[-20,-164],[20,-178],[45,-200],[60,-230]];
@@ -26,5 +27,10 @@ for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1], len=Math
   for(let t=0;t<=len;t+=1.8){ const x=x0+(x1-x0)*t/len, z=z0+(z1-z0)*t/len; if(Math.hypot(x-BR.x,z-BR.z)<6) continue; circC(x,z,3.4); } }
 for(let v=-4.4;v<=4.41;v+=0.8) [-2.2,2.2].forEach(u=>circC(BR.x+u*BD.x+v*BN.x,BR.z+u*BD.z+v*BN.z,0.22));
 function riverDist(x,z){ let best=1e9; for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1], dx=x1-x0, dz=z1-z0, t=Math.max(0,Math.min(1,((x-x0)*dx+(z-z0)*dz)/(dx*dx+dz*dz))); best=Math.min(best,Math.hypot(x-x0-dx*t,z-z0-dz*t)); } return best; }
+
+
+// 小橋的橋面可以走上去
+registerHeight((x,z)=>{ const dx=x-BR.x, dz=z-BR.z, u=dx*BD.x+dz*BD.z, v=dx*BN.x+dz*BN.z; return (Math.abs(u)<2.3&&Math.abs(v)<4.5)?0.4:null; });
+registerZone(30, p=>riverDist(p.x,p.z)<9?'指南溪畔':null);
 
 export { BD, BN, BR, RIV, riverDist };

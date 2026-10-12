@@ -1,7 +1,7 @@
 /**
  * 碰撞：方塊、圓形、旋轉方塊三種碰撞體，以及推開角色的 resolve()。
  */
-import { late } from './late.js';
+import { IX } from '../world/layout.js';
 
 /* ---------- colliders ---------- */
 const colliders=[];
@@ -23,8 +23,8 @@ function resolveCore(p){
     else { const l=p.x-c.x0, r=c.x1-p.x, b=p.z-c.z0, f=c.z1-p.z, mn=Math.min(l,r,b,f);
       if(mn===l)p.x=c.x0-R; else if(mn===r)p.x=c.x1+R; else if(mn===b)p.z=c.z0-R; else p.z=c.z1+R; }
   }
-  if(p.x>200){ p.x=Math.max(late.IX-11.2,Math.min(late.IX+11.2,p.x)); p.z=Math.max(-21.4,Math.min(24.3,p.z));
-    if(p.z<-17.7&&p.z>-18.4&&Math.abs(p.x-late.IX)>7.9){ p.z=p.z>-18.05?-17.7:-18.4; } }
+  if(p.x>200){ p.x=Math.max(IX-11.2,Math.min(IX+11.2,p.x)); p.z=Math.max(-21.4,Math.min(24.3,p.z));
+    if(p.z<-17.7&&p.z>-18.4&&Math.abs(p.x-IX)>7.9){ p.z=p.z>-18.05?-17.7:-18.4; } }
   else { p.x=Math.max(-245,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(29.5,p.z)); }
 }
 

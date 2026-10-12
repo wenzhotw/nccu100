@@ -9,7 +9,7 @@ import { AU } from './audio.js';
 import { basic, canvasTex } from '../render/kit.js';
 import { bdZ, swZ } from '../world/layout.js';
 import { FZ } from '../world/terrain/fountain.js';
-import { TRK } from '../world/buildings/track/index.js';
+import { world } from '../world/registry.js';
 import { RIV } from '../world/terrain/river.js';
 import { rig } from '../actors/player.js';
 import { crystals } from './stories.js';
@@ -32,11 +32,8 @@ function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined
   road([[-88,15],[-88,-144]],10,'#d9c49b'); road([[23.5,-60],[23.5,-150]],10,'#d9c49b'); road([[96,15],[96,-36]],8,'#d9c49b');
   const bld=(x,z,w,d,col,name,dy)=>{ g.fillStyle=col; g.strokeStyle='#6b4a2a'; g.lineWidth=3; g.fillRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H); g.strokeRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H);
     if(name){ g.fillStyle='#4a3520'; g.font='700 22px "Noto Sans TC",sans-serif'; g.textAlign='center'; g.fillText(name,mx(x),my(z)+(dy||7)); } };
-  bld(0,-87,14,30,'#c8c3b4','四維堂'); bld(-46,-110,44,26,'#e6dccb','中正圖書館'); bld(-54,-27,34,32,'#d8cbbb','商學院'); bld(45,-90,34,26,'#ddd2be','行政大樓');
-  bld(-27,-3,16,11,'#e2ddd5','研究大樓'); bld(-28,-32,6,35,'#b9cfae',''); bld(28,-32,6,35,'#b9cfae',''); bld(130,-84,30,24,'#e9cdbd','綜合院館');
-  bld(114,-156,36,28,'#d6dadd','體育館');
-  g.save(); g.translate(mx(TRK.x),my(TRK.z)); g.rotate(-TRK.th); g.fillStyle='#8fbf72'; g.strokeStyle='#c1734f'; g.lineWidth=8; g.beginPath(); g.ellipse(0,0,46,30,0,0,7); g.fill(); g.stroke(); g.restore();
-  g.fillStyle='#4a3520'; g.font='700 22px "Noto Sans TC",sans-serif'; g.textAlign='center'; g.fillText('田徑場',mx(TRK.x),my(TRK.z)+7);
+  // 建築圖示由各建築的 index.js 登記（map 欄位）
+  world.mapShapes.forEach(m=>{ if(m.draw) m.draw(g,mx,my); else bld(m.x,m.z,m.w,m.d,m.color,m.label||'',m.dy); });
   g.beginPath(); g.arc(mx(0),my(FZ),9,0,7); g.fillStyle='#9cc7c9'; g.fill(); g.stroke();
   g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-110),my(-128));
   g.fillText('四維道',mx(-120),my(swZ(-120))-12);

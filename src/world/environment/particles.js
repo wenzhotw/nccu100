@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { scene } from '../../core/engine.js';
 import { canvasTex } from '../../render/kit.js';
-import { IX } from '../buildings/siwei-hall/interior.js';
+import { IX } from '../layout.js';
 
 /* ---------- glow, motes ---------- */
 const glowTex=canvasTex(64,64,(g,w,h)=>{ const r=g.createRadialGradient(32,32,0,32,32,32); r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.35,'rgba(255,255,255,.45)'); r.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=r; g.fillRect(0,0,w,h); });

@@ -9,7 +9,7 @@ import { AU } from '../systems/audio.js';
 import { BOX, SPH, basic, canvasTex, outline, toon } from '../render/kit.js';
 import { resolve } from '../core/collision.js';
 import { police } from './police-car.js';
-import { IX } from '../world/buildings/siwei-hall/interior.js';
+import { IX } from '../world/layout.js';
 import { outlineU, part } from './player.js';
 import { dlg, openDialog } from '../ui/dialog.js';
 import { groundH, indoor, lerpA, pos, spots } from '../core/gameplay.js';

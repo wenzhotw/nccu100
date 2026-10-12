@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
 import { mk, toon } from '../render/kit.js';
-import { IX } from '../world/buildings/siwei-hall/interior.js';
+import { IX } from '../world/layout.js';
 import { glowTex } from '../world/environment/particles.js';
 import { HC } from '../actors/player.js';
 
