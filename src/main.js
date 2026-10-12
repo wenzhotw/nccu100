@@ -24,6 +24,7 @@ import './actors/campus-bus.js';
 import './world/lots.js';
 import './world/terrain/outer-roads.js';
 import './world/terrain/river.js';
+import './world/terrain/creek-road.js';
 import './world/environment/mountains.js';
 import './world/buildings/index.js'; // 自動載入 world/buildings/ 底下每一棟建築
 import './world/zones.js';

@@ -1,9 +1,9 @@
 /**
- * 醉夢溪（指南溪）與小橋。
+ * 醉夢溪（指南溪）與三座橋：小紅橋（人行）、濟賢橋（環山一道）、渡賢橋（校園公車路線）。
  */
 import * as THREE from 'three';
 import { scene } from '../../core/engine.js';
-import { block } from '../../render/kit.js';
+import { basic, block, hText, plane } from '../../render/kit.js';
 import { circC } from '../../core/collision.js';
 import { WV, waterU } from '../../render/water.js';
 import { registerHeight, registerZone } from '../registry.js';
@@ -18,19 +18,53 @@ for(let i=0;i<RIV.length-1;i++){
   const w=new THREE.Mesh(new THREE.PlaneGeometry(6,len+3),rivMat); w.rotation.x=-Math.PI/2; w.position.y=0.03; g.add(w);
   [-1,1].forEach(s=>{ block(s*3.25,0.22,0,0.5,0.44,len+3,'#a8a091',0.02,g); block(s*3.25,0.47,0,0.7,0.08,len+3,'#c6bdac',0,g); });
 }
+/* ---------- 橋 ---------- */
+// 小紅橋（原有的人行橋），沿溪道路就在它北端
 const BR={x:-45,z:-158}, BD={x:0.973,z:-0.233}, BN={x:0.233,z:0.973};
 { const brG=new THREE.Group(); brG.position.set(BR.x,0,BR.z); brG.rotation.y=Math.atan2(BN.x,BN.z); scene.add(brG);
   block(0,0.2,0,4.6,0.4,9,'#b98552',0.04,brG);
   for(let z=-4.2;z<=4.21;z+=0.7) block(0,0.41,z,4.5,0.02,0.05,'#9c6c40',0,brG);
   [-2.2,2.2].forEach(x=>{ for(let z=-4.3;z<=4.31;z+=1.075) block(x,0.9,z,0.18,0.9,0.18,'#c9533d',0.025,brG); block(x,1.32,0,0.22,0.14,8.8,'#d95f45',0.025,brG); }); }
+
+/** 溪在某個 x 的位置（中心線的 z） */
+function riverZ(x){ for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1]; if(x>=x0&&x<=x1) return z0+(z1-z0)*(x-x0)/(x1-x0); } return null; }
+/** 溪在某個 x 往北的法線方向（橋就沿著這個方向跨過去） */
+function riverNormal(x){ for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1]; if(x>=x0&&x<=x1){ const l=Math.hypot(x1-x0,z1-z0); let nx=-(z1-z0)/l, nz=(x1-x0)/l; if(nz<0){ nx=-nx; nz=-nz; } return {x:nx,z:nz}; } } return {x:0,z:1}; }
+
+/** 車行的水泥橋：寬 6、長 9（北端剛好接到沿溪道路的南緣），兩側矮護欄，南端路邊立橋名石碑；tail 是過橋之後往南延伸的路長 */
+const BRIDGES=[BR];
+function carBridge(x,name,tail){
+  const z=riverZ(x), n=riverNormal(x), d={x:n.z,z:-n.x};
+  const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.atan2(n.x,n.z); scene.add(g);
+  block(0,0.2,0,6,0.4,9,'#b7b4ab',0.04,g);
+  block(0,0.41,0,4.8,0.02,9,'#5b6270',0,g);
+  [-3.1,3.1].forEach(u=>{ block(u,0.85,0,0.35,0.9,9,'#e1ddd3',0.03,g); block(u,1.33,0,0.45,0.08,9.2,'#c9c4b8',0,g); });
+  // 橋名石碑
+  // 立在南端路邊（北端是沿溪道路），兩面都有字
+  block(-4.1,0.7,-5.6,1.6,1.4,0.4,'#cfcac0',0.03,g);
+  const t=hText(name,'#3e3a32','900 110px "Noto Serif TC","Noto Sans TC",serif',420,150,70);
+  [[-5.81,Math.PI],[-5.39,0]].forEach(([v,ry])=>{ const p=plane(1.4,0.5,basic({map:t,transparent:true}),0,0,0,0,ry); scene.remove(p); p.position.set(-4.1,0.8,v); g.add(p); });
+  if(tail) block(0,0.01,-4.5-tail/2,4.8,0.02,tail,'#5b6270',0,g);
+  const b={x,z,BD:d,BN:n,w:3,l:6}; BRIDGES.push(b);
+  for(let v=-4.5;v<=4.51;v+=0.75) [-3.1,3.1].forEach(u=>circC(x+u*d.x+v*n.x,z+u*d.z+v*n.z,0.3));
+  circC(x-4.1*d.x-5.6*n.x,z-4.1*d.z-5.6*n.z,0.8);
+  return b;
+}
+// 濟賢橋：環山一道過溪往山上校區；渡賢橋：行政大樓旁車道（校園公車路線）過溪
+const JIXIAN=carBridge(-88,'濟賢橋',0);
+const DUXIAN=carBridge(19.3,'渡賢橋',16);
+
 for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1], len=Math.hypot(x1-x0,z1-z0);
-  for(let t=0;t<=len;t+=1.8){ const x=x0+(x1-x0)*t/len, z=z0+(z1-z0)*t/len; if(Math.hypot(x-BR.x,z-BR.z)<6) continue; circC(x,z,3.4); } }
+  for(let t=0;t<=len;t+=1.8){ const x=x0+(x1-x0)*t/len, z=z0+(z1-z0)*t/len; if(BRIDGES.some(b=>Math.hypot(x-b.x,z-b.z)<(b===BR?6:8))) continue; circC(x,z,3.4); } }
 for(let v=-4.4;v<=4.41;v+=0.8) [-2.2,2.2].forEach(u=>circC(BR.x+u*BD.x+v*BN.x,BR.z+u*BD.z+v*BN.z,0.22));
 function riverDist(x,z){ let best=1e9; for(let i=0;i<RIV.length-1;i++){ const [x0,z0]=RIV[i],[x1,z1]=RIV[i+1], dx=x1-x0, dz=z1-z0, t=Math.max(0,Math.min(1,((x-x0)*dx+(z-z0)*dz)/(dx*dx+dz*dz))); best=Math.min(best,Math.hypot(x-x0-dx*t,z-z0-dz*t)); } return best; }
 
 
-// 小橋的橋面可以走上去
+// 橋面可以走上去
 registerHeight((x,z)=>{ const dx=x-BR.x, dz=z-BR.z, u=dx*BD.x+dz*BD.z, v=dx*BN.x+dz*BN.z; return (Math.abs(u)<2.3&&Math.abs(v)<4.5)?0.4:null; });
-registerZone(30, p=>riverDist(p.x,p.z)<9?'指南溪畔':null);
+[JIXIAN,DUXIAN].forEach(b=>registerHeight((x,z)=>{ const dx=x-b.x, dz=z-b.z, u=dx*b.BD.x+dz*b.BD.z, v=dx*b.BN.x+dz*b.BN.z; return (Math.abs(u)<2.9&&Math.abs(v)<4.5)?0.4:null; }));
+registerZone(25, p=>Math.hypot(p.x-JIXIAN.x,p.z-JIXIAN.z)<7?'濟賢橋':null);
+registerZone(26, p=>Math.hypot(p.x-DUXIAN.x,p.z-DUXIAN.z)<7?'渡賢橋':null);
+registerZone(30, p=>riverDist(p.x,p.z)<5.5?'指南溪畔':null);
 
 export { BD, BN, BR, RIV, riverDist };
