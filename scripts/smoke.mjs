@@ -32,7 +32,8 @@ try {
   const loaded = await page.evaluate(() => window.__game.world.buildings.map(b => b.id));
   const missing = buildings.filter(b => !loaded.includes(b));
   if (missing.length) errors.push('沒有載入的建築：' + missing.join(', '));
-  await page.click('#visitDistrict');
+  if (await page.locator('#visitDistrict').count()) errors.push('首頁仍有探索捷徑');
+  await page.click('#go');
   await page.waitForTimeout(3000);
   const district = JSON.parse(fs.readFileSync(path.join(root, 'src/world/buildings/law-education-route/district.json'), 'utf8'));
   const districtChecks = await page.evaluate(data => {
@@ -41,7 +42,8 @@ try {
     const issues = [];
     if (!group || group.children.filter(c => c.isInstancedMesh).length !== data.batches.length) issues.push('模型批次不完整');
     if (g.world.buildings.some(b => ['law-school','swimming-hall'].includes(b.id))) issues.push('舊模型仍啟用');
-    if (Math.hypot(g.pos.x+80,g.pos.z+57) > 1) issues.push('街區捷徑位置錯誤');
+    if (Math.hypot(g.pos.x+2,g.pos.z-21) > 1) issues.push('原本的校門起點被改動');
+    if (group.children.some(c => c.isInstancedMesh && !c.material.isMeshToonMaterial)) issues.push('未使用原網頁卡通材質');
     for (const lot of data.lots) {
       const p = {x:lot.entry[0],y:0,z:lot.entry[1]};
       g.resolve(p);
@@ -56,14 +58,16 @@ try {
   console.log('街區檢查：', JSON.stringify(districtChecks));
   fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
   await page.setViewportSize({width:1100,height:720});
-  await page.evaluate(() => window.__game.view(-68,65,-5,-155,5,-85));
+  await page.evaluate(() => { window.__game.teleport(-80,-57); window.__game.view(-68,65,-5,-155,5,-85); });
   await page.waitForTimeout(1500);
+  await page.addStyleTag({content:'#banner{opacity:0!important}'});
   await page.screenshot({path:path.join(root,'test-results/law-education-overview.png')});
+  await page.screenshot({path:path.join(root,'test-results/law-education-overview.jpg'),quality:85});
   const mobile = await browser.newPage({ viewport:{width:390,height:844}, isMobile:true, hasTouch:true });
   mobile.on('pageerror', e => errors.push(String(e)));
   await mobile.goto(`http://localhost:${port}/?debug`,{waitUntil:'domcontentloaded'});
   await mobile.waitForFunction(()=>window.__game);
-  await mobile.tap('#visitDistrict');
+  await mobile.tap('#go');
   await mobile.waitForTimeout(1000);
   if (!await mobile.locator('#stick').isVisible()) errors.push('手機搖桿未顯示');
   await mobile.evaluate(()=>{window.__game.teleport(-144,-80);window.__game.state.yaw=-Math.PI/2;});

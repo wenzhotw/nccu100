@@ -1,56 +1,32 @@
 /** 從使用者已確認位置的 Godot 場景匯入法學院到教育學院的照片街區。 */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
+import { toon } from '../../../render/kit.js';
 import { colliders } from '../../../core/collision.js';
 import { LOTS } from '../../layout.js';
 import { defineBuilding } from '../../registry.js';
 import data from './district.json';
 
-const textureFiles = import.meta.glob('./textures/*.{jpg,png}', { eager: true, query: '?url', import: 'default' });
-const textures = new Map();
 const matrix = new THREE.Matrix4();
 const geometries = {
   box: new THREE.BoxGeometry(1, 1, 1),
   quad: new THREE.PlaneGeometry(1, 1),
-  sphere: new THREE.SphereGeometry(.5, 12, 6),
+  sphere: new THREE.IcosahedronGeometry(1, 1),
   cylinder: new THREE.CylinderGeometry(.5, .5, 1, 12),
 };
 
+// 沿用原專案的卡通光照、輪廓光，以及明亮的建築、道路與草地色系。
+const palette = {
+  wall:'#777e83', trim:'#efefea', fins:'#d4915a', frame:'#52636f', glass:'#5c7686',
+  dark:'#43515c', stone:'#c4c7c0', road:'#5b6270', paving:'#d8cdb9', brick:'#c77563',
+  cream:'#e5e1d6', green:'#4f9a48', yellow:'#efd54a', white:'#f4f4ee', red:'#d87368',
+  pink:'#b89b91', rose:'#ae7380', tile:'#c5bfb2', roof:'#64756e', metal:'#97a2a1',
+  bark:'#7a5a43', leaf:'#5cb150', lawn:'#86c35a', soil:'#bd9974', blue:'#69a8c0',
+  playgreen:'#75b454', rubber:'#353a43', carwhite:'#e9eef2', carblue:'#5885ae',
+};
+const playgroundSphere = new THREE.SphereGeometry(.5, 12, 6);
 function material(batch) {
-  const leaf = batch.kind === 'quad';
-  const params = { color: batch.color, roughness: .84, side: leaf ? THREE.DoubleSide : THREE.FrontSide };
-  if (batch.texture) {
-    const file = batch.texture.split('/').pop();
-    if (!textures.has(file)) {
-      const url = textureFiles[`./textures/${file}`];
-      if (!url) throw new Error(`街區貼圖遺失：${file}`);
-      const tex = new THREE.TextureLoader().load(url);
-      tex.encoding = THREE.sRGBEncoding;
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      textures.set(file, tex);
-    }
-    params.map = textures.get(file);
-  }
-  if (leaf) params.alphaTest = .4;
-  if (batch.name.includes('_glass_')) { params.roughness = .27; params.metalness = .28; }
-  const result = new THREE.MeshStandardMaterial(params);
-  // Godot 的世界座標三向貼圖，避免大型地坪拉伸成一張模糊貼圖。
-  if (params.map && !leaf) {
-    result.onBeforeCompile = shader => {
-      shader.vertexShader = 'varying vec3 districtPos; varying vec3 districtNormal;\n' + shader.vertexShader;
-      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
-        districtPos = (modelMatrix * instanceMatrix * vec4(position, 1.0)).xyz;
-        districtNormal = normalize(mat3(modelMatrix * instanceMatrix) * normal);`);
-      shader.fragmentShader = 'varying vec3 districtPos; varying vec3 districtNormal;\n' + shader.fragmentShader;
-      shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
-        vec3 weight = pow(abs(normalize(districtNormal)), vec3(4.0));
-        weight /= max(dot(weight, vec3(1.0)), .001);
-        vec3 p = districtPos * .3;
-        diffuseColor *= texture2D(map, p.zy) * weight.x + texture2D(map, p.xz) * weight.y + texture2D(map, p.xy) * weight.z;`);
-    };
-    result.customProgramCacheKey = () => 'district-triplanar-v1';
-  }
-  return result;
+  return toon(palette[batch.name.split('_')[1]] || batch.color);
 }
 
 function addLabel(label, parent) {
@@ -89,7 +65,7 @@ function heightAt(x, z) {
 function build() {
   const group = new THREE.Group(); group.name = '法學院－教育學院照片街區';
   for (const batch of data.batches) {
-    const mesh = new THREE.InstancedMesh(geometries[batch.kind], material(batch), batch.matrices.length);
+    const mesh = new THREE.InstancedMesh((batch.name === 'LawEducationWalk_leaf_sphere' ? geometries.sphere : batch.kind === 'sphere' ? playgroundSphere : geometries[batch.kind]), material(batch), batch.matrices.length);
     mesh.name = batch.name;
     batch.matrices.forEach((values, i) => {
       matrix.fromArray(values);
@@ -98,7 +74,10 @@ function build() {
       mesh.setMatrixAt(i, matrix);
     });
     mesh.instanceMatrix.needsUpdate = true;
-    mesh.castShadow = !batch.name.includes('_lawn_'); mesh.receiveShadow = true;
+    const surface = batch.name.split('_')[1];
+    // 薄地坪與窗框不投影，避免與重疊地面產生鋸齒狀陰影；量體保留投影。
+    mesh.castShadow = ['wall','pink','rose','tile','roof','cream','bark','leaf','carblue'].includes(surface);
+    mesh.receiveShadow = ['road','paving','brick','lawn','soil'].includes(surface);
     group.add(mesh);
   }
   for (const label of data.labels) addLabel(label, group);

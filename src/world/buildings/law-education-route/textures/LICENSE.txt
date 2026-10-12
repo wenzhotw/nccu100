@@ -1,8 +1,0 @@
-Surface textures: Poly Haven, CC0, copied from the existing Godot project.
-https://polyhaven.com/a/asphalt_02
-https://polyhaven.com/a/brown_brick_02
-https://polyhaven.com/a/pavement_02
-https://polyhaven.com/a/aerial_grass_rock
-
-campus_48.png: procedural foliage texture exported from the original NCCU campus web scene.
-Buildings and landscape: user's existing photo-informed Godot architecture.
