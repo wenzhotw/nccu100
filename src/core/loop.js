@@ -99,6 +99,8 @@ function update(dt){
   if(indoor()){ camera.position.x=Math.max(IX-11.3,Math.min(IX+11.3,camera.position.x)); camera.position.z=Math.max(-21.3,Math.min(24.6,camera.position.z)); camera.position.y=Math.min(10.4,camera.position.y); }
   if(camera.position.y<0.5) camera.position.y=0.5;
   camera.lookAt(camT);
+  // 除錯用的自由視角（__game.view），平常不會用到
+  if(state.viewCam){ const v=state.viewCam; camera.position.set(v[0],v[1],v[2]); camera.lookAt(v[3],v[4],v[5]); }
   sky.position.copy(camera.position);
   sun.position.set(pos.x+SUN.x*70,SUN.y*70,pos.z+SUN.z*70); sun.target.position.set(pos.x,0,pos.z);
   placePrompt();
