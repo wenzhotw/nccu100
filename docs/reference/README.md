@@ -34,4 +34,6 @@
 | E1 | 田徑場 | `track` |
 | E2 | 體育館 | `gym` |
 | B27 | 綜合院館 | `zonghe` |
+| D3 | 法學院（憩賢樓原址，2025 年啟用） | `law-school` |
+| A14、B14 | 電子計算機中心、資訊大樓 | `computer-center` |
 | F5 | 四維道 | 地形（`src/world/terrain/avenue.js`） |
