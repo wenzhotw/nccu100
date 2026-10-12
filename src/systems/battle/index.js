@@ -14,7 +14,7 @@
 import './battle.css';
 import { state } from '../../core/state.js';
 import { AU } from '../audio.js';
-import { enemySVG, playerSVG, swordSVG } from './sprites.js';
+import { enemySVG, fieldSVG, playerSVG, swordSVG } from './sprites.js';
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const rand = (a, b) => Math.round(a + Math.random() * (b - a));
@@ -26,7 +26,7 @@ let advanceFn = null, menuFn = null, menuCur = 0;
 function infoBox(side, who) {
   const el = document.createElement('div'); el.className = `bt-info ${side}`;
   el.innerHTML = `<div class="bt-row"><span>${who.name}</span><span class="bt-lv">Lv.${who.level}</span></div>
-    <div class="bt-hp"><b>HP</b><div class="bt-bar"><i></i></div></div>${side === 'player' ? '<div class="bt-num"></div>' : ''}`;
+    <div class="bt-hp"><b>HP</b><div class="bt-bar"><i></i></div></div>${side === 'player' ? '<div class="bt-num"></div><div class="bt-exp"><i></i></div>' : ''}`;
   bars[side] = el.querySelector('.bt-bar i');
   if (side === 'player') numEl = el.querySelector('.bt-num');
   return el;
@@ -34,7 +34,8 @@ function infoBox(side, who) {
 function build(def) {
   root = document.createElement('div'); root.id = 'battle'; root.className = 'intro flash';
   const field = document.createElement('div'); field.className = 'bt-field';
-  field.innerHTML = `<div class="bt-plat enemy"></div><div class="bt-plat player"></div>
+  const clouds = [0, 1, 2].map(i => `<div class="bt-cloud" style="top:${6 + i * 9}%;width:${8 + i * 3}%;animation-duration:${50 + i * 22}s;animation-delay:-${i * 19}s"></div>`).join('');
+  field.innerHTML = `<div class="bt-bg">${fieldSVG}</div>${clouds}<div class="bt-plat enemy"></div><div class="bt-plat player"></div>
     <div class="bt-sprite enemy">${enemySVG}</div><div class="bt-sprite player">${playerSVG}</div><div class="bt-fx"></div>`;
   field.append(infoBox('enemy', def.enemy), infoBox('player', def.player));
   spr.enemy = field.querySelector('.bt-sprite.enemy'); spr.player = field.querySelector('.bt-sprite.player');
@@ -45,8 +46,10 @@ function build(def) {
   msgEl.addEventListener('click', () => advanceFn && advanceFn());
   menuEl = document.createElement('div'); menuEl.className = 'bt-menu';
   def.playerMoves.forEach((m, i) => {
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = m.name;
-    if (m.gameOver) b.classList.add('danger');
+    const b = document.createElement('button'); b.type = 'button';
+    const t = TYPES[m.type] || TYPES['一般'];
+    b.style.setProperty('--c1', t[0]); b.style.setProperty('--c2', t[1]);
+    b.innerHTML = `<span>${m.name}</span>${m.type && m.type !== '逃跑' ? `<small>${m.type}</small>` : ''}`;
     b.addEventListener('pointerenter', () => { menuCur = i; renderMenu(); });
     b.addEventListener('click', () => menuFn && menuFn(i));
     menuEl.appendChild(b);
@@ -57,6 +60,35 @@ function build(def) {
   document.body.appendChild(root);
 }
 function renderMenu() { [...menuEl.children].forEach((b, i) => b.classList.toggle('on', i === menuCur)); }
+/** 招式屬性的按鈕顏色（上、下漸層） */
+const TYPES = {
+  '水': ['#6cb6ff', '#2f7fd6'], '地面': ['#e2bd6b', '#b98a3a'], '超能力': ['#f17bd0', '#b04aa6'],
+  '光': ['#ffe27a', '#e0a92e'], '一般': ['#b8b8a8', '#87877a'], '逃跑': ['#9aa3ad', '#6b7480'],
+};
+let beepT = null;
+function lowBeep(on) {
+  if (on && !beepT) { AU.sfx('lowhp'); beepT = setInterval(() => AU.sfx('lowhp'), 900); }
+  if (!on && beepT) { clearInterval(beepT); beepT = null; }
+}
+/** HP 條一格一格扣（或補），數字跟著滾動 */
+function animateHP(side, from, to, max) {
+  return new Promise(resolve => {
+    const t0 = performance.now(), dur = Math.min(1100, 250 + Math.abs(to - from) * 22);
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), v = Math.round(from + (to - from) * k);
+      setHP(side, v, max);
+      if (k < 1) requestAnimationFrame(step);
+      else { if (side === 'player') lowBeep(to > 0 && to / max <= 0.2); resolve(); }
+    };
+    requestAnimationFrame(step);
+  });
+}
+/** 傷害或補血的數字跳出來 */
+function popNumber(side, text, cls) {
+  const c = center(spr[side]);
+  const d = add('fx-dmg' + (cls ? ' ' + cls : ''), { left: c.x + 'px', top: (c.y - 20) + 'px' }); d.textContent = text;
+  setTimeout(() => d.remove(), 1000);
+}
 function setHP(side, hp, max) {
   const r = Math.max(0, hp) / max, bar = bars[side];
   bar.style.width = (r * 100).toFixed(1) + '%';
@@ -116,6 +148,8 @@ async function beam(kind, from, to) {
   await wait(520);
 }
 async function hit(side, crit) {
+  // 命中瞬間：閃白＋停格一下，打擊感比較強
+  add('fx-flash'); await wait(110);
   AU.sfx(crit ? 'crit' : 'hit');
   spr[side].classList.add('blink'); if (crit) root.classList.add('quake');
   await wait(520); spr[side].classList.remove('blink'); root.classList.remove('quake');
@@ -178,17 +212,20 @@ async function useMove(m, from, to, s, msgs) {
   if (m.heal) {
     if (fx) await fx(from, to); clearFx();
     const key = from === 'enemy' ? 'enemyHP' : 'playerHP', max = from === 'enemy' ? s.enemyMax : s.playerMax;
-    s[key] = Math.min(max, s[key] + m.heal); setHP(from, s[key], max);
-    await wait(500); await sayAll(post); return 'continue';
+    const before = s[key]; s[key] = Math.min(max, s[key] + m.heal);
+    popNumber(from, '+' + (s[key] - before), 'heal'); await animateHP(from, before, s[key], max);
+    await wait(300); await sayAll(post); return 'continue';
   }
   if (Math.random() > (m.accuracy ?? 1)) { await say(msgs.miss); return 'continue'; }
   if (fx) await fx(from, to);
   const crit = Math.random() < 1 / 8;
   let dmg = rand(m.power[0], m.power[1]); if (crit) dmg = Math.round(dmg * 1.5);
-  await hit(to, crit); clearFx();
+  clearFx();
   const key = to === 'enemy' ? 'enemyHP' : 'playerHP', max = to === 'enemy' ? s.enemyMax : s.playerMax;
-  s[key] = Math.max(0, s[key] - dmg); setHP(to, s[key], max);
-  await wait(750);
+  const before = s[key]; s[key] = Math.max(0, s[key] - dmg);
+  popNumber(to, '-' + dmg, crit ? 'crit' : '');
+  await Promise.all([hit(to, crit), animateHP(to, before, s[key], max)]);
+  await wait(350);
   if (crit) await say(msgs.crit);
   return 'continue';
 }
@@ -201,7 +238,10 @@ export async function startBattle(def) {
   addEventListener('keydown', onKey, true);
   const s = { enemyHP: def.enemy.hp, enemyMax: def.enemy.hp, playerHP: def.player.hp, playerMax: def.player.hp, heals: 0 };
   setHP('enemy', s.enemyHP, s.enemyMax); setHP('player', s.playerHP, s.playerMax);
+  // 開場：閃屏 → 對手以黑色剪影滑入 → 顯現顏色
+  spr.enemy.classList.add('sil');
   await wait(950); root.classList.remove('flash'); await wait(60); root.classList.remove('intro'); await wait(900);
+  spr.enemy.classList.remove('sil'); AU.sfx('encounter'); await wait(500);
   for (const l of def.intro) await say(l);
   const msgs = def.messages, ai = def.enemyAI || defaultAI;
   let result = null;
@@ -221,13 +261,14 @@ export async function startBattle(def) {
     if (s.playerHP <= 0) { AU.sfx('faint'); spr.player.classList.add('faint'); await wait(700); await sayAll(msgs.playerFaint); result = 'lose'; break; }
   }
   if (result !== 'gameOver') AU.music('field');
-  removeEventListener('keydown', onKey, true);
+  removeEventListener('keydown', onKey, true); lowBeep(false);
   if (result !== 'gameOver') { root.remove(); root = null; state.busy = false; }
   return result;
 }
 
 /** 遊戲結束時把戰鬥畫面收掉（結局畫面會蓋在上面） */
 export function closeBattle() {
+  lowBeep(false);
   if (root) { root.remove(); root = null; }
   removeEventListener('keydown', onKey, true);
 }

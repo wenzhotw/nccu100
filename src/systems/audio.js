@@ -99,6 +99,7 @@ const AU=(()=>{
     flee:t=>[79,74,70,67].forEach((n,i)=>voice('square',N(n),t+i*0.06,0.05,0.07,sfxBus,0.002,0.03)),
     faint:t=>voice('square',N(72),t,0.6,0.09,sfxBus,0.005,0.1,N(48)),
     win:t=>[[72,0],[76,0.12],[79,0.24],[84,0.36],[79,0.6],[84,0.72]].forEach(([n,d])=>voice('square',N(n),t+d,d>0.5?0.3:0.1,0.09,sfxBus,0.003,0.1)),
+    lowhp:t=>{ voice('square',N(91),t,0.07,0.05,sfxBus,0.002,0.02); voice('square',N(91),t+0.14,0.07,0.05,sfxBus,0.002,0.02); },
     over:t=>[[67,0],[63,0.35],[60,0.7],[55,1.05]].forEach(([n,d])=>voice('triangle',N(n),t+d,0.4,0.12,sfxBus,0.005,0.3))
   };
   return {

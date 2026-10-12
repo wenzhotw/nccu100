@@ -1,16 +1,22 @@
 /* 寶可夢式戰鬥畫面 */
 #battle{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:#000;
   font-family:"Noto Sans TC",sans-serif;color:#2b2b33;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-#battle .bt-field{position:relative;flex:1;overflow:hidden;
-  background:linear-gradient(#bfe6ff 0%,#e6f6ff 46%,#c6ecaa 46.2%,#9fd889 100%)}
-#battle .bt-field::before{content:"";position:absolute;left:0;right:0;top:46%;height:6%;
-  background:repeating-linear-gradient(90deg,#8fcf78 0 22px,#a6dd8d 22px 44px);opacity:.6}
-#battle .bt-plat{position:absolute;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#e9f7cf 0%,#b8e092 60%,#8cc46d 100%);
-  box-shadow:inset 0 -6px 0 rgba(60,110,40,.25)}
-#battle .bt-plat.enemy{right:7%;top:36%;width:34%;height:11%}
+#battle .bt-field{position:relative;flex:1;overflow:hidden;background:#8fd0ff}
+#battle .bt-bg{position:absolute;inset:0}
+#battle .bt-bg svg{width:100%;height:100%;display:block}
+#battle .bt-field::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(20,30,40,.22) 100%)}
+#battle .bt-cloud{position:absolute;height:5%;border-radius:999px;background:#fff;opacity:.9;box-shadow:30px -10px 0 6px #fff,-26px -6px 0 2px #fff;animation:btDrift linear infinite}
+@keyframes btDrift{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
+#battle .bt-plat{position:absolute;border-radius:50%;background:radial-gradient(ellipse at 50% 38%,#f3fbe2 0%,#c9eba4 45%,#94cf74 78%,#6fae58 100%);
+  box-shadow:0 6px 0 #5e9a4b,0 14px 18px rgba(40,60,30,.25)}
+#battle .bt-plat.enemy{right:6%;top:47%;width:36%;height:12%}
 #battle .bt-plat.player{left:2%;bottom:-3%;width:44%;height:16%}
 #battle .bt-sprite{position:absolute;transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .4s}
-#battle .bt-sprite svg{width:100%;height:100%;display:block;overflow:visible}
+#battle .bt-sprite svg{width:100%;height:100%;display:block;overflow:visible;transition:filter .7s}
+#battle .bt-sprite g.pA,#battle .bt-sprite g.pB{transform-box:fill-box;transform-origin:50% 100%;animation:btBreath 2.4s ease-in-out infinite}
+#battle .bt-sprite g.pB{animation-delay:-1.2s}
+@keyframes btBreath{50%{transform:scale(1.02,1.045)}}
+#battle .bt-sprite.sil svg{filter:brightness(0) opacity(.8)}
 #battle .bt-sprite.enemy{right:10%;top:4%;width:min(30vw,44vh);height:min(28vw,40vh)}
 #battle .bt-sprite.player{left:7%;bottom:0;width:min(34vw,52vh);height:min(34vw,52vh)}
 #battle.intro .bt-sprite.enemy{transform:translateX(-120vw)}
@@ -24,8 +30,12 @@
 @keyframes btShake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 
 /* 資訊框 */
-#battle .bt-info{position:absolute;background:#fbf8ec;border:4px solid #3e3a32;border-radius:14px 4px 14px 4px;
-  padding:8px 16px 10px;min-width:min(42vw,340px);box-shadow:0 5px 0 rgba(0,0,0,.25);transition:transform .6s .3s}
+#battle .bt-info{position:absolute;background:linear-gradient(#fffdf4,#f1ecd8);border:4px solid #3e3a32;border-radius:20px 6px 20px 6px;
+  padding:8px 18px 10px 22px;min-width:min(42vw,350px);box-shadow:0 6px 0 rgba(0,0,0,.22),inset 0 0 0 3px #fffdf4;transition:transform .6s .3s}
+#battle .bt-info::before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:6px;border-radius:3px;background:#c7643b}
+#battle .bt-info.player::before{background:#5b6fb5}
+#battle .bt-exp{height:6px;margin-top:6px;background:#3e3a32;border-radius:3px;padding:1px}
+#battle .bt-exp i{display:block;height:100%;width:42%;background:linear-gradient(#7fd0ff,#3a8fe0);border-radius:2px}
 #battle .bt-info.enemy{left:4%;top:7%}
 #battle .bt-info.player{right:4%;bottom:9%}
 #battle.intro .bt-info.enemy{transform:translateX(-120%)}
@@ -33,27 +43,30 @@
 #battle .bt-row{display:flex;justify-content:space-between;align-items:baseline;font:900 clamp(17px,2.3vw,26px)/1.2 "Noto Sans TC",sans-serif}
 #battle .bt-lv{font-size:.8em}
 #battle .bt-hp{display:flex;align-items:center;gap:8px;margin-top:6px}
-#battle .bt-hp b{font:900 13px/1 Arial,sans-serif;color:#f2a93b;background:#3e3a32;padding:3px 6px;border-radius:6px}
+#battle .bt-hp b{font:900 13px/1 Arial,sans-serif;color:#ffd46b;background:#3e3a32;padding:3px 7px;border-radius:6px}
 #battle .bt-bar{flex:1;height:12px;background:#4c4a44;border-radius:7px;padding:2px;border:2px solid #3e3a32}
-#battle .bt-bar i{display:block;height:100%;width:100%;border-radius:5px;background:#3fcf6b;transition:width .7s ease-out,background-color .3s}
-#battle .bt-bar i.mid{background:#f2c33d}
-#battle .bt-bar i.low{background:#e8463c}
+#battle .bt-bar i{display:block;height:100%;width:100%;border-radius:5px;background:linear-gradient(#7ff09a 0 35%,#3fcf6b 35%);transition:background .3s}
+#battle .bt-bar i.mid{background:linear-gradient(#ffe27a 0 35%,#f2c33d 35%)}
+#battle .bt-bar i.low{background:linear-gradient(#ff8a80 0 35%,#e8463c 35%)}
 #battle .bt-num{text-align:right;font:900 clamp(15px,1.9vw,22px)/1.3 Arial,sans-serif;margin-top:2px}
 
 /* 下方訊息框與指令 */
 #battle .bt-bottom{height:clamp(120px,27vh,210px);display:flex;gap:10px;padding:10px;background:#3e3a32}
-#battle .bt-msg{flex:1;position:relative;background:#fbf8ec;border:5px solid #c7643b;border-radius:14px;padding:14px 22px;
+#battle .bt-msg{flex:1;position:relative;background:#fbf8ec;border:5px solid #3e3a32;border-radius:14px;padding:14px 22px;
+  box-shadow:inset 0 0 0 4px #fbf8ec,inset 0 0 0 8px #e08a5f;
   font:700 clamp(18px,2.6vw,30px)/1.55 "Noto Sans TC",sans-serif;cursor:pointer}
 #battle .bt-next{position:absolute;right:18px;bottom:12px;border:9px solid transparent;border-top:12px solid #c7643b;animation:btBob .7s infinite alternate;display:none}
 #battle .bt-msg.wait .bt-next{display:block}
 @keyframes btBob{to{transform:translateY(5px)}}
 #battle .bt-menu{width:min(50%,560px);display:none;grid-template-columns:1fr 1fr;gap:8px;background:#fbf8ec;border:5px solid #5b6fb5;border-radius:14px;padding:10px}
 #battle .bt-menu.on{display:grid}
-#battle .bt-menu button{all:unset;cursor:pointer;border-radius:10px;padding:6px 10px 6px 30px;position:relative;
-  font:900 clamp(15px,2.2vw,25px)/1.25 "Noto Sans TC",sans-serif;display:flex;align-items:center}
-#battle .bt-menu button.on{background:#e3e8ff}
-#battle .bt-menu button.on::before{content:"";position:absolute;left:10px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:10px solid #2b2b33}
-#battle .bt-menu button.danger{color:#b5434a}
+#battle .bt-menu{background:#3e3a32;border-color:#3e3a32}
+#battle .bt-menu button{all:unset;cursor:pointer;border-radius:12px;padding:6px 12px;position:relative;color:#fff;
+  font:900 clamp(15px,2.2vw,25px)/1.2 "Noto Sans TC",sans-serif;display:flex;flex-direction:column;justify-content:center;
+  background:linear-gradient(var(--c1),var(--c2));border:3px solid rgba(0,0,0,.25);text-shadow:0 2px 0 rgba(0,0,0,.3);transition:transform .08s}
+#battle .bt-menu button small{font:800 clamp(11px,1.3vw,14px)/1 "Noto Sans TC",sans-serif;opacity:.95;margin-top:4px;
+  align-self:flex-start;background:rgba(0,0,0,.22);padding:3px 8px;border-radius:999px}
+#battle .bt-menu button.on{transform:scale(1.04);border-color:#fff;box-shadow:0 0 0 3px #ffd46b}
 @media (max-width:640px){
   #battle .bt-bottom{flex-direction:column;height:auto}
   #battle .bt-msg{min-height:84px}
@@ -86,3 +99,13 @@
 #battle.quake .bt-field{animation:btQuake .5s 3}
 @keyframes btQuake{25%{transform:translate(-8px,4px)}50%{transform:translate(8px,-4px)}75%{transform:translate(-6px,-3px)}}
 #battle.gray .bt-field{filter:grayscale(1) brightness(.6);transition:filter 1.6s}
+
+/* 傷害數字、命中閃白 */
+#battle .fx-dmg{position:absolute;transform:translate(-50%,-50%);font:900 clamp(30px,4.5vw,56px)/1 Arial,sans-serif;color:#fff;
+  -webkit-text-stroke:3px #3e3a32;paint-order:stroke fill;animation:fxPop .95s ease-out forwards;z-index:3}
+#battle .fx-dmg.crit{color:#ffd23f;font-size:clamp(40px,6vw,76px)}
+#battle .fx-dmg.heal{color:#7ff09a}
+@keyframes fxPop{0%{transform:translate(-50%,-30%) scale(.4);opacity:0}20%{transform:translate(-50%,-70%) scale(1.25);opacity:1}
+  40%{transform:translate(-50%,-80%) scale(1)}100%{transform:translate(-50%,-150%) scale(1);opacity:0}}
+#battle .fx-flash{position:absolute;inset:0;background:#fff;opacity:.85;animation:fxFlash .18s ease-out forwards;z-index:2}
+@keyframes fxFlash{to{opacity:0}}
