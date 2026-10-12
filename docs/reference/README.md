@@ -39,3 +39,17 @@
 | D3 | 法學院（憩賢樓原址，2025 年啟用） | `law-school` |
 | A14、B14 | 電子計算機中心、資訊大樓 | `computer-center` |
 | F5 | 四維道 | 地形（`src/world/terrain/avenue.js`） |
+
+## Google Earth 截圖（道路參考）
+
+`google-earth/` 是 2026 年 10 月的 Google Earth 截圖，用來對照道路網。注意：照片裡田徑場是紅色跑道，那是舊影像，現在已經換成藍色。
+
+照片看到、已經做進遊戲的道路：
+
+| 道路 | 遊戲裡 |
+| --- | --- |
+| 四維道紅磚段（行政大樓西側到環山一道、法學院） | `SIWEI` 範圍內的紅磚，兩側延伸改成灰色步道 |
+| 醉夢溪北岸沿溪道路（體育館南邊到社資中心） | `CREEK_ROAD`，`terrain/creek-road.js` |
+| 環山一道往南過濟賢橋上山 | `outer-roads.js`、`river.js` |
+| 行政大樓旁車道（校園公車）往南過渡賢橋 | `service-road.js`、`river.js` |
+| 四維堂東側車道（圖書館這一側的停車道） | `service-road.js` |

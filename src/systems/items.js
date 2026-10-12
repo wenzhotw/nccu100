@@ -7,7 +7,7 @@ import { late } from '../core/late.js';
 import { $ } from '../core/dom.js';
 import { AU } from './audio.js';
 import { basic, canvasTex } from '../render/kit.js';
-import { bdZ, swZ } from '../world/layout.js';
+import { CREEK_ROAD, SIWEI, bdZ, swZ } from '../world/layout.js';
 import { FZ } from '../world/terrain/fountain.js';
 import { world } from '../world/registry.js';
 import { registerAction } from '../content/index.js';
@@ -29,14 +29,17 @@ function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined
   const road=(pts,w,col)=>{ g.strokeStyle=col; g.lineWidth=w; g.beginPath(); pts.forEach(([x,z],i)=>i?g.lineTo(mx(x),my(z)):g.moveTo(mx(x),my(z))); g.stroke(); };
   road(RIV,22,'#9cc7c9'); road(RIV,3,'#6f9fa3');
   road([[-160,25],[170,25]],24,'#cdb68d'); road([[-90,bdZ(-90)],[0,bdZ(0)],[94,bdZ(94)]],10,'#d9c49b');
-  road([[-160,swZ(-160)],[170,swZ(170)]],16,'#d79b7b'); road([[0,12],[0,-76]],14,'#d9c49b');
-  road([[-88,15],[-88,-144]],10,'#d9c49b'); road([[23.5,-60],[23.5,-150]],10,'#d9c49b'); road([[96,15],[96,-36]],8,'#d9c49b');
+  road([[-160,swZ(-160)],[170,swZ(170)]],7,'#e6dcc6');   // 四維道兩側延伸的步道
+  road([[SIWEI.x0,swZ(SIWEI.x0)],[SIWEI.x1,swZ(SIWEI.x1)]],16,'#d79b7b'); road([[0,12],[0,-76]],14,'#d9c49b');
+  road(CREEK_ROAD,9,'#d9c49b');   // 沿溪道路
+  road([[-88,15],[-88,-176]],10,'#d9c49b'); road([[23.5,-60],[23.5,-172]],10,'#d9c49b'); road([[-16,-68],[-16,-158]],7,'#d9c49b');
+  road([[96,15],[96,swZ(96)]],8,'#d9c49b');
   const bld=(x,z,w,d,col,name,dy)=>{ g.fillStyle=col; g.strokeStyle='#6b4a2a'; g.lineWidth=3; g.fillRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H); g.strokeRect(mx(x-w/2),my(z+d/2),w/(X1-X0)*W,d/(Z0-Z1)*H);
     if(name){ g.fillStyle='#4a3520'; g.font='700 22px "Noto Sans TC",sans-serif'; g.textAlign='center'; g.fillText(name,mx(x),my(z)+(dy||7)); } };
   // 建築圖示由各建築的 index.js 登記（map 欄位）
   world.mapShapes.forEach(m=>{ if(m.draw) m.draw(g,mx,my); else bld(m.x,m.z,m.w,m.d,m.color,m.label||'',m.dy); });
   g.beginPath(); g.arc(mx(0),my(FZ),9,0,7); g.fillStyle='#9cc7c9'; g.fill(); g.stroke();
-  g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-110),my(-128));
+  g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-175),my(-145));
   g.fillText('四維道',mx(-120),my(swZ(-120))-12);
   const spots=crystals.map(c=>[c,c.mapAt.x,c.mapAt.z]);
   if(state.haveMap) spots.forEach(([c,x,z])=>{ const X=mx(x), Y=my(z);

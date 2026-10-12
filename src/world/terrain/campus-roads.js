@@ -1,11 +1,12 @@
 /**
- * 四維道紅磚帶與八德道。
+ * 四維道紅磚帶（行政大樓到環山一道）、兩側延伸的步道，與八德道。
  */
 import * as THREE from 'three';
 import { scene } from '../../core/engine.js';
 import { GRAD, canvasTex, flat, mk, toon } from '../../render/kit.js';
 import { circC } from '../../core/collision.js';
-import { bdZ, swZ } from '../layout.js';
+import { SIWEI, bdZ, swZ } from '../layout.js';
+import { stoneMat } from '../props.js';
 
 /* ---------- 四維道：四維堂、圖書館、行政大樓前的東西向紅磚帶 ---------- */
 const diaTex=canvasTex(256,256,(g,w,h)=>{ g.fillStyle='#c26a55'; g.fillRect(0,0,w,h);
@@ -13,9 +14,18 @@ const diaTex=canvasTex(256,256,(g,w,h)=>{ g.fillStyle='#c26a55'; g.fillRect(0,0,
   for(let i=0;i<500;i++){ g.fillStyle='rgba(120,50,30,.15)'; g.fillRect(Math.random()*w,Math.random()*h,2,2); }
   g.strokeStyle='#5d5f63'; g.lineWidth=16; g.lineCap='square';
   [[0,0,w,h],[w,0,0,h],[-w,0,w,2*h],[0,-h,2*w,h],[2*w,0,0,2*h],[w,-h,-w,h]].forEach(([x0,y0,x1,y1])=>{ g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke(); }); },[40,4]);
-{ const t=diaTex.clone(); t.repeat.set(48,1.1); t.needsUpdate=true; const g=new THREE.Group(); g.position.set(-20,0,swZ(-20)); g.rotation.y=-Math.atan(0.18); scene.add(g);
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(437,10),new THREE.MeshToonMaterial({map:t,gradientMap:GRAD})); m.rotation.x=-Math.PI/2; m.position.y=0.016; m.receiveShadow=true; g.add(m);
-  [-5.1,5.1].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(437,0.35),toon('#9c5446')); e.rotation.x=-Math.PI/2; e.position.set(0,0.018,dz); g.add(e); }); }
+/** 沿著四維道方向（swZ）鋪一段平面：x 從 x0 到 x1，寬 w */
+function alongSw(x0,x1,w,mat,y,edge){
+  const xc=(x0+x1)/2, len=(x1-x0)*Math.hypot(1,0.18), g=new THREE.Group(); g.position.set(xc,0,swZ(xc)); g.rotation.y=-Math.atan(0.18); scene.add(g);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(len,w),mat); m.rotation.x=-Math.PI/2; m.position.y=y; m.receiveShadow=true; g.add(m);
+  if(edge) [-w/2-0.1,w/2+0.1].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(len,0.35),toon(edge)); e.rotation.x=-Math.PI/2; e.position.set(0,y+0.002,dz); g.add(e); });
+}
+// 紅磚段：行政大樓西側到環山一道（照片上實際的四維道範圍）
+{ const t=diaTex.clone(); t.repeat.set((SIWEI.x1-SIWEI.x0)/9,1.1); t.needsUpdate=true;
+  alongSw(SIWEI.x0,SIWEI.x1,10,new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}),0.016,'#9c5446'); }
+// 紅磚段以外：一般灰色步道，往西接到最西側道路、往東接到指南路轉彎
+alongSw(SIWEI.x1,176,4.6,stoneMat(30,1),0.015,'#9d9c96');
+alongSw(-238,SIWEI.x0,4.6,stoneMat(36,1),0.015,'#9d9c96');
 /* 八德道：校門內東西向車道 */
 function roadSeg(x0,x1,zf,w){ const z0=zf(x0), z1=zf(x1), len=Math.hypot(x1-x0,z1-z0), g=new THREE.Group(); g.position.set((x0+x1)/2,0,(z0+z1)/2); g.rotation.y=-Math.atan2(z1-z0,x1-x0); scene.add(g);
   const r=new THREE.Mesh(new THREE.PlaneGeometry(len,w),toon('#5b6270')); r.rotation.x=-Math.PI/2; r.position.y=0.021; r.receiveShadow=true; g.add(r);
