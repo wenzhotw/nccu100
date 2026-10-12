@@ -5,7 +5,6 @@ import { createServer } from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { replacedBuildings } from '../src/world/photo-district.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -19,7 +18,7 @@ const server = createServer((req, res) => {
 }).listen(0);
 const port = server.address().port;
 
-const buildings = fs.readdirSync(path.join(root, 'src/world/buildings')).filter(f => !replacedBuildings.has(f) && fs.existsSync(path.join(root, 'src/world/buildings', f, 'index.js')));
+const buildings = fs.readdirSync(path.join(root, 'src/world/buildings')).filter(f => fs.existsSync(path.join(root, 'src/world/buildings', f, 'index.js')));
 const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined, args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 640, height: 360 } });
 const errors = [];
@@ -41,7 +40,8 @@ try {
     const group = g.scene.getObjectByName('法學院－教育學院照片街區');
     const issues = [];
     if (!group || group.children.filter(c => c.isInstancedMesh).length !== data.batches.length) issues.push('模型批次不完整');
-    if (g.world.buildings.some(b => ['law-school','swimming-hall'].includes(b.id))) issues.push('舊模型仍啟用');
+    if (!['law-school','swimming-hall'].every(id => g.world.buildings.some(b => b.id === id))) issues.push('法學院或游泳館未使用原模組');
+    if (group.children.some(c => /^(LawCollege|SwimmingPool)_/.test(c.name))) issues.push('街區仍含法學院或游泳館模型');
     if (Math.hypot(g.pos.x+2,g.pos.z-21) > 1) issues.push('原本的校門起點被改動');
     if (group.children.some(c => c.isInstancedMesh && !c.material.isMeshToonMaterial)) issues.push('未使用原網頁卡通材質');
     for (const lot of data.lots) {
@@ -50,8 +50,9 @@ try {
       if (Math.hypot(p.x-lot.entry[0],p.z-lot.entry[1]) > .1) issues.push(lot.name+'入口被碰撞擋住');
       if (!g.world.mapShapes.some(s => s.label === lot.name)) issues.push(lot.name+'缺少地圖標記');
     }
-    const rampHeights = [-106.1,-107,-107.8].map(z => g.heightAt(-132,z));
-    if (!(rampHeights[0] < rampHeights[1] && rampHeights[1] < rampHeights[2])) issues.push('游泳館坡道高度不連續');
+    // 原游泳館模組的入口階梯：由法學院一側往門口逐階升高。
+    const rampHeights = [-115,-116,-117.5].map(z => g.heightAt(-125.4,z));
+    if (!(rampHeights[0] < rampHeights[1] && rampHeights[1] < rampHeights[2])) issues.push('游泳館階梯高度不連續');
     return {issues, rampHeights, batches:group?.children.filter(c=>c.isInstancedMesh).length};
   }, district);
   errors.push(...districtChecks.issues);

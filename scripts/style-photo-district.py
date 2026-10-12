@@ -1,12 +1,32 @@
-"""將 Godot 匯出的照片街區簡化成原網頁的低多邊形植栽；可重複執行。"""
+"""將 Godot 匯出的照片街區整理成網頁版：移除改用原模組的建築，並簡化成原網頁的低多邊形植栽；可重複執行。"""
 import json
 from pathlib import Path
 
 path = Path(__file__).resolve().parents[1] / 'src/world/buildings/law-education-route/district.json'
 data = json.loads(path.read_text(encoding='utf-8'))
+# 法學院、游泳館改用原本的 law-school、swimming-hall 模組，街區不再重複提供。
+# 原模組位置上的磚鋪前庭與鳳凰林會被建築蓋住，一併移除。
+UPSTREAM_GROUPS = ('LawCollege', 'SwimmingPool')
+UPSTREAM_LOTS = ('法學院', '游泳館', '鳳凰林')
+UPSTREAM_AREAS = [(-146, -84, -109, -64.5), (-146, -99, -133, -100)]
+GROUND = ('lawn', 'road', 'paving')
+def in_upstream(x, z):
+    return any(x0 <= x <= x1 and z0 <= z <= z1 for x0, x1, z0, z1 in UPSTREAM_AREAS)
+
+data['groups'] = [g for g in data['groups'] if g not in UPSTREAM_GROUPS]
+data['lots'] = [l for l in data['lots'] if l['name'] not in UPSTREAM_LOTS]
+data['labels'] = [l for l in data['labels'] if not in_upstream(l['matrix'][12], l['matrix'][14])]
+data['ramps'] = [r for r in data['ramps'] if not in_upstream(r['matrix'][12], r['matrix'][14])]
+data['colliders'] = [c for c in data['colliders'] if not in_upstream((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2)]
+
 batches = []
 canopies = []
 for batch in data['batches']:
+    group, surface = batch['name'].split('_')[:2]
+    if group in UPSTREAM_GROUPS:
+        continue
+    if group == 'LawEducationWalk' and surface not in GROUND:
+        batch['matrices'] = [m for m in batch['matrices'] if not in_upstream(m[12], m[14])]
     if batch['kind'] == 'quad' or batch['name'] == 'LawEducationWalk_leaf_sphere':
         continue
     batch.pop('texture', None)
