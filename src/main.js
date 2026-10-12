@@ -41,6 +41,7 @@ import './actors/npc.js';
 import './systems/items.js';
 import './systems/pangolin-grab.js';
 import './systems/missionaries/index.js'; // 學生傳教士與寶可夢式戰鬥
+import './systems/old-principal/index.js'; // 老校長：騎馬、歷史問答、精神堡壘任務信函
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';
