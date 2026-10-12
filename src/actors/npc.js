@@ -85,6 +85,7 @@ function addNPC(o){
   n.g.position.set(o.home.x,0,o.home.z); n.g.rotation.y=o.face||0;
   if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=1.62; n.g.add(n.tag); }
   n.sp=speech(); n.sp.position.y=o.tag?2.12:1.8; n.g.add(n.sp);
+  if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.indoorNPC?indoor():!indoor()),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
   spots.push(n.spot); NPCS.push(n); return n;
@@ -120,6 +121,7 @@ function npcUpdate(n,dt){
   else if(n.sayT<=0){ if(n.shout&&sameSide&&dP<26&&dP>3.6){ n.si=(n.si+1)%n.shout.length; n.sp.say(n.shout[n.si]); n.sayT=2.6; } else { n.sp.say(''); n.sayT=1; } }
   if(n.tag) n.tag.visible=sameSide&&dP<24&&dP>2.6;
   if(!panic&&n.shout&&dP<=3.6&&n.sp.visible&&n.state!=='chase') n.sp.say('');
+  if(!panic&&n.bubble){ n.sp.say(sameSide&&dP<40&&dlg.hidden?n.bubble:''); }   // 一直掛在頭上的對話泡泡（npcs.json 的 bubble）
   n.spot.x=p.x; n.spot.z=p.z;
   if(n.after) n.after(n,dt);   // 特殊 NPC 自己的動作（例如老校長騎馬），蓋過上面的預設動畫
   if(n.umbrella&&n.umbrella.visible) n.P.shR.rotation.set(-0.15,0,2.55);   // 下雨撐傘：右手舉起來（傘由 systems/weather 掛上）

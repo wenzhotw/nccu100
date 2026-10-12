@@ -33,6 +33,7 @@
 | `wave` |  | `true` 會一直揮手 |
 | `look` |  | 外觀：`top` 上衣、`pants` 褲子、`hair` 頭髮顏色，`suit` 西裝、`tie` 領帶顏色、`glasses` 眼鏡顏色、`hairStyle`（`side`、`bowl`、`short`）、`cap` 帽子、`hood` 帽T、`flyer` 拿傳單… |
 | `shout` |  | 玩家靠近時頭上輪流冒出的話 |
+| `bubble` |  | 一直掛在頭上的對話泡泡（40 公尺內都看得到，對話時收起來） |
 | `dialog` | ✓ | 對話，見下方 |
 
 `students` 是路上的同學：`lines` 台詞、`colors` 衣服顏色、`paths` 走路路線（`colors` 和 `paths` 數量要一樣）。
