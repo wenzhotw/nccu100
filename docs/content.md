@@ -93,3 +93,15 @@
 `inside: true` 表示放在四維堂室內（x 是相對室內中心），`mapAt` 是它在地圖上要標示的位置。
 
 新增故事後，總數 `{total}` 會自動變多；台詞裡寫死的「三個」記得一起改。
+
+## missionaries.json：學生傳教士與寶可夢式戰鬥
+
+- `pair`：兩位傳教士的位置、巡邏路線、外觀（格式同 NPC）
+- `greeting`、`choices`、`replies`：搭話、三個選項、選完之後的回應
+- `saved`：選「願意接受」之後的結局畫面
+- `battle`：戰鬥設定
+  - `enemy`、`player`：名字、等級、HP
+  - `playerMoves`、`enemyMoves`：招式。`power` 傷害範圍、`accuracy` 命中率（0～1）、`heal` 回復量、`run: true` 逃跑、`gameOver: true` 直接結束遊戲、`fx` 特效（rain 水柱、sand 沙塵暴、holy 聖光、sword 寶劍、heal 回血光點、flee 逃跑、politics 畫面變灰）
+  - `messages`：沒打中、會心一擊、勝利、倒下、結局的文字
+
+戰鬥引擎在 `src/systems/battle/`，可以給其他 NPC 重複使用：準備一份同樣格式的 `battle` 設定，呼叫 `startBattle(設定)` 就好。
