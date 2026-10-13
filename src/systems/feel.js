@@ -71,12 +71,13 @@ function drawMini(dt){
   mg.fillStyle='#f3e6c6'; mg.fillRect(0,0,W,W);
   if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.name)||'室內',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText('室內',W/2,W/2+30); mg.restore(); return; }
   drawCachedMap(miniBase);
-  const R=36, cx=(pos.x-MX0)*kx, cy=(MZ0-pos.z)*kz;
+  // 地圖是西在左（x 越大越左邊），所以裁切位置用 MX1 - x；箭頭和視角扇形的轉向也要反過來
+  const R=36, cx=(MX1-pos.x)*kx, cy=(MZ0-pos.z)*kz;
   mg.drawImage(miniBase,cx-R*kx,cy-R*kz,2*R*kx,2*R*kz,0,0,W,W);
   mg.translate(W/2,W/2);
-  mg.save(); mg.rotate(state.yaw+Math.PI); const cg=mg.createRadialGradient(0,0,0,0,0,W*0.42); cg.addColorStop(0,'rgba(89,168,255,.45)'); cg.addColorStop(1,'rgba(89,168,255,0)');
+  mg.save(); mg.rotate(-(state.yaw+Math.PI)); const cg=mg.createRadialGradient(0,0,0,0,0,W*0.42); cg.addColorStop(0,'rgba(89,168,255,.45)'); cg.addColorStop(1,'rgba(89,168,255,0)');
   mg.fillStyle=cg; mg.beginPath(); mg.moveTo(0,0); mg.arc(0,0,W*0.42,-Math.PI/2-0.6,-Math.PI/2+0.6); mg.closePath(); mg.fill(); mg.restore();
-  mg.rotate(state.driving?state.carYaw:player.rotation.y);
+  mg.rotate(-(state.driving?state.carYaw:player.rotation.y));
   mg.fillStyle='#ff6a57'; mg.strokeStyle='#fff'; mg.lineWidth=5; mg.beginPath(); mg.moveTo(0,-20); mg.lineTo(14,14); mg.lineTo(0,6); mg.lineTo(-14,14); mg.closePath(); mg.stroke(); mg.fill();
   mg.restore();
 }
