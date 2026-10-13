@@ -3,6 +3,9 @@
  *   爛透了 → 戰鬥，他一招「破壞死光」把你轟掉 →「有意見的話，來直接找我吧。」→ 可以開他的 Instagram
  *   超好玩 → 告訴你去操場、游泳池看看 → 可以開他的 Instagram
  * 台詞與戰鬥設定在 src/content/wenz.json。
+ *
+ * talk() 有 export：變雄鷹把 Wenz 搬去四維堂頂樓後（systems/eagle），抓到他一樣要能
+ * 問這個「好玩嗎」的問題、連到 Instagram，兩邊共用同一套問答，不要各寫一份。
  */
 import { NPCS } from '../../actors/npc.js';
 import { openDialog } from '../../ui/dialog.js';
@@ -40,3 +43,5 @@ if (wenz) wenz.spot.fn = talk;
 if (import.meta.env.DEV || new URLSearchParams(location.search).has('debug')) {
   window.__wenz = { talk, angry };
 }
+
+export { talk };
