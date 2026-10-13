@@ -9,6 +9,10 @@
  * 跟他對話；屋頂本身設了 heightAt（world/buildings/siwei-hall/index.js）跟碰撞 top
  * 高度豁免（exterior.js 的 boxC），真的可以站上去、不會破圖掉下去。
  *
+ * 第一次追到他、看完「真的被你追到屋頂了」那段話之後，接原本地面上「這個遊戲好玩嗎？」
+ * 那組問答（systems/wenz，talk()，可以連到 Instagram），之後他不會再躲、可以一直找他
+ * 重新問一次、重新開一次 Instagram。
+ *
  * 台詞在 src/content/eagle.json。
  */
 import { state } from '../../core/state.js';
@@ -18,6 +22,7 @@ import { becomeEagle } from '../../actors/player.js';
 import { transition, pos } from '../../core/gameplay.js';
 import { openDialog, toast } from '../../ui/dialog.js';
 import { openChoice } from '../../ui/choice.js';
+import { talk } from '../wenz/index.js';
 import E from '../../content/eagle.json';
 
 const principal = NPCS.find(n => n.id === 'principal');
@@ -53,10 +58,15 @@ function moveWenzToRoof() {
   wenz.g.position.set(wenz.home.x, ROOF.y, wenz.home.z);
   wenz.bubble = null;   // 地面那句「這個遊戲好玩嗎？」是一直掛著的泡泡，蓋過 shout，不清掉的話屋頂上永遠喊不出新台詞
   wenz.shout = E.roof.shout;
-  wenz.spot.label = E.roof.catchLabel;
   wenz.spot.r = 2.2;
-  wenz.spot.ok = () => state.isEagle && !caught && pos.y > ROOF.minY;
-  wenz.spot.fn = () => { caught = true; openDialog(E.roof.title, E.roof.caught); };
+  wenz.spot.ok = () => state.isEagle && pos.y > ROOF.minY;
+  wenz.spot.label = E.roof.catchLabel;
+  wenz.spot.fn = () => {
+    if (caught) { talk(); return; }   // 已經追到過一次了：不用再演一次「被你追到了」，直接問好不好玩
+    caught = true;
+    wenz.spot.label = '交談';   // 之後他不會再跑，跟地面上一般 NPC 一樣用「交談」
+    openDialog(E.roof.title, E.roof.caught, talk);
+  };
   wenz.after = (n, dt) => {
     const p = n.g.position; p.y = ROOF.y;
     if (!caught && pos.y > ROOF.minY) {
