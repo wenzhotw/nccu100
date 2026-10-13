@@ -9,6 +9,7 @@ export function createMapCache({ createCanvas, drawBase, drawDetails }) {
   let savedShapes = [], savedCrystals = [];
   let mapRevision, fontRevision, haveMap;
   let baseRedraws = 0, compositeRedraws = 0;
+  const invalidations = { initial: 0, size: 0, map: 0, font: 0, shapes: 0 };
 
   function sameShapes(shapes) {
     if (shapes !== shapesRef || shapes.length !== savedShapes.length) return false;
@@ -28,12 +29,22 @@ export function createMapCache({ createCanvas, drawBase, drawDetails }) {
 
   function update(canvas, input) {
     const { shapes, crystals } = input;
-    const baseDirty = !base || base.width !== canvas.width || base.height !== canvas.height ||
-      mapRevision !== input.mapRevision || fontRevision !== input.fontRevision || !sameShapes(shapes);
+    const initial = !base;
+    const sizeChanged = !initial && (base.width !== canvas.width || base.height !== canvas.height);
+    const mapChanged = !initial && mapRevision !== input.mapRevision;
+    const fontChanged = !initial && fontRevision !== input.fontRevision;
+    const shapesChanged = !initial && !sameShapes(shapes);
+    const baseDirty = initial || sizeChanged || mapChanged || fontChanged || shapesChanged;
     const detailsDirty = baseDirty || target !== canvas || haveMap !== input.haveMap || !sameCrystals(crystals);
     if (!detailsDirty) return false;
 
     if (baseDirty) {
+      // 同一次重畫可能有多個原因；保留各自計數，避免把字型載入誤認為移動失效。
+      if (initial) invalidations.initial++;
+      if (sizeChanged) invalidations.size++;
+      if (mapChanged) invalidations.map++;
+      if (fontChanged) invalidations.font++;
+      if (shapesChanged) invalidations.shapes++;
       if (!base) base = createCanvas();
       if (base.width !== canvas.width) base.width = canvas.width;
       if (base.height !== canvas.height) base.height = canvas.height;
@@ -55,7 +66,8 @@ export function createMapCache({ createCanvas, drawBase, drawDetails }) {
   }
 
   function stats() {
-    return { baseRedraws, compositeRedraws, width: base?.width || 0, height: base?.height || 0 };
+    return { baseRedraws, compositeRedraws, width: base?.width || 0, height: base?.height || 0,
+      fontRevision, invalidations: { ...invalidations } };
   }
   return { update, stats };
 }

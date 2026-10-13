@@ -42,18 +42,64 @@ async function waitMiniMap() {
 }
 const miniMapImage = () => page.locator('#minic').evaluate(cv => cv.toDataURL());
 
-async function checkCachedMapAndPrompts() {
-  // 字型載入完成也會使底圖失效，先等它完成再檢查靜止時的快取。
-  await page.waitForFunction(() => !document.fonts || document.fonts.status === 'loaded', null, { timeout: 60000 });
+// 新顯示的文字仍可能要求新的網路字型子集；先讓版面與目前載入完成，
+// 再等小地圖消化最後一次字型失效，不能只檢查某一瞬間的 fonts.status。
+async function settleMapFonts() {
+  await page.waitForFunction(async () => {
+    document.body.getBoundingClientRect();
+    if (document.fonts) await document.fonts.ready;
+    return true;
+  }, null, { timeout: 60000 });
   await waitGameTime();
+  await page.waitForFunction(() => {
+    const stats = window.__game.miniMapCacheStats();
+    return (!document.fonts || document.fonts.status === 'loaded') &&
+      stats.fontRevision === stats.pendingFontRevision;
+  }, null, { timeout: 60000 });
+}
+
+async function checkCachedMapAndPrompts() {
+  const haveMap = await page.evaluate(() => window.__game.state.haveMap);
+  const viewport = page.viewportSize();
+  const origin = await page.evaluate(() => ({ x: window.__game.pos.x, z: window.__game.pos.z }));
+  await settleMapFonts();
+  const warmupStart = await page.evaluate(() => window.__game.miniMapCacheStats());
+  // 預先顯示之後會測到的地圖、入口文字與兩種尺寸；正式斷言仍要求精確重畫次數。
+  // 不停用網路字型或失效監聽，也不把「多重畫幾次」當成通過。
+  try {
+    await page.evaluate(() => { window.__game.state.haveMap = true; });
+    await page.setViewportSize({ width: viewport.width, height: 720 });
+    await page.keyboard.press('m');
+    await page.locator('#mapw').waitFor({ state: 'visible' });
+    await settleMapFonts();
+    await page.keyboard.press('Escape');
+    await page.locator('#mapw').waitFor({ state: 'hidden' });
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => {
+      const g = window.__game, door = g.spots.find(s => s.id === 'siwei-hall-enter');
+      g.teleport(door.x, door.z);
+    });
+    await page.waitForFunction(() => window.__game.state.near?.id === 'siwei-hall-enter', null, { timeout: 60000 });
+    await settleMapFonts();
+  } finally {
+    await page.keyboard.press('Escape');
+    await page.evaluate(({ haveMap, origin }) => {
+      window.__game.state.haveMap = haveMap;
+      window.__game.teleport(origin.x, origin.z);
+    }, { haveMap, origin });
+    await page.setViewportSize(viewport);
+  }
+  await page.waitForFunction(() => !window.__game.state.near && document.getElementById('act').hidden,
+    null, { timeout: 60000 });
+  await settleMapFonts();
+  const warmupEnd = await page.evaluate(() => window.__game.miniMapCacheStats());
+  console.log('字型預熱診斷：', JSON.stringify({ before: warmupStart, after: warmupEnd }));
   const before = await page.evaluate(() => window.__game.miniMapCacheStats());
   await waitGameTime(1.6);
   const after = await page.evaluate(() => window.__game.miniMapCacheStats());
   if (before.baseRedraws < 1 || before.compositeRedraws < 1) errors.push('小地圖快取未建立');
   if (after.baseRedraws !== before.baseRedraws || after.compositeRedraws !== before.compositeRedraws) errors.push('靜止時仍重畫小地圖底圖或標記');
 
-  const haveMap = await page.evaluate(() => window.__game.state.haveMap);
-  const viewport = page.viewportSize();
   try {
     await page.evaluate(value => { window.__game.state.haveMap = !value; }, haveMap);
     await waitGameTime();
@@ -82,7 +128,6 @@ async function checkCachedMapAndPrompts() {
   if (restored.baseRedraws !== after.baseRedraws || restored.compositeRedraws !== after.compositeRedraws + 2) errors.push('還原地圖持有狀態未更新小地圖標記');
 
   const outdoorMini = await miniMapImage();
-  const origin = await page.evaluate(() => ({ x: window.__game.pos.x, z: window.__game.pos.z }));
   await page.evaluate(() => {
     const g = window.__game, door = g.spots.find(s => s.id === 'siwei-hall-enter');
     g.teleport(door.x, door.z);
@@ -115,7 +160,25 @@ async function checkCachedMapAndPrompts() {
     null, { timeout: 60000 });
   const moved = await page.evaluate(() => window.__game.miniMapCacheStats());
   if (moved.baseRedraws !== restored.baseRedraws || moved.compositeRedraws !== restored.compositeRedraws) errors.push('玩家移動使小地圖底圖快取失效');
-  console.log('介面檢查：小地圖快取、持有狀態、移動視野、地圖重開與互動提示');
+  console.log('快取嚴格斷言診斷：', JSON.stringify({ before, after, restored, moved }));
+  // 刻意在快取已穩定後送出晚到的字型事件，驗證真的重畫一次，之後仍可重用。
+  // 這裡驗證事件連線；真實網路字型載入保留在上面的預熱及整場冒煙流程中。
+  for (const type of ['loadingdone', 'loadingerror']) {
+    const prior = await page.evaluate(() => window.__game.miniMapCacheStats());
+    await page.evaluate(type => document.fonts.dispatchEvent(new Event(type)), type);
+    await waitGameTime();
+    const updated = await page.evaluate(() => window.__game.miniMapCacheStats());
+    if (updated.baseRedraws !== prior.baseRedraws + 1 || updated.compositeRedraws !== prior.compositeRedraws + 1 ||
+        updated.invalidations.font !== prior.invalidations.font + 1 || updated.fontRevision !== prior.fontRevision + 1) {
+      errors.push(`字型 ${type} 未使小地圖快取精確重畫一次：${JSON.stringify({ prior, updated })}`);
+    }
+    await waitGameTime();
+    const stable = await page.evaluate(() => window.__game.miniMapCacheStats());
+    if (stable.baseRedraws !== updated.baseRedraws || stable.compositeRedraws !== updated.compositeRedraws) {
+      errors.push(`字型 ${type} 更新後小地圖快取未恢復穩定`);
+    }
+  }
+  console.log('介面檢查：小地圖快取、持有狀態、移動視野、地圖重開、互動提示與晚到字型事件');
 }
 
 async function checkPerformance() {
