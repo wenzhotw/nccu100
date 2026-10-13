@@ -9,6 +9,8 @@ import { replacedBuildings } from '../src/world/photo-district.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
+const { version } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const titleVersion = `v${version.replace(/\.0$/, '')}`;
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.mp3': 'audio/mpeg' };
 const server = createServer((req, res) => {
   let p = path.join(dist, decodeURIComponent(req.url.split('?')[0]));
@@ -25,10 +27,162 @@ const page = await browser.newPage({ viewport: { width: 640, height: 360 } });
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
 page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
+
+// 依遊戲真正更新的時間等待，不要求測試機達到某個 FPS。
+async function waitGameTime(seconds = 0.15) {
+  const start = await page.evaluate(() => window.__game.state.time);
+  await page.waitForFunction(({ start, seconds }) => window.__game.state.time >= start + seconds,
+    { start, seconds }, { timeout: 120000 });
+}
+async function waitMiniMap() {
+  await page.waitForFunction(() => {
+    const cv = document.getElementById('minic');
+    return cv && cv.getContext('2d').getImageData(128, 128, 1, 1).data[3] > 0;
+  }, null, { timeout: 60000 });
+}
+const miniMapImage = () => page.locator('#minic').evaluate(cv => cv.toDataURL());
+
+async function checkCachedMapAndPrompts() {
+  // 字型載入完成也會使底圖失效，先等它完成再檢查靜止時的快取。
+  await page.waitForFunction(() => !document.fonts || document.fonts.status === 'loaded', null, { timeout: 60000 });
+  await waitGameTime();
+  const before = await page.evaluate(() => window.__game.miniMapCacheStats());
+  await waitGameTime(1.6);
+  const after = await page.evaluate(() => window.__game.miniMapCacheStats());
+  if (before.baseRedraws < 1 || before.compositeRedraws < 1) errors.push('小地圖快取未建立');
+  if (after.baseRedraws !== before.baseRedraws || after.compositeRedraws !== before.compositeRedraws) errors.push('靜止時仍重畫小地圖底圖或標記');
+
+  const haveMap = await page.evaluate(() => window.__game.state.haveMap);
+  const viewport = page.viewportSize();
+  try {
+    await page.evaluate(value => { window.__game.state.haveMap = !value; }, haveMap);
+    await waitGameTime();
+    const changed = await page.evaluate(() => window.__game.miniMapCacheStats());
+    if (changed.baseRedraws !== after.baseRedraws || changed.compositeRedraws !== after.compositeRedraws + 1) errors.push('地圖持有狀態未只更新小地圖標記');
+    if (!haveMap) {
+      // 完整地圖比低解析度的 360 px 測試視窗高，讓關閉按鈕也能實際點擊。
+      await page.setViewportSize({ width: viewport.width, height: 720 });
+      await page.keyboard.press('m');
+      await page.locator('#mapw').waitFor({ state: 'visible' });
+      const painted = await page.locator('#mapc').evaluate(cv => cv.getContext('2d').getImageData(10, 10, 1, 1).data[3] > 0);
+      if (!painted) errors.push('完整地圖未繪製');
+      await page.keyboard.press('Escape');
+      await page.locator('#mapw').waitFor({ state: 'hidden' });
+      await page.keyboard.press('m');
+      await page.locator('#mapw').waitFor({ state: 'visible' });
+      await page.click('#mapClose');
+      await page.locator('#mapw').waitFor({ state: 'hidden' });
+    }
+  } finally {
+    await page.evaluate(value => { window.__game.state.haveMap = value; }, haveMap);
+    await page.setViewportSize(viewport);
+  }
+  await waitGameTime();
+  const restored = await page.evaluate(() => window.__game.miniMapCacheStats());
+  if (restored.baseRedraws !== after.baseRedraws || restored.compositeRedraws !== after.compositeRedraws + 2) errors.push('還原地圖持有狀態未更新小地圖標記');
+
+  const outdoorMini = await miniMapImage();
+  const origin = await page.evaluate(() => ({ x: window.__game.pos.x, z: window.__game.pos.z }));
+  await page.evaluate(() => {
+    const g = window.__game, door = g.spots.find(s => s.id === 'siwei-hall-enter');
+    g.teleport(door.x, door.z);
+  });
+  await page.waitForFunction(() => window.__game.state.near?.id === 'siwei-hall-enter', null, { timeout: 60000 });
+  await waitGameTime();
+  if (await miniMapImage() === outdoorMini) errors.push('移動後小地圖沒有更新視野');
+  const prompt = await page.evaluate(() => {
+    const g = window.__game;
+    return { hidden: document.getElementById('act').hidden, label: document.getElementById('actText').textContent, expected: g.state.near.label };
+  });
+  if (prompt.hidden || prompt.label !== prompt.expected || !await page.locator('#act').isVisible()) errors.push('建築入口互動提示未顯示正確文字');
+  const rewrites = await page.evaluate(async () => {
+    const button = document.getElementById('act'), label = document.getElementById('actText');
+    let writes = 0;
+    const observer = new MutationObserver(records => { writes += records.length; });
+    observer.observe(button, { attributes: true, attributeFilter: ['hidden'] });
+    observer.observe(label, { childList: true, characterData: true, subtree: true });
+    await new Promise(resolve => {
+      let frames = 0;
+      const tick = () => { if (++frames >= 5) resolve(); else requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    });
+    observer.disconnect();
+    return writes;
+  });
+  if (rewrites) errors.push('互動目標未改變時仍重寫提示文字或顯示狀態');
+  await page.evaluate(({ x, z }) => window.__game.teleport(x, z), origin);
+  await page.waitForFunction(() => !window.__game.state.near && document.getElementById('act').hidden && document.getElementById('act2').hidden,
+    null, { timeout: 60000 });
+  const moved = await page.evaluate(() => window.__game.miniMapCacheStats());
+  if (moved.baseRedraws !== restored.baseRedraws || moved.compositeRedraws !== restored.compositeRedraws) errors.push('玩家移動使小地圖底圖快取失效');
+  console.log('介面檢查：小地圖快取、持有狀態、移動視野、地圖重開與互動提示');
+}
+
+async function checkPerformance() {
+  await page.bringToFront();
+  await page.goto(`http://localhost:${port}/?perf`, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__game?.perf?.snapshot()?.sampleCount >= 3, null, { timeout: 60000 });
+  await page.locator('#performance').waitFor({ state: 'visible' });
+  const snapshot = await page.evaluate(() => window.__game.perf.snapshot());
+  const numeric = ['sampleCount', 'windowFrames', 'p50Ms', 'p95Ms', 'longFrames', 'rawFrameMs', 'renderCalls', 'triangles', 'pixelRatio'];
+  for (const key of numeric) if (!Number.isFinite(snapshot[key]) || snapshot[key] < 0) errors.push(`效能快照缺少有效數值：${key}`);
+  if (snapshot.sampleCount < 3 || snapshot.windowFrames < 1 || snapshot.windowFrames > snapshot.sampleCount || snapshot.windowFrames > snapshot.windowCapacity) errors.push('效能樣本計數不正確');
+  if (snapshot.p95Ms < snapshot.p50Ms || snapshot.rawFrameMs <= 0 || snapshot.pixelRatio <= 0 || snapshot.longFrames > snapshot.sampleCount) errors.push('效能快照的時間或長幀計數不正確');
+  if (typeof snapshot.bloom !== 'boolean' || typeof snapshot.postProcessing !== 'boolean') errors.push('效能快照缺少畫質狀態');
+  if (snapshot.renderCalls < 1 || snapshot.triangles < 1) errors.push('效能快照未量到渲染內容');
+  // WebGL1 不走後製；WebGL2 必須計入場景與所有 pass，不能只剩最後一張 quad。
+  if (snapshot.postProcessing && snapshot.renderCalls <= 1) errors.push('後製渲染計數只包含最後一個 pass');
+  if (!snapshot.postProcessing) console.log('效能檢查：目前未使用後製，略過後製全幀計數斷言');
+  const report = await page.locator('#performance').textContent();
+  if (!/Frame ms p50/.test(report) || !/Calls/.test(report) || !/triangles/.test(report)) errors.push('效能面板未顯示量測報表');
+  await page.screenshot({ path: path.join(root, 'test-results/performance-diagnostics.png') });
+
+  const disabled = await page.evaluate(() => {
+    const perf = window.__game.perf;
+    perf.enabled = false;
+    return !perf.enabled && perf.snapshot() === null && document.getElementById('performance').hidden;
+  });
+  if (!disabled) errors.push('關閉效能量測後未清除樣本或隱藏面板');
+  await waitGameTime();
+  if (!await page.evaluate(() => !window.__game.perf.enabled && window.__game.perf.snapshot() === null)) errors.push('關閉效能量測後仍累積樣本');
+  if (await page.locator('#performance').isVisible()) errors.push('關閉效能量測後面板再次出現');
+  const enabledCleanly = await page.evaluate(() => {
+    const perf = window.__game.perf;
+    perf.enabled = true;
+    return perf.enabled && perf.snapshot() === null;
+  });
+  if (!enabledCleanly) errors.push('重新開啟效能量測未從空樣本開始');
+  await page.waitForFunction(() => window.__game.perf.snapshot()?.sampleCount >= 3, null, { timeout: 60000 });
+  await page.locator('#performance').waitFor({ state: 'visible' });
+  const count = await page.evaluate(() => window.__game.perf.snapshot().sampleCount);
+  await page.waitForFunction(count => window.__game.perf.snapshot()?.sampleCount > count, count, { timeout: 60000 });
+  const reset = await page.evaluate(() => {
+    const perf = window.__game.perf;
+    perf.reset();
+    return perf.enabled && perf.snapshot() === null;
+  });
+  if (!reset) errors.push('效能 reset 未清除量測或改變了啟用狀態');
+  await page.waitForFunction(() => window.__game.perf.snapshot()?.sampleCount >= 2, null, { timeout: 60000 });
+  console.log('效能檢查：快照、全幀渲染計數、關閉、重開、重設；不以 CI 幀率判定硬體效能');
+}
+
 let ok = false;
 try {
+  fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
+  await page.goto(`http://localhost:${port}/`, { waitUntil: 'domcontentloaded' });
+  await waitMiniMap();
+  const displayedVersion = (await page.locator('#intro .ver').textContent()).trim();
+  if (displayedVersion !== titleVersion) errors.push(`首頁版本 ${displayedVersion} 與 package.json ${version} 不符`);
+  await page.setViewportSize({ width: 1100, height: 720 });
+  await page.screenshot({ path: path.join(root, 'test-results/start-screen-version.png') });
+  await page.setViewportSize({ width: 640, height: 360 });
+  if (await page.evaluate(() => typeof window.__game !== 'undefined')) errors.push('正式版預設開啟了除錯工具');
+  if (await page.locator('#performance').count()) errors.push('正式版預設建立了效能面板');
   await page.goto(`http://localhost:${port}/?debug`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__game, null, { timeout: 60000 });
+  await waitGameTime();
+  if (!await page.evaluate(() => window.__game.perf?.enabled === false && window.__game.perf.snapshot() === null)) errors.push('?debug 預設啟用了效能量測');
+  if (await page.locator('#performance').count()) errors.push('?debug 預設建立了效能面板');
   const loaded = await page.evaluate(() => window.__game.world.buildings.map(b => b.id));
   const missing = buildings.filter(b => !loaded.includes(b));
   if (missing.length) errors.push('沒有載入的建築：' + missing.join(', '));
@@ -53,15 +207,22 @@ try {
   });
   errors.push(...districtChecks.issues);
   console.log('街區檢查：', JSON.stringify(districtChecks));
+  await checkCachedMapAndPrompts();
   // 每個室內房間：走進去、確認換到房間、走出來
   const roomIds = await page.evaluate(() => Object.values(window.__game.rooms).filter(r => r.def).map(r => r.id));
   for (const id of roomIds) {
+    const outdoorMini = await miniMapImage();
     await page.evaluate(id => window.__game.enterRoom(id), id);
     await page.waitForFunction(id => window.__game.state.room === id && !window.__game.state.busy, id, { timeout: 60000 });
     const inside = await page.evaluate(() => ({ zone: window.__game.zoneOf(window.__game.pos), meshes: Object.values(window.__game.rooms).find(r => r.id === window.__game.state.room).scene.children.length }));
     if (inside.meshes < 3) errors.push(id + ' 房間是空的');
+    await waitGameTime();
+    const indoorMini = await miniMapImage();
+    if (indoorMini === outdoorMini) errors.push(id + ' 進入室內後小地圖未更新');
     await page.evaluate(() => window.__game.exitRoom());
     await page.waitForFunction(() => window.__game.state.room === null && !window.__game.state.busy, null, { timeout: 60000 });
+    await waitGameTime();
+    if (await miniMapImage() === indoorMini) errors.push(id + ' 離開室內後小地圖未恢復');
     console.log('房間：', id, inside.zone);
   }
   fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
@@ -91,6 +252,7 @@ try {
   const zone = await page.evaluate(() => window.__game.zoneOf(window.__game.pos));
   console.log('已載入建築：', loaded.join(', '));
   console.log('起點區域：', zone);
+  await checkPerformance();
   ok = errors.length === 0;
 } catch (e) { errors.push(String(e)); }
 await browser.close();

@@ -6,7 +6,10 @@ import { state } from './state.js';
 import { $ } from './dom.js';
 import { camera, renderer, scene } from './engine.js';
 import { AU } from '../systems/audio.js';
-import { POST, qualityTick } from '../render/post.js';
+import { POST, qualityTick, resetQualityMeasurement } from '../render/post.js';
+import { createFrameTiming } from './frame-timing.js';
+import { performanceMonitor } from '../ui/performance.js';
+import { updateInteraction } from '../ui/interaction.js';
 import { resolve } from './collision.js';
 import { SUN, clouds, sky, sun } from '../world/environment/sky.js';
 import { waterU } from '../render/water.js';
@@ -32,7 +35,8 @@ import { cameraFov, drawMini, heroJuice, placePrompt, puff, updatePuffs } from '
 /* ---------- 標題畫面環繞鏡頭 ---------- */
 function titleCamera(t){ const a=t*0.07+0.6; camera.position.set(Math.sin(a)*58,22+Math.sin(t*0.13)*3,-38+Math.cos(a)*58); camera.lookAt(0,7,-48); }
 state.time=0;
-const clock=new THREE.Clock();
+const clock=new THREE.Clock(), frameTiming=createFrameTiming();
+const act=$('act'), actText=$('actText'), act2=$('act2'), act2Text=$('act2Text');
 function update(dt){
   state.time+=dt; grassU.value=state.time; waterU.t.value=state.time;
   const mapOpen=!$('mapw').hidden; if(mapOpen){ keys.KeyW=keys.KeyA=keys.KeyS=keys.KeyD=false; }
@@ -84,9 +88,9 @@ function update(dt){
   if(state.driving){ if(dlg.hidden&&!state.busy) state.near={label:'下車',fn:exitCar}; }
   else if(state.started&&dlg.hidden&&!state.busy) spots.forEach(s=>{ if((s.room||null)!==(state.room||null)||!s.ok()) return;   // 互動點只在它所在的場景有效（s.room，戶外是 null）
      const d=Math.hypot(pos.x-s.x,pos.z-s.z); if(d<s.r&&d<best){ best=d; state.near=s; } });
-  if(state.near){ $('actText').textContent=state.near.label; $('act').hidden=false; } else $('act').hidden=true;
-  if(state.near&&state.near.alt){ $('act2Text').textContent=state.near.alt.label; $('act2').hidden=false; } else $('act2').hidden=true;
-  updatePuffs(dt); drawMini(dt); qualityTick(dt);
+  updateInteraction(act,actText,state.near);
+  updateInteraction(act2,act2Text,state.near&&state.near.alt);
+  updatePuffs(dt); drawMini(dt);
 
   const z=zoneOf(pos); if(z!==state.zone){ const first=state.zone===''; state.zone=z; $('locname').textContent=z; if(state.started&&!first){ banner(z); AU.sfx('chime'); } }
 
@@ -120,7 +124,21 @@ function update(dt){
   placePrompt();
 }
 // 畫目前所在的場景：戶外是校園，室內是那個房間自己的場景（core/rooms.js）
-function loop(){ update(Math.min(clock.getDelta(),0.05)); const s=ROOMS.activeScene(); if(POST) POST.render(s,camera,state.time,indoor()); else renderer.render(s,camera); requestAnimationFrame(loop); }
+function loop(){
+  const frame=frameTiming.sample(clock.getDelta(),document.hidden);
+  performanceMonitor.beginFrame(frame.measurementDt);
+  update(frame.simulationDt);
+  qualityTick(frame.measurementDt);
+  const s=ROOMS.activeScene();
+  performanceMonitor.beginRender(renderer);
+  try { if(POST) POST.render(s,camera,state.time,indoor()); else renderer.render(s,camera); }
+  finally { performanceMonitor.endFrame(); }
+  requestAnimationFrame(loop);
+}
+// 背景停頓不當成掉幀；不重設 Clock，維持原有遊戲步進與恢復時的 50 ms 上限。
+document.addEventListener('visibilitychange',()=>{
+  frameTiming.resetMeasurement(); resetQualityMeasurement(); performanceMonitor.reset();
+});
 addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); if(POST) POST.size(); });
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ scene.traverse(o=>{ const m=o.material; if(m&&m.map&&m.map.redraw) m.map.redraw(); }); });
 player.userData.noOcc=true;
