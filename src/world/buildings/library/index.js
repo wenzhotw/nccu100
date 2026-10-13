@@ -142,8 +142,12 @@ function build() {
     /* 石獅：在第一段階梯上方的平台兩側 */
     const x=LBX+s*10.2, z=-83.6, y0=1.4;
     block(x,y0+0.55,z,1,1.1,1,'#efece6',0.02);
-    // 獅子本體放在一個群組裡（名稱「石獅-左／右」），天氣系統會讓它跳下台座講話（systems/weather）
-    const lion=makeLion(s); lion.name=s>0?'石獅-右':'石獅-左'; lion.position.set(x,y0+1.1,z); scene.add(lion); circC(x,z,0.6);
+    // 獅子本體放在一個群組裡（名稱「石獅-左／右」），天氣系統會讓它跳下台座講話（systems/weather）。
+    // userData.noOcc：裡面每一塊身體都是沒有名字的小球、沒有單獨設 noOcc，靜態烘焙（world/bake）
+    // 會把它們當成普通裝飾合併掉，合併後天氣系統移動的是這個群組、畫面上卻是烘焙後凍結的獅子，
+    // 獅子會變成看起來不會動；用 noOcc 讓烘焙整棵跳過，就能跟原本一樣用群組本身做動畫。
+    const lion=makeLion(s); lion.name=s>0?'石獅-右':'石獅-左'; lion.userData.noOcc=true;
+    lion.position.set(x,y0+1.1,z); scene.add(lion); circC(x,z,0.6);
     /* 紅磚邊帶與草坪上的細磚步道 */
     flat(1.1,18,brickMat(1,9),LBX+s*11.6,0.03,-85);
     [14.5,17.5].forEach(d=>block(LBX+s*d,0.08,-86,0.7,0.16,16,brickMat(1,8),0.01));
