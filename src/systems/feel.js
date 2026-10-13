@@ -10,8 +10,9 @@ import { canvasTex } from '../render/kit.js';
 import { police } from '../actors/police-car.js';
 import { player } from '../actors/player.js';
 import { dlg } from '../ui/dialog.js';
+import { updatePromptDisplay } from '../ui/interaction.js';
 import { groundH, indoor, pos } from '../core/gameplay.js';
-import { drawMap } from './items.js';
+import { drawCachedMap } from './items.js';
 import { MAP_BOUNDS } from '../world/layout.js';
 import * as ROOMS from '../core/rooms.js';
 import { enterCar, exitCar } from './police-drive.js';
@@ -45,7 +46,7 @@ function cameraFov(dt,sp,run){
 /* ---------- 互動提示跟著目標在畫面上浮動 ---------- */
 const promptEl=$('prompt'), pV=new THREE.Vector3();
 function placePrompt(){
-  const vis=!$('act').hidden||!$('act2').hidden; promptEl.style.display=vis?'flex':'none';
+  const vis=!$('act').hidden||!$('act2').hidden; updatePromptDisplay(promptEl,vis);
   if(!vis||!state.near||(dlg&&!dlg.hidden)){ return; }
   let x,z,y=2.25;
   if(state.near.fn===exitCar){ x=police.position.x; z=police.position.z; y=2.6; }
@@ -61,15 +62,15 @@ const miniBase=document.createElement('canvas');
 miniBase.width=1040;
 miniBase.height=800;
 const minic=$('minic'), mg=minic.getContext('2d');
-let miniT=0, baseT=99;
+let miniT=0;
 const {x0:MX0,x1:MX1,z0:MZ0,z1:MZ1}=MAP_BOUNDS;
 function drawMini(dt){
-  baseT+=dt; miniT+=dt; if(miniT<0.08) return; miniT=0;
-  if(baseT>1.5){ baseT=0; drawMap(miniBase,false); }
+  miniT+=dt; if(miniT<0.08) return; miniT=0;
   const W=minic.width, kx=miniBase.width/(MX1-MX0), kz=miniBase.height/(MZ0-MZ1);
   mg.clearRect(0,0,W,W); mg.save(); mg.beginPath(); mg.arc(W/2,W/2,W/2,0,7); mg.clip();
   mg.fillStyle='#f3e6c6'; mg.fillRect(0,0,W,W);
   if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.name)||'室內',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText('室內',W/2,W/2+30); mg.restore(); return; }
+  drawCachedMap(miniBase);
   const R=36, cx=(pos.x-MX0)*kx, cy=(MZ0-pos.z)*kz;
   mg.drawImage(miniBase,cx-R*kx,cy-R*kz,2*R*kx,2*R*kz,0,0,W,W);
   mg.translate(W/2,W/2);

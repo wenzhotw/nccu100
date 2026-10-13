@@ -9,15 +9,18 @@
  *   __game.view(-60, 30, -60, -114, 10, -100)  從 (x,y,z) 看向 (x,y,z)，檢查建築外觀；__game.view() 回到一般視角
  */
 import { state } from './state.js';
+import { performanceMonitor } from '../ui/performance.js';
+import { getMiniMapCacheStats } from '../systems/items.js';
 import { world, heightAt } from '../world/registry.js';
 import { enterRoom, exitRoom, groundH, pos, spots, zoneOf } from './gameplay.js';
 import { rooms } from './rooms.js';
 import { scene } from './engine.js';
 import { colliders, resolve } from './collision.js';
 
-const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug');
+const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug') || new URLSearchParams(location.search).has('perf');
 if (on) {
   window.__game = {
+    perf: performanceMonitor, miniMapCacheStats: getMiniMapCacheStats,
     state, world, pos, spots, heightAt: groundH, zoneOf, scene, colliders, resolve,
     rooms, enterRoom, exitRoom,
     teleport(x, z) { pos.set(x, groundH(x, z), z); },
