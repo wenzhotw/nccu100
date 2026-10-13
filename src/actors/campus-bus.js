@@ -10,7 +10,10 @@ import { colliders } from '../core/collision.js';
 
 /* 校園公車：粉紫色中型巴士，車頭跑馬燈「一路」 */
 function makeBus(){
-  const g=new THREE.Group(); scene.add(g);
+  // userData.noOcc：車身是一堆沒有名字的純色方塊，靜態烘焙（world/bake）會把它們
+  // 合併成凍結的裝飾，行駛邏輯移動的卻是這個群組，公車會變成看起來不會動；
+  // 用 noOcc 讓烘焙整棵跳過（石獅子、警車都是同樣的修法）。
+  const g=new THREE.Group(); g.userData.noOcc=true; scene.add(g);
   const PINK='#efb9e2', LAV='#c88bd0', LAV2='#b878c4', GREY='#9a9ca3';
   const L=7.4, W=2.1;
   const lower=mk(BOX,toon(LAV),0,0.62,0,{parent:g}); lower.scale.set(W,0.7,L); outline(lower,0).scale.set(1.04,1.08,1.015);
