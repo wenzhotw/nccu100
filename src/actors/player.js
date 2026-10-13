@@ -160,16 +160,32 @@ state.outfit='normal';
  * 蓬鬆大白頭、深色眉毛、黃色鳥喙，藍色隊服，咖啡色翅膀和腿，黃色鳥爪。
  * 沿用原本的關節（肩膀、髖部、頭），走路／飛行動畫不用重寫。 */
 state.isEagle=false;
-const EC={blue:'#1f3f8f',blue2:'#16306e',brown:'#6b4a2e',brown2:'#59402a',beak:'#f2b33d',claw:'#e8a93a',white:'#f7f5ef'};
+const EC={blue:'#1f3f8f',blue2:'#16306e',brown:'#6b4a2e',brown2:'#59402a',beak:'#f2b33d',beak2:'#c98c22',claw:'#e8a93a',white:'#f7f5ef',cheek:'#f4a97a'};
 const eagleHead=new THREE.Group(); eagleHead.visible=false; hc.add(eagleHead);
-{ const sk=part(new THREE.SphereGeometry(0.35,28,20),EC.white,0,0.01,0,eagleHead); sk.scale.set(1.08,1,1.04); outlineU(sk,1.035);
-  [-1,1].forEach(s=>{ const b=part(BOX,'#2a2c4a',s*0.12,0.11,0.265,eagleHead); b.scale.set(0.17,0.038,0.01); b.rotation.z=-s*0.4; b.rotation.y=-s*0.15; });
-  [-1,1].forEach(s=>part(SPH,'#241f1f',s*0.1,0.015,0.31,eagleHead).scale.setScalar(0.034));
-  const beak=part(new THREE.ConeGeometry(0.1,0.2,8),EC.beak,0,-0.07,0.33,eagleHead); beak.rotation.x=Math.PI/2.05; outlineU(beak,1.05);
-  part(BOX,EC.beak,0,-0.1,0.38,eagleHead).scale.set(0.09,0.02,0.1);
+{ const sk=part(new THREE.SphereGeometry(0.35,28,20),EC.white,0,0.01,0,eagleHead); sk.scale.set(1.1,1.02,1.06); outlineU(sk,1.035);
+  // 蓬鬆的毛：頭頂與後腦一圈小球，讓大頭看起來毛茸茸的，不是光滑的球
+  for(let i=0;i<11;i++){ const a=i/11*Math.PI*2-Math.PI/2; const fx=Math.cos(a)*0.34, fz=Math.sin(a)*0.1-0.08;
+    if(fz>0.2) continue; const f=part(SPH,EC.white,fx,0.16+Math.sin(a)*0.05,fz,eagleHead,0.016); f.scale.setScalar(0.09+Math.random()*0.02); }
+  // 臉頰：淡橘色圓點，Q 版吉祥物常見的腮紅
+  [-1,1].forEach(s=>{ part(SPH,EC.cheek,s*0.23,-0.08,0.2,eagleHead,0).scale.set(0.07,0.05,0.015); });
+  // 眉毛：粗黑斜線，內側往下壓、外側揚起，看起來比較兇一點
+  [-1,1].forEach(s=>{ const b=part(BOX,'#241f1f',s*0.135,0.1,0.285,eagleHead); b.scale.set(0.16,0.05,0.012); b.rotation.z=s*0.5; });
+  // 眼睛：白眼球＋黑眼珠＋高光，比原本的黑點大很多，表情才看得出來
+  [-1,1].forEach(s=>{ const white=part(SPH,'#ffffff',s*0.11,0.01,0.3,eagleHead,0.01); white.scale.set(0.08,0.07,0.035);
+    part(SPH,'#241f1f',s*0.118,-0.005,0.318,eagleHead).scale.setScalar(0.044);
+    part(SPH,'#ffffff',s*0.102,0.025,0.335,eagleHead).scale.setScalar(0.015); });
+  // 鳥喙：上喙＋下喙，中間一條縫線
+  const beak=part(new THREE.ConeGeometry(0.1,0.22,8),EC.beak,0,-0.08,0.33,eagleHead); beak.rotation.x=Math.PI/2.05; outlineU(beak,1.05);
+  part(BOX,EC.beak,0,-0.12,0.4,eagleHead).scale.set(0.085,0.02,0.1);
+  part(BOX,EC.beak2,0,-0.095,0.4,eagleHead).scale.set(0.1,0.006,0.02);
 }
 const eagleChest=part(BOX,'#fff6dc',0,0.55,0.16,rig); eagleChest.visible=false; eagleChest.scale.set(0.12,0.16,0.01);
-const eagleWing=s=>{ const w=part(new THREE.ConeGeometry(0.22,0.5,4,1,true),EC.brown,s*0.22,-0.1,0,s<0?H.shL:H.shR,0.01); w.rotation.z=s*0.45; w.rotation.x=Math.PI/2; w.scale.set(1,1,0.25); w.visible=false; return w; };
+// 翅膀：一片咖啡色的大「划槳」形主翼（扁平膠囊），尾端扇出三片羽毛，看起來才像翅膀而不是一塊板子
+const eagleWing=s=>{ const sh=s<0?H.shL:H.shR; const grp=new THREE.Group(); grp.position.set(s*0.17,-0.06,0); grp.rotation.z=s*0.28; sh.add(grp); grp.visible=false;
+  const main=part(new THREE.CapsuleGeometry(0.15,0.3,4,10),EC.brown,0,-0.2,0,grp,0.016); main.rotation.z=s*0.1; main.scale.set(1.2,1,0.3); outlineU(main,1.05);
+  for(let i=0;i<3;i++){ const a=(i-1)*0.42; const f=part(new THREE.ConeGeometry(0.08,0.24,4),EC.brown2,Math.sin(a)*0.13,-0.44,0,grp,0.013);
+    f.rotation.z=Math.PI+a*0.3; f.scale.set(1,1,0.3); }
+  return grp; };
 const eagleWingL=eagleWing(-1), eagleWingR=eagleWing(1);
 const eagleFeet=[H.hipL,H.hipR].map(hp=>{ const foot=part(new THREE.ConeGeometry(0.1,0.17,4),EC.claw,0,-0.26,0.05,hp); foot.rotation.x=Math.PI/2.3; foot.scale.set(1,1,1.6); foot.visible=false; outlineU(foot,1.08); return foot; });
 /** 永久變成雄鷹（校長的任務獎勵）：藏起人類的頭髮、臉、書包，換上雄鷹頭、翅膀、鳥爪 */
