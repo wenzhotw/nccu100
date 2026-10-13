@@ -137,3 +137,15 @@
 - `battle`：跟警察的戰鬥，格式同 missionaries.json 的 `battle`。新招式欄位 `skip: true` 表示什麼都不做（例如睡覺）。新特效 `donut`（吃甜甜圈）、`ticket`（紅單）、`sleep`（睡覺）
 
 室內（四維堂）不會淋雨，雨停後沒撐傘也不會再扣體力。
+
+## swimming.json：游泳館（換泳衣、救生員、下水）
+
+房間在 `src/world/buildings/swimming-hall/interior.js`，規則在 `src/systems/swimming/`。
+
+- 游泳館裡的 NPC（櫃檯阿姨、英文系溫同學、救生員）在 `npcs.json`，用 `"room": "swimming-hall"`
+- `lifeguard`：沒穿泳衣靠近池邊時救生員的台詞、三個選項（換泳衣、跟救生員戰鬥、算了）、戰鬥結束後的回應、`cooldownSeconds` 擋人之後多久才會再擋
+- `locker`：更衣室置物櫃前的按鈕文字和提示
+- `battle`：跟救生員的戰鬥，格式同 missionaries.json。新特效 `whistle`（吹哨子）、`buoy`（丟救生圈）
+
+穿泳衣（`state.outfit === 'swim'`）或打贏救生員之後才能下水。離開游泳館時自動換回衣服。
+

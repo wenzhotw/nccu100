@@ -17,7 +17,7 @@ import * as ROOMS from './rooms.js';
 import { late } from './late.js';
 import { grassU } from '../world/environment/grass.js';
 import { PN, dGeo, pGeo } from '../world/environment/particles.js';
-import { H, animateHero, player, shadowBlob } from '../actors/player.js';
+import { H, animateHero, player, rig, shadowBlob } from '../actors/player.js';
 import { pang, updatePangolin } from '../actors/pangolin.js';
 import { crystals } from '../systems/stories.js';
 import { banner, dlg } from '../ui/dialog.js';
@@ -44,7 +44,7 @@ function update(dt){
     const m=Math.hypot(ix,iy); if(m>1){ix/=m;iy/=m;}
     run=keys.ShiftLeft||keys.ShiftRight||Math.hypot(state.stickV.x,state.stickV.y)>0.92;
   }
-  const spd=run?8.2:4.6;
+  const spd=(run?8.2:4.6)*(state.swimming?0.55:1);   // 在水裡游得比較慢
   const fx=-Math.sin(state.yaw), fz=-Math.cos(state.yaw), rx=Math.cos(state.yaw), rz=-Math.sin(state.yaw);
   const tvx=(fx*iy+rx*ix)*spd, tvz=(fz*iy+rz*ix)*spd;
   const k=1-Math.exp(-dt*12); vel.x+=(tvx-vel.x)*k; vel.z+=(tvz-vel.z)*k;
@@ -59,8 +59,15 @@ function update(dt){
   shadowBlob.position.set(pos.x,gh+0.03,pos.z); shadowBlob.scale.setScalar(1-Math.min(0.5,(pos.y-gh)*0.3));
   if(state.holdPang){ H.shL.rotation.x=-1.35; H.shR.rotation.x=-1.35; H.shL.rotation.z=-0.35; H.shR.rotation.z=0.35; }
   if(state.holdUmbrella){ H.shR.rotation.set(-0.15,0,2.55); }   // 撐傘：右手舉起來（systems/weather）
+  // 游泳：身體往前趴、雙手輪流划水、腳打水（state.swimming 由所在房間設定，例如游泳館）
+  if(state.swimming){ const t=state.time*(sp>0.5?6:2.5), a=sp>0.5?1:0.35;
+    rig.rotation.x=sp>0.5?1.25:0.35; rig.position.y=0;
+    H.shL.rotation.set(-Math.PI/2+Math.sin(t)*1.6*a,0,-0.2); H.shR.rotation.set(-Math.PI/2-Math.sin(t)*1.6*a,0,0.2);
+    H.hipL.rotation.x=Math.sin(t*2)*0.5*a; H.hipR.rotation.x=-Math.sin(t*2)*0.5*a; }
   }
 
+  // 所在房間自己的每一幀更新（例如泳池的水波、游泳的人）
+  if(ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.update) ROOMS.current.def.update(dt);
   updatePangolin(dt);
   updateCar(dt);
   NPCS.forEach(n=>npcUpdate(n,dt));

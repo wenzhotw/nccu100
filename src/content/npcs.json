@@ -322,6 +322,99 @@
         }
       ],
       "bubble": "小心石獅子！"
+    },
+    {
+      "id": "pool-counter",
+      "room": "swimming-hall",
+      "tag": "櫃檯阿姨",
+      "title": "游泳館櫃檯",
+      "home": {
+        "x": 0,
+        "z": 7.4
+      },
+      "face": 0,
+      "look": {
+        "top": "#5aa0c8",
+        "pants": "#2f3446",
+        "hair": "#3a2418",
+        "hairStyle": "bowl",
+        "glasses": "#6b4f3a"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "歡迎光臨政大游泳館！學生證刷一下就可以進去囉。",
+            "更衣室在左右兩邊，換好泳衣才能下水喔。",
+            "救生員很兇，不要亂來。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wen",
+      "room": "swimming-hall",
+      "tag": "英文系　溫同學",
+      "title": "英文系．溫同學",
+      "home": {
+        "x": -12,
+        "z": -14
+      },
+      "path": [
+        [
+          -12,
+          -14
+        ],
+        [
+          -12,
+          -34
+        ]
+      ],
+      "speed": 0.8,
+      "look": {
+        "top": "#ffd9c0",
+        "pants": "#1f3f8f",
+        "hair": "#161616",
+        "hairStyle": "short",
+        "glasses": "#2a2c4a",
+        "shortSleeve": true,
+        "shoe": "#ffd9c0"
+      },
+      "bubble": "限界を超えろ！",
+      "dialog": [
+        {
+          "lines": [
+            "限界を超えろ！",
+            "限界を、超えていけ！",
+            "……（英文系的溫同學一直用日文喊：「超越界線吧！」）"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lifeguard",
+      "room": "swimming-hall",
+      "tag": "救生員",
+      "title": "救生員",
+      "home": {
+        "x": 10.6,
+        "z": -24.6
+      },
+      "face": "-PI/2",
+      "look": {
+        "top": "#e8463c",
+        "pants": "#f2f2ee",
+        "hair": "#2a1c18",
+        "hairStyle": "short",
+        "shortSleeve": true,
+        "shoe": "#2a2c35"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "我是救生員，泳池裡的安全歸我管。"
+          ]
+        }
+      ]
     }
   ],
   "students": {

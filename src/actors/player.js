@@ -20,14 +20,16 @@ const H={};
 /* 身體：T恤、短褲、書包 */
 H.torso=part(new THREE.CapsuleGeometry(0.17,0.12,6,16),HC.shirt,0,0.5,0,rig,0.014);
 H.torso.scale.z=0.85;
-part(new THREE.CylinderGeometry(0.172,0.18,0.13,18),HC.shorts,0,0.36,0,rig,0.012).scale.z=0.85;
-ring(0.1,0.018,HC.white,0.68,rig,0.9);
-part(BOX,HC.white,0,0.5,0.148,rig).scale.set(0.15,0.028,0.01);
-const bag=part(BOX,HC.bag,0,0.53,-0.2,rig);
+const shorts=part(new THREE.CylinderGeometry(0.172,0.18,0.13,18),HC.shorts,0,0.36,0,rig,0.012); shorts.scale.z=0.85;
+// 換泳衣時要藏起來的東西（領口、胸前白線、書包）
+const PACK=[];
+PACK.push(ring(0.1,0.018,HC.white,0.68,rig,0.9));
+PACK.push(part(BOX,HC.white,0,0.5,0.148,rig)); PACK[1].scale.set(0.15,0.028,0.01);
+const bag=part(BOX,HC.bag,0,0.53,-0.2,rig); PACK.push(bag);
 bag.scale.set(0.27,0.3,0.14);
 outline(bag,0).scale.set(1.12,1.1,1.2);
-part(BOX,HC.bag2,0,0.45,-0.28,rig).scale.set(0.2,0.12,0.04);
-[-1,1].forEach(s=>part(BOX,HC.bag2,s*0.1,0.56,0,rig).scale.set(0.035,0.28,0.31));
+PACK.push(part(BOX,HC.bag2,0,0.45,-0.28,rig)); PACK[3].scale.set(0.2,0.12,0.04);
+[-1,1].forEach(s=>{ const st=part(BOX,HC.bag2,s*0.1,0.56,0,rig); st.scale.set(0.035,0.28,0.31); PACK.push(st); });
 function arm(s){
   const sh=new THREE.Group(); sh.position.set(s*0.19,0.63,0); rig.add(sh);
   part(new THREE.CapsuleGeometry(0.055,0.06,4,10),HC.shirt,0,-0.05,0,sh,0.012);
@@ -133,4 +135,25 @@ function animateHero(dt,sp,run){
   else if(blinkT<=-0.12){ faceMat.map=faceOpen; blinkT=2.2+Math.random()*3; }
 }
 
-export { H, HC, animateHero, outlineU, part, player, rig, shadowBlob };
+/* ---------- 換裝：一般衣服／泳衣（泳褲、泳帽、蛙鏡），游泳館用 ---------- */
+const swimGear=new THREE.Group(); swimGear.visible=false; hc.add(swimGear);
+{ const sc=part(new THREE.SphereGeometry(0.325,28,14,0,Math.PI*2,0,Math.PI*0.45),'#e8463c',0,0.01,-0.005,swimGear); sc.scale.set(...HS); outlineU(sc,1.035);
+  [-1,1].forEach(s=>{ const g=part(new THREE.TorusGeometry(0.06,0.018,6,16),'#2a2c4a',s*0.085,0.02,0.285,swimGear); g.scale.y=0.8;
+    part(new THREE.CircleGeometry(0.05,16),basic({color:'#7fc8e8',transparent:true,opacity:0.7}),s*0.085,0.02,0.29,swimGear); });
+  part(BOX,'#2a2c4a',0,0.02,0.29,swimGear).scale.set(0.06,0.015,0.01); }
+const HAIR=[cap,back]; hc.children.forEach(m=>{ if(m.geometry===SPIKE||(m.isGroup&&m.children[0]&&m.children[0].geometry===BANG)) HAIR.push(m); });
+const SLEEVES=[H.shL.children[0],H.shR.children[0]];
+/** 換裝：'swim' 泳衣（打赤膊、藍色泳褲、紅泳帽、蛙鏡），其他值換回一般衣服 */
+function setOutfit(kind){
+  const swim=kind==='swim';
+  H.torso.material=toon(swim?HC.skin:HC.shirt);
+  SLEEVES.forEach(m=>{ m.material=toon(swim?HC.skin:HC.shirt); });
+  shorts.material=toon(swim?'#1f6fd0':HC.shorts);
+  PACK.forEach(m=>{ m.visible=!swim; });
+  HAIR.forEach(m=>{ m.visible=!swim; });
+  swimGear.visible=swim;
+  state.outfit=swim?'swim':'normal';
+}
+state.outfit='normal';
+
+export { H, HC, animateHero, outlineU, part, player, rig, setOutfit, shadowBlob };
