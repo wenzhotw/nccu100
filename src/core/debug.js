@@ -7,6 +7,7 @@
  *   __game.zoneOf(__game.pos)  目前區域名稱
  *   __game.enterRoom('siwei-hall')  直接走進某個室內房間；__game.exitRoom() 出來
  *   __game.view(-60, 30, -60, -114, 10, -100)  從 (x,y,z) 看向 (x,y,z)，檢查建築外觀；__game.view() 回到一般視角
+ *   __game.becomeEagle()       直接變成雄鷹（跳過任務流程，方便測試飛行）
  */
 import { state } from './state.js';
 import { performanceMonitor } from '../ui/performance.js';
@@ -16,13 +17,14 @@ import { enterRoom, exitRoom, groundH, pos, spots, zoneOf } from './gameplay.js'
 import { rooms } from './rooms.js';
 import { scene } from './engine.js';
 import { colliders, resolve } from './collision.js';
+import { becomeEagle } from '../actors/player.js';
 
 const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug') || new URLSearchParams(location.search).has('perf');
 if (on) {
   window.__game = {
     perf: performanceMonitor, miniMapCacheStats: getMiniMapCacheStats,
     state, world, pos, spots, heightAt: groundH, zoneOf, scene, colliders, resolve,
-    rooms, enterRoom, exitRoom,
+    rooms, enterRoom, exitRoom, becomeEagle,
     teleport(x, z) { pos.set(x, groundH(x, z), z); },
     view(...v) { state.viewCam = v.length === 6 ? v : null; },
   };
