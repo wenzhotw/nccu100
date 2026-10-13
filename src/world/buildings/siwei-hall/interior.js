@@ -1,29 +1,22 @@
 /**
- * 四維堂內部（禮堂、舞台）。放在 x=300 的獨立空間。
+ * 四維堂內部（禮堂、舞台）。是獨立的室內房間（core/rooms.js），有自己的場景。
+ * 座標沿用以前放在 x = IX（300）的位置，房間是獨立場景，所以位置不影響校園。
  */
 import * as THREE from 'three';
-import { scene } from '../../../core/engine.js';
 import { GRAD, basic, block, canvasTex, flat, hText, plane } from '../../../render/kit.js';
 import { boxC } from '../../../core/collision.js';
 import { IX } from '../../layout.js';
-import { hemi, sun } from '../../environment/sky.js';
 
-/** 室內專用燈光，進門才打開 */
-let inLight=null;
-
-/** 走進四維堂：關掉太陽、打開室內燈 */
-export function enterInterior() { inLight.visible=true; sun.visible=false; hemi.intensity=1.0; }
-/** 走出四維堂：恢復戶外光線 */
-export function exitInterior() { inLight.visible=false; sun.visible=true; hemi.intensity=0.75; }
+/** 燈光：跟以前進門時一樣（天光 1.0 加一盞暖色主燈） */
+export function interiorLight(s) {
+  s.add(new THREE.HemisphereLight('#bfe0ff','#a89a7a',1.0));
+  const inLight=new THREE.DirectionalLight('#fff4e2',0.95);
+  inLight.position.set(IX+6,22,14); inLight.target.position.set(IX,0,-6);
+  s.add(inLight); s.add(inLight.target);
+}
 
 export function buildInterior() {
   /* ---------- 四維堂內部（另一區域） ---------- */
-  inLight=new THREE.DirectionalLight('#fff4e2',0.95);
-  inLight.position.set(IX+6,22,14);
-  inLight.target.position.set(IX,0,-6);
-  inLight.visible=false;
-  scene.add(inLight);
-  scene.add(inLight.target);
   const floorTex=canvasTex(256,256,(g,w,h)=>{ g.fillStyle='#a7a9a8'; g.fillRect(0,0,w,h); for(let i=0;i<2200;i++){ g.fillStyle=['#8e9091','#c3c4c2','#7b7d7f','#b6b7b5'][i%4]; g.fillRect(Math.random()*w,Math.random()*h,2,2); } g.strokeStyle='#959796'; g.lineWidth=2; g.strokeRect(0,0,w,h); },[6,12]);
   flat(24,50,new THREE.MeshToonMaterial({map:floorTex,gradientMap:GRAD}),IX,0.01,0);
   const WHITE='#efede6', MAROON='#6a2b2e';

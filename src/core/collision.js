@@ -1,17 +1,22 @@
 /**
  * 碰撞：方塊、圓形、旋轉方塊三種碰撞體，以及推開角色的 resolve()。
  */
-import { IX } from '../world/layout.js';
 
 /* ---------- colliders ---------- */
+/** 校園（戶外）的碰撞體。室內房間各有自己的清單，進出房間時由 core/rooms.js 切換 */
 const colliders=[];
+let active=colliders, roomClamp=null;
+/** 切換目前生效的碰撞清單（core/rooms.js 用） */
+function setActiveColliders(list){ active=list; }
+/** 在房間裡時的範圍限制（core/rooms.js 用）；null 表示在戶外 */
+function setRoomClamp(fn){ roomClamp=fn; }
 let R=0.4;
 const boxC=(x0,x1,z0,z1)=>colliders.push({x0,x1,z0,z1});
 const circC=(x,z,r)=>colliders.push({c:true,x,z,r});
 const obbC=(cx,cz,hx,hz,th)=>colliders.push({obb:true,cx,cz,hx,hz,cs:Math.cos(th),sn:Math.sin(th)});
 function resolve(p,rad){ const R0=R; if(rad) R=rad; resolveCore(p); R=R0; }
 function resolveCore(p){
-  for(const c of colliders){
+  for(const c of active){
     if(c.top!==undefined&&p.y>=c.top) continue;
     if(c.obb){ const dx=p.x-c.cx, dz=p.z-c.cz; let lx=dx*c.cs-dz*c.sn, lz=dx*c.sn+dz*c.cs; const nx=Math.max(-c.hx,Math.min(lx,c.hx)), nz=Math.max(-c.hz,Math.min(lz,c.hz)); const ex=lx-nx, ez=lz-nz, d2=ex*ex+ez*ez; if(d2>=R*R) continue;
       if(d2>1e-8){ const d=Math.sqrt(d2); lx=nx+ex/d*R; lz=nz+ez/d*R; } else { const m=[c.hx-lx,lx+c.hx,c.hz-lz,lz+c.hz], mn=Math.min(...m); if(mn===m[0]) lx=c.hx+R; else if(mn===m[1]) lx=-c.hx-R; else if(mn===m[2]) lz=c.hz+R; else lz=-c.hz-R; }
@@ -23,9 +28,8 @@ function resolveCore(p){
     else { const l=p.x-c.x0, r=c.x1-p.x, b=p.z-c.z0, f=c.z1-p.z, mn=Math.min(l,r,b,f);
       if(mn===l)p.x=c.x0-R; else if(mn===r)p.x=c.x1+R; else if(mn===b)p.z=c.z0-R; else p.z=c.z1+R; }
   }
-  if(p.x>200){ p.x=Math.max(IX-11.2,Math.min(IX+11.2,p.x)); p.z=Math.max(-21.4,Math.min(24.3,p.z));
-    if(p.z<-17.7&&p.z>-18.4&&Math.abs(p.x-IX)>7.9){ p.z=p.z>-18.05?-17.7:-18.4; } }
+  if(roomClamp) roomClamp(p);
   else { p.x=Math.max(-265,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(29.5,p.z)); }
 }
 
-export { boxC, circC, colliders, obbC, resolve };
+export { boxC, circC, colliders, obbC, resolve, setActiveColliders, setRoomClamp };

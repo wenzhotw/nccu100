@@ -18,4 +18,4 @@ function releasePangolin(){ state.holdPang=false; const fx=Math.sin(player.rotat
   pang.position.set(pos.x+fx*1.2,0,pos.z+fz*1.2); pang.rotation.set(0,player.rotation.y,0); pBody.scale.setScalar(1); }
 spotById('pangolin').ok=()=>!indoor()&&!state.holdPang&&!state.driving;
 spotById('pangolin').alt={label:'抓起來',fn:grabPangolin};
-{ const s=spotById('siwei-enter'), o=s.ok; s.ok=()=>o()&&!state.holdPang&&!state.driving; }
+{ const s=spotById('siwei-hall-enter'), o=s.ok; s.ok=()=>o()&&!state.holdPang&&!state.driving; }

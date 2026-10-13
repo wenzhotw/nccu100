@@ -13,7 +13,8 @@ import { waterU } from '../render/water.js';
 import { palms } from '../world/vegetation.js';
 import { police } from '../actors/police-car.js';
 import { driveCar, updateCar } from '../actors/campus-bus.js';
-import { IX } from '../world/layout.js';
+import * as ROOMS from './rooms.js';
+import { late } from './late.js';
 import { grassU } from '../world/environment/grass.js';
 import { PN, dGeo, pGeo } from '../world/environment/particles.js';
 import { H, animateHero, player, shadowBlob } from '../actors/player.js';
@@ -74,7 +75,8 @@ function update(dt){
 
   state.near=null; let best=99;
   if(state.driving){ if(dlg.hidden&&!state.busy) state.near={label:'下車',fn:exitCar}; }
-  else if(state.started&&dlg.hidden&&!state.busy) spots.forEach(s=>{ if(!s.ok()) return; const d=Math.hypot(pos.x-s.x,pos.z-s.z); if(d<s.r&&d<best){ best=d; state.near=s; } });
+  else if(state.started&&dlg.hidden&&!state.busy) spots.forEach(s=>{ if((s.room||null)!==(state.room||null)||!s.ok()) return;   // 互動點只在它所在的場景有效（s.room，戶外是 null）
+     const d=Math.hypot(pos.x-s.x,pos.z-s.z); if(d<s.r&&d<best){ best=d; state.near=s; } });
   if(state.near){ $('actText').textContent=state.near.label; $('act').hidden=false; } else $('act').hidden=true;
   if(state.near&&state.near.alt){ $('act2Text').textContent=state.near.alt.label; $('act2').hidden=false; } else $('act2').hidden=true;
   updatePuffs(dt); drawMini(dt); qualityTick(dt);
@@ -93,12 +95,14 @@ function update(dt){
   if(state.driving&&Math.abs(state.carSpeed)>1&&state.camPtr===null) state.yaw=lerpA(state.yaw,state.carYaw+(state.carSpeed>0?Math.PI:0),1-Math.exp(-dt*2.5));
   const tf=(!dlg.hidden&&state.talkFocus)?state.talkFocus:null;
   camT.lerp(tf?new THREE.Vector3((pos.x+tf.x)/2,pos.y+1.05,(pos.z+tf.z)/2):new THREE.Vector3(pos.x,pos.y+(state.driving?1.5:0.9),pos.z),1-Math.exp(-dt*(tf?3:8)));
-  const cp=Math.cos(state.pitch); let dWant=indoor()?Math.min(state.dist,6.5):(state.driving?Math.max(state.dist,10):state.dist); if(tf) dWant=Math.min(dWant,4.6);
+  const cp=Math.cos(state.pitch); const RC=ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.camera;
+  let dWant=indoor()?Math.min(state.dist,(RC&&RC.maxDist)||6.5):(state.driving?Math.max(state.dist,10):state.dist); if(tf) dWant=Math.min(dWant,4.6);
   camDir.set(Math.sin(state.yaw)*cp,Math.sin(state.pitch),Math.cos(state.yaw)*cp);
   if(state.OCC.length){ camRay.set(camT,camDir); camRay.far=dWant+0.6; const hit=camRay.intersectObjects(state.OCC,false)[0]; if(hit) dWant=Math.max(0.9,hit.distance-0.45); }
   state.camD=dWant<state.camD?dWant:state.camD+(dWant-state.camD)*(1-Math.exp(-dt*3));
   camera.position.copy(camT).addScaledVector(camDir,state.camD);
-  if(indoor()){ camera.position.x=Math.max(IX-11.3,Math.min(IX+11.3,camera.position.x)); camera.position.z=Math.max(-21.3,Math.min(24.6,camera.position.z)); camera.position.y=Math.min(10.4,camera.position.y); }
+  // 室內：鏡頭不能出房間、不能高過天花板（範圍由房間設定的 camera 決定）
+  if(RC){ camera.position.x=Math.max(RC.x0,Math.min(RC.x1,camera.position.x)); camera.position.z=Math.max(RC.z0,Math.min(RC.z1,camera.position.z)); if(RC.ceil) camera.position.y=Math.min(RC.ceil,camera.position.y); }
   if(camera.position.y<0.5) camera.position.y=0.5;
   camera.lookAt(camT);
   // 除錯用的自由視角（__game.view），平常不會用到
@@ -108,12 +112,16 @@ function update(dt){
   sun.position.set(pos.x+SUN.x*70,SUN.y*70,pos.z+SUN.z*70); sun.target.position.set(pos.x,0,pos.z);
   placePrompt();
 }
-function loop(){ update(Math.min(clock.getDelta(),0.05)); if(POST) POST.render(scene,camera,state.time,indoor()); else renderer.render(scene,camera); requestAnimationFrame(loop); }
+// 畫目前所在的場景：戶外是校園，室內是那個房間自己的場景（core/rooms.js）
+function loop(){ update(Math.min(clock.getDelta(),0.05)); const s=ROOMS.activeScene(); if(POST) POST.render(s,camera,state.time,indoor()); else renderer.render(s,camera); requestAnimationFrame(loop); }
 addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); if(POST) POST.size(); });
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ scene.traverse(o=>{ const m=o.material; if(m&&m.map&&m.map.redraw) m.map.redraw(); }); });
 player.userData.noOcc=true;
 pang.userData.noOcc=true;
 driveCar.userData.noOcc=true;
 crystals.forEach(c=>c.g.userData.noOcc=true);
-buildOccluders();
+// 鏡頭防穿模的牆：每個場景各一份，換場景時切換（室內第一次進去才建立）
+const OUTDOOR_OCC=buildOccluders();
+state.OCC=OUTDOOR_OCC;
+late.onSceneChange=()=>{ const r=ROOMS.current; if(!r){ state.OCC=OUTDOOR_OCC; return; } if(!r.occ) r.occ=buildOccluders(r.scene); state.OCC=r.occ; };
 loop();

@@ -9,6 +9,7 @@
 - `npm run check`：結構與內容檢查（必跑）
 - `npm run smoke`：無頭瀏覽器冒煙測試（先 build）
 - `npm run new-building -- <id> <中文名>`：建立建築資料夾
+- `npm run new-interior -- <id>`：幫建築建立室內房間模板
 
 ## 架構重點
 
@@ -18,7 +19,8 @@
 - 共用可變狀態放 `state`（`src/core/state.js`）；`late`（`src/core/late.js`）是讓先載入模組呼叫後載入模組的過渡機制。
 - 台詞與劇情在 `src/content/*.json`，由 `src/content/index.js` 解讀（`when` 條件、`{found}` 變數、`then` 動作）。格式說明：`docs/content.md`。
 - 材質用 `toon()`、`basic()`，幾何用 `block()`、`mk()`、`flat()`、`plane()`（`src/render/kit.js`）；碰撞用 `boxC`、`circC`、`obbC`（`src/core/collision.js`）。
-- 座標：單位公尺；從校門面向四維堂，x 越大越右，z 越小越裡面。四維堂室內在 x = IX = 300。
+- 座標：單位公尺；從校門面向四維堂，x 越大越右，z 越小越裡面。
+- 室內：每個室內是獨立場景（`src/core/rooms.js`），建築用 `interior` 欄位登記，進門換場景。用 `indoor()`、`state.room` 判斷；互動點加 `room`。說明：`docs/interiors.md`。四維堂室內的座標沿用 x = IX = 300。
 
 ## 風格
 

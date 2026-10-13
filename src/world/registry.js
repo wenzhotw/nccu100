@@ -5,6 +5,8 @@
  * 遊戲邏輯（移動、區域橫幅、秘寶地圖、小地圖）只讀這裡，不直接 import 任何一棟建築，
  * 所以新增或修改一棟建築，不會影響到其他人的檔案。
  */
+import { registerRoom } from '../core/rooms.js';
+
 export const world = {
   /** 所有建築定義（由 buildings/index.js 自動載入） */
   buildings: [],
@@ -15,6 +17,7 @@ export const world = {
   /** 秘寶地圖與小地圖上的圖示 */
   mapShapes: [],
   /** 室內空間：{ [建築 id]: { enter(), exit() } } */
+  /** 室內房間設定：{ [房間 id]: def }，房間的場景與碰撞在 core/rooms.js */
   interiors: {},
 };
 
@@ -28,7 +31,7 @@ export const world = {
  * @param {(x:number, z:number) => (number|null)} [def.heightAt] 可走上去的地方（階梯、平台）回傳高度，其他地方回傳 null
  * @param {{priority:number, test:(p:{x:number,z:number}) => (string|null)}[]} [def.zones] 區域名稱
  * @param {object[]} [def.map]   地圖圖示：{ x, z, w, d, color, label } 矩形，或 { draw(g, mx, my) } 自訂畫法
- * @param {{enter:() => void, exit:() => void}} [def.interior] 有室內空間時，進出要做的事（例如切換燈光）
+ * @param {object|object[]} [def.interior] 室內房間（可以是陣列，一棟建築好幾個房間）。格式見 docs/interiors.md
  */
 export function defineBuilding(def) {
   if (!def || typeof def.id !== 'string' || typeof def.build !== 'function') {
@@ -48,7 +51,10 @@ export function installBuilding(def) {
   if (def.heightAt) world.heights.push(def.heightAt);
   (def.zones || []).forEach(z => world.zones.push(z));
   (def.map || []).forEach(s => world.mapShapes.push(s));
-  if (def.interior) world.interiors[def.id] = def.interior;
+  [].concat(def.interior || []).forEach(r => {
+    const room = { id: def.id, name: def.name, ...r };
+    world.interiors[room.id] = room; registerRoom(room);
+  });
 }
 
 /** 地面高度：問過所有登記的高度函式，沒有人回答就是 0 */

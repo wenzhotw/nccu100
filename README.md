@@ -28,6 +28,7 @@ npm run dev
 | `npm run check` | 檢查資料夾結構與內容檔格式（送 PR 前跑一次） |
 | `npm run smoke` | 打開遊戲確認沒有錯誤（要先 `npm run build`） |
 | `npm run new-building -- <資料夾名稱> <中文名稱>` | 建立一棟新建築的資料夾 |
+| `npm run new-interior -- <資料夾名稱>` | 幫建築加一個室內房間（見 `docs/interiors.md`） |
 
 ## 專案結構
 

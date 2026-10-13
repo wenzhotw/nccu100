@@ -53,6 +53,17 @@ try {
   });
   errors.push(...districtChecks.issues);
   console.log('街區檢查：', JSON.stringify(districtChecks));
+  // 每個室內房間：走進去、確認換到房間、走出來
+  const roomIds = await page.evaluate(() => Object.values(window.__game.rooms).filter(r => r.def).map(r => r.id));
+  for (const id of roomIds) {
+    await page.evaluate(id => window.__game.enterRoom(id), id);
+    await page.waitForFunction(id => window.__game.state.room === id && !window.__game.state.busy, id, { timeout: 60000 });
+    const inside = await page.evaluate(() => ({ zone: window.__game.zoneOf(window.__game.pos), meshes: Object.values(window.__game.rooms).find(r => r.id === window.__game.state.room).scene.children.length }));
+    if (inside.meshes < 3) errors.push(id + ' 房間是空的');
+    await page.evaluate(() => window.__game.exitRoom());
+    await page.waitForFunction(() => window.__game.state.room === null && !window.__game.state.busy, null, { timeout: 60000 });
+    console.log('房間：', id, inside.zone);
+  }
   fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
   await page.setViewportSize({width:1100,height:720});
   await page.evaluate(() => { window.__game.teleport(-80,-57); window.__game.view(-68,65,-5,-155,5,-85); });
