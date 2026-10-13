@@ -18,6 +18,8 @@ function segInfo(px, pz, ax, az, bx, bz) {
 }
 
 function setAlpha(f, a) {
+  // 預製物件的樹（world/prefabs）：直接調每棵樹的淡出值（網點淡出，不用換材質）
+  if (f.setFade) { f.setFade(a >= 0.999 ? 1 : a); f.faded = a < 0.999; return; }
   if (a >= 0.999) {
     if (f.faded) {
       f.parts.forEach((m, i) => { m.material = f.orig[i]; m.children.forEach(o => { o.visible = true; }); });

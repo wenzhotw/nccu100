@@ -14,6 +14,7 @@ import { resolve } from './collision.js';
 import { SUN, clouds, sky, sun } from '../world/environment/sky.js';
 import { waterU } from '../render/water.js';
 import { palms } from '../world/vegetation.js';
+import { updatePrefabs } from '../world/prefabs/index.js';
 import { police } from '../actors/police-car.js';
 import { driveCar, updateCar } from '../actors/campus-bus.js';
 import * as ROOMS from './rooms.js';
@@ -78,6 +79,7 @@ function update(dt){
   if(!state.driving){ const on=Math.sin(state.time*2)>2; sirenR.material.color.set('#661a1a'); sirenB.material.color.set('#1a2a66'); }
   carSpot.x=police.position.x; carSpot.z=police.position.z;
   palms.forEach((c,i)=>{ c.rotation.z=Math.sin(state.time*0.9+i)*0.04; c.rotation.x=Math.sin(state.time*0.7+i*1.7)*0.03; });
+  if(!indoor()) updatePrefabs();   // 椰子樹葉跟著搖（world/prefabs）
 
   crystals.forEach((c,i)=>{
     if(c.got){ c.g.scale.multiplyScalar(Math.max(0,1-dt*5)); c.g.position.y+=dt*1.5; if(c.g.scale.x<0.02) c.g.visible=false; return; }

@@ -6,6 +6,7 @@ import { scene } from '../../../core/engine.js';
 import { GRAD, SPH, basic, block, canvasTex, flat, mk, outline, plane, toon } from '../../../render/kit.js';
 import { boxC, circC } from '../../../core/collision.js';
 import { palm, tree } from '../../vegetation.js';
+import { asPrefab } from '../../prefabs/index.js';
 
 export function buildCorridor() {
   /* ---------- 四維堂西側：混凝土廊道、棕櫚、路口石盆、大樹與指標 ---------- */
@@ -35,7 +36,7 @@ export function buildCorridor() {
     for(let z=PG.z0-0.4;z>=PG.z0-12;z-=3.6){ block(PG.x1+0.32,2.4,z,0.04,1.4,0.04,'#d9d9d9'); const f=new THREE.Mesh(new THREE.PlaneGeometry(0.7,0.46),fm); f.position.set(PG.x1+0.33,2.7,z-0.38); f.rotation.y=Math.PI/2; scene.add(f); } }
   /* 棕櫚與灌木（建築與廊道之間） */
   for(let z=-68;z>-104;z-=8) palm(14.6,z,10+Math.random()*2);
-  for(let z=-70;z>-104;z-=4){ const b=mk(SPH,toon(z%8?'#4f8e40':'#5f9d4a'),14.6,0.55,z,{}); b.scale.set(0.6,0.55,1.6); outline(b,0.06); }
+  asPrefab(()=>{ for(let z=-70;z>-104;z-=4){ const b=mk(SPH,toon(z%8?'#4f8e40':'#5f9d4a'),14.6,0.55,z,{}); b.scale.set(0.6,0.55,1.6); outline(b,0.06); } });   // 灌木（工具箱）
   /* 路口：石盆龍舌蘭 */
   function agavePot(x,z){
     latheMesh([[0.05,0],[0.55,0.05],[0.72,0.35],[0.75,0.7],[0.68,0.85],[0.6,0.88]],'#cfc8b8',x,z);

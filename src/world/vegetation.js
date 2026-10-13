@@ -6,6 +6,7 @@ import { scene } from '../core/engine.js';
 import { SPH, mk, toon } from '../render/kit.js';
 import { circC } from '../core/collision.js';
 import { inLot } from './layout.js';
+import { asPrefab } from './prefabs/index.js';
 import { inPhotoDistrict } from './photo-district.js';
 
 /* ---------- 樹、椰子、路燈 ---------- */
@@ -19,32 +20,43 @@ const FOLIAGE=[];
 function tree(x,z,s){
   if(inPhotoDistrict(x,z)) return;
   if(inLot(x,z)) return;
-  s=s||1; const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
-  const tr=mk(TRUNK,toon('#7a5a43'),0,1.3,0,{parent:g,out:0.05}); tr.scale.setScalar(s); tr.position.y=1.3*s;
-  const parts=[];
-  [[0,3.6,0,1.8],[1.1,3.1,0.3,1.25],[-0.9,3.3,-0.4,1.3],[0.2,4.6,-0.2,1.15]].forEach((b,i)=>{
-    const m=mk(SPH,toon(greens[(i+Math.floor(Math.abs(x)))%3]),b[0]*s,b[1]*s,b[2]*s,{parent:g,out:0.1}); m.scale.setScalar(b[3]*s); parts.push(m);
-  });
-  FOLIAGE.push({x,z,r:2.3*s,y0:1.9*s,y1:5.8*s,parts});
+  // 樹、椰子樹、榕樹都是預製物件（world/prefabs）：同款一次畫完；擋視線時用 setFade 淡掉樹冠
+  s=s||1; const parts=[];
+  const pf=asPrefab(()=>{
+    const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
+    const tr=mk(TRUNK,toon('#7a5a43'),0,1.3,0,{parent:g,out:0.05}); tr.scale.setScalar(s); tr.position.y=1.3*s;
+    [[0,3.6,0,1.8],[1.1,3.1,0.3,1.25],[-0.9,3.3,-0.4,1.3],[0.2,4.6,-0.2,1.15]].forEach((b,i)=>{
+      const m=mk(SPH,toon(greens[(i+Math.floor(Math.abs(x)))%3]),b[0]*s,b[1]*s,b[2]*s,{parent:g,out:0.1}); m.scale.setScalar(b[3]*s); parts.push(m);
+    });
+  },{fade:()=>parts});
+  FOLIAGE.push({x,z,r:2.3*s,y0:1.9*s,y1:5.8*s,parts,setFade:pf.setFade});
   circC(x,z,0.4*s);
 }
 const FROND=new THREE.ConeGeometry(0.34,3.6,4);
 FROND.rotateX(Math.PI/2);
 FROND.translate(0,0,1.8);
 const palms=[];
+const PALM_NECK=new THREE.CylinderGeometry(0.27,0.25,1.5,9);
+const trunkCache=new Map();
+function palmTrunk(fan,hh){ const k=(fan?'f':'p')+hh; if(!trunkCache.has(k)) trunkCache.set(k,new THREE.CylinderGeometry(fan?0.22:0.24,fan?0.3:0.34,hh,9)); return trunkCache.get(k); }
 function palm(x,z,h,fan){
   if(inPhotoDistrict(x,z)) return;
   if(inLot(x,z)) return;
-  h=h||9; const g=new THREE.Group(); g.position.set(x,0,z); scene.add(g);
-  mk(new THREE.CylinderGeometry(fan?0.22:0.24,fan?0.3:0.34,h,9),toon(fan?'#8f7c66':'#cfc7b8'),0,h/2,0,{parent:g,out:0.04});
-  if(!fan) mk(new THREE.CylinderGeometry(0.27,0.25,1.5,9),toon('#7ea84c'),0,h+0.7,0,{parent:g,out:0.03});
-  const crown=new THREE.Group(); crown.position.y=fan?h:h+1.4; g.add(crown);
-  const n=fan?13:9, off=Math.random()*6;
-  for(let i=0;i<n;i++){ const p=new THREE.Group(); p.rotation.order='YXZ'; p.rotation.y=off+i/n*Math.PI*2; p.rotation.x=fan?(-0.5+Math.random()*0.9):(-0.15+Math.random()*0.8); crown.add(p);
-    const f=mk(FROND,toon(i%2?'#4f9a3e':'#5fae46'),0,0,0,{parent:p});
-    if(fan) f.scale.set(2.6,0.2,0.5+Math.random()*0.15); else f.scale.set(1.7,0.22,1+Math.random()*0.25); }
+  h=h||9; let crown=null;
+  const pf=asPrefab(()=>{
+    const g=new THREE.Group(); g.position.set(x,0,z); scene.add(g);
+    // 樹幹高度取到 0.5 公尺共用形狀，才能合批
+    const hh=Math.round(h*2)/2;
+    mk(palmTrunk(fan,hh),toon(fan?'#8f7c66':'#cfc7b8'),0,hh/2,0,{parent:g,out:0.04});
+    if(!fan) mk(PALM_NECK,toon('#7ea84c'),0,h+0.7,0,{parent:g,out:0.03});
+    crown=new THREE.Group(); crown.position.y=fan?h:h+1.4; g.add(crown);
+    const n=fan?13:9, off=Math.random()*6;
+    for(let i=0;i<n;i++){ const p=new THREE.Group(); p.rotation.order='YXZ'; p.rotation.y=off+i/n*Math.PI*2; p.rotation.x=fan?(-0.5+Math.random()*0.9):(-0.15+Math.random()*0.8); crown.add(p);
+      const f=mk(FROND,toon(i%2?'#4f9a3e':'#5fae46'),0,0,0,{parent:p});
+      if(fan) f.scale.set(2.6,0.2,0.5+Math.random()*0.15); else f.scale.set(1.7,0.22,1+Math.random()*0.25); }
+  },{fade:()=>crown.children.map(p=>p.children[0]),sway:()=>crown});
   const top=crown.position.y;
-  FOLIAGE.push({x,z,r:fan?2.6:3.4,y0:top-(fan?1.6:2.2),y1:top+1.4,parts:crown.children.map(p=>p.children[0])});
+  FOLIAGE.push({x,z,r:fan?2.6:3.4,y0:top-(fan?1.6:2.2),y1:top+1.4,parts:crown.children.map(p=>p.children[0]),setFade:pf.setFade});
   palms.push(crown); circC(x,z,0.4);
 }
 [[-14,-68],[14,-68],[-17,-60],[16,-58]].forEach(p=>palm(p[0],p[1],8.5+Math.random()));
@@ -59,16 +71,18 @@ function palm(x,z,h,fan){
 const ROOT=new THREE.CylinderGeometry(0.035,0.05,1,4);
 function banyan(x,z,s){
   if(inLot(x,z)) return;
-  s=s||1; const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
+  s=s||1; const parts=[];
+  const pf=asPrefab(()=>{
+  const g=new THREE.Group(); g.position.set(x,0,z); g.rotation.y=Math.random()*6; scene.add(g);
   const trunkMat=toon('#8a7a62');
   mk(new THREE.CylinderGeometry(0.55,0.85,4.2,9),trunkMat,0,2.1*s,0,{parent:g,out:0.05}).scale.setScalar(s);
   [[1.2,0.4],[-1,0.6],[0.3,-1.2]].forEach(([dx,dz])=>{ const b=mk(new THREE.CylinderGeometry(0.22,0.35,3.2,7),trunkMat,dx*0.9*s,3.6*s,dz*0.9*s,{parent:g,out:0.04}); b.rotation.set(dz*0.45,0,-dx*0.45); b.scale.setScalar(s); });
-  const parts=[];
   [[0,5.2,0,3.4,0.6],[2.6,4.8,0.6,2.4,0.55],[-2.5,4.9,-0.4,2.5,0.55],[0.6,5,2.4,2.3,0.55],[-0.4,5.1,-2.5,2.3,0.55],[0,6.1,0,2.4,0.6]].forEach(([dx,y,dz,r,sy],i)=>{
     const m=mk(SPH,toon(['#6f8f4e','#7a9a55','#668548'][i%3]),dx*s,y*s,dz*s,{parent:g,out:0.1}); m.scale.set(r*s,r*sy*s,r*s); parts.push(m); });
   for(let i=0;i<14;i++){ const a=Math.random()*Math.PI*2, d=(1+Math.random()*3)*s, h=(1.6+Math.random()*2.2)*s;
     const r=mk(ROOT,toon('#8f8068'),Math.cos(a)*d,4.3*s-h/2,Math.sin(a)*d,{parent:g}); r.scale.y=h; }
-  FOLIAGE.push({x,z,r:4.2*s,y0:3.6*s,y1:7.4*s,parts});
+  },{fade:()=>parts});
+  FOLIAGE.push({x,z,r:4.2*s,y0:3.6*s,y1:7.4*s,parts,setFade:pf.setFade});
   circC(x,z,0.9*s);
 }
 

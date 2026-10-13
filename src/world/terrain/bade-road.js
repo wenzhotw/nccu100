@@ -13,6 +13,7 @@ import { circC, obbC } from '../../core/collision.js';
 import { tree } from '../vegetation.js';
 import { BD_TH, alongBd } from '../layout.js';
 import { brickMat, lamp, shrubCol } from './back-road.js';
+import { asPrefab } from '../prefabs/index.js';
 
 const X0 = 12, X1 = 92.5;          // 這一段的範圍（中心線的 x）
 const HALF = 2.2;                  // 半個路寬
@@ -58,11 +59,14 @@ strip(X0, 88.6, HALF, HALF + 0.2, '#a7a7a1', 0.022);
 strip(14, 92.2, -HALF - 0.2, -HALF, '#a7a7a1', 0.022);
 
 /* ---------- 南側：花台、路燈、樹穴裡的行道樹 ---------- */
-const CONCRETE = toon('#7e7f7b'), PIT = new THREE.RingGeometry(0.45, 0.68, 16);
+const CONCRETE = toon('#7e7f7b'), PIT = new THREE.RingGeometry(0.45, 0.68, 16), SOIL = new THREE.CircleGeometry(0.45, 16);
 function planter(x) {
-  const g = at(x, 2.75);
-  block(0, 0.28, 0, 1.7, 0.56, 0.9, CONCRETE, 0.02, g);
-  [-0.35, 0.35].forEach((u, i) => mk(SPH, toon(shrubCol(i + Math.round(x))), u, 0.78, 0, { parent: g, out: 0.03 }).scale.set(0.45, 0.36, 0.45));
+  let g;
+  asPrefab(() => {
+    g = at(x, 2.75);
+    block(0, 0.28, 0, 1.7, 0.56, 0.9, CONCRETE, 0.02, g);
+    [-0.35, 0.35].forEach((u, i) => mk(SPH, toon(shrubCol(i + Math.round(x))), u, 0.78, 0, { parent: g, out: 0.03 }).scale.set(0.45, 0.36, 0.45));
+  });
   obbC(g.position.x, g.position.z, 0.85, 0.45, -BD_TH);
 }
 const crossing = x => Math.abs(x - 62.9) < 2 || Math.abs(x - 88.2) < 2;
@@ -72,8 +76,10 @@ for (let x = 36; x < 86; x += 6.6) {
   if (Math.abs(x - 62.9) < 3) continue;
   const [wx, wz] = alongBd(x, 4.85);
   tree(wx, wz, 0.95);
-  const r = new THREE.Mesh(PIT, toon('#8d8b85')); r.rotation.x = -Math.PI / 2; r.position.set(wx, 0.03, wz); scene.add(r);
-  const soil = new THREE.Mesh(new THREE.CircleGeometry(0.45, 16), toon('#5f5242')); soil.rotation.x = -Math.PI / 2; soil.position.set(wx, 0.028, wz); scene.add(soil);
+  asPrefab(() => {
+    const r = new THREE.Mesh(PIT, toon('#8d8b85')); r.rotation.x = -Math.PI / 2; r.position.set(wx, 0.03, wz); scene.add(r);
+    const soil = new THREE.Mesh(SOIL, toon('#5f5242')); soil.rotation.x = -Math.PI / 2; soil.position.set(wx, 0.028, wz); scene.add(soil);
+  });
 }
 // 北側靠路邊幾棵行道樹（樂活館前面）
 [[26, -3.8], [56, -3.8], [72, -3.8]].forEach(([x, v]) => { const [wx, wz] = alongBd(x, v); tree(wx, wz, 0.9); });

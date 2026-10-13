@@ -10,9 +10,11 @@ import { brickMat } from '../../terrain/ground.js';
 import { tree } from '../../vegetation.js';
 import { mbox } from '../../building-kit.js';
 import { defineBuilding } from '../../registry.js';
+import { asPrefab } from '../../prefabs/index.js';
 
 // 這棟建築的位置與尺寸（地圖、碰撞、高度判斷都會用到）
 const LBX=-46;
+const LAMP_POLE=new THREE.CylinderGeometry(0.07,0.09,4,8), LAMP_HEAD=new THREE.ConeGeometry(0.42,0.22,12);
 
 /**
  * 石獅（坐姿的傳統石獅，Q 版比例）：大頭、一圈捲毛鬃毛、凸眼、張嘴露牙、頸圈和鈴鐺、前腿直立、後腿蹲坐、捲尾巴。
@@ -149,9 +151,11 @@ function build() {
     tree(LBX+s*18.6,-90,0.85);
     /* 白色路燈 */
     const lx=LBX+s*12.6, lz=-80.5;
-    mk(new THREE.CylinderGeometry(0.07,0.09,4,8),toon('#efefea'),lx,2,lz,{out:0.02}); circC(lx,lz,0.15);
-    mk(new THREE.ConeGeometry(0.42,0.22,12),toon('#efefea'),lx,4.15,lz,{out:0.02});
-    mk(SPH,toon('#fff6dc',{emissive:'#ffe6a8',emissiveIntensity:0.6}),lx,3.95,lz,{}).scale.setScalar(0.18);
+    asPrefab(()=>{   // 白色路燈（工具箱預製物件）
+      mk(LAMP_POLE,toon('#efefea'),lx,2,lz,{out:0.02});
+      mk(LAMP_HEAD,toon('#efefea'),lx,4.15,lz,{out:0.02});
+      mk(SPH,toon('#fff6dc',{emissive:'#ffe6a8',emissiveIntensity:0.6}),lx,3.95,lz,{}).scale.setScalar(0.18);
+    }); circC(lx,lz,0.15);
   });
   /* NCCU 白色立牌 */
   { const t=canvasTex(128,320,(g,w,h)=>{ g.fillStyle='#ecebe6'; g.fillRect(0,0,w,h); g.fillStyle='#7b6a5e'; g.fillRect(10,14,w-20,46);

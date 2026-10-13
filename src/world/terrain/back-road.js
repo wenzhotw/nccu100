@@ -15,6 +15,7 @@ import { GRAD, SPH, basic, block, canvasTex, flat, hText, mk, plane, toon } from
 import { boxC, circC } from '../../core/collision.js';
 import { palm, tree } from '../vegetation.js';
 import { swZ } from '../layout.js';
+import { asPrefab } from '../prefabs/index.js';
 
 const X = 96;                 // 道路中心線
 const HW = 3.5;               // 半個路寬（兩線道）
@@ -129,21 +130,26 @@ const slowTex = hText('慢', WHITE, '900 150px "Noto Sans TC",sans-serif', 160, 
 /* ---------- 人行道上的花台、路燈、行道樹 ---------- */
 const CONCRETE = toon('#7e7f7b'), SHRUBS = ['#4f8f3e', '#5c9e45', '#467f38'];
 const shrubCol = n => SHRUBS[((Math.round(n) % 3) + 3) % 3];   // z 是負的，取餘數要轉正
+// 花台、路燈都是工具箱的預製物件（world/prefabs），同款一次畫完
 function planter(x, z, along) {   // along：'z' 表示花台沿著南北向道路擺
   const [w, d] = along === 'z' ? [0.9, 1.7] : [1.7, 0.9];
-  block(x, 0.28, z, w, 0.56, d, CONCRETE, 0.02);
-  for (let i = 0; i < 2; i++) {
-    const s = mk(SPH, toon(shrubCol(i + Math.round(z))), x + (along === 'z' ? 0 : (i - 0.5) * 0.7), 0.78, z + (along === 'z' ? (i - 0.5) * 0.7 : 0), { out: 0.03 });
-    s.scale.set(0.45, 0.36, 0.45);
-  }
+  asPrefab(() => {
+    block(x, 0.28, z, w, 0.56, d, CONCRETE, 0.02);
+    for (let i = 0; i < 2; i++) {
+      const s = mk(SPH, toon(shrubCol(i + Math.round(z))), x + (along === 'z' ? 0 : (i - 0.5) * 0.7), 0.78, z + (along === 'z' ? (i - 0.5) * 0.7 : 0), { out: 0.03 });
+      s.scale.set(0.45, 0.36, 0.45);
+    }
+  });
   boxC(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
 }
-const POLE = new THREE.CylinderGeometry(0.07, 0.09, 5.6, 7), HEAD = new THREE.ConeGeometry(0.32, 0.22, 3);
+const POLE = new THREE.CylinderGeometry(0.07, 0.09, 5.6, 7), HEAD = new THREE.ConeGeometry(0.32, 0.22, 3), BULB = new THREE.CircleGeometry(0.16, 3);
 function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 朝 -x）
-  mk(POLE, toon('#a3a8ae'), x, 2.8, z, { out: 0.015 });
-  block(x + face * 0.22, 5.5, z, 0.5, 0.06, 0.08, '#a3a8ae', 0);
-  const h = mk(HEAD, toon('#c4c8cc'), x + face * 0.42, 5.5, z, { out: 0.02 }); h.rotation.y = Math.PI / 6;
-  mk(new THREE.CircleGeometry(0.16, 3), toon('#fff6dc', { emissive: '#ffe6a8', emissiveIntensity: 0.7 }), x + face * 0.42, 5.38, z).rotation.x = Math.PI / 2;
+  asPrefab(() => {
+    mk(POLE, toon('#a3a8ae'), x, 2.8, z, { out: 0.015 });
+    block(x + face * 0.22, 5.5, z, 0.5, 0.06, 0.08, '#a3a8ae', 0);
+    const h = mk(HEAD, toon('#c4c8cc'), x + face * 0.42, 5.5, z, { out: 0.02 }); h.rotation.y = Math.PI / 6;
+    mk(BULB, toon('#fff6dc', { emissive: '#ffe6a8', emissiveIntensity: 0.7 }), x + face * 0.42, 5.38, z).rotation.x = Math.PI / 2;
+  });
   circC(x, z, 0.14);
 }
 {
@@ -216,7 +222,7 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
   const wx = x1 + 0.2, wz0 = ZN + SW, wz1 = ZG - 0.3;
   block(wx, 1.1, (wz0 + wz1) / 2, 0.3, 2.2, wz1 - wz0, '#efefea', 0.03);
   boxC(wx - 0.15, wx + 0.15, wz0, wz1);
-  for (let z = wz0 + 0.8; z < wz1; z += 1.1) { const s = mk(SPH, toon(shrubCol(z * 3)), wx - 0.5, 0.35, z, { out: 0.03 }); s.scale.set(0.45, 0.4, 0.55); }
+  asPrefab(() => { for (let z = wz0 + 0.8; z < wz1; z += 1.1) { const s = mk(SPH, toon(shrubCol(z * 3)), wx - 0.5, 0.35, z, { out: 0.03 }); s.scale.set(0.45, 0.4, 0.55); } });   // 灌木（工具箱）
   ['#d8433f', '#f0c94a', '#5b8ed6', '#efe6d0'].forEach((c, i) => block(wx - 0.18, 1.35, wz0 + 1.6 + i * 1.5, 0.06, 1.2, 1.1, c, 0.01));
   { const v = canvasTex(64, 256, (g, w, h) => { g.fillStyle = '#2f5fa8'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.font = '900 40px "Noto Sans TC",sans-serif'; g.textAlign = 'center'; [...'學生會'].forEach((c, i) => g.fillText(c, w / 2, 70 + i * 60)); });
     block(wx - 0.3, 1.4, wz1 - 0.7, 0.12, 2.8, 0.5, '#2f5fa8', 0.01);
