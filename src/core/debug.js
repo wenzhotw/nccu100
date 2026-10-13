@@ -16,13 +16,14 @@ import { enterRoom, exitRoom, groundH, pos, spots, zoneOf } from './gameplay.js'
 import { rooms } from './rooms.js';
 import { scene } from './engine.js';
 import { colliders, resolve } from './collision.js';
+import { bakeStats } from '../world/bake/index.js';
 
 const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug') || new URLSearchParams(location.search).has('perf');
 if (on) {
   window.__game = {
     perf: performanceMonitor, miniMapCacheStats: getMiniMapCacheStats,
     state, world, pos, spots, heightAt: groundH, zoneOf, scene, colliders, resolve,
-    rooms, enterRoom, exitRoom,
+    rooms, enterRoom, exitRoom, bakeStats,
     teleport(x, z) { pos.set(x, groundH(x, z), z); },
     view(...v) { state.viewCam = v.length === 6 ? v : null; },
   };
