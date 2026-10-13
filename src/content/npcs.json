@@ -26,6 +26,15 @@
       "dialog": [
         {
           "when": {
+            "isEagle": true
+          },
+          "lines": [
+            "你現在是政大的雄鷹吉祥物了，飛得還順利嗎？",
+            "政大的一百年，就託付給你繼續守護了。"
+          ]
+        },
+        {
+          "when": {
             "haveMap": false
           },
           "lines": [

@@ -53,9 +53,20 @@ function update(dt){
   const fx=-Math.sin(state.yaw), fz=-Math.cos(state.yaw), rx=Math.cos(state.yaw), rz=-Math.sin(state.yaw);
   const tvx=(fx*iy+rx*ix)*spd, tvz=(fz*iy+rz*ix)*spd;
   const k=1-Math.exp(-dt*12); vel.x+=(tvx-vel.x)*k; vel.z+=(tvz-vel.z)*k;
-  pos.x+=vel.x*dt; pos.z+=vel.z*dt; resolve(pos);
-  state.vy-=18*dt; pos.y+=state.vy*dt; const gh=groundH(pos.x,pos.z);
+  pos.x+=vel.x*dt; pos.z+=vel.z*dt;
+  if(!(state.isEagle&&!state.grounded)) resolve(pos);   // 雄鷹飛在空中時不擋建築，可以飛過去
+  if(state.isEagle){
+    // 雄鷹飛行：按住空白鍵／跳躍鍵持續上升，放開緩緩下降
+    const asc=state.started&&dlg.hidden&&!state.busy&&(keys.Space||state.flyHeld);
+    state.vy=asc?Math.min(state.vy+dt*22,7.2):Math.max(state.vy-dt*30,-2.4);
+    if(state.vy>0&&pos.y>=90) state.vy=0;
+  } else {
+    state.vy-=18*dt;
+  }
+  pos.y+=state.vy*dt; pos.y=Math.min(pos.y,90);
+  const gh=groundH(pos.x,pos.z);
   if(pos.y<=gh){ if(!state.grounded&&state.vy<-4) AU.sfx('land'); pos.y=gh; state.vy=0; state.grounded=true; }
+  else if(state.isEagle) state.grounded=false;
   player.position.copy(pos);
   const sp=Math.hypot(vel.x,vel.z);
   if(sp>0.3) player.rotation.y=lerpA(player.rotation.y,Math.atan2(vel.x,vel.z),1-Math.exp(-dt*14));
@@ -69,6 +80,9 @@ function update(dt){
     rig.rotation.x=mv?1.25:0.35; rig.position.y=0;
     H.shL.rotation.set(-Math.PI/2+Math.sin(t)*1.6*a,0,-0.2); H.shR.rotation.set(-Math.PI/2-Math.sin(t)*1.6*a,0,0.2);
     H.hipL.rotation.x=Math.sin(t*2)*0.5*a; H.hipR.rotation.x=-Math.sin(t*2)*0.5*a; }
+  // 雄鷹飛行：翅膀拍動（上升拍快、下降滑翔慢）
+  if(state.isEagle&&!state.grounded){ const flap=Math.sin(state.time*(state.vy>0?14:6))*0.9;
+    H.shL.rotation.set(flap,0,-0.9-Math.abs(flap)*0.3); H.shR.rotation.set(-flap,0,0.9+Math.abs(flap)*0.3); }
   }
 
   // 所在房間自己的每一幀更新（例如泳池的水波、游泳的人）

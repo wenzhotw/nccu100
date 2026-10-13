@@ -159,3 +159,17 @@
 - 選「超好玩」：說 `happy`（提示去操場、游泳池）
 - 兩條路最後都有 `contact` 選項，第一個會開 `instagram` 網址
 
+## eagle.json：雄鷹吉祥物（永久變身、飛行、行政大樓屋頂躲 Wenz）
+
+三個校園故事都交給校長之後，再跟校長說話，他會問「你想要自由嗎？」。程式在 `src/systems/eagle/`，雄鷹的 3D 模型和 `becomeEagle()` 在 `src/actors/player.js`。
+
+- `ask`、`choices`：校長的提議和兩個選項（我想要自由！、我還是當人類好了）
+- 選「我想要自由！」：說 `grant`（我讓你成為雄鷹！）之後畫面轉場（`transition`），永久變身雄鷹（`state.isEagle=true`，不會變回人類），`afterToast` 提示飛行操作
+- 選「我還是當人類好了」：說 `decline`，之後再找校長還是會重新問一次
+- 變身之後，npcs.json 裡校長的 `dialog` 第一段（`when: { "isEagle": true }`）會換成新的問候
+- 變身之後，原本在四維堂旁廊道的 Wenz 會消失（`state.isEagle` 讓他的互動永遠失效），`roof` 底下的 Wenz 在行政大樓屋頂出現
+  - `roof.shout`：玩家靠近時頭上冒出的話
+  - `roof.caught`：追到他、按「抓住他！」之後的結局台詞
+
+雄鷹飛行：到戶外按住空白鍵（手機按跳躍鍵）持續上升，放開會緩緩下降，建築的牆不會擋住飛在空中的雄鷹（但在地面上走路時一樣會被擋）。
+

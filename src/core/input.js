@@ -36,7 +36,13 @@ stick.addEventListener('pointermove',e=>{ if(e.pointerId===stickPtr) stickMove(e
 const stickEnd=e=>{ if(e.pointerId!==stickPtr) return; stickPtr=null; state.stickV={x:0,y:0}; knob.style.transform=''; };
 stick.addEventListener('pointerup',stickEnd);
 stick.addEventListener('pointercancel',stickEnd);
-$('jump').addEventListener('pointerdown',e=>{ e.preventDefault(); if(!dlg.hidden) advance(); else late.jump(); });
+state.flyHeld=false;
+const jumpBtn=$('jump');
+jumpBtn.addEventListener('pointerdown',e=>{ e.preventDefault(); if(!dlg.hidden) advance(); else { late.jump(); state.flyHeld=true; } });
+const jumpEnd=()=>{ state.flyHeld=false; };
+jumpBtn.addEventListener('pointerup',jumpEnd);
+jumpBtn.addEventListener('pointercancel',jumpEnd);
+jumpBtn.addEventListener('pointerleave',jumpEnd);
 $('act').addEventListener('click',()=>late.interact());
 $('act2').addEventListener('click',()=>late.interactAlt());
 $('snd').addEventListener('click',()=>{ AU.init(); const m=AU.toggle(); $('snd').classList.toggle('off',m); });
