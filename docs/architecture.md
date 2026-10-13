@@ -30,7 +30,7 @@ core/loop.js                 每一幀的更新與繪製
 | `heights` | 可以走上去的高度（階梯、平台、橋） | 玩家、NPC 移動，`heightAt(x, z)` |
 | `zones` | 區域名稱（依 priority 由小到大判斷） | 畫面上方的地區橫幅，`zoneAt(p)` |
 | `mapShapes` | 地圖圖示（矩形或自訂畫法） | 百年秘寶地圖、小地圖 |
-| `interiors` | 室內空間的進出動作 | 四維堂的門 |
+| `interiors` | 室內房間（獨立場景、門、範圍），見 [interiors.md](interiors.md) | `core/rooms.js`、`core/gameplay.js` 的門 |
 
 建築用 `defineBuilding({...})` 一次宣告全部；地形用 `registerHeight()`、`registerZone()`。
 

@@ -13,12 +13,13 @@ import { dlg } from '../ui/dialog.js';
 import { groundH, indoor, pos } from '../core/gameplay.js';
 import { drawMap } from './items.js';
 import { MAP_BOUNDS } from '../world/layout.js';
+import * as ROOMS from '../core/rooms.js';
 import { enterCar, exitCar } from './police-drive.js';
 
 /* ---------- 手感：塵土粒子、落地壓縮、跑步鏡頭 ---------- */
 const puffTex=canvasTex(64,64,(g)=>{ const r=g.createRadialGradient(32,32,2,32,32,30); r.addColorStop(0,'rgba(255,252,244,1)'); r.addColorStop(0.6,'rgba(250,244,230,.85)'); r.addColorStop(1,'rgba(250,244,230,0)'); g.fillStyle=r; g.beginPath(); g.arc(32,32,30,0,7); g.fill(); });
 const PUFFS=[];
-for(let i=0;i<28;i++){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,transparent:true,depthWrite:false,opacity:0})); s.visible=false; s.userData={life:0,vx:0,vy:0,vz:0,s0:0.3}; scene.add(s); PUFFS.push(s); }
+for(let i=0;i<28;i++){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,transparent:true,depthWrite:false,opacity:0})); s.visible=false; s.userData={life:0,vx:0,vy:0,vz:0,s0:0.3}; scene.add(s); ROOMS.carry(s); PUFFS.push(s); }
 let puffI=0;
 function puff(x,y,z,n,spread,size){ for(let k=0;k<n;k++){ const s=PUFFS[puffI++%PUFFS.length], a=Math.random()*Math.PI*2, sp=spread*(0.5+Math.random()*0.5);
   s.position.set(x+Math.cos(a)*0.15,y+0.08,z+Math.sin(a)*0.15); s.userData.vx=Math.cos(a)*sp; s.userData.vz=Math.sin(a)*sp; s.userData.vy=0.5+Math.random()*0.6; s.userData.life=1; s.userData.s0=(size||0.32)*(0.8+Math.random()*0.4); s.visible=true; } }
@@ -68,7 +69,7 @@ function drawMini(dt){
   const W=minic.width, kx=miniBase.width/(MX1-MX0), kz=miniBase.height/(MZ0-MZ1);
   mg.clearRect(0,0,W,W); mg.save(); mg.beginPath(); mg.arc(W/2,W/2,W/2,0,7); mg.clip();
   mg.fillStyle='#f3e6c6'; mg.fillRect(0,0,W,W);
-  if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText('四維堂',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText('室內',W/2,W/2+30); mg.restore(); return; }
+  if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.name)||'室內',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText('室內',W/2,W/2+30); mg.restore(); return; }
   const R=36, cx=(pos.x-MX0)*kx, cy=(MZ0-pos.z)*kz;
   mg.drawImage(miniBase,cx-R*kx,cy-R*kz,2*R*kx,2*R*kz,0,0,W,W);
   mg.translate(W/2,W/2);

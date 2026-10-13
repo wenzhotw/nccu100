@@ -26,7 +26,8 @@
 | `title` | ✓ | 對話框上的名字 |
 | `tag` |  | 頭上的名牌；不填就沒有名牌 |
 | `home` | ✓ | 站的位置。四維堂室內的 x 寫 `"IX"` |
-| `indoor` |  | `true` 表示在四維堂室內 |
+| `room` |  | 在哪個室內房間（房間 id，見 [interiors.md](interiors.md)） |
+| `indoor` |  | `true` 表示在四維堂室內（等於 `"room": "siwei-hall"`） |
 | `path` |  | 來回走的路線，`[[x, z], [x, z], …]` |
 | `speed` |  | 走路速度，預設 1.3 |
 | `face` |  | 站著時面向的角度，可寫數字或 `"PI"`、`"-PI/2"` |

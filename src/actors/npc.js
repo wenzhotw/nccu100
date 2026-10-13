@@ -7,6 +7,7 @@ import { scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
 import { BOX, SPH, basic, canvasTex, outline, toon } from '../render/kit.js';
 import { resolve } from '../core/collision.js';
+import { roomScene } from '../core/rooms.js';
 import { police } from './police-car.js';
 import { NPC_LIST, PANIC_LINES, STUDENTS, num, pickDialog, runAction } from '../content/index.js';
 import { outlineU, part } from './player.js';
@@ -38,8 +39,8 @@ function npcFace(brow,mode){ return canvasTex(256,256,g=>{ g.save(); g.translate
   if(mode==='panic'){ g.fillStyle='#7a3238'; g.beginPath(); g.ellipse(128,182,13,18,0,0,7); g.fill(); }
   else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
   g.restore(); }); }
-function makePerson(o){
-  const g=new THREE.Group(), rig=new THREE.Group(); g.add(rig); scene.add(g); g.userData.noOcc=true;
+function makePerson(o,where){
+  const g=new THREE.Group(), rig=new THREE.Group(); g.add(rig); (where||scene).add(g); g.userData.noOcc=true;
   const P={}, top=o.top||'#5a7fb0', pants=o.pants||'#2f3446', skin=o.skin||'#ffe1cc';
   const tor=part(new THREE.CapsuleGeometry(0.18,0.16,6,14),top,0,0.52,0,rig,0.014); tor.scale.z=0.85;
   if(o.suit){ part(BOX,'#ffffff',0,0.6,0.148,rig).scale.set(0.09,0.16,0.01); part(BOX,o.tie||'#6b3f8f',0,0.57,0.156,rig).scale.set(0.035,0.15,0.01);
@@ -80,20 +81,24 @@ function makePerson(o){
 }
 const PANIC=PANIC_LINES;
 function addNPC(o){
-  const b=makePerson(o.look);
+  // room：在哪個室內（null 是戶外）。舊的 indoor: true 等於四維堂
+  if(o.room===undefined) o={...o,room:o.indoorNPC?'siwei-hall':null};
+  const b=makePerson(o.look,o.room?roomScene(o.room):null);
   const n=Object.assign({},o,{g:b.g,rig:b.rig,P:b.P,pi:0,fear:0,state:'idle',ph:Math.random()*6,blink:2+Math.random()*3,sayT:Math.random()*2,si:-1,chaseT:0});
   n.g.position.set(o.home.x,0,o.home.z); n.g.rotation.y=o.face||0;
   if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=1.62; n.g.add(n.tag); }
   n.sp=speech(); n.sp.position.y=o.tag?2.12:1.8; n.g.add(n.sp);
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
-  n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.indoorNPC?indoor():!indoor()),
+  n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
-  spots.push(n.spot); NPCS.push(n); return n;
+  n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 function npcUpdate(n,dt){
-  const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=n.indoorNPC?indoor():!indoor();
+  // 不在主角所在的場景：不畫也不動（一般遊戲換場景後，其他場景的角色會暫停）
+  if((n.room||null)!==(state.room||null)) return;
+  const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=true;
   let tx=null,tz=null,spd=0;
-  if(state.driving&&!n.indoorNPC&&n!==cop&&Math.abs(state.carSpeed)>1.5&&Math.hypot(police.position.x-p.x,police.position.z-p.z)<13){ if(n.fear<=0&&Math.random()<0.6) AU.sfx('scream'); n.fear=3.2; }
+  if(state.driving&&!n.room&&n!==cop&&Math.abs(state.carSpeed)>1.5&&Math.hypot(police.position.x-p.x,police.position.z-p.z)<13){ if(n.fear<=0&&Math.random()<0.6) AU.sfx('scream'); n.fear=3.2; }
   if(n.fear>0){ n.fear-=dt; let ax=p.x-police.position.x, az=p.z-police.position.z; const l=Math.hypot(ax,az)||1; tx=p.x+ax/l*5; tz=p.z+az/l*5; spd=6.2; }
   else if(n.state==='chase'){ n.chaseT+=dt; tx=pos.x; tz=pos.z; spd=n.chaseSpd||9;
     if(n.chaseT>14&&dP>12){ const bx=Math.sin(state.yaw), bz=Math.cos(state.yaw); p.x=pos.x+bx*7; p.z=pos.z+bz*7; n.chaseT=0; }
@@ -107,7 +112,7 @@ function npcUpdate(n,dt){
   if(tx!==null){ const dx=tx-p.x, dz=tz-p.z, d=Math.hypot(dx,dz);
     if(d>0.08){ const st=Math.min(d,spd*dt); npcTmp.set(p.x+dx/d*st,0,p.z+dz/d*st); resolve(npcTmp,0.35); p.x=npcTmp.x; p.z=npcTmp.z;
       n.g.rotation.y=lerpA(n.g.rotation.y,Math.atan2(dx,dz),1-Math.exp(-dt*9)); moving=true; } }
-  p.y=groundH(p.x,p.z);
+  p.y=groundH(p.x,p.z,n.room||null);
   const P=n.P, a=moving?Math.min(1,spd/3):0; n.ph+=dt*(moving?4+spd*1.2:0); const s=Math.sin(n.ph);
   P.hipL.rotation.x=-s*0.8*a; P.hipR.rotation.x=s*0.8*a;
   const panic=n.fear>0;
