@@ -204,6 +204,25 @@ const FX = {
     t.textContent = '罰單'; AU.sfx('whistle');
     await wait(30); t.style.transform = `translate(${b.x - a.x}px,${b.y - a.y}px) rotate(540deg)`; await wait(560); t.remove();
   },
+  // 吹哨子：音符和聲波往對手衝過去
+  async whistle(from, to) {
+    const a = center(spr[from]), b = center(spr[to]); AU.sfx('whistle');
+    for (let i = 0; i < 4; i++) {
+      const n = add('fx-note', { left: a.x + 'px', top: (a.y - 30) + 'px', position: 'absolute', font: '900 34px "M PLUS Rounded 1c",sans-serif', color: '#e8463c',
+        transition: 'transform .55s ease-in, opacity .55s', textShadow: '0 2px 0 #fff' });
+      n.textContent = i % 2 ? '♫' : '♪';
+      setTimeout(() => { n.style.transform = `translate(${b.x - a.x}px,${b.y - a.y + (i - 1.5) * 18}px) scale(1.4)`; n.style.opacity = 0.2; }, i * 120);
+    }
+    await wait(900);
+  },
+  // 丟救生圈：紅白相間的圈圈轉著飛過去
+  async buoy(from, to) {
+    const a = center(spr[from]), b = center(spr[to]);
+    const r = add('fx-buoy', { left: (a.x - 28) + 'px', top: (a.y - 28) + 'px', width: '56px', height: '56px', borderRadius: '50%', position: 'absolute',
+      background: 'conic-gradient(#e8463c 0 25%,#fff 0 50%,#e8463c 0 75%,#fff 0)', border: '3px solid #2a2c4a',
+      WebkitMask: 'radial-gradient(circle,transparent 14px,#000 15px)', mask: 'radial-gradient(circle,transparent 14px,#000 15px)', transition: 'transform .6s ease-in' });
+    AU.sfx('grab'); await wait(30); r.style.transform = `translate(${b.x - a.x}px,${b.y - a.y}px) rotate(720deg)`; await wait(620); r.remove();
+  },
   // 睡覺：頭上飄 Zzz
   async sleep(from) {
     const c = center(spr[from]);

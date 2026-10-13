@@ -44,6 +44,7 @@ import './systems/pangolin-grab.js';
 import './systems/missionaries/index.js'; // 學生傳教士與寶可夢式戰鬥
 import './systems/old-principal/index.js'; // 老校長：騎馬、歷史問答、精神堡壘任務信函
 import './systems/weather/index.js'; // 天氣：石獅子、下雨、偷傘、淋雨體力、四維道噴水磁磚
+import './systems/swimming/index.js'; // 游泳館：換泳衣、救生員、下水游泳
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';

@@ -36,7 +36,7 @@ function enterRoom(id){ const d=roomDef(id); transition(()=>{
 function exitRoom(){ const d=roomDef(state.room); transition(()=>{
   d&&d.onExit&&d.onExit(); switchTo(null); state.room=null; late.onSceneChange&&late.onSceneChange();
   const s=d.returnTo; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; }); }
-function jump(){ if(state.grounded&&dlg.hidden&&!state.busy&&!state.driving){ AU.sfx('jump'); state.vy=6.6; state.grounded=false; } }
+function jump(){ if(state.grounded&&dlg.hidden&&!state.busy&&!state.driving&&!state.swimming){ AU.sfx('jump'); state.vy=6.6; state.grounded=false; } }
 function transition(fn){
   state.busy=true; AU.sfx('door'); $('act').hidden=true; $('act2').hidden=true;
   late.iris(true,520,()=>{ fn(); vel.set(0,0,0); camT.set(pos.x,pos.y+0.9,pos.z); state.camD=state.dist; setTimeout(()=>late.iris(false,560,()=>{ state.busy=false; }),160); });
