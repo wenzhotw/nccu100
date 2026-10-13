@@ -156,4 +156,37 @@ function setOutfit(kind){
 }
 state.outfit='normal';
 
-export { H, HC, animateHero, outlineU, part, player, rig, setOutfit, shadowBlob };
+/* ---------- 雄鷹吉祥物：收集三個校園故事交給校長、答應「想要自由」之後永久換裝 ----------
+ * 蓬鬆大白頭、深色眉毛、黃色鳥喙，藍色隊服，咖啡色翅膀和腿，黃色鳥爪。
+ * 沿用原本的關節（肩膀、髖部、頭），走路／飛行動畫不用重寫。 */
+state.isEagle=false;
+const EC={blue:'#1f3f8f',blue2:'#16306e',brown:'#6b4a2e',brown2:'#59402a',beak:'#f2b33d',claw:'#e8a93a',white:'#f7f5ef'};
+const eagleHead=new THREE.Group(); eagleHead.visible=false; hc.add(eagleHead);
+{ const sk=part(new THREE.SphereGeometry(0.35,28,20),EC.white,0,0.01,0,eagleHead); sk.scale.set(1.08,1,1.04); outlineU(sk,1.035);
+  [-1,1].forEach(s=>{ const b=part(BOX,'#2a2c4a',s*0.12,0.11,0.265,eagleHead); b.scale.set(0.17,0.038,0.01); b.rotation.z=-s*0.4; b.rotation.y=-s*0.15; });
+  [-1,1].forEach(s=>part(SPH,'#241f1f',s*0.1,0.015,0.31,eagleHead).scale.setScalar(0.034));
+  const beak=part(new THREE.ConeGeometry(0.1,0.2,8),EC.beak,0,-0.07,0.33,eagleHead); beak.rotation.x=Math.PI/2.05; outlineU(beak,1.05);
+  part(BOX,EC.beak,0,-0.1,0.38,eagleHead).scale.set(0.09,0.02,0.1);
+}
+const eagleChest=part(BOX,'#fff6dc',0,0.55,0.16,rig); eagleChest.visible=false; eagleChest.scale.set(0.12,0.16,0.01);
+const eagleWing=s=>{ const w=part(new THREE.ConeGeometry(0.22,0.5,4,1,true),EC.brown,s*0.22,-0.1,0,s<0?H.shL:H.shR,0.01); w.rotation.z=s*0.45; w.rotation.x=Math.PI/2; w.scale.set(1,1,0.25); w.visible=false; return w; };
+const eagleWingL=eagleWing(-1), eagleWingR=eagleWing(1);
+const eagleFeet=[H.hipL,H.hipR].map(hp=>{ const foot=part(new THREE.ConeGeometry(0.1,0.17,4),EC.claw,0,-0.26,0.05,hp); foot.rotation.x=Math.PI/2.3; foot.scale.set(1,1,1.6); foot.visible=false; outlineU(foot,1.08); return foot; });
+/** 永久變成雄鷹（校長的任務獎勵）：藏起人類的頭髮、臉、書包，換上雄鷹頭、翅膀、鳥爪 */
+function becomeEagle(){
+  if(state.isEagle) return;
+  state.isEagle=true; state.outfit='normal';
+  HAIR.forEach(m=>{ m.visible=false; });
+  skull.visible=false; face.visible=false; PACK.forEach(m=>{ m.visible=false; });
+  eagleHead.visible=true; eagleChest.visible=true;
+  H.torso.material=toon(EC.blue); shorts.visible=false;
+  SLEEVES.forEach(m=>{ m.material=toon(EC.brown); });
+  H.shL.children[1].material=toon(EC.brown2); H.shR.children[1].material=toon(EC.brown2);
+  eagleWingL.visible=true; eagleWingR.visible=true;
+  H.hipL.children[0].material=toon(EC.brown2); H.hipR.children[0].material=toon(EC.brown2);
+  H.hipL.children[1].visible=false; H.hipR.children[1].visible=false;   // 原本的鞋子藏起來
+  H.hipL.children[2].visible=false; H.hipR.children[2].visible=false;   // 鞋底
+  eagleFeet.forEach(m=>{ m.visible=true; });
+}
+
+export { H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };
