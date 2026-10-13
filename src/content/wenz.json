@@ -1,0 +1,33 @@
+{
+  "_說明": "遊戲製作人 Wenz（四維堂旁的廊道）。問你遊戲好不好玩：回「爛透了」會被一招破壞死光轟掉；回「超好玩」會告訴你哪裡好玩。兩條路最後都可以到他的 Instagram。",
+  "title": "遊戲製作人．Wenz",
+  "ask": ["嗨，我是這個遊戲的製作人 Wenz。", "這個遊戲好玩嗎？"],
+  "choices": ["爛透了", "超好玩"],
+  "angry": ["……爛透了？", "好，那我們來 PK。"],
+  "after": ["有意見的話，來直接找我吧。"],
+  "happy": ["真的嗎！謝謝你！", "那你一定要去操場看看，有個騎馬的老人在等你。", "還有游泳池，去跟英文系的溫同學比一場。", "有什麼想法，歡迎直接聯繫我！"],
+  "contact": ["聯繫 Wenz（Instagram）", "下次再說"],
+  "bye": ["好喔，玩得開心！"],
+  "instagram": "https://www.instagram.com/hoche91321/",
+  "battle": {
+    "enemy": { "name": "遊戲製作人 Wenz", "level": 99, "hp": 9999 },
+    "player": { "name": "你", "level": 21, "hp": 100 },
+    "intro": ["遊戲製作人 Wenz 想要對戰！", "「說爛透了的人，給我站好。」"],
+    "prompt": "你要怎麼做？",
+    "playerMoves": [
+      { "id": "star", "name": "一星負評", "fx": "sand", "power": [3, 6], "accuracy": 0.9, "lines": ["你使出了 一星負評！"], "type": "地面" },
+      { "id": "refund", "name": "要求退款", "fx": "rain", "power": [2, 5], "accuracy": 0.9, "lines": ["你使出了 要求退款！", "可是這個遊戲是免費的……"], "type": "水" },
+      { "id": "ptt", "name": "截圖上 PTT", "fx": "holy", "power": [4, 8], "accuracy": 0.85, "lines": ["你使出了 截圖上 PTT！"], "type": "光" },
+      { "id": "bug", "name": "回報 Bug", "fx": "sword", "power": [5, 9], "accuracy": 0.8, "lines": ["你使出了 回報 Bug！"], "type": "一般" }
+    ],
+    "enemyMoves": [
+      { "id": "deathray", "name": "破壞死光", "fx": "deathray", "power": [999, 999], "accuracy": 1, "lines": ["遊戲製作人 Wenz 使出了 破壞死光！"] }
+    ],
+    "messages": {
+      "miss": "可是沒有打中！",
+      "crit": "會心一擊！",
+      "enemyFaint": ["遊戲製作人 Wenz 倒下了！"],
+      "playerFaint": ["你被轟飛了……"]
+    }
+  }
+}

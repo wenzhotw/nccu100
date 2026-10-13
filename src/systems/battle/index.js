@@ -223,6 +223,19 @@ const FX = {
       WebkitMask: 'radial-gradient(circle,transparent 14px,#000 15px)', mask: 'radial-gradient(circle,transparent 14px,#000 15px)', transition: 'transform .6s ease-in' });
     AU.sfx('grab'); await wait(30); r.style.transform = `translate(${b.x - a.x}px,${b.y - a.y}px) rotate(720deg)`; await wait(620); r.remove();
   },
+  // 破壞死光：畫面變暗，一道超粗的光束轟過去，全白閃光加大地震
+  async deathray(from, to) {
+    const a = center(spr[from]), b = center(spr[to]);
+    const dark = add('fx-tint', { background: 'rgba(20,10,40,.7)' }); await wait(20); dark.style.opacity = 1;
+    AU.sfx('thunder'); await wait(500);
+    const len = Math.hypot(b.x - a.x, b.y - a.y), ang = Math.atan2(b.y - a.y, b.x - a.x);
+    const ray = add('fx-ray', { position: 'absolute', left: a.x + 'px', top: (a.y - 40) + 'px', width: len + 'px', height: '80px', borderRadius: '40px', transformOrigin: '0 50%',
+      background: 'linear-gradient(#fff 0,#fff 30%,#ffe36b 45%,#ff6a3d 70%,rgba(255,60,120,0) 100%)', boxShadow: '0 0 40px 16px rgba(255,220,120,.8)',
+      transform: `rotate(${ang}rad) scaleX(0)`, transition: 'transform .35s ease-in' });
+    AU.sfx('crit'); await wait(30); ray.style.transform = `rotate(${ang}rad) scaleX(1)`; await wait(380);
+    root.classList.add('quake'); const w = add('fx-white'); await wait(30); w.style.opacity = 1; AU.sfx('thunder');
+    await wait(500); w.style.opacity = 0; await wait(300); root.classList.remove('quake');
+  },
   // 睡覺：頭上飄 Zzz
   async sleep(from) {
     const c = center(spr[from]);

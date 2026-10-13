@@ -60,8 +60,8 @@ function update(dt){
   if(state.holdPang){ H.shL.rotation.x=-1.35; H.shR.rotation.x=-1.35; H.shL.rotation.z=-0.35; H.shR.rotation.z=0.35; }
   if(state.holdUmbrella){ H.shR.rotation.set(-0.15,0,2.55); }   // 撐傘：右手舉起來（systems/weather）
   // 游泳：身體往前趴、雙手輪流划水、腳打水（state.swimming 由所在房間設定，例如游泳館）
-  if(state.swimming){ const t=state.time*(sp>0.5?6:2.5), a=sp>0.5?1:0.35;
-    rig.rotation.x=sp>0.5?1.25:0.35; rig.position.y=0;
+  if(state.swimming){ const mv=sp>0.5||state.racing, t=state.time*(mv?6:2.5), a=mv?1:0.35;
+    rig.rotation.x=mv?1.25:0.35; rig.position.y=0;
     H.shL.rotation.set(-Math.PI/2+Math.sin(t)*1.6*a,0,-0.2); H.shR.rotation.set(-Math.PI/2-Math.sin(t)*1.6*a,0,0.2);
     H.hipL.rotation.x=Math.sin(t*2)*0.5*a; H.hipR.rotation.x=-Math.sin(t*2)*0.5*a; }
   }

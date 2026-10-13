@@ -415,6 +415,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "wenz",
+      "tag": "遊戲製作人　Wenz",
+      "tagCol": "#f2c84b",
+      "title": "遊戲製作人．Wenz",
+      "home": {
+        "x": 17,
+        "z": -68
+      },
+      "face": 0,
+      "look": {
+        "top": "#2f3446",
+        "pants": "#3a4a6b",
+        "hair": "#1c1414",
+        "hairStyle": "side",
+        "glasses": "#2a2c4a",
+        "hood": true,
+        "shoe": "#f2f2ee",
+        "watch": true
+      },
+      "bubble": "這個遊戲好玩嗎？",
+      "dialog": [
+        {
+          "lines": [
+            "嗨，我是這個遊戲的製作人 Wenz。"
+          ]
+        }
+      ]
     }
   ],
   "students": {
