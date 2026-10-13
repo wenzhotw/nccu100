@@ -7,7 +7,10 @@ import { BOX, basic, block, canvasTex, mk, outline, toon } from '../render/kit.j
 
 /* 警車 */
 function makePolice(){
-  const g=new THREE.Group(); scene.add(g);
+  // userData.noOcc：要在這裡（建立時）就設，不能等 systems/police-drive.js 才設──
+  // 靜態烘焙在 main.js 的 import 順序裡發生在 police-drive.js 之前，太晚設定等於沒設，
+  // 車身一樣會被烘焙凍結（同公車、石獅子的修法）。
+  const g=new THREE.Group(); g.userData.noOcc=true; scene.add(g);
   const lo=mk(BOX,toon('#22305a'),0,0.55,0,{parent:g}); lo.scale.set(1.8,0.5,4.3); outline(lo,0).scale.set(1.04,1.1,1.02);
   const up=mk(BOX,toon('#f6f6f2'),0,0.95,0,{parent:g}); up.scale.set(1.8,0.32,4.3); outline(up,0).scale.set(1.04,1.12,1.02);
   const cab=mk(BOX,toon('#f6f6f2'),0,1.42,-0.3,{parent:g}); cab.scale.set(1.62,0.66,2.5); outline(cab,0).scale.set(1.05,1.08,1.04);

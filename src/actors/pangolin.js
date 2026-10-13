@@ -11,6 +11,7 @@ import { outlineU, player } from './player.js';
 /* ---------- 穿山甲小穿：在四維道上來回散步 ---------- */
 const pang=new THREE.Group();
 pang.position.set(-3,0,8);
+pang.userData.noOcc=true; // 身體都是沒名字的小方塊，不設 noOcc 會被靜態烘焙凍結（同石獅子、公車）
 scene.add(pang);
 const pBody=new THREE.Group();
 pBody.position.y=0.32;
