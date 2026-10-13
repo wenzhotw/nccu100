@@ -33,6 +33,7 @@ import './world/zones.js';
 import './world/environment/grass.js';
 import './world/environment/particles.js';
 import './world/prefabs/flush.js'; // 全部建好後，把工具箱的東西合成一批一批畫（要在所有建築、地形之後）
+import './world/bake/flush.js'; // 再把剩下沒名字、純色的小方塊合併成幾個大網格（要在工具箱之後、鏡頭防穿模之前）
 import './actors/player.js';
 import './actors/pangolin.js';
 import './systems/stories.js';
