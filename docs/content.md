@@ -148,4 +148,14 @@
 - `battle`：跟救生員的戰鬥，格式同 missionaries.json。新特效 `whistle`（吹哨子）、`buoy`（丟救生圈）
 
 穿泳衣（`state.outfit === 'swim'`）或打贏救生員之後才能下水。離開游泳館時自動換回衣服。
+- `race`：跟英文系溫同學比游泳。要先換泳衣；一直按「划水！」（或空白鍵、E）加速。`maxSpeed` 前半段最快速度、`wenSpeed` 溫同學的速度、`tiredAt` 游到多少比例開始沒力、`tiredSpeed` 沒力後最快速度。照預設數值溫同學一定贏，輸了他說 `lose`
+
+## wenz.json：遊戲製作人 Wenz
+
+站在四維堂旁的廊道，頭上掛著「這個遊戲好玩嗎？」。程式在 `src/systems/wenz/`。
+
+- `ask`、`choices`：開場和兩個選項（爛透了、超好玩）
+- 選「爛透了」：`angry` 之後進入戰鬥，Wenz 只會一招 `破壞死光`（特效 `deathray`，傷害 999），戰鬥後說 `after`
+- 選「超好玩」：說 `happy`（提示去操場、游泳池）
+- 兩條路最後都有 `contact` 選項，第一個會開 `instagram` 網址
 
