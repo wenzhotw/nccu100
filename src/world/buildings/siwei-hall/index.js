@@ -8,10 +8,20 @@ import { buildExterior } from './exterior.js';
 import { buildCorridor } from './corridor.js';
 import { buildInterior, interiorLight } from './interior.js';
 
+// 正面門廳屋頂：exterior.js 裡那個實心方塊（block(0,6,-77.5,14,12,3,...)）的頂面，
+// 整棟樓唯一平的屋頂，真的可以站上去（搭配 exterior.js 的 boxC top 高度豁免）。
+// 範圍要跟 systems/eagle/index.js 的 ROOF 常數一致──兩邊不能互相 import，只能
+// 各自維護同一塊矩形（遊戲製作人 Wenz 變雄鷹後會搬去這裡躲著跑）。
+function roofHeightAt(x, z) {
+  if (x > -6.3 && x < 6.3 && z > -78.6 && z < -76.4) return 12;
+  return null;
+}
+
 export default defineBuilding({
   id: 'siwei-hall',
   name: '四維堂',
   build() { buildExterior(); buildCorridor(); },
+  heightAt: roofHeightAt,
   zones: [
     { priority: 150, test: p => (p.x > 14 && p.x <= 19.5 && p.z < -62 && p.z > -105) ? '四維堂廊道' : null },
   ],
