@@ -11,7 +11,10 @@ function setActiveColliders(list){ active=list; }
 /** 在房間裡時的範圍限制（core/rooms.js 用）；null 表示在戶外 */
 function setRoomClamp(fn){ roomClamp=fn; }
 let R=0.4;
-const boxC=(x0,x1,z0,z1)=>colliders.push({x0,x1,z0,z1});
+// top：可省略。有設的話，角色腳底高度（p.y）到這個高度以上就不擋這個碰撞體，
+// 用在「牆內有一塊可以站上去的屋頂平台」──例如飛上去站在屋頂時，不會被牆本身的
+// 碰撞箱從旁邊推開（resolveCore 裡用 c.top!==undefined&&p.y>=c.top 判斷）。
+const boxC=(x0,x1,z0,z1,top)=>colliders.push({x0,x1,z0,z1,top});
 const circC=(x,z,r)=>colliders.push({c:true,x,z,r});
 const obbC=(cx,cz,hx,hz,th)=>colliders.push({obb:true,cx,cz,hx,hz,cs:Math.cos(th),sn:Math.sin(th)});
 function resolve(p,rad){ const R0=R; if(rad) R=rad; resolveCore(p); R=R0; }

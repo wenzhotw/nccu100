@@ -3,14 +3,17 @@
  * 答應的話會有一個特效畫面，之後永久變成政大雄鷹吉祥物（不會變回人類），
  * 到戶外按住空白鍵（手機按跳躍鍵）就能持續飛高，放開緩緩下降，可以飛到空中俯視校園。
  *
- * 飛到行政大樓屋頂，會看到遊戲製作人 Wenz（他已經搬去那裡躲起來了，原本在四維堂旁的
- * 那個 Wenz 就消失了）。靠近他會躲著跑，追到才能跟他對話。
+ * 全遊戲只有一個遊戲製作人 Wenz：變身的瞬間（畫面轉場變黑時）直接把他原本站在四維堂
+ * 旁的那個人搬去四維堂正面屋頂（唯一平的那一塊，見 world/buildings/siwei-hall/
+ * exterior.js 的門廳box），不是另外生一個分身。飛到那裡、靠近他會躲著跑，追到才能
+ * 跟他對話；屋頂本身設了 heightAt（world/buildings/siwei-hall/index.js）跟碰撞 top
+ * 高度豁免（exterior.js 的 boxC），真的可以站上去、不會破圖掉下去。
  *
  * 台詞在 src/content/eagle.json。
  */
 import { state } from '../../core/state.js';
-import { STORIES, NPC_LIST } from '../../content/index.js';
-import { NPCS, addNPC } from '../../actors/npc.js';
+import { STORIES } from '../../content/index.js';
+import { NPCS } from '../../actors/npc.js';
 import { becomeEagle } from '../../actors/player.js';
 import { transition, pos } from '../../core/gameplay.js';
 import { openDialog, toast } from '../../ui/dialog.js';
@@ -18,17 +21,14 @@ import { openChoice } from '../../ui/choice.js';
 import E from '../../content/eagle.json';
 
 const principal = NPCS.find(n => n.id === 'principal');
-const wenzGround = NPCS.find(n => n.id === 'wenz');
+const wenz = NPCS.find(n => n.id === 'wenz');   // 全遊戲唯一的遊戲製作人，變雄鷹後直接搬家
 
 /* ---------- 校長：問你要不要變成雄鷹 ---------- */
 function offerFreedom() {
   openDialog(E.offerTitle, E.ask, () => openChoice(E.choices, i => {
     if (i === 0) {
       openDialog(E.offerTitle, E.grant, () => {
-        transition(() => {
-          becomeEagle();
-          if (wenzGround) { wenzGround.g.visible = false; wenzGround.spot.ok = () => false; }
-        });
+        transition(() => { becomeEagle(); if (wenz) moveWenzToRoof(); });
         setTimeout(() => toast(E.afterToast), 900);
       });
     } else {
@@ -41,34 +41,38 @@ if (principal) {
   principal.spot.fn = () => { if (state.found >= STORIES.length && !state.isEagle) offerFreedom(); else defaultFn(); };
 }
 
-/* ---------- 行政大樓屋頂：躲著跑的 Wenz ---------- */
-// 屋頂上一塊沒有突出結構擋著的平台，世界座標（見 world/buildings/admin-building）
-const ROOF = { x0: 46, x1: 60, z0: -96, z1: -85, y: 30.2 };
-const wenzLook = (NPC_LIST.find(n => n.id === 'wenz') || {}).look;
+/* ---------- 四維堂頂樓：Wenz 搬過去躲著跑 ---------- */
+// 範圍要跟 world/buildings/siwei-hall/index.js 的 heightAt、exterior.js 的 boxC top
+// 高度一致（兩邊都不能互相 import，只能各自維護同一塊矩形）。
+// y=12.15 比屋頂實際頂面（12）高一點點，純粹避免 Wenz 的模型陷進屋頂；minY=7 只是
+// 「確定你是飛上來的，不是地上走到的」的門檻，跟真正的屋頂高度留一點緩衝。
+const ROOF = { x0: -6.3, x1: 6.3, z0: -78.6, z1: -76.4, y: 12.15, minY: 7 };
 let caught = false;
-const roofWenz = addNPC({
-  id: 'wenz-roof', title: E.roof.title, tag: E.roof.tag, tagCol: '#f2c84b',
-  home: { x: (ROOF.x0 + ROOF.x1) / 2, z: (ROOF.z0 + ROOF.z1) / 2 },
-  look: wenzLook, shout: E.roof.shout, dialog: [{ lines: E.roof.caught }],
-});
-roofWenz.g.visible = false;
-roofWenz.spot.label = E.roof.catchLabel;
-roofWenz.spot.r = 2.2;
-roofWenz.spot.ok = () => state.isEagle && !caught && pos.y > 24;
-roofWenz.spot.fn = () => { caught = true; openDialog(E.roof.title, E.roof.caught); };
-roofWenz.after = (n, dt) => {
-  n.g.visible = state.isEagle;
-  if (!state.isEagle) return;
-  const p = n.g.position; p.y = ROOF.y;
-  if (!caught && pos.y > 24) {
-    const dx = p.x - pos.x, dz = p.z - pos.z, d = Math.hypot(dx, dz);
-    if (d < 12) {
-      const ex = d > 0.05 ? dx / d : Math.sin(state.time), ez = d > 0.05 ? dz / d : Math.cos(state.time);
-      const st = 6.5 * dt;
-      p.x = Math.min(ROOF.x1, Math.max(ROOF.x0, p.x + ex * st));
-      p.z = Math.min(ROOF.z1, Math.max(ROOF.z0, p.z + ez * st));
-      n.g.rotation.y = Math.atan2(-ex, -ez);
+function moveWenzToRoof() {
+  wenz.home = { x: (ROOF.x0 + ROOF.x1) / 2, z: (ROOF.z0 + ROOF.z1) / 2 };
+  wenz.g.position.set(wenz.home.x, ROOF.y, wenz.home.z);
+  wenz.bubble = null;   // 地面那句「這個遊戲好玩嗎？」是一直掛著的泡泡，蓋過 shout，不清掉的話屋頂上永遠喊不出新台詞
+  wenz.shout = E.roof.shout;
+  wenz.spot.label = E.roof.catchLabel;
+  wenz.spot.r = 2.2;
+  wenz.spot.ok = () => state.isEagle && !caught && pos.y > ROOF.minY;
+  wenz.spot.fn = () => { caught = true; openDialog(E.roof.title, E.roof.caught); };
+  wenz.after = (n, dt) => {
+    const p = n.g.position; p.y = ROOF.y;
+    if (!caught && pos.y > ROOF.minY) {
+      const dx = p.x - pos.x, dz = p.z - pos.z, d = Math.hypot(dx, dz);
+      if (d < 12) {
+        const ex = d > 0.05 ? dx / d : Math.sin(state.time), ez = d > 0.05 ? dz / d : Math.cos(state.time);
+        const st = 6.5 * dt;
+        p.x = Math.min(ROOF.x1, Math.max(ROOF.x0, p.x + ex * st));
+        p.z = Math.min(ROOF.z1, Math.max(ROOF.z0, p.z + ez * st));
+        n.g.rotation.y = Math.atan2(-ex, -ez);
+      }
     }
-  }
-  n.spot.x = p.x; n.spot.z = p.z;
-};
+    n.spot.x = p.x; n.spot.z = p.z;
+  };
+}
+
+if (import.meta.env.DEV || new URLSearchParams(location.search).has('debug')) {
+  window.__eagle = { offerFreedom, moveWenzToRoof };
+}
