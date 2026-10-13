@@ -77,7 +77,8 @@ test('unchanged map skips all base, noise and marker rendering', () => {
   for (let i = 0; i < 200; i++) assert.equal(f.cache.update(target, f.input), false);
   assert.deepEqual(target.getContext('2d').ops, pixels);
   assert.deepEqual(f.counts(), { allocated: 1, baseCalls: 1, detailCalls: 1 });
-  assert.deepEqual(f.cache.stats(), { baseRedraws: 1, compositeRedraws: 1, width: 1040, height: 800 });
+  assert.deepEqual(f.cache.stats(), { baseRedraws: 1, compositeRedraws: 1, width: 1040, height: 800,
+    fontRevision: 0, invalidations: { initial: 1, size: 0, map: 0, font: 0, shapes: 0 } });
 });
 
 test('cached composition preserves base text alignment without building labels', () => {
@@ -147,4 +148,29 @@ test('full map preserves outdoor player, indoor exclusion and compass/frame prec
     f.painter.drawDetails(target, { haveMap, crystals: f.input.crystals, player: showPlayer && !indoor ? player : null });
     assert.deepEqual(target.getContext('2d').ops, f.original({ haveMap, indoor, showPlayer, player }, canvas(780, 600)));
   }
+});
+
+
+test('base redraw diagnostics distinguish late fonts from ownership and movement', () => {
+  const f = fixture(), target = canvas();
+  f.cache.update(target, f.input);
+  f.input.haveMap = false;
+  f.cache.update(target, f.input);
+  f.input.fontRevision++;
+  f.cache.update(target, f.input);
+  assert.equal(f.cache.update(target, f.input), false);
+  const stats = f.cache.stats();
+  assert.equal(stats.baseRedraws, 2);
+  assert.equal(stats.compositeRedraws, 3);
+  assert.equal(stats.fontRevision, 1);
+  assert.deepEqual(stats.invalidations, { initial: 1, size: 0, map: 0, font: 1, shapes: 0 });
+  stats.invalidations.font = -1;
+  assert.equal(f.cache.stats().invalidations.font, 1);
+
+  f.input.fontRevision++;
+  f.input.mapRevision++;
+  f.input.shapes[0].label = '變更';
+  target.width = 520;
+  f.cache.update(target, f.input);
+  assert.deepEqual(f.cache.stats().invalidations, { initial: 1, size: 1, map: 1, font: 2, shapes: 1 });
 });

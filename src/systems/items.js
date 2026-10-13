@@ -40,7 +40,7 @@ function drawCachedMap(cv){
   return miniMapCache.update(cv,{ shapes:world.mapShapes, mapRevision:world.mapRevision,
     fontRevision:mapFontRevision, haveMap:state.haveMap, crystals });
 }
-function getMiniMapCacheStats(){ return miniMapCache.stats(); }
+function getMiniMapCacheStats(){ return { ...miniMapCache.stats(), pendingFontRevision:mapFontRevision }; }
 function openMap(){ if(!state.haveMap) return; drawMap(); $('mapw').hidden=false; AU.sfx('open'); }
 function closeMap(){ $('mapw').hidden=true; }
 $('mapItem').addEventListener('click',openMap);
