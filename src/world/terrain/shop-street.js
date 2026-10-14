@@ -59,7 +59,7 @@ function hSign(text, bg, fg) {
 }
 function vSign(text, bg, fg, border) {
   const chars = [...text.replace(/ /g, '')];
-  return basic({ side: THREE.DoubleSide, map: canvasTex(96, 384, (g, w, h) => {
+  return basic({ map: canvasTex(96, 384, (g, w, h) => {
     g.fillStyle = bg; g.fillRect(0, 0, w, h);
     if (border) { g.fillStyle = border; g.fillRect(0, 0, w, h); g.fillStyle = bg; g.fillRect(10, 10, w - 20, h - 20); }
     else { g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 5; g.strokeRect(4, 4, w - 8, h - 8); }
@@ -71,32 +71,36 @@ function vSign(text, bg, fg, border) {
 }
 
 /* ---------- 照片裡的店：八方雲集到政大牛肉麵（2026 年 10 月實拍） ---------- */
-// 正面平貼在牆上的直式大招牌（面向馬路）
-function frontV(text, x, y, z, w, h, bg, fg, border) {
-  block(x, y, z + 0.1, w + 0.16, h + 0.16, 0.2, border || '#efe8d8', 0.02);
-  plane(w, h, vSign(text, bg, fg, border), x, y, z - 0.01, 0, Math.PI);
-}
 // 側面伸出去、跟馬路垂直的直式招牌
+// 招牌板兩面都貼字（各貼在板子外側一點，字才不會被板子蓋住，也不會左右相反）
+function twoFaces(mat, x, y, z, w, h) {
+  plane(w, h, mat, x + 0.07, y, z, 0, Math.PI / 2);
+  plane(w, h, mat, x - 0.07, y, z, 0, -Math.PI / 2);
+}
 function sideV(text, x, y, z, w, h, bg, fg, border) {
   block(x, y, z, 0.1, h + 0.12, w + 0.12, border || '#efe8d8', 0.02);
-  plane(w, h, vSign(text, bg, fg, border), x, y, z, 0, Math.PI / 2);
+  twoFaces(vSign(text, bg, fg, border), x, y, z, w, h);
 }
-// 招牌後面、頂樓上的鐵架
-function steelFrame(x, z, y0, y1, w) {
-  [-w / 2, w / 2].forEach(dx => block(x + dx, (y0 + y1) / 2, z, 0.08, y1 - y0, 0.08, '#4a4f52', 0));
+// 鐵架：預設沿著牆面（x 方向），alongZ 時跟馬路垂直，撐住伸出去的直招牌
+function steelFrame(x, z, y0, y1, w, alongZ) {
+  const at = (d, y, sx, sy, sz) => alongZ ? block(x, y, z + d, sz, sy, sx, '#4a4f52', 0) : block(x + d, y, z, sx, sy, sz, '#4a4f52', 0);
+  [-w / 2, w / 2].forEach(d => at(d, (y0 + y1) / 2, 0.08, y1 - y0, 0.08));
   for (let y = y0 + 0.6; y < y1; y += 1.2) {
-    block(x, y, z, w, 0.06, 0.06, '#4a4f52', 0);
-    const d = block(x, y + 0.6, z, Math.hypot(w, 1.2), 0.05, 0.05, '#4a4f52', 0); d.rotation.z = Math.atan2(1.2, w) * (y % 2.4 < 1.2 ? 1 : -1);
+    at(0, y, w, 0.06, 0.06);
+    const t = Math.atan2(1.2, w) * (y % 2.4 < 1.2 ? 1 : -1), m = at(0, y + 0.6, Math.hypot(w, 1.2), 0.05, 0.05);
+    if (alongZ) m.rotation.x = t; else m.rotation.z = t;
   }
 }
+// 跟店面垂直、往馬路伸出去的直招牌（照片裡沿街看過去是正面）：x 是招牌位置，伸出 d 公尺
+const outV = (text, x, y, d, h, bg, fg, border) => sideV(text, x, y, FRONT - d / 2 - 0.15, d, h, bg, fg, border);
 const STEEL_TANK = new THREE.CylinderGeometry(0.55, 0.55, 1.1, 14);
 function tanks(x, y, z, n) { for (let k = 0; k < n; k++) mk(STEEL_TANK, toon('#d5dade'), x + (k - (n - 1) / 2) * 1.25, y + 0.55, z, { out: 0.02 }); }
 
 const LOOK = {
-  // 四層樓加鐵皮斜屋頂；正面一塊紅框黃底的超大直招牌，一樓是紅框黃底的店招
+  // 四層樓加鐵皮斜屋頂；伸向馬路的紅框黃底超大直招牌，一樓是紅框黃底的店招
   '八方雲集': { h: 13.5, wall: '#9a9d97', gable: true, ownFront: true, draw(x, h, Z) {
     block(x + 0.6, 9, Z(0.03), 3.4, 6, 0.06, '#7fa6a2', 0);                       // 中段綠色磁磚
-    frontV('八方雲集', x - 1.5, 8.6, Z(0.62), 1.7, 6.4, '#f4d23c', '#2a2420', '#d8473b');
+    outV('八方雲集', x + 1.9, 8.6, 1.9, 6.4, '#f4d23c', '#2a2420', '#d8473b');
     block(x, 3.7, Z(0.3), W + 0.1, 1.5, 0.5, '#d8473b', 0.02);                    // 一樓紅色大招牌框
     plane(W - 0.6, 1.1, hSign('八方雲集', '#f4d23c', '#2a2420'), x, 3.85, Z(0.56), 0, Math.PI);
     plane(W - 0.6, 0.28, hSign('鍋貼水餃專賣店', '#d8473b', '#fff4dc'), x, 3.08, Z(0.56), 0, Math.PI);
@@ -108,8 +112,8 @@ const LOOK = {
   // 橘黃色柱子；很高的直招牌架在鐵架上、超出屋頂；一樓米色招牌加綠色雨遮
   '菁英食堂自助餐': { h: 12, wall: '#ddd3bd', ownFront: true, draw(x, h, Z) {
     [-W / 2 + 0.35, W / 2 - 0.35].forEach(dx => block(x + dx, 7.5, Z(0.08), 0.45, 9, 0.2, '#e3a42c', 0.02));
-    steelFrame(x, Z(-0.4), h, h + 3.5, 2.2);
-    frontV('菁英食堂自助餐', x, h + 0.6, Z(0.5), 1.6, 7.6, '#3a3434', '#fff4e6', '#7a7268');
+    steelFrame(x, FRONT - 0.95, h, h + 3.5, 1.7, true);
+    outV('菁英食堂自助餐', x, h + 0.6, 1.6, 7.6, '#3a3434', '#fff4e6', '#7a7268');
     block(x + 0.9, 5.4, Z(0.3), 2.6, 1.3, 0.2, '#e3a42c', 0.02);
     plane(2.4, 1.1, hSign('菁英 便當', '#f1e7d6', '#7a3b2a'), x + 0.9, 5.4, Z(0.41), 0, Math.PI);
     block(x, 3.75, Z(0.05), W - 0.2, 0.92, 0.16, '#efe8d8', 0.02);
@@ -119,9 +123,9 @@ const LOOK = {
   } },
   // 最高的綠色直招牌（頂端白色），下面接「影林專業攝影」；紅白橫幅「數位函授課程」
   '富士數位影像': { h: 10.5, wall: '#c8c6bc', ownFront: true, draw(x, h, Z) {
-    steelFrame(x - 1.6, Z(-0.3), h, h + 4.5, 1.6);
-    frontV('富士數位影像', x - 1.6, h + 0.2, Z(0.6), 1.4, 7.4, '#2f7d4f', '#ffffff', '#f1efe6');
-    frontV('影林專業攝影', x - 1.6, 5.7, Z(0.65), 1.2, 2.7, '#2f7d4f', '#ffffff', '#f1efe6');
+    steelFrame(x - 1.6, FRONT - 0.85, h, h + 4.5, 1.5, true);
+    outV('富士數位影像', x - 1.6, h + 0.2, 1.4, 7.4, '#2f7d4f', '#ffffff', '#f1efe6');
+    outV('影林專業攝影', x - 1.6, 5.4, 1.3, 2.9, '#2f7d4f', '#ffffff', '#f1efe6');
     block(x + 1, 9.5, Z(0.6), 3.6, 1.5, 0.15, '#efe8d8', 0.02);
     plane(3.4, 1.3, hSign('數位函授課程', '#d6383a', '#ffffff'), x + 1, 9.5, Z(0.69), 0, Math.PI);
     block(x, 3.75, Z(0.05), W - 0.2, 0.92, 0.16, '#efe8d8', 0.02);
@@ -130,13 +134,13 @@ const LOOK = {
   } },
   // 紅底白字的高直招牌；旁邊一塊白底藍字「幸福」髮廊直招牌
   '高點網路學院': { h: 10.5, wall: '#b9beb6', draw(x, h, Z) {
-    steelFrame(x - 1.2, Z(-0.3), h - 1, h + 2.2, 1.5);
-    frontV('高點網路學院', x - 1.2, h - 0.8, Z(0.6), 1.5, 6.6, '#d23a3c', '#ffffff', '#f1efe6');
-    sideV('幸福', x + W / 2 - 0.3, 6, Z(0.9), 1, 3.2, '#f4f6f8', '#5b8ed6', '#d9dde2');
+    steelFrame(x - 1.2, FRONT - 0.9, h - 1, h + 2.2, 1.5, true);
+    outV('高點網路學院', x - 1.2, h - 0.8, 1.5, 6.6, '#d23a3c', '#ffffff', '#f1efe6');
+    outV('幸福', x + W / 2 - 0.3, 6, 1, 3.2, '#f4f6f8', '#5b8ed6', '#d9dde2');
     tanks(x + 1.4, h + 0.3, Z(-3.2), 1);
   } },
   '政大牛肉麵': { h: 10.5, wall: '#c3bfb1', draw(x, h, Z) {
-    sideV('政大原汁牛肉麵', x - W / 2 + 0.35, 7.6, Z(0.85), 1.1, 5, '#d23a3c', '#ffffff', '#f1efe6');
+    outV('政大原汁牛肉麵', x - W / 2 + 0.35, 7.6, 1.1, 5, '#d23a3c', '#ffffff', '#f1efe6');
   } },
 };
 
@@ -185,7 +189,7 @@ function shop(i, [name, bg, fg]) {
   // 直式招牌（麥當勞沒有；照片裡有特別招牌的店改由 LOOK 畫）
   if (!mcd && !st.draw) {
     const sx = x - W / 2 + 0.35;
-    plane(1.3, 5.2, vSign(name, bg, fg), sx, 7.3, Z(0.75), 0, Math.PI / 2);
+    twoFaces(vSign(name, bg, fg), sx, 7.3, Z(0.75), 1.3, 5.2);
     block(sx, 7.3, Z(0.75), 0.08, 5.3, 1.4, '#efe8d8', 0);
     [4.6, 10].forEach(y => block(sx, y, Z(0.4), 0.08, 0.08, 1.3, '#58605a', 0));
   }
