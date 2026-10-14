@@ -24,6 +24,7 @@ import './actors/campus-bus.js';
 import './world/lots.js';
 import './world/terrain/outer-roads.js';
 import './world/terrain/back-road.js';
+import './world/terrain/shop-street.js'; // 側門對面：麥當勞與左手邊的商店街
 import './world/terrain/bade-road.js';
 import './world/terrain/river.js';
 import './world/terrain/creek-road.js';

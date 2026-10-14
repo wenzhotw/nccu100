@@ -17,6 +17,10 @@ let R=0.4;
 const boxC=(x0,x1,z0,z1,top)=>colliders.push({x0,x1,z0,z1,top});
 const circC=(x,z,r)=>colliders.push({c:true,x,z,r});
 const obbC=(cx,cz,hx,hz,th)=>colliders.push({obb:true,cx,cz,hx,hz,cs:Math.cos(th),sn:Math.sin(th)});
+// 戶外範圍南界原本是 z=29.5（指南路中間）；addWalkArea 可以在某段 x 範圍內放寬，
+// 例如 shop-street.js 讓玩家過馬路走進對面商店街。兩端要自己用 boxC 擋住。
+const walkAreas=[];
+const addWalkArea=(x0,x1,zMax)=>walkAreas.push({x0,x1,zMax});
 function resolve(p,rad){ const R0=R; if(rad) R=rad; resolveCore(p); R=R0; }
 function resolveCore(p){
   for(const c of active){
@@ -32,7 +36,8 @@ function resolveCore(p){
       if(mn===l)p.x=c.x0-R; else if(mn===r)p.x=c.x1+R; else if(mn===b)p.z=c.z0-R; else p.z=c.z1+R; }
   }
   if(roomClamp) roomClamp(p);
-  else { p.x=Math.max(-265,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(29.5,p.z)); }
+  else { let zMax=29.5; for(const a of walkAreas) if(p.x>=a.x0&&p.x<=a.x1) zMax=Math.max(zMax,a.zMax);
+    p.x=Math.max(-265,Math.min(195,p.x)); p.z=Math.max(-230,Math.min(zMax,p.z)); }
 }
 
-export { boxC, circC, colliders, obbC, resolve, setActiveColliders, setRoomClamp };
+export { addWalkArea, boxC, circC, colliders, obbC, resolve, setActiveColliders, setRoomClamp };
