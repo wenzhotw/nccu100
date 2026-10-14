@@ -8,7 +8,8 @@ import { boxC, circC } from '../../core/collision.js';
 import { tree } from '../vegetation.js';
 
 /* ---------- 指南路對面：行道樹、公車站、機車 ---------- */
-for(let x=-143;x<=190;x+=11) tree(x,37,0.9);
+// 麥當勞到八方雲集那段（shop-street.js）實景沒有行道樹，騎樓前直接是機車
+for(let x=-143;x<=190;x+=11) if(x<82||x>148) tree(x,37,0.9);
 mk(new THREE.CylinderGeometry(0.06,0.06,2.8,6),toon('#4a5560'),27,1.4,17.4,{out:0.02});
 const busTex=canvasTex(256,320,(g,W,H)=>{ g.fillStyle='#1f5fae'; g.fillRect(0,0,W,H); g.fillStyle='#fff'; g.textAlign='center'; g.font='900 92px "Noto Sans TC",sans-serif'; g.fillText('政大',W/2,140); g.font='500 40px "Noto Sans TC",sans-serif'; g.fillText('公車站',W/2,220); });
 block(27,2.6,17.4,0.9,1.1,0.08,'#1f5fae',0.02);

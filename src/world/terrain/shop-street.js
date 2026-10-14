@@ -46,6 +46,7 @@ const FONT = '"Noto Sans TC",sans-serif';
 flat(X1 - X0, FRONT - 36, '#cfc8b8', (X0 + X1) / 2, 0.015, (36 + FRONT) / 2);
 flat(X1 - X0, 5.5, '#bdb4a2', (X0 + X1) / 2, 0.016, FRONT + 2.75);   // 騎樓地磚
 for (let x = X0; x <= X1; x += 1.5) flat(0.04, 5.5, '#a89f8e', x, 0.018, FRONT + 2.75);
+flat(X1 - X0, 0.2, '#c8413a', (X0 + X1) / 2, 0.03, 36.1);   // 照片裡人行道邊的紅線
 
 /* ---------- 招牌貼圖 ---------- */
 function hSign(text, bg, fg) {
@@ -56,11 +57,12 @@ function hSign(text, bg, fg) {
     g.font = `900 64px ${FONT}`; g.fillText(text, w / 2, h / 2 + 3, w - 40);
   }) });
 }
-function vSign(text, bg, fg) {
+function vSign(text, bg, fg, border) {
   const chars = [...text.replace(/ /g, '')];
   return basic({ side: THREE.DoubleSide, map: canvasTex(96, 384, (g, w, h) => {
     g.fillStyle = bg; g.fillRect(0, 0, w, h);
-    g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 5; g.strokeRect(4, 4, w - 8, h - 8);
+    if (border) { g.fillStyle = border; g.fillRect(0, 0, w, h); g.fillStyle = bg; g.fillRect(10, 10, w - 20, h - 20); }
+    else { g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 5; g.strokeRect(4, 4, w - 8, h - 8); }
     g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
     const step = (h - 24) / chars.length;
     g.font = `900 ${Math.min(70, step * 0.85) | 0}px ${FONT}`;
@@ -68,14 +70,85 @@ function vSign(text, bg, fg) {
   }) });
 }
 
+/* ---------- 照片裡的店：八方雲集到政大牛肉麵（2026 年 10 月實拍） ---------- */
+// 正面平貼在牆上的直式大招牌（面向馬路）
+function frontV(text, x, y, z, w, h, bg, fg, border) {
+  block(x, y, z + 0.1, w + 0.16, h + 0.16, 0.2, border || '#efe8d8', 0.02);
+  plane(w, h, vSign(text, bg, fg, border), x, y, z - 0.01, 0, Math.PI);
+}
+// 側面伸出去、跟馬路垂直的直式招牌
+function sideV(text, x, y, z, w, h, bg, fg, border) {
+  block(x, y, z, 0.1, h + 0.12, w + 0.12, border || '#efe8d8', 0.02);
+  plane(w, h, vSign(text, bg, fg, border), x, y, z, 0, Math.PI / 2);
+}
+// 招牌後面、頂樓上的鐵架
+function steelFrame(x, z, y0, y1, w) {
+  [-w / 2, w / 2].forEach(dx => block(x + dx, (y0 + y1) / 2, z, 0.08, y1 - y0, 0.08, '#4a4f52', 0));
+  for (let y = y0 + 0.6; y < y1; y += 1.2) {
+    block(x, y, z, w, 0.06, 0.06, '#4a4f52', 0);
+    const d = block(x, y + 0.6, z, Math.hypot(w, 1.2), 0.05, 0.05, '#4a4f52', 0); d.rotation.z = Math.atan2(1.2, w) * (y % 2.4 < 1.2 ? 1 : -1);
+  }
+}
+const STEEL_TANK = new THREE.CylinderGeometry(0.55, 0.55, 1.1, 14);
+function tanks(x, y, z, n) { for (let k = 0; k < n; k++) mk(STEEL_TANK, toon('#d5dade'), x + (k - (n - 1) / 2) * 1.25, y + 0.55, z, { out: 0.02 }); }
+
+const LOOK = {
+  // 四層樓加鐵皮斜屋頂；正面一塊紅框黃底的超大直招牌，一樓是紅框黃底的店招
+  '八方雲集': { h: 13.5, wall: '#9a9d97', gable: true, ownFront: true, draw(x, h, Z) {
+    block(x + 0.6, 9, Z(0.03), 3.4, 6, 0.06, '#7fa6a2', 0);                       // 中段綠色磁磚
+    frontV('八方雲集', x - 1.5, 8.6, Z(0.62), 1.7, 6.4, '#f4d23c', '#2a2420', '#d8473b');
+    block(x, 3.7, Z(0.3), W + 0.1, 1.5, 0.5, '#d8473b', 0.02);                    // 一樓紅色大招牌框
+    plane(W - 0.6, 1.1, hSign('八方雲集', '#f4d23c', '#2a2420'), x, 3.85, Z(0.56), 0, Math.PI);
+    plane(W - 0.6, 0.28, hSign('鍋貼水餃專賣店', '#d8473b', '#fff4dc'), x, 3.08, Z(0.56), 0, Math.PI);
+    // 斜屋頂（鐵皮）
+    [-1, 1].forEach(s => { const r = block(x, h + 0.75, Z(-3) + s * 1.55, W + 0.3, 0.12, 3.4, '#7b8287', 0.02); r.rotation.x = s * 0.42; });
+    // 左側外掛逃生梯鐵架
+    steelFrame(x + W / 2 - 0.15, Z(0.25), 3.4, h, 0.5);
+  } },
+  // 橘黃色柱子；很高的直招牌架在鐵架上、超出屋頂；一樓米色招牌加綠色雨遮
+  '菁英食堂自助餐': { h: 12, wall: '#ddd3bd', ownFront: true, draw(x, h, Z) {
+    [-W / 2 + 0.35, W / 2 - 0.35].forEach(dx => block(x + dx, 7.5, Z(0.08), 0.45, 9, 0.2, '#e3a42c', 0.02));
+    steelFrame(x, Z(-0.4), h, h + 3.5, 2.2);
+    frontV('菁英食堂自助餐', x, h + 0.6, Z(0.5), 1.6, 7.6, '#3a3434', '#fff4e6', '#7a7268');
+    block(x + 0.9, 5.4, Z(0.3), 2.6, 1.3, 0.2, '#e3a42c', 0.02);
+    plane(2.4, 1.1, hSign('菁英 便當', '#f1e7d6', '#7a3b2a'), x + 0.9, 5.4, Z(0.41), 0, Math.PI);
+    block(x, 3.75, Z(0.05), W - 0.2, 0.92, 0.16, '#efe8d8', 0.02);
+    plane(W - 0.34, 0.8, hSign('菁英 食堂自助餐', '#f1e1c8', '#8a3a2e'), x, 3.75, Z(0.14), 0, Math.PI);
+    const aw = block(x, 2.6, Z(0.7), W - 0.6, 0.08, 1.2, '#2f6b45', 0.02); aw.rotation.x = -0.35;   // 綠色雨遮
+    tanks(x - 1.2, h + 0.3, Z(-3), 1);
+  } },
+  // 最高的綠色直招牌（頂端白色），下面接「影林專業攝影」；紅白橫幅「數位函授課程」
+  '富士數位影像': { h: 10.5, wall: '#c8c6bc', ownFront: true, draw(x, h, Z) {
+    steelFrame(x - 1.6, Z(-0.3), h, h + 4.5, 1.6);
+    frontV('富士數位影像', x - 1.6, h + 0.2, Z(0.6), 1.4, 7.4, '#2f7d4f', '#ffffff', '#f1efe6');
+    frontV('影林專業攝影', x - 1.6, 5.7, Z(0.65), 1.2, 2.7, '#2f7d4f', '#ffffff', '#f1efe6');
+    block(x + 1, 9.5, Z(0.6), 3.6, 1.5, 0.15, '#efe8d8', 0.02);
+    plane(3.4, 1.3, hSign('數位函授課程', '#d6383a', '#ffffff'), x + 1, 9.5, Z(0.69), 0, Math.PI);
+    block(x, 3.75, Z(0.05), W - 0.2, 0.92, 0.16, '#efe8d8', 0.02);
+    plane(W - 0.34, 0.8, hSign('富士數位影像', '#2f7d4f', '#ffffff'), x, 3.75, Z(0.14), 0, Math.PI);
+    tanks(x + 1, h + 0.3, Z(-3.2), 2);
+  } },
+  // 紅底白字的高直招牌；旁邊一塊白底藍字「幸福」髮廊直招牌
+  '高點網路學院': { h: 10.5, wall: '#b9beb6', draw(x, h, Z) {
+    steelFrame(x - 1.2, Z(-0.3), h - 1, h + 2.2, 1.5);
+    frontV('高點網路學院', x - 1.2, h - 0.8, Z(0.6), 1.5, 6.6, '#d23a3c', '#ffffff', '#f1efe6');
+    sideV('幸福', x + W / 2 - 0.3, 6, Z(0.9), 1, 3.2, '#f4f6f8', '#5b8ed6', '#d9dde2');
+    tanks(x + 1.4, h + 0.3, Z(-3.2), 1);
+  } },
+  '政大牛肉麵': { h: 10.5, wall: '#c3bfb1', draw(x, h, Z) {
+    sideV('政大原汁牛肉麵', x - W / 2 + 0.35, 7.6, Z(0.85), 1.1, 5, '#d23a3c', '#ffffff', '#f1efe6');
+  } },
+};
+
 /* ---------- 一間店 ---------- */
 const TANK = new THREE.CylinderGeometry(0.65, 0.65, 1.2, 12);
 const FAN = new THREE.TorusGeometry(0.22, 0.03, 5, 16);
 
 function shop(i, [name, bg, fg]) {
   const x = shopX(i), mcd = name === '麥當勞';
-  const h = i % 4 === 0 ? 12.5 : 10.5;
-  const wall = mcd ? '#3c4246' : WALLS[i % 4];
+  const st = LOOK[name] || {};
+  const h = st.h || (i % 4 === 0 ? 12.5 : 10.5);
+  const wall = st.wall || (mcd ? '#3c4246' : WALLS[i % 4]);
   const Z = dz => FRONT - dz;   // dz：從騎樓外緣往店裡的深度
 
   // 二樓以上的樓身（懸在騎樓上方）、屋頂女兒牆
@@ -93,7 +166,7 @@ function shop(i, [name, bg, fg]) {
   // 雨遮與橫式招牌
   block(x, 3.25, Z(0.55), W - 0.04, 0.12, 1.3, '#6d7a70', 0.02);
   block(x, 3.75, Z(0.05), W - 0.2, 0.92, 0.16, '#efe8d8', 0.02);
-  plane(W - 0.34, 0.8, hSign(name, bg, fg), x, 3.75, Z(0.14), 0, Math.PI);
+  if (!st.ownFront) plane(W - 0.34, 0.8, hSign(name, bg, fg), x, 3.75, Z(0.14), 0, Math.PI);
   // 二、三樓窗戶（麥當勞是大片玻璃、沒有鐵窗和冷氣）
   for (let f = 0; f < 2; f++) {
     const y = 5.5 + f * 3;
@@ -109,15 +182,16 @@ function shop(i, [name, bg, fg]) {
       mk(FAN, toon('#6c7671'), x + 1.7, y - 0.72, Z(0.74), { cast: false });
     }
   }
-  // 直式招牌（麥當勞沒有）
-  if (!mcd) {
+  // 直式招牌（麥當勞沒有；照片裡有特別招牌的店改由 LOOK 畫）
+  if (!mcd && !st.draw) {
     const sx = x - W / 2 + 0.35;
     plane(1.3, 5.2, vSign(name, bg, fg), sx, 7.3, Z(0.75), 0, Math.PI / 2);
     block(sx, 7.3, Z(0.75), 0.08, 5.3, 1.4, '#efe8d8', 0);
     [4.6, 10].forEach(y => block(sx, y, Z(0.4), 0.08, 0.08, 1.3, '#58605a', 0));
   }
   // 頂樓加蓋與水塔
-  if (i % 3 === 0) {
+  if (st.draw) st.draw(x, h, Z);
+  if (i % 3 === 0 && !st.gable) {
     block(x, h + 0.75, Z(-3.3), W - 0.2, 0.12, 5.2, '#7e8a80', 0.02);
     [-W / 2 + 0.2, W / 2 - 0.2].forEach(dx => block(x + dx, h + 0.45, Z(-0.9), 0.1, 0.6, 0.1, '#6b736c', 0));
     mk(TANK, toon('#c2cdc5'), x + 1, h + 0.95, Z(-4.2), { out: 0.02 });
