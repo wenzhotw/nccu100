@@ -24,6 +24,7 @@ import { openDialog, toast } from '../../ui/dialog.js';
 import { openChoice } from '../../ui/choice.js';
 import { talk } from '../wenz/index.js';
 import E from '../../content/eagle.json';
+export { moveWenzToRoof };
 
 const principal = NPCS.find(n => n.id === 'principal');
 const wenz = NPCS.find(n => n.id === 'wenz');   // 全遊戲唯一的遊戲製作人，變雄鷹後直接搬家
@@ -53,6 +54,9 @@ if (principal) {
 // 「確定你是飛上來的，不是地上走到的」的門檻，跟真正的屋頂高度留一點緩衝。
 const ROOF = { x0: -6.3, x1: 6.3, z0: -78.6, z1: -76.4, y: 12.15, minY: 7 };
 let caught = false;
+/** 存檔用：讀取與恢復「已經在屋頂追到 Wenz」 */
+export const wenzCaught = () => caught;
+export function restoreWenzCaught() { if (!wenz) return; caught = true; wenz.spot.label = '交談'; }
 function moveWenzToRoof() {
   wenz.home = { x: (ROOF.x0 + ROOF.x1) / 2, z: (ROOF.z0 + ROOF.z1) / 2 };
   wenz.g.position.set(wenz.home.x, ROOF.y, wenz.home.z);

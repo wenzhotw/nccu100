@@ -21,7 +21,8 @@ import { createMapCache } from './map-cache.js';
 
 /* ---------- 任務與道具：百年秘寶地圖 ---------- */
 state.haveMap=false;
-function giveMap(){ state.haveMap=true; $('quest').hidden=false; $('mapItem').hidden=false; AU.sfx('gem'); toast('獲得道具：百年秘寶地圖（按 M 打開）'); }
+// silent：讀取存檔時用，只恢復狀態與畫面，不播音效、不跳提示
+function giveMap(silent){ state.haveMap=true; $('quest').hidden=false; $('mapItem').hidden=false; if(silent===true) return; AU.sfx('gem'); toast('獲得道具：百年秘寶地圖（按 M 打開）'); }
 const mapPainter=createMapPainter({ MAP_BOUNDS, RIV, SIWEI, bdZ, swZ, CREEK_ROAD, FZ });
 const miniMapCache=createMapCache({ createCanvas:()=>document.createElement('canvas'), ...mapPainter });
 let mapFontRevision=0;
@@ -57,7 +58,7 @@ const chestBadge=new THREE.Mesh(new THREE.CircleGeometry(0.06,24),basic({map:med
 chestBadge.position.set(-0.08,0.56,0.149);
 chestBadge.visible=false;
 rig.add(chestBadge);
-function giveBadge(){ state.haveBadge=true; chestBadge.visible=true; $('item').hidden=false; AU.sfx('gem'); toast('獲得道具：親愛精誠徽章'); }
+function giveBadge(silent){ state.haveBadge=true; chestBadge.visible=true; $('item').hidden=false; if(silent===true) return; AU.sfx('gem'); toast('獲得道具：親愛精誠徽章'); }
 
 // 讓較早載入的模組也能在執行時呼叫到這裡定義的東西
 late.giveMap = giveMap;
@@ -67,4 +68,4 @@ late.giveBadge = giveBadge;
 registerAction('giveMap', giveMap);
 registerAction('giveBadge', giveBadge);
 
-export { drawMap, drawCachedMap, getMiniMapCacheStats };
+export { drawMap, drawCachedMap, getMiniMapCacheStats, giveMap, giveBadge };
