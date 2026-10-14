@@ -4,6 +4,7 @@
  *
  * priority 越小越先判斷。目前的編號：
  *     0 四維堂室內        10 指南路二段      20 正門          30 指南溪畔（river.js）
+ *     5 指南路商店街（shop-street.js）
  *    15 側門（back-road.js 的行人廣場）
  *    40 綜合院館          50 田徑場          60 體育館        70 商學院
  *    80 環山一道          90 校內道路       100 預定地       110 噴水池
@@ -16,8 +17,10 @@
 import { registerZone } from './registry.js';
 import { SIWEI, bdZ, creekRoadDist, inLot, swZ } from './layout.js';
 import { FZ } from './terrain/fountain.js';
+import { SHOP_STREET_X0, SHOP_STREET_X1 } from './terrain/shop-street.js';
 import { BACK_BRANCH_HW, BACK_BRANCH_Z, BACK_PLAZA_Z0, BACK_ROAD_HW, BACK_ROAD_X } from './terrain/back-road.js';
 
+registerZone(5, p => (p.z > 36 && p.x > SHOP_STREET_X0 - 1 && p.x < SHOP_STREET_X1 + 1) ? '指南路商店街' : null);
 registerZone(10, p => p.z > 18 ? '指南路二段' : null);
 registerZone(20, p => p.z > 9 ? '正門' : null);
 registerZone(80, p => (Math.abs(p.x + 88) < 2.8 && p.z < 18) ? '環山一道' : null);
