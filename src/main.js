@@ -49,6 +49,7 @@ import './systems/weather/index.js'; // 天氣：石獅子、下雨、偷傘、�
 import './systems/swimming/index.js'; // 游泳館：換泳衣、救生員、下水游泳
 import './systems/wenz/index.js'; // 遊戲製作人 Wenz：好玩嗎？破壞死光、Instagram
 import './systems/eagle/index.js'; // 雄鷹吉祥物：收集三個故事後校長的任務，永久變身、飛行、四維堂頂樓躲 Wenz
+import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';

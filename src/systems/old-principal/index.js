@@ -148,9 +148,11 @@ npc.after = (n, dt) => {
 
 /* ---------- 對話、問答 ---------- */
 state.haveLetter = false;
-function giveLetter() {
-  state.haveLetter = true; $('letterItem').hidden = false; AU.sfx('gem'); toast(D.letter.toast);
+// silent：讀取存檔時用，只恢復狀態與畫面
+function giveLetter(silent) {
+  state.haveLetter = true; $('letterItem').hidden = false; if (silent === true) return; AU.sfx('gem'); toast(D.letter.toast);
 }
+export { giveLetter };
 $('letterItem').addEventListener('click', () => { if (state.busy) return; AU.sfx('open'); openDialog(D.letter.name, D.letter.lines); });
 
 const say = (lines, then) => openDialog(D.title, lines, then);
