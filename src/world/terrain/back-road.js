@@ -237,14 +237,7 @@ function lamp(x, z, face) {   // face：燈頭朝哪個方向（+1 朝 +x、-1 �
 
 /* ---------- 指南路對面：從校內道路一路看得到的店家和高招牌 ---------- */
 {
-  const z = 46;
-  // 麥當勞和它左手邊那排店面改在 shop-street.js，這裡只留商店街右邊再過去的一棟
-  [[110, 8, 7, '#9c968c']].forEach(([x, w, h, c]) => {
-    block(x, h / 2, z, w, h, 8, c, 0.04);
-    block(x, 2.4, z - 4.05, w - 1, 1.2, 0.1, '#5b8ed6', 0.01);
-    for (let y = 4; y < h - 1; y += 2.6) block(x, y, z - 4.03, w * 0.7, 1, 0.06, '#5b6b78', 0);
-    boxC(x - w / 2, x + w / 2, z - 4, z + 4);
-  });
+  // 麥當勞和西邊那排店面在 shop-street.js，這裡只留高招牌
   // 很高的漢堡店招牌
   const x = 95, zz = 40.5;
   mk(new THREE.CylinderGeometry(0.22, 0.28, 13, 8), toon('#8a8f96'), x, 6.5, zz, { out: 0.03 });
