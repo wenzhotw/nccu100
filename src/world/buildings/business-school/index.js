@@ -8,6 +8,7 @@ import { boxC, circC, colliders } from '../../../core/collision.js';
 import { lot, stoneMat } from '../../props.js';
 import { tree } from '../../vegetation.js';
 import { defineBuilding } from '../../registry.js';
+import { DOOR, HALL, R, buildInterior, interiorHeight, interiorLight, interiorZone } from './interior.js';
 
 // 這棟建築的位置與尺寸（地圖、碰撞、高度判斷都會用到）
 const BZK=0.75, BZA={x:-54,z:-59.7};
@@ -127,4 +128,20 @@ export default defineBuilding({
   },
   zones: [{ priority: 70, test: p => (p.x < -36 && p.x > -72 && p.z < -17 && p.z > -64) ? '商學院' : null }],
   map: [{ x: -54, z: -27, w: 34, d: 32, color: '#d8cbbb', label: '商學院' }],
+  // 一樓內部：挑高大廳 → 長廊 → 穿堂、便利商店 → 用餐區（interior.js，照一樓平面圖）
+  interior: {
+    id: 'business-1f',
+    name: '商學院一樓',
+    build: buildInterior,
+    light: interiorLight,
+    background: '#d6e8f2',
+    entrance: { x: -54, z: -52.6, r: 2.8, label: '進入商學院' },     // 入口平台上，玻璃門前
+    spawn: { x: DOOR.x, z: DOOR.z - 2.6, yaw: 0, pitch: 0.25, face: Math.PI },
+    exit: { x: DOOR.x, z: DOOR.z - 0.7, r: 2.2, label: '離開商學院' },
+    returnTo: { x: -54, z: -53.6, yaw: 0, pitch: 0.3, face: Math.PI },
+    bounds: { x0: R.x0 + 0.4, x1: R.x1 - 0.4, z0: R.z0 + 0.4, z1: R.z1 - 0.4 },
+    camera: { x0: R.x0 + 0.3, x1: R.x1 - 0.3, z0: R.z0 + 0.3, z1: R.z1 - 0.2, ceil: HALL - 0.4, maxDist: 6 },
+    heightAt: interiorHeight,
+    zone: interiorZone,
+  },
 });
