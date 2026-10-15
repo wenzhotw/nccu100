@@ -101,6 +101,16 @@ button.chip:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(35,42,77,.2
 /* ---------- iris transition ---------- */
 #fade{position:fixed;inset:0;background:var(--ink);pointer-events:none;--r:160vmax;-webkit-mask:radial-gradient(circle at 50% 55%,transparent var(--r),#000 calc(var(--r) + 1px));mask:radial-gradient(circle at 50% 55%,transparent var(--r),#000 calc(var(--r) + 1px));z-index:6}
 
+/* ---------- 搭公車轉場（core/gameplay.js 的 transition）：全黑時中間一台小公車沿著路跑 ---------- */
+#ride{position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;color:#fff7e0;text-align:center;padding:0 16px}
+#ride .r-road{position:relative;width:min(260px,70vw);height:34px;border-bottom:4px dashed rgba(255,247,224,.5)}
+#ride .r-bus{position:absolute;bottom:4px;left:0;width:54px;height:24px;border-radius:7px 9px 3px 3px;background:linear-gradient(180deg,#efb9e2 0 58%,#c88bd0 58%);box-shadow:inset -8px 4px 0 -4px #2e3a46;animation:rideBus 1.4s ease-in-out forwards}
+#ride .r-bus::before,#ride .r-bus::after{content:"";position:absolute;bottom:-5px;width:10px;height:10px;border-radius:50%;background:#222228;border:2px solid #c9ccd2}
+#ride .r-bus::before{left:7px}#ride .r-bus::after{right:7px}
+#ride .r-text{font:900 clamp(16px,4.6vw,22px) "Noto Sans TC",sans-serif;letter-spacing:.06em}
+#ride .r-sub{font:700 13px var(--round);letter-spacing:.2em;opacity:.75}
+@keyframes rideBus{from{transform:translateX(0)}to{transform:translateX(calc(min(260px,70vw) - 54px))}}
+
 /* ---------- title screen ---------- */
 #intro{position:fixed;inset:0;display:grid;place-items:center;padding:0 16px;background:linear-gradient(180deg,rgba(255,255,255,0) 40%,rgba(35,42,77,.38) 100%);transition:opacity .8s;z-index:7}
 #intro.gone{opacity:0;pointer-events:none}

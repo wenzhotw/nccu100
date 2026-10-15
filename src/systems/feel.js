@@ -69,7 +69,7 @@ function drawMini(dt){
   const W=minic.width, kx=miniBase.width/(MX1-MX0), kz=miniBase.height/(MZ0-MZ1);
   mg.clearRect(0,0,W,W); mg.save(); mg.beginPath(); mg.arc(W/2,W/2,W/2,0,7); mg.clip();
   mg.fillStyle='#f3e6c6'; mg.fillRect(0,0,W,W);
-  if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.name)||'室內',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText('室內',W/2,W/2+30); mg.restore(); return; }
+  if(indoor()){ mg.fillStyle='#4a3520'; mg.font='900 34px "Noto Sans TC",sans-serif'; mg.textAlign='center'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.name)||'室內',W/2,W/2-4); mg.font='700 22px "Noto Sans TC",sans-serif'; mg.fillText((ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.miniSub)||'室內',W/2,W/2+30); mg.restore(); return; }
   drawCachedMap(miniBase);
   // 地圖是西在左（x 越大越左邊），所以裁切位置用 MX1 - x；箭頭和視角扇形的轉向也要反過來
   const R=36, cx=(MX1-pos.x)*kx, cy=(MZ0-pos.z)*kz;
