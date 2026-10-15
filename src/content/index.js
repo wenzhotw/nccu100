@@ -69,9 +69,15 @@ export function registerAction(name, fn) { actions[name] = fn; }
 /** 劇情旗標：then 寫 "set:旗標名稱"，之後 when 就能用 { "旗標名稱": true } 判斷（會存檔） */
 state.flags = state.flags || new Set();
 export function setFlag(name) { state[name] = true; state.flags.add(name); }
+/** 帶參數的動作（"achieve:connector" 這種冒號前面是動作、後面是參數），由各系統用 registerPrefix 登記 */
+const prefixed = { set: setFlag };
+export function registerPrefix(name, fn) { prefixed[name] = fn; }
+/** then 可以是一個動作，也可以是好幾個動作的陣列（依序執行） */
 export function runAction(name) {
   if (!name) return;
-  if (name.startsWith('set:')) { setFlag(name.slice(4)); return; }
+  if (Array.isArray(name)) { name.forEach(runAction); return; }
+  const i = name.indexOf(':');
+  if (i > 0 && prefixed[name.slice(0, i)]) { prefixed[name.slice(0, i)](name.slice(i + 1)); return; }
   if (!actions[name]) { console.warn(`[content] 找不到動作「${name}」`); return; }
   actions[name]();
 }

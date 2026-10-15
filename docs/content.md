@@ -80,9 +80,21 @@
 
 | `set:旗標名稱` | 記住一件事，例如 `"then": "set:bizHuangAsked"`。之後別的 NPC 就能寫 `"when": { "bizHuangAsked": true }`，會跟著存檔 |
 
-旗標可以串成支線任務。例如商學院一樓：先跟黃同學講話（`set:bizHuangAsked`）→ 再找梁同學，她的台詞換成介紹那段（`set:bizLiangGoing`）→ 回去找黃同學，他就會道謝。有旗標的那段要排在預設台詞前面。
+| `achieve:成就代號` | 跳出「獲得成就」畫面，名稱和說明寫在 `achievements.json`。同一個成就只會跳一次（記成旗標 `achv_成就代號`，會存檔） |
+
+`then` 也可以寫成陣列，一次做好幾件事，例如 `"then": ["set:bizLiangGoing", "achieve:connector"]`。
+
+旗標可以串成支線任務。例如商學院一樓：先跟黃同學講話（`set:bizHuangAsked`）→ 再找梁同學，她的台詞換成介紹那段（`set:bizLiangGoing`）→ 回去找黃同學，他就會道謝。介紹完的那一刻會拿到成就「人脈串接王」。有旗標的那段要排在預設台詞前面。
 
 要新增動作，請在程式裡用 `registerAction('名稱', 函式)` 登記（見 `src/systems/items.js`）。
+
+## achievements.json：成就
+
+```json
+{ "connector": { "title": "人脈串接王", "icon": "🤝", "desc": "說明文字" } }
+```
+
+`title` 成就名稱、`icon` 徽章上的圖示（一個表情符號）、`desc` 說明。台詞的 `then` 寫 `achieve:connector` 就會跳出來。
 
 ## dialogs.json：其他對話
 
