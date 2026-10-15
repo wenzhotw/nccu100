@@ -128,7 +128,7 @@ export default defineBuilding({
   },
   zones: [{ priority: 70, test: p => (p.x < -36 && p.x > -72 && p.z < -17 && p.z > -64) ? '商學院' : null }],
   map: [{ x: -54, z: -27, w: 34, d: 32, color: '#d8cbbb', label: '商學院' }],
-  // 一樓內部：挑高大廳 → 長廊 → 穿堂、便利商店 → 用餐區（interior.js，照一樓平面圖）
+  // 一樓內部：大廳 → 電梯廳 → 廁所前走道 → 交誼廳、販賣部（interior.js，照一樓平面配置圖）
   interior: {
     id: 'business-1f',
     name: '商學院一樓',
