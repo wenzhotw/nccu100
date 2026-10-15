@@ -8,3 +8,5 @@
 /src/world/registry.js          @wenzhotw
 /src/content/                   @wenzhotw
 /src/world/buildings/law-education-route/ @wenzhotw @Frankfangcode
+# 山上校區：認領後在後面加上負責同學的帳號
+/src/world/buildings/uphill-campus/ @wenzhotw

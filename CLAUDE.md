@@ -22,6 +22,7 @@
 - 室外場景蓋完之後會自動跑一次靜態烘焙（`src/world/bake/`，說明：`docs/bake.md`），把沒有名字的純色小方塊合併成少數幾個大網格；不用改建築程式，但新加的東西如果之後要用名字找到、會動、會變色，記得設 `name` 或 `userData.noOcc`。
 - 材質用 `toon()`、`basic()`，幾何用 `block()`、`mk()`、`flat()`、`plane()`（`src/render/kit.js`）；碰撞用 `boxC`、`circC`、`obbC`（`src/core/collision.js`）。
 - 座標：單位公尺；從校門面向四維堂，x 越大越右，z 越小越裡面。
+- 山上校區：另一張獨立地圖（`src/world/buildings/uphill-campus/`），在行政大樓乘車處搭公車上下山。**做山上校區相關工作前，先讀該資料夾的 README.md**，裡面有風格、分工與避免衝突的規範。
 - 室內：每個室內是獨立場景（`src/core/rooms.js`），建築用 `interior` 欄位登記，進門換場景。用 `indoor()`、`state.room` 判斷；互動點加 `room`。說明：`docs/interiors.md`。四維堂室內的座標沿用 x = IX = 300。
 
 ## 風格

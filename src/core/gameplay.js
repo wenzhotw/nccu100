@@ -31,15 +31,22 @@ carry(player); carry(shadowBlob);
 function enterRoom(id){ const d=roomDef(id); transition(()=>{
   switchTo(id); state.room=id; late.onSceneChange&&late.onSceneChange();
   const s=d.spawn; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.22; player.rotation.y=s.face??Math.PI;
-  d.onEnter&&d.onEnter(); }); }
+  d.onEnter&&d.onEnter(); },d.ride&&d.ride.up); }
 /** 走出房間：回到戶外門口 */
 function exitRoom(){ const d=roomDef(state.room); transition(()=>{
   d&&d.onExit&&d.onExit(); switchTo(null); state.room=null; late.onSceneChange&&late.onSceneChange();
-  const s=d.returnTo; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; }); }
+  const s=d.returnTo; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; },d&&d.ride&&d.ride.down); }
 function jump(){ if(state.grounded&&dlg.hidden&&!state.busy&&!state.driving&&!state.swimming){ AU.sfx('jump'); state.vy=6.6; state.grounded=false; } }
-function transition(fn){
-  state.busy=true; AU.sfx('door'); $('act').hidden=true; $('act2').hidden=true;
-  late.iris(true,520,()=>{ fn(); vel.set(0,0,0); camT.set(pos.x,pos.y+0.9,pos.z); state.camD=state.dist; setTimeout(()=>late.iris(false,560,()=>{ state.busy=false; }),160); });
+/**
+ * 換場景的圓形轉場。ride 是搭車時的說明文字（例如搭公車上山）：
+ * 有的話換成喇叭聲，畫面全黑時顯示「公車行駛中」的小動畫，停留久一點再打開。
+ */
+const rideEl=$('ride');
+function transition(fn,ride){
+  state.busy=true; AU.sfx(ride?'toot':'door'); $('act').hidden=true; $('act2').hidden=true;
+  late.iris(true,520,()=>{ fn(); vel.set(0,0,0); camT.set(pos.x,pos.y+0.9,pos.z); state.camD=state.dist;
+    if(ride&&rideEl){ rideEl.querySelector('.r-text').textContent=ride; rideEl.hidden=false; }
+    setTimeout(()=>{ if(rideEl) rideEl.hidden=true; late.iris(false,560,()=>{ state.busy=false; }); },ride?1500:160); });
 }
 const spots=[
   {id:'pangolin',x:0,z:0,r:2.6,label:'交談',ok:()=>!indoor(),fn:()=>openDialog(DIALOGS.pangolin.title,pickDialog(DIALOGS.pangolin.dialog).lines,()=>{ state.dogTalked=true; })},
