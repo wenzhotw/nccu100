@@ -2,7 +2,7 @@
  * 存檔：把遊戲進度存在玩家自己的瀏覽器（localStorage），關掉網頁再打開可以繼續玩。
  *
  * 存什麼：道具（地圖、徽章、信函）、收集到的校園故事、和穿山甲講過話、變身雄鷹、
- * 在屋頂追到 Wenz、最後站在戶外的位置。
+ * 在屋頂追到 Wenz、劇情旗標（例如商學院的同學支線）、最後站在戶外的位置。
  * 什麼時候存：遊戲開始後每 3 秒自動存一次，切到別的分頁或關掉網頁時也會存。
  * 讀取：載入時就恢復狀態（不播音效、不跳提示），開始畫面的按鈕會變成「繼續冒險」，
  * 下面多一個「重新開始」可以清掉存檔。
@@ -14,6 +14,7 @@ import { state } from '../core/state.js';
 import { $ } from '../core/dom.js';
 import { pos, groundH, indoor } from '../core/gameplay.js';
 import { crystals } from './stories.js';
+import { setFlag } from '../content/index.js';
 import { bubble } from '../actors/pangolin.js';
 import { becomeEagle } from '../actors/player.js';
 import { giveMap, giveBadge } from './items.js';
@@ -52,6 +53,7 @@ function saveGame() {
     isEagle: !!state.isEagle,
     wenzCaught: wenzCaught(),
     stories: crystals.filter(c => c.got).map(c => c.id),
+    flags: [...(state.flags || [])],
     spot: lastSpot,
   });
 }
@@ -62,6 +64,7 @@ function loadGame(d) {
   if (d.haveBadge) giveBadge(true);
   if (d.haveLetter) giveLetter(true);
   if (d.dogTalked) state.dogTalked = true;
+  (d.flags || []).forEach(setFlag);   // 劇情旗標（npcs.json 裡 then 寫的 set:旗標）
   const got = new Set(d.stories || []);
   crystals.forEach(c => { if (got.has(c.id)) { c.got = true; c.g.visible = false; } });
   state.found = crystals.filter(c => c.got).length;
