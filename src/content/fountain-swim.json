@@ -1,0 +1,34 @@
+{
+  "exitAsk": {
+    "title": "游泳館櫃檯",
+    "lines": ["同學，你要這樣穿直接出去嗎？"],
+    "choices": ["換回衣服再走", "就這樣穿出去！"],
+    "changedToast": "換回衣服了",
+    "goLines": ["……好吧，年輕真好。", "外面風大，小心著涼喔。"]
+  },
+  "comments": ["好帥喔！", "身材好好喔！", "是要去參加遊行嗎？", "我也想要去！"],
+  "fountain": {
+    "spot": "跳進噴水池游泳",
+    "jetsToast": "噴水池好像在歡迎你……",
+    "jumpToast": "噗通！跳進噴水池了"
+  },
+  "crowd": {
+    "title": "圍觀的同學",
+    "shout": ["生日快樂！", "生日快樂～！", "祝你生日快樂！"],
+    "lines": ["生日快樂！！", "（一群人圍著噴水池，拍手唱起生日快樂歌）"],
+    "choices": ["今天不是我生日啊", "今天是我生日，謝謝大家！"],
+    "notBirthday": ["蛤？", "沒有生日還下水搞屁呀！"],
+    "birthday": ["生日快樂！！記得許願喔！"],
+    "scatterToast": "大家一哄而散，鳥獸散了……",
+    "people": [
+      { "top": "#e86a6a", "pants": "#2f3446", "hair": "#2a2220", "hairStyle": "side" },
+      { "top": "#f2c94c", "pants": "#3a4a6a", "hair": "#4a2e1c", "hairStyle": "long" },
+      { "top": "#6abf69", "pants": "#2f3446", "hair": "#1e1a18", "hairStyle": "short", "cap": "#2f6fd0" },
+      { "top": "#7f8ff0", "pants": "#4a3a2a", "hair": "#3a2418", "hairStyle": "bowl", "glasses": "#2a2c4a" },
+      { "top": "#f29ac2", "pants": "#2f3446", "hair": "#2a2220", "hairStyle": "long" },
+      { "top": "#ffffff", "pants": "#2e5a8a", "hair": "#5a3a22", "hairStyle": "side", "hood": true },
+      { "top": "#ff9a3a", "pants": "#2f3446", "hair": "#1e1a18", "hairStyle": "short" },
+      { "top": "#4fb5c9", "pants": "#3a3a46", "hair": "#3a2418", "hairStyle": "bowl" }
+    ]
+  }
+}

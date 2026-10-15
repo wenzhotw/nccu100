@@ -3,7 +3,8 @@
  *   換泳衣         → 換上泳褲、泳帽、蛙鏡，可以下水
  *   跟救生員戰鬥   → 寶可夢式戰鬥（吹哨子、丟救生圈、做暖身操），打贏就可以穿著衣服下水
  *   算了           → 回去
- * 更衣室裡也可以自己換泳衣、換回衣服。離開游泳館時自動換回衣服。
+ * 更衣室裡也可以自己換泳衣、換回衣服。穿著泳衣走到出口，櫃檯阿姨會問要不要換回衣服：
+ * 換回就照常離開；選「就這樣穿出去」就穿著泳衣到外面（噴水池劇情，見 systems/fountain-swim）。
  *
  * 房間本身（大廳、更衣室、泳池、游泳的人）在 world/buildings/swimming-hall/interior.js，
  * 台詞和戰鬥招式在 src/content/swimming.json。
@@ -21,6 +22,7 @@ import { puff } from '../feel.js';
 import { lifeguardSVG } from './lifeguard-svg.js';
 import { startRace, wenSwimPose } from './race.js';
 import S from '../../content/swimming.json';
+import F from '../../content/fountain-swim.json';
 
 const ROOM = 'swimming-hall';
 const def = world.interiors[ROOM];
@@ -92,11 +94,29 @@ def.update = dt => {
   if (!state.poolOk && dlg.hidden && !state.busy && performance.now() > nextStop && nearPool()) stopPlayer();
   if (state.racing) state.swimming = true;
 };
-// 離開游泳館：換回衣服
+/* ---------- 穿著泳衣走到出口：櫃檯阿姨問要不要換回衣服 ---------- */
+state.swimOut = false;
+const exitSpot = spots.find(s => s.id === ROOM + '-exit');
+if (exitSpot) {
+  const leave = exitSpot.fn, A = F.exitAsk;
+  exitSpot.fn = () => {
+    if (state.outfit !== 'swim') { leave(); return; }
+    const counter = NPCS.find(n => n.id === 'pool-counter');
+    if (counter) counter.state = 'talk';
+    const back = () => { if (counter) counter.state = 'idle'; };
+    openDialog(A.title, A.lines, () => openChoice(A.choices, i => {
+      back();
+      if (i === 0) { setOutfit('normal'); toast(A.changedToast); leave(); return; }
+      openDialog(A.title, A.goLines, () => { state.swimOut = true; leave(); });
+    }));
+  };
+}
+// 離開游泳館：沒有選「就這樣穿出去」的話換回衣服
 const roomExit = def.onExit;
 def.onExit = () => {
   roomExit && roomExit();
-  if (state.outfit === 'swim') { setOutfit('normal'); setTimeout(() => toast(S.locker.exitToast), 900); }
+  if (state.outfit === 'swim' && !state.swimOut) { setOutfit('normal'); setTimeout(() => toast(S.locker.exitToast), 900); }
+  state.swimOut = false;
   state.swimming = false; wasSwimming = false;
 };
 
