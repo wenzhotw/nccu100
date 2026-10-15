@@ -10,7 +10,10 @@
   "fountain": {
     "spot": "跳進噴水池游泳",
     "jetsToast": "噴水池好像在歡迎你……",
-    "jumpToast": "噗通！跳進噴水池了"
+    "jumpToast": "噗通！跳進噴水池了",
+    "hintLabel": "看看噴水池",
+    "hintTitle": "噴水池",
+    "hint": ["（池水閃閃發亮，好像在對你說話……）", "穿著泳衣就可以跳進來喔！"]
   },
   "crowd": {
     "title": "圍觀的同學",

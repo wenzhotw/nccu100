@@ -4,6 +4,7 @@
  *   1. 游泳館出口，櫃檯阿姨問「要這樣穿直接出去嗎？」選「就這樣穿出去」（systems/swimming）。
  *   2. 在外面穿著泳衣：路過的人會議論紛紛（好帥喔、身材好好喔、是要去參加遊行嗎？）。
  *   3. 穿著泳衣走近噴水池：噴水池開始噴水，池邊出現「跳進噴水池游泳」。
+ *      沒穿泳衣時池邊是「看看噴水池」，提示穿著泳衣就可以跳進來。
  *   4. 跳下去游泳：一群同學跑過來圍著噴水池喊生日快樂，玩家回答：
  *        今天不是我生日啊　　　 → 「沒有生日還下水搞屁呀！」
  *        今天是我生日，謝謝大家 → 「生日快樂！！記得許願喔！」
@@ -162,6 +163,11 @@ function climbOut() {
 const spot = { id: 'fountain-swim', x: 0, z: FZ + FR, r: 1.9, room: null, label: F.fountain.spot,
   ok: () => inSuit() && !state.inFountain && !state.holdPang, fn: jumpIn };
 spots.push(spot);
+/* 沒穿泳衣時：池邊可以「看看噴水池」，提示穿泳衣就能跳進來 */
+const hint = { id: 'fountain-hint', x: spot.x, z: spot.z, r: 1.9, room: null, label: F.fountain.hintLabel,
+  ok: () => outside() && state.outfit !== 'swim' && !state.inFountain && !state.driving && !state.holdPang,
+  fn: () => openDialog(F.fountain.hintTitle, F.fountain.hint) };
+spots.push(hint);
 
 /* ---------- 每一幀 ---------- */
 let last = performance.now();
@@ -172,6 +178,7 @@ function tick(now) {
     updateComments(now);
     const dx = pos.x, dz = pos.z - FZ, d = Math.hypot(dx, dz) || 1;
     spot.x = dx / d * (FR + 0.3); spot.z = FZ + dz / d * (FR + 0.3);
+    hint.x = spot.x; hint.z = spot.z;
     if (state.inFountain) state.swimming = true;   // 在池裡一直維持游泳姿勢
   }
   requestAnimationFrame(tick);
