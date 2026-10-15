@@ -43,6 +43,7 @@ import './core/input.js';
 import './core/gameplay.js';
 import './actors/npc.js';
 import './systems/items.js';
+import './ui/achievement.js';   // 獲得成就的畫面（台詞 then 寫 achieve:成就代號）
 import './systems/pangolin-grab.js';
 import './systems/missionaries/index.js'; // 學生傳教士與寶可夢式戰鬥
 import './systems/old-principal/index.js'; // 老校長：騎馬、歷史問答、精神堡壘任務信函

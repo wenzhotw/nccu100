@@ -495,7 +495,10 @@
             "你：「剛好有個同學在找想上廁所的人。」",
             "這樣子啊，我也想要去耶！"
           ],
-          "then": "set:bizLiangGoing"
+          "then": [
+            "set:bizLiangGoing",
+            "achieve:connector"
+          ]
         },
         {
           "lines": [
