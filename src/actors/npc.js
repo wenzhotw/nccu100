@@ -73,21 +73,43 @@ function makePerson(o,where){
   const back=part(new THREE.SphereGeometry(0.299,28,18,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*(o.hairStyle==='short'?0.58:0.66)),hm,0,0,-0.01,hc); back.scale.set(1.05,0.97,1);
   if(o.hairStyle==='bowl'){ const fr=part(new THREE.SphereGeometry(0.302,28,10,Math.PI/2-0.95,1.9,Math.PI*0.28,Math.PI*0.13),hm,0,0.005,0,hc); fr.scale.set(1.05,0.97,1); }
   if(o.hairStyle==='side'){ const s1=part(SPH,hm,-0.06,0.22,0.12,hc); s1.scale.set(0.24,0.08,0.16); s1.rotation.z=0.25; }
+  if(o.hairStyle==='long'){   // 長髮：後面垂到肩膀下，兩側各一束
+    const lb=part(new THREE.CapsuleGeometry(0.25,0.3,6,16),hm,0,-0.2,-0.1,hc); lb.scale.set(1.08,1,0.55); outlineU(lb,1.03);
+    [-1,1].forEach(s=>{ const st=part(new THREE.CapsuleGeometry(0.075,0.32,4,10),hm,s*0.25,-0.17,0.04,hc); st.rotation.z=s*0.08; }); }
+  if(o.mole) part(SPH,'#3a2622',0.055,-0.198,0.188,hc).scale.setScalar(0.016);   // 下巴的痣
   if(o.glasses){ const gm=toon(o.glasses); [-0.078,0.078].forEach(x=>{ const r=part(new THREE.TorusGeometry(0.056,0.009,6,18),gm,x,-0.045,0.272,hc); if(o.rect) r.scale.set(1.15,0.78,1); }); part(BOX,gm,0,-0.04,0.282,hc).scale.set(0.05,0.01,0.01); }
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
   g.scale.setScalar(o.scale||1.2);
   return {g,rig,P};
 }
+/* 卡皮巴拉（npcs.json 寫 "kind": "capybara"）：圓滾滾的咖啡色身體、方方的大頭、頭上頂一顆柚子。
+   回傳的格式跟 makePerson 一樣，四肢和頭共用同一套走路動畫 */
+function makeCapybara(o,where){
+  const g=new THREE.Group(), rig=new THREE.Group(); g.add(rig); (where||scene).add(g); g.userData.noOcc=true;
+  const fur=o.fur||'#9a6a43', dark=o.dark||'#6e4a2f', P={};
+  const body=part(new THREE.CapsuleGeometry(0.3,0.42,8,16),fur,0,0.42,-0.05,rig,0.014); body.rotation.x=Math.PI/2; body.scale.set(1,1,0.92);
+  const hc=new THREE.Group(); hc.position.set(0,0.62,0.36); rig.add(hc); P.head=hc;
+  const hd=part(BOX,fur,0,0,0.06,hc,0.014); hd.scale.set(0.34,0.3,0.42);
+  const nose=part(BOX,dark,0,-0.02,0.28,hc); nose.scale.set(0.3,0.22,0.06);
+  [-0.07,0.07].forEach(x=>part(SPH,'#2a1f1a',x,0.02,0.312,hc).scale.set(0.022,0.015,0.01));
+  [-1,1].forEach(s=>{ part(SPH,'#1e1714',s*0.172,0.07,0.12,hc).scale.setScalar(0.03); part(SPH,dark,s*0.13,0.16,-0.08,hc).scale.set(0.05,0.06,0.03); });
+  if(o.yuzu!==false){ part(SPH,'#f2b134',0,0.2,0.04,hc,0.01).scale.setScalar(0.085); part(BOX,'#4f9a48',0.03,0.29,0.04,hc).scale.set(0.06,0.015,0.035); }
+  const leg=(x,z)=>{ const hp=new THREE.Group(); hp.position.set(x,0.24,z); rig.add(hp); part(new THREE.CapsuleGeometry(0.065,0.1,4,8),dark,0,-0.1,0,hp,0.01); return hp; };
+  P.hipL=leg(-0.17,0.2); P.hipR=leg(0.17,0.2); P.shL=leg(-0.17,-0.28); P.shR=leg(0.17,-0.28);
+  P.fA=P.fB=P.fC=null; P.fm={map:null};   // 沒有畫上去的臉，眨眼動畫不用做事
+  g.scale.setScalar(o.scale||1.25);
+  return {g,rig,P};
+}
 const PANIC=PANIC_LINES;
 function addNPC(o){
   // room：在哪個室內（null 是戶外）。舊的 indoor: true 等於四維堂
   if(o.room===undefined) o={...o,room:o.indoorNPC?'siwei-hall':null};
-  const b=makePerson(o.look,o.room?roomScene(o.room):null);
+  const b=(o.kind==='capybara'?makeCapybara:makePerson)(o.look||{},o.room?roomScene(o.room):null);
   const n=Object.assign({},o,{g:b.g,rig:b.rig,P:b.P,pi:0,fear:0,state:'idle',ph:Math.random()*6,blink:2+Math.random()*3,sayT:Math.random()*2,si:-1,chaseT:0});
   n.g.position.set(o.home.x,0,o.home.z); n.g.rotation.y=o.face||0;
-  if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=1.62; n.g.add(n.tag); }
-  n.sp=speech(); n.sp.position.y=o.tag?2.12:1.8; n.g.add(n.sp);
+  if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=o.kind==='capybara'?1.2:1.62; n.g.add(n.tag); }
+  n.sp=speech(); n.sp.position.y=(o.tag?2.12:1.8)-(o.kind==='capybara'?0.45:0); n.g.add(n.sp);
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};

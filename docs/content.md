@@ -32,7 +32,8 @@
 | `speed` |  | 走路速度，預設 1.3 |
 | `face` |  | 站著時面向的角度，可寫數字或 `"PI"`、`"-PI/2"` |
 | `wave` |  | `true` 會一直揮手 |
-| `look` |  | 外觀：`top` 上衣、`pants` 褲子、`hair` 頭髮顏色，`suit` 西裝、`tie` 領帶顏色、`glasses` 眼鏡顏色、`hairStyle`（`side`、`bowl`、`short`）、`cap` 帽子、`hood` 帽T、`flyer` 拿傳單… |
+| `kind` |  | 不是人的角色：`"capybara"` 卡皮巴拉（頭上頂柚子，不用寫 `look`） |
+| `look` |  | 外觀：`top` 上衣、`pants` 褲子、`hair` 頭髮顏色，`suit` 西裝、`tie` 領帶顏色、`glasses` 眼鏡顏色、`hairStyle`（`side`、`bowl`、`short`、`long` 長髮）、`mole` 下巴的痣、`cap` 帽子、`hood` 帽T、`flyer` 拿傳單… |
 | `shout` |  | 玩家靠近時頭上輪流冒出的話 |
 | `bubble` |  | 一直掛在頭上的對話泡泡（40 公尺內都看得到，對話時收起來） |
 | `dialog` | ✓ | 對話，見下方 |
@@ -76,6 +77,10 @@
 | --- | --- |
 | `giveMap` | 給百年秘寶地圖 |
 | `giveBadge` | 給親愛精誠徽章 |
+
+| `set:旗標名稱` | 記住一件事，例如 `"then": "set:bizHuangAsked"`。之後別的 NPC 就能寫 `"when": { "bizHuangAsked": true }`，會跟著存檔 |
+
+旗標可以串成支線任務。例如商學院一樓：先跟黃同學講話（`set:bizHuangAsked`）→ 再找梁同學，她的台詞換成介紹那段（`set:bizLiangGoing`）→ 回去找黃同學，他就會道謝。有旗標的那段要排在預設台詞前面。
 
 要新增動作，請在程式裡用 `registerAction('名稱', 函式)` 登記（見 `src/systems/items.js`）。
 

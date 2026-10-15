@@ -66,8 +66,12 @@ export function pickDialog(dialog) {
 /** then 動作：由各系統自己登記，例如 items.js 登記 giveMap */
 const actions = {};
 export function registerAction(name, fn) { actions[name] = fn; }
+/** 劇情旗標：then 寫 "set:旗標名稱"，之後 when 就能用 { "旗標名稱": true } 判斷（會存檔） */
+state.flags = state.flags || new Set();
+export function setFlag(name) { state[name] = true; state.flags.add(name); }
 export function runAction(name) {
   if (!name) return;
+  if (name.startsWith('set:')) { setFlag(name.slice(4)); return; }
   if (!actions[name]) { console.warn(`[content] 找不到動作「${name}」`); return; }
   actions[name]();
 }

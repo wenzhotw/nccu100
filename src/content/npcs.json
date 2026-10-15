@@ -453,6 +453,135 @@
           ]
         }
       ]
+    },
+    {
+      "id": "biz-liang",
+      "room": "business-1f",
+      "tag": "資管系　梁同學",
+      "title": "資管系．梁同學",
+      "home": {
+        "x": 3.2,
+        "z": -2.6
+      },
+      "face": "-PI/2",
+      "look": {
+        "top": "#f3efe6",
+        "pants": "#3b4a6b",
+        "hair": "#1c1412",
+        "hairStyle": "long",
+        "mole": true,
+        "shoe": "#f4f4f0",
+        "bag": "#2a2a2e"
+      },
+      "shout": [
+        "五樓以上的廁所……你懂的。"
+      ],
+      "dialog": [
+        {
+          "when": {
+            "bizLiangGoing": true
+          },
+          "lines": [
+            "我等一下就去找黃同學！",
+            "順便上個五樓，嘿嘿。"
+          ]
+        },
+        {
+          "when": {
+            "bizHuangAsked": true
+          },
+          "lines": [
+            "嗨，又是你。",
+            "你：「剛好有個同學在找想上廁所的人。」",
+            "這樣子啊，我也想要去耶！"
+          ],
+          "then": "set:bizLiangGoing"
+        },
+        {
+          "lines": [
+            "嗨！你也是來商學院上課的嗎？",
+            "偷偷跟你說一個商學院的祕密。",
+            "五樓以上的廁所人比較少，比較好大便。",
+            "一樓跟二樓的廁所下課時間都要排隊，不推。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "biz-huang",
+      "room": "business-1f",
+      "tag": "會計系　黃同學",
+      "title": "會計系．黃同學",
+      "home": {
+        "x": -20.42,
+        "z": -21.29
+      },
+      "face": "PI",
+      "look": {
+        "top": "#5f8f6a",
+        "pants": "#2f3446",
+        "hair": "#2a2220",
+        "hairStyle": "short",
+        "glasses": "#2a2c4a",
+        "shoe": "#2a2a2e"
+      },
+      "shout": [
+        "好餓……"
+      ],
+      "dialog": [
+        {
+          "when": {
+            "bizLiangGoing": true
+          },
+          "lines": [
+            "是你！",
+            "謝謝你剛剛介紹梁同學，",
+            "我飽餐了一頓。"
+          ]
+        },
+        {
+          "lines": [
+            "欸，你想去上大號嗎？",
+            "你：「為什麼？」",
+            "因為我肚子很餓。"
+          ],
+          "then": "set:bizHuangAsked"
+        }
+      ]
+    },
+    {
+      "id": "biz-tsai",
+      "room": "business-1f",
+      "kind": "capybara",
+      "tag": "國貿系　蔡同學",
+      "title": "國貿系．蔡同學",
+      "home": {
+        "x": -13.33,
+        "z": -33.79
+      },
+      "face": "PI/2",
+      "path": [
+        [
+          -13.33,
+          -33.79
+        ],
+        [
+          -19.17,
+          -33.79
+        ]
+      ],
+      "speed": 0.5,
+      "shout": [
+        "健康滷味……"
+      ],
+      "dialog": [
+        {
+          "lines": [
+            "……（卡皮巴拉慢慢轉過頭來）",
+            "要不要繼續去吃健康滷味？"
+          ]
+        }
+      ]
     }
   ],
   "students": {
