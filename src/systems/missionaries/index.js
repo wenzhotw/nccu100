@@ -1,5 +1,6 @@
 /**
  * 學生傳教士：兩人一組在四維道上走來走去，主角靠近時會突然衝過來搭話。
+ * 只會主動衝過來一次（記成劇情旗標 missionaryMet，跟著存檔）；之後要自己走過去按「交談」才會遇到。
  *
  * 流程：頭上冒「！」→ 衝向主角 → 打招呼 → 三個選項
  *   我沒有興趣耶       → 被說「那你就下地獄去吧！」，兩人走開
@@ -16,6 +17,7 @@ import { dlg, openDialog, toast } from '../../ui/dialog.js';
 import { openChoice } from '../../ui/choice.js';
 import { showEnding } from '../../ui/ending.js';
 import { closeBattle, startBattle } from '../battle/index.js';
+import { setFlag } from '../../content/index.js';
 import M from '../../content/missionaries.json';
 
 const SEE = 11;          // 多近會被發現（公尺）
@@ -59,7 +61,7 @@ async function onChoice(i) {
 
 /** 遭遇：打招呼之後跳出選項 */
 function encounter() {
-  active = true;
+  active = true; setFlag('missionaryMet');
   [lead, buddy].forEach(n => { n.state = 'talk'; });
   openDialog(M.title, M.greeting, () => openChoice(M.choices.map(c => c.label), onChoice));
 }
@@ -73,10 +75,10 @@ setInterval(() => {
   // 追到一半主角上車或進室內：放棄，走回去
   if (active && lead.state === 'chase' && (state.driving || indoor())) { goHome(); return; }
   if (active || !state.started || state.busy || state.driving || state.holdPang || !dlg.hidden || indoor()) return;
-  if (performance.now() < nextTime) return;
+  if (state.missionaryMet || performance.now() < nextTime) return;   // 遇過一次就不再主動衝過來
   const p = lead.g.position;
   if (Math.hypot(pos.x - p.x, pos.z - p.z) > SEE) return;
-  active = true;
+  active = true; setFlag('missionaryMet');
   AU.sfx('encounter');
   [lead, buddy].forEach(n => { n.sp.say(M.spot); n.sayT = 1.6; n.state = 'chase'; n.chaseT = 0; });
   lead.onCatch = encounter;
