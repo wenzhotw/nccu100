@@ -190,3 +190,19 @@
 
 雄鷹飛行：到戶外按住空白鍵（手機按跳躍鍵）持續上升，放開會緩緩下降，建築的牆不會擋住飛在空中的雄鷹（但在地面上走路時一樣會被擋）。
 
+
+## gym.json：體育館（投籃挑戰、毛巾、找雄鷹吉祥物支線）
+
+房間在 `src/world/buildings/gym/interior.js`，規則在 `src/systems/gym/`。體育館裡的 NPC 在 `npcs.json`，用 `"room": "gym"`；打球的人身上的籃球、場邊坐姿由程式處理。
+
+- `captain`：雄鷹隊長 Marcus 的台詞
+  - `invite`、`choices`：邀請挑戰和兩個選項（開始挑戰、等一下），`decline` 是選「等一下」的回應
+  - `lose`、`retryChoices`、`rest`：沒過關的台詞和再挑戰的選項，`{makes}` 會換成進球數
+  - `win`：過關的台詞，說完跳出禮物卡片（`gift`）
+  - `afterGift`、`acceptChoices`、`accepted`、`acceptToast`：雄鷹吉祥物不見了，玩家答應幫忙之後接下支線
+  - `hint`：接下支線之後再找隊長說的話
+- `gift`：禮物卡片上的文字、右上角道具欄的名稱（`chip`）
+- `sideQuest`：右上角支線任務的標籤和內容
+- `shootout`：投籃挑戰的數值。`shots` 投幾球、`need` 要進幾球；`aimZone` 方向綠色區的半寬、`powerTarget` 力道綠色帶的中心、`powerZone` 綠色帶的半寬（0～1）；`aimSpeed`、`powerSpeed` 指針擺動的速度。差一點點（方向多 0.06、力道多 0.05 以內）有一半機率打框滾進
+
+進度記成劇情旗標，會存檔：`gymWon`（贏過投籃挑戰、拿到毛巾）、`eagleMissing`（接下找雄鷹的支線）。其他 NPC 的台詞可以用 `"when": { "eagleMissing": true }` 接著寫找雄鷹的線索。

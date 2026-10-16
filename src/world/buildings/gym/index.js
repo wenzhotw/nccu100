@@ -8,9 +8,11 @@ import { circC, obbC } from '../../../core/collision.js';
 import { banyan, palm } from '../../vegetation.js';
 import { toW } from '../../building-kit.js';
 import { defineBuilding } from '../../registry.js';
+import { R, buildInterior, interiorClamp, interiorLight, interiorZone } from './interior.js';
 
 // 這棟建築的位置與尺寸（地圖、碰撞、高度判斷都會用到）
 const GYM={x:114,z:-156,th:-1.25};
+const xz=([x,z])=>({x,z});
 const gymLocal=(x,z)=>{ const dx=x-GYM.x, dz=z-GYM.z, c=Math.cos(GYM.th), s=Math.sin(GYM.th); return [dx*c-dz*s, dx*s+dz*c]; };
 function gymH(x,z){ const [lx,lz]=gymLocal(x,z); if(Math.abs(lx)>23) return null;
   if(lz>=10&&lz<=16.6) return 1.6; if(lz>16.6&&lz<=20.2) return Math.max(0,1.6-0.2*Math.ceil((lz-16.6)/0.45)); return null; }
@@ -88,4 +90,19 @@ export default defineBuilding({
   heightAt: gymH,
   zones: [{ priority: 60, test: p => Math.hypot(p.x - GYM.x, p.z - GYM.z) < 27 ? '體育館' : null }],
   map: [{ x: 114, z: -156, w: 36, d: 28, color: '#d6dadd', label: '體育館' }],
+  // 室內：一樓大廳 → 柵欄門 → 一樓球場（interior.js）。打球的人和投籃挑戰在 systems/gym
+  interior: {
+    build: buildInterior,
+    light: interiorLight,
+    background: '#1c1f2b',
+    // 門口在內凹門廊裡（建築自己的座標 z = 12），出來站在門廊前的平台上，面向外面
+    entrance: { ...xz(toW(GYM, 0, 12.2)), r: 3, label: '進入體育館' },
+    spawn: { x: 0, z: R.z1 - 2, yaw: 0, pitch: 0.22, face: Math.PI },
+    exit: { x: 0, z: R.z1 - 0.6, r: 2.4, label: '離開體育館' },
+    returnTo: { ...xz(toW(GYM, 0, 15.2)), face: GYM.th, yaw: GYM.th + Math.PI, pitch: 0.3 },
+    bounds: { x0: R.x0 + 0.4, x1: R.x1 - 0.4, z0: R.z0 + 0.4, z1: R.z1 - 0.4 },
+    camera: { x0: R.x0 + 0.3, x1: R.x1 - 0.3, z0: R.z0 + 0.3, z1: R.z1 - 0.2, ceil: 9, maxDist: 6.5 },
+    zone: interiorZone,
+    clamp: interiorClamp,
+  },
 });
