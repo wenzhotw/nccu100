@@ -585,6 +585,513 @@
           ]
         }
       ]
+    },
+    {
+      "id": "gym-jamal",
+      "room": "gym",
+      "title": "Jamal",
+      "home": {
+        "x": -10,
+        "z": -16
+      },
+      "path": [
+        [
+          -10,
+          -16
+        ],
+        [
+          -6,
+          -12.5
+        ],
+        [
+          -9,
+          -9
+        ],
+        [
+          -11.5,
+          -12.5
+        ]
+      ],
+      "speed": 2.6,
+      "look": {
+        "top": "#f4f4f0",
+        "pants": "#2a2d38",
+        "skin": "#4a2e1e",
+        "hair": "#120c08",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "shout": [
+        "傳球！",
+        "我有空檔！"
+      ],
+      "dialog": [
+        {
+          "lines": [
+            "嘿！三對三剛好缺一個人。",
+            "你先去東邊找隊長 Marcus，他在找人挑戰投籃。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-azhe",
+      "room": "gym",
+      "title": "阿哲",
+      "home": {
+        "x": -5,
+        "z": -17
+      },
+      "path": [
+        [
+          -5,
+          -17
+        ],
+        [
+          -8,
+          -11
+        ],
+        [
+          -4,
+          -9.5
+        ]
+      ],
+      "speed": 2.4,
+      "look": {
+        "top": "#f4f4f0",
+        "pants": "#2a2d38",
+        "skin": "#ffdcc2",
+        "hair": "#1a1410",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "side"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "這學期系際盃，我們系一定要拿冠軍。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-kofi",
+      "room": "gym",
+      "title": "Kofi",
+      "home": {
+        "x": -8,
+        "z": -18.5
+      },
+      "path": [
+        [
+          -8,
+          -18.5
+        ],
+        [
+          -4.5,
+          -14
+        ],
+        [
+          -7,
+          -8.5
+        ]
+      ],
+      "speed": 2.8,
+      "look": {
+        "top": "#f4f4f0",
+        "pants": "#2a2d38",
+        "skin": "#5c3a24",
+        "hair": "#0e0a07",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "shout": [
+        "Nice！"
+      ],
+      "dialog": [
+        {
+          "lines": [
+            "我是從迦納來的交換生。",
+            "政大的球場比我想像的還大，晚上來打球的人超多！"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-boyu",
+      "room": "gym",
+      "title": "柏宇",
+      "home": {
+        "x": -11,
+        "z": -10
+      },
+      "path": [
+        [
+          -11,
+          -10
+        ],
+        [
+          -7,
+          -15
+        ],
+        [
+          -12,
+          -17
+        ]
+      ],
+      "speed": 2.5,
+      "look": {
+        "top": "#f08a3c",
+        "pants": "#3a2a20",
+        "skin": "#f6d3b5",
+        "hair": "#231a12",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "bowl"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "看台的椅子是橘、灰、白混著排的。",
+            "坐滿的時候從場上看上去，超有氣勢。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-andre",
+      "room": "gym",
+      "title": "Andre",
+      "home": {
+        "x": -4,
+        "z": -12
+      },
+      "path": [
+        [
+          -4,
+          -12
+        ],
+        [
+          -9.5,
+          -14
+        ],
+        [
+          -6,
+          -18
+        ]
+      ],
+      "speed": 2.7,
+      "look": {
+        "top": "#f08a3c",
+        "pants": "#3a2a20",
+        "skin": "#7a4e33",
+        "hair": "#140e0a",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "shout": [
+        "防守！"
+      ],
+      "dialog": [
+        {
+          "lines": [
+            "Defense！欸你小心一點，球會飛過去喔。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-lin",
+      "room": "gym",
+      "title": "小林",
+      "home": {
+        "x": -6,
+        "z": -9
+      },
+      "path": [
+        [
+          -6,
+          -9
+        ],
+        [
+          -10.5,
+          -11
+        ],
+        [
+          -5,
+          -15.5
+        ]
+      ],
+      "speed": 2.3,
+      "look": {
+        "top": "#f08a3c",
+        "pants": "#3a2a20",
+        "skin": "#ffe1cc",
+        "hair": "#2b2018",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "side"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "打完我要上 2F 看台休息。",
+            "從上面看整個球場，像在看比賽轉播一樣。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-captain",
+      "room": "gym",
+      "tag": "雄鷹隊長　Marcus",
+      "title": "政大雄鷹隊長．Marcus",
+      "home": {
+        "x": 9,
+        "z": -13.5
+      },
+      "face": "PI/2",
+      "look": {
+        "top": "#2c2f8f",
+        "pants": "#1f2240",
+        "skin": "#3f2718",
+        "hair": "#0d0907",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "shout": [
+        "要不要來挑戰投籃？",
+        "五投三中，敢不敢？"
+      ],
+      "dialog": [
+        {
+          "lines": [
+            "嘿！我是政大雄鷹的隊長 Marcus。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-daniel",
+      "room": "gym",
+      "title": "Daniel",
+      "home": {
+        "x": 11,
+        "z": -16
+      },
+      "path": [
+        [
+          11,
+          -16
+        ],
+        [
+          9.8,
+          -11
+        ],
+        [
+          11.6,
+          -11.8
+        ]
+      ],
+      "speed": 1.8,
+      "look": {
+        "top": "#2c2f8f",
+        "pants": "#1f2240",
+        "skin": "#5a3824",
+        "hair": "#0d0907",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "dialog": [
+        {
+          "when": {
+            "gymWon": true
+          },
+          "lines": [
+            "你就是剛剛投進三球的那個人！",
+            "雄鷹就拜託你了，下禮拜主場比賽不能沒有牠。"
+          ]
+        },
+        {
+          "lines": [
+            "隊長在找人挑戰投籃，你去跟他聊聊吧。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-yuxiang",
+      "room": "gym",
+      "title": "宇翔",
+      "home": {
+        "x": 8,
+        "z": -17
+      },
+      "path": [
+        [
+          8,
+          -17
+        ],
+        [
+          10.5,
+          -15
+        ],
+        [
+          8.5,
+          -10
+        ]
+      ],
+      "speed": 1.6,
+      "look": {
+        "top": "#2c2f8f",
+        "pants": "#1f2240",
+        "skin": "#ffe1cc",
+        "hair": "#18120d",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "side"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "你看天花板那一片片木板，那是吸音板。",
+            "所以運球聲在這裡不會轟轟的，很適合比賽。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-tunde",
+      "room": "gym",
+      "title": "Tunde",
+      "home": {
+        "x": 4,
+        "z": -24.1
+      },
+      "face": 0,
+      "look": {
+        "top": "#6b6f7a",
+        "pants": "#2a2d38",
+        "skin": "#3f2718",
+        "hair": "#0d0907",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "short"
+      },
+      "dialog": [
+        {
+          "when": {
+            "eagleMissing": true
+          },
+          "lines": [
+            "雄鷹不見了？",
+            "我剛剛好像看到一個毛茸茸的影子往樓上跑，可能是我眼花吧。"
+          ]
+        },
+        {
+          "lines": [
+            "剛打完一場，腿已經沒力了，先坐一下。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-mei",
+      "room": "gym",
+      "title": "小美",
+      "home": {
+        "x": 5.4,
+        "z": -24.1
+      },
+      "face": 0,
+      "look": {
+        "top": "#f4b8c8",
+        "pants": "#5a6278",
+        "skin": "#ffe1cc",
+        "hair": "#3a2618",
+        "shortSleeve": true,
+        "shoe": "#ffffff",
+        "hairStyle": "long"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "我在等朋友打完球。",
+            "他說打贏就請我喝飲料，所以我很認真在加油。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-staff",
+      "room": "gym",
+      "tag": "場館管理員",
+      "title": "場館管理員",
+      "home": {
+        "x": -10,
+        "z": 2.6
+      },
+      "face": "PI/2",
+      "look": {
+        "top": "#3c6e5a",
+        "pants": "#2e3440",
+        "skin": "#d9a77c",
+        "hair": "#3a3a3a",
+        "shortSleeve": true,
+        "shoe": "#2a2a2e",
+        "hairStyle": "short",
+        "glasses": "#4f545b"
+      },
+      "dialog": [
+        {
+          "lines": [
+            "歡迎來到政大體育館！",
+            "進場記得主動出示證件，學生證、教職員證或校友證都可以。",
+            "往球場走左右兩個柵欄門，樓梯上去是 2F 看台。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gym-tall",
+      "room": "gym",
+      "title": "量身高的同學",
+      "home": {
+        "x": 11.3,
+        "z": -0.6
+      },
+      "face": "-PI/2",
+      "look": {
+        "top": "#8fa0b2",
+        "pants": "#2a2d38",
+        "skin": "#ffe1cc",
+        "hair": "#2a2220",
+        "shortSleeve": true,
+        "shoe": "#f2f2ee",
+        "hairStyle": "bowl"
+      },
+      "dialog": [
+        {
+          "when": {
+            "eagleMissing": true
+          },
+          "lines": [
+            "雄鷹平常都站在這面身高牆旁邊跟大家拍照。",
+            "牠比我還高一顆頭，今天卻一直沒看到牠。"
+          ]
+        },
+        {
+          "lines": [
+            "這面身高牆從 0 量到 300 公分。",
+            "我每次來都量一下，看打球會不會長高。"
+          ]
+        }
+      ]
     }
   ],
   "students": {
