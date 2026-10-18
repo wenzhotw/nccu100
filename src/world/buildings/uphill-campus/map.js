@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
 import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon } from '../../../render/kit.js';
 import { boxC, obbC } from '../../../core/collision.js';
-import { R, SIZE, STOP } from './layout.js';
+import { BUS_SHELTER, R, SIZE, STOP } from './layout.js';
 import { heightAt } from './terrain.js';
 import { createGreybox, greyboxColliders, fenceRails } from './greybox.js';
 import { zoneName } from './zone-names.js';
@@ -63,14 +63,14 @@ function hills() {
 function busStop() {
   const start = scene.children.length, base = heightAt(STOP.x, STOP.z);
   const { x, z } = STOP, steel = '#7d8a96', roof = '#2f6f4f';
-  // 候車亭：在站牌東邊，背對校區、面向車道
-  const sx = x + 9;
-  [-1.8, 1.8].forEach(dx => block(sx + dx, 1.25, z - 0.9, 0.12, 2.5, 0.12, steel));
-  block(sx, 2.55, z - 0.3, 4.4, 0.14, 2.0, roof, 0.03);
-  block(sx, 1.4, z - 1.0, 3.8, 1.6, 0.05, toon('#cfe6ef', { transparent: true, opacity: 0.55 }));
-  block(sx, 0.45, z - 0.7, 3.2, 0.08, 0.5, '#8a6a42', 0.02);
-  [-1.3, 1.3].forEach(dx => block(sx + dx, 0.22, z - 0.7, 0.08, 0.44, 0.42, '#6b7178'));
-  boxC(sx - 2, sx + 2, z - 1.1, z - 0.4, base + 2.5);
+  // 候車亭：在站牌東邊建築退縮處，背對校區、面向車道（位置見 layout.js 的 BUS_SHELTER）
+  const sx = BUS_SHELTER.x, sz = BUS_SHELTER.z;
+  [-1.8, 1.8].forEach(dx => block(sx + dx, 1.25, sz - 0.9, 0.12, 2.5, 0.12, steel));
+  block(sx, 2.55, sz - 0.3, 4.4, 0.14, 2.0, roof, 0.03);
+  block(sx, 1.4, sz - 1.0, 3.8, 1.6, 0.05, toon('#cfe6ef', { transparent: true, opacity: 0.55 }));
+  block(sx, 0.45, sz - 0.7, 3.2, 0.08, 0.5, '#8a6a42', 0.02);
+  [-1.3, 1.3].forEach(dx => block(sx + dx, 0.22, sz - 0.7, 0.08, 0.44, 0.42, '#6b7178'));
+  boxC(sx - 2, sx + 2, sz - 1.1, sz - 0.4, base + 2.5);
   // 站牌：和山下行政大樓乘車處同樣的綠底白字
   mk(new THREE.CylinderGeometry(0.06, 0.06, 2.6, 8), toon('#9aa3ab'), x, 1.3, z, { out: 0.02 });
   const t = canvasTex(256, 320, (g, w, h) => {

@@ -1,5 +1,5 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
-import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R } from './layout.js';
+import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 export function projectToPath(x, z, path) {
@@ -24,13 +24,12 @@ function pathLength(path) {
     sum + Math.hypot(x - path[i][0], z - path[i][1]), 0);
 }
 
-/** 沿路徑線性升高，再往下取整為細台階，兩端夾回核可高度。 */
+/** 沿路徑連續線性升高，兩端夾回核可高度。 */
 export function rampHeight(ramp, s) {
   const length = pathLength(ramp.path);
   if (s <= 0) return ramp.from;
   if (s >= length) return ramp.to;
-  const steps = Math.floor(s / length * (ramp.to - ramp.from) / ramp.step + 1e-9);
-  return ramp.from + steps * ramp.step;
+  return ramp.from + s / length * (ramp.to - ramp.from);
 }
 
 /** 每階踏面走完才升高，多餘路長平均分配給休息平台。 */
@@ -39,15 +38,17 @@ export function stairHeight(stair, s) {
   const from = parent
     ? stairHeight(parent, projectToPath(...stair.path[0], parent.path).s)
     : stair.from;
+  const ramp = stair.joinRamp ? RAMPS.find(candidate => candidate.id === stair.joinRamp) : null;
+  const to = ramp ? rampHeight(ramp, projectToPath(...stair.path.at(-1), ramp.path).s) : stair.to;
   const length = pathLength(stair.path);
-  const steps = Math.round((stair.to - from) / 0.3);
+  const steps = Math.round((to - from) / 0.3);
   const landings = Math.floor((steps - 1) / 12);
   if (length + 1e-10 < steps * 0.8 + landings * 1.6) {
     throw new Error('階梯路徑太短，無法容納踏面與休息平台。');
   }
   const landingDepth = landings > 0 ? (length - steps * 0.8) / landings : 0;
   if (s <= 0) return from;
-  if (s >= length) return stair.to;
+  if (s >= length) return to;
   let risen = 0;
   for (let step = 1; step <= steps; step++) {
     const end = step * 0.8 + Math.floor((step - 1) / 12) * landingDepth;
@@ -102,7 +103,13 @@ export function heightAt(x, z) {
       nearestProjection = projection;
     }
   }
-  if (nearestStair) return stairHeight(nearestStair, nearestProjection.s);
+  if (nearestStair) {
+    const h = stairHeight(nearestStair, nearestProjection.s);
+    // 柏油路穿過主線最後一階的側緣，保留水平路口，不改主線階高與踏面。
+    if (nearestStair.id === 'haohanpo' && h >= 11.7 && LAYOUT.roads.some(road =>
+      road.osm === 510739837 && projectToPath(x, z, road.pts).distance <= 0.8 ** 2)) return 12;
+    return h;
+  }
 
   let nearestRamp = null;
   nearestProjection = { distance: Infinity };
@@ -115,7 +122,11 @@ export function heightAt(x, z) {
       nearestProjection = projection;
     }
   }
-  if (nearestRamp) return rampHeight(nearestRamp, nearestProjection.s);
+  if (nearestRamp) {
+    // T 字路口的橫向柏油路維持水平，坡面從路口北緣開始。
+    if (nearestRamp.id === 'z-p' && z >= nearestRamp.path[0][1]) return nearestRamp.from;
+    return rampHeight(nearestRamp, nearestProjection.s);
+  }
 
   return LEVELS[platformLevel(x, z)];
 }
@@ -158,9 +169,9 @@ function clipToMap(a, b) {
 }
 
 /** 在來源線法線兩側量測，回傳牆的上下緣。 */
-function wallHeights(a, b) {
+function wallHeights(a, b, t = 0.5) {
   const dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
-  const x = (a[0] + b[0]) / 2, z = (a[1] + b[1]) / 2;
+  const x = a[0] + (b[0] - a[0]) * t, z = a[1] + (b[1] - a[1]) * t;
   const d = length < 0.2 ? 0.1 : 0.3;
   const heights = [heightAt(x - dz / length * d, z + dx / length * d),
     heightAt(x + dz / length * d, z - dx / length * d)];
@@ -174,7 +185,7 @@ function wallHeights(a, b) {
 export function wallSegments() {
   const walls = [];
   const passages = [...STAIRS, ...RAMPS];
-  function sampleLine(rawA, rawB, source, owner = null) {
+  function sampleLine(rawA, rawB, source, owner = null, side = null) {
     const clipped = clipToMap(rawA, rawB);
     if (!clipped) return;
     const [a, b] = clipped;
@@ -188,15 +199,24 @@ export function wallSegments() {
       // 保留整個取樣小段的開口，避免小段端點伸入通路。
       const blocked = passages.some(passage => passage !== owner
         && projectToPath(...middle, passage.path).distance <= (passage.width / 2 + length / count / 2) ** 2);
-      if (blocked) { run = null; continue; }
+      const roadOpening = LAYOUT.roads.some(road => [510739837,1313447898,1313447899].includes(road.osm)
+        && projectToPath(...middle, road.pts).distance <= (0.9 + length / count / 2) ** 2);
+      if (blocked || roadOpening) { run = null; continue; }
       const heights = wallHeights(start, end);
       if (heights.high - heights.low <= 0.5) { run = null; continue; }
       const merged = run && wallHeights(run.a, end);
       if (run && Math.abs(run.low - heights.low) < 1e-8 && Math.abs(run.high - heights.high) < 1e-8
         && Math.abs(merged.low - run.low) < 1e-8 && Math.abs(merged.high - run.high) < 1e-8) {
         run.b = end;
+        if (run.ramp) {
+          const atB = wallHeights(start, end, 1);
+          run.lowB = atB.low; run.highB = atB.high;
+        }
       } else {
-        run = { a: start, b: end, ...heights, source };
+        const ramp = RAMPS.includes(owner) ? owner.id : null;
+        const atA = wallHeights(start, end, 0), atB = wallHeights(start, end, 1);
+        run = { a: start, b: end, ...heights, source,
+          ...(ramp ? { ramp, side, lowA: atA.low, highA: atA.high, lowB: atB.low, highB: atB.high } : {}) };
         walls.push(run);
       }
     }
@@ -204,16 +224,39 @@ export function wallSegments() {
   for (const region of [...REGIONS, ...FILL_REGIONS]) {
     region.poly.forEach((a, i) => sampleLine(a, region.poly[(i + 1) % region.poly.length], 'region'));
   }
-  for (const passage of passages) {
+  for (const passage of passages) for (const sign of [-1, 1]) {
+    const normals = passage.path.slice(1).map((b, i) => {
+      const a = passage.path[i], length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      return [-(b[1] - a[1]) / length, (b[0] - a[0]) / length];
+    });
+    const side = passage.path.map((p, i) => {
+      const a = normals[Math.max(0, i - 1)], b = normals[Math.min(i, normals.length - 1)];
+      const divisor = 1 + a[0] * b[0] + a[1] * b[1];
+      return [p[0] + sign * (a[0] + b[0]) / divisor * passage.width / 2,
+        p[1] + sign * (a[1] + b[1]) / divisor * passage.width / 2];
+    });
     for (let i = 1; i < passage.path.length; i++) {
-      const a = passage.path[i - 1], b = passage.path[i];
-      const dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
-      for (const sign of [-1, 1]) {
-        const offset = p => [p[0] - sign * dz / length * passage.width / 2,
-          p[1] + sign * dx / length * passage.width / 2];
-        sampleLine(offset(a), offset(b), 'passage', passage);
+      if (RAMPS.includes(passage)) sampleLine(side[i - 1], side[i], 'passage', passage, sign);
+      else {
+        // 階梯維持原有逐段偏移，避免改動好漢坡的既有開口。
+        const offset = p => [p[0] + sign * normals[i - 1][0] * passage.width / 2,
+          p[1] + sign * normals[i - 1][1] * passage.width / 2];
+        sampleLine(offset(passage.path[i - 1]), offset(passage.path[i]), 'passage', passage);
       }
     }
   }
+  // 共用接點取相鄰段的高低包絡，避免分區邊跨過取樣點時牆頂低於應擋住的高度。
+  const profiles = walls.map(s => ({ ...s }));
+  walls.forEach((s, i) => {
+    if (!s.ramp) return;
+    const join = (a, b) => a?.ramp === b.ramp && a.side === b.side
+      && Math.hypot(a.b[0]-b.a[0],a.b[1]-b.a[1]) < 1e-6;
+    const current=profiles[i], previous=join(profiles[i-1],current) ? profiles[i-1] : current;
+    const next=profiles[i+1] && join(current,profiles[i+1]) ? profiles[i+1] : current;
+    s.highA=Math.max(current.highA,current.high,previous.highB,previous.high);
+    s.highB=Math.max(current.highB,current.high,next.highA,next.high);
+    s.lowA=Math.min(current.lowA,current.low,previous.lowB,previous.low);
+    s.lowB=Math.min(current.lowB,current.low,next.lowA,next.low);
+  });
   return walls;
 }

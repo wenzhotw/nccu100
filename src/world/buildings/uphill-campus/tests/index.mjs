@@ -7,3 +7,4 @@ import './walls.test.mjs';
 import './greybox.test.mjs';
 import './zones.test.mjs';
 import './landmarks.test.mjs';
+import './spawn.test.mjs';

@@ -74,7 +74,7 @@ test('主線範圍優先於平台，兩端往外半公尺沒有高度跳躍', ()
   close(terrain.heightAt(x + dz / len * 1.61, z - dx / len * 1.61), 0);
 });
 
-test('東支線由主線接點的實際階高起步，逐階到達十五公尺', () => {
+test('東支線由主線接點的實際階高起步，二十五階接上斜坡', () => {
   const [main, east] = layout.STAIRS;
   const joinS = lengthOf(main.path.slice(0, 5));
   close(terrain.stairHeight(main, joinS), 6.3);
@@ -83,8 +83,8 @@ test('東支線由主線接點的實際階高起步，逐階到達十五公尺',
   close(terrain.stairHeight(east, 0), terrain.stairHeight(main, joinS));
   close(terrain.heightAt(...east.path[0]), 6.3);
   const length = lengthOf(east.path);
-  close(terrain.stairHeight(east, length), 15);
-  close(terrain.heightAt(...east.path.at(-1)), 15);
+  close(terrain.stairHeight(east, length), 13.8);
+  close(terrain.heightAt(...east.path.at(-1)), 13.8);
   let previous = 6.3, rises = 0;
   for (let i = 1; i <= Math.ceil(length * 10); i++) {
     const s = Math.min(i / 10, length);
@@ -93,7 +93,7 @@ test('東支線由主線接點的實際階高起步，逐階到達十五公尺',
     if (h > previous) { close(h - previous, 0.3); rises++; }
     previous = h;
   }
-  assert.equal(rises, 29);
+  assert.equal(rises, 25);
   close(terrain.heightAt(...pointAt(east.path, 2)), 6.9);
 });
 

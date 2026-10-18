@@ -133,3 +133,26 @@ test('A4-5 坡道十公尺處有雙側牆，全程中線與頂端接縫不被牆
     }
   }
 });
+
+
+test('7a ramp walls retain continuous sloping profiles and bounded collision runs', async () => {
+  const {wallChains,greyboxColliders} = await import('../greybox.js');
+  const chains = wallChains().filter(c=>c.ramp === 'z-p');
+  assert(chains.length >= 2 && chains.length <= 4);
+  for (const side of [-1,1]) {
+    const own = chains.filter(c=>c.side===side);
+    assert(own.length >= 1 && own.length <= 2, `side ${side}: ${own.length}`);
+    for (const chain of own) {
+      for (let i=0;i<chain.segments.length;i++) {
+        const s=chain.segments[i];
+        assert(Number.isFinite(s.lowA) && Number.isFinite(s.highB));
+        if(i) {
+          const previous=chain.segments[i-1];
+          assert(Math.hypot(previous.b[0]-s.a[0],previous.b[1]-s.a[1])<1e-6);
+          assert(Math.abs(previous.highB-s.highA)<0.08);
+        }
+      }
+    }
+    assert(greyboxColliders().filter(c=>c.ramp==='z-p' && c.side===side).length<=6);
+  }
+});

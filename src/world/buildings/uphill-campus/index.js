@@ -9,7 +9,7 @@
  * 山下這一側不用另外蓋東西：乘車處、站牌、公車停靠區都已經在行政大樓（admin-building）裡。
  */
 import { defineBuilding } from '../../registry.js';
-import { R, STOP } from './layout.js';
+import { R, SPAWN, STOP } from './layout.js';
 import { buildMap, mapHeight, mapLight, mapZone } from './map.js';
 
 /** 山下乘車處：行政大樓左側騎樓的候車長椅與時刻表旁（校園座標） */
@@ -29,7 +29,7 @@ export default defineBuilding({
     ride: { up: '搭乘校園公車「一路」前往山上校區', down: '搭乘校園公車「一路」返回山下校區' },
     miniSub: '公車站在南邊',
     entrance: { x: BOARD.x, z: BOARD.z, r: 3, label: '搭公車上山' },
-    spawn: { x: STOP.x - 2, z: STOP.z - 4.5, yaw: 0, pitch: 0.28, face: Math.PI },
+    spawn: { ...SPAWN, pitch: 0.28 },
     exit: { x: STOP.x, z: STOP.z - 0.8, r: 3, label: '搭公車下山' },
     returnTo: { x: BOARD.x - 1.2, z: BOARD.z, yaw: Math.PI / 2, pitch: 0.3, face: -Math.PI / 2 },
     bounds: { x0: R.x0 + 0.6, x1: R.x1 - 0.6, z0: R.z0 + 0.6, z1: R.z1 - 0.6 },

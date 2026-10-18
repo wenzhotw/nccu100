@@ -1,5 +1,5 @@
 /** 依地標、通路、建築與平台判斷區域名稱，不載入場景或瀏覽器引擎。 */
-import { LAYOUT, STAIRS, RAMPS } from './layout.js';
+import { LAYOUT, STAIRS, RAMPS, STOP } from './layout.js';
 import { projectToPath, pointInPoly, platformLevel } from './terrain.js';
 
 const displayNames = {
@@ -9,7 +9,9 @@ const displayNames = {
   '遮雨棚西端': '遮雨棚',
   '遮雨棚東端': '遮雨棚',
 };
-const landmarks = Object.entries(LAYOUT.landmarks).filter(([name]) => name !== '福利社(Google)');
+// 山居下車點改以站牌 STOP 為準（Task 7 站牌由原點移到山居南側），配置資料的原點座標不再代表站牌。
+const landmarks = Object.entries(LAYOUT.landmarks).filter(([name]) => name !== '福利社(Google)')
+  .map(([name, point]) => [name, name === '山居下車點' ? [STOP.x, STOP.z] : point]);
 const levelNames = { L1: '環山一道', L2: '自強宿舍區', L3: '自強九舍・十舍' };
 
 export function zoneName({ x, z }) {

@@ -128,7 +128,7 @@ test('範圍內建築依輪廓最低層擠出，並提供至多四個碰撞盒',
     assert(boxes.length >= 1 && boxes.length <= 4);
     for (const c of boxes) assert(c.hx > 0 && c.hz > 0);
   }
-  assert.equal(colliders.filter(c => c.kind === 'wall').length, wallChains().length);
+  assert.equal(colliders.filter(c => c.kind === 'wall').length, wallChains().filter(c => !c.ramp).length + 4);
   assert(model.getObjectByName('擋土牆'));
   assert(model.getObjectByName('建築描邊'));
 });
@@ -175,6 +175,12 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
     assert(scene.getObjectByName('山上校區灰盒'));
     assert.equal(scene.getObjectByName('uphill-bus-sign').position.y, 14.2);
     assert(colliders.some(c => c.top === 14.5));
+    // 站牌在 STOP，候車亭碰撞以 BUS_SHELTER 為中心（Task 7 移到山居南側）。
+    const { STOP, BUS_SHELTER } = await import('../layout.js');
+    const sign = scene.getObjectByName('uphill-bus-sign');
+    assert.deepEqual([sign.position.x, sign.position.z], [STOP.x, STOP.z]);
+    assert(colliders.some(c => c.top === 14.5 && Math.abs((c.x0 + c.x1) / 2 - BUS_SHELTER.x) < 1e-9
+      && Math.abs(c.z0 - (BUS_SHELTER.z - 1.1)) < 1e-9), '候車亭碰撞不在 BUS_SHELTER');
     for (const name of ['圍籬木樁', '圍籬橫木']) {
       const fence = scene.getObjectByName(name); assert(fence);
       for (let i = 0; i < fence.count; i++) {
@@ -191,7 +197,7 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
         }
       }
     }
-    assert.equal(mapZone({ x: 0, z: 0 }), '山居學習中心');
+    assert.equal(mapZone(STOP), '山居學習中心');
     const lights = new THREE.Scene(); mapLight(lights);
     assert.equal(lights.children.filter(o => o.isLight).length, 2);
     assert(lights.children.every(o => !o.castShadow));
@@ -227,7 +233,7 @@ test('D3 每段牆外觀至少厚 0.45，碰撞包住可見牆', async () => {
     const normal = new THREE.Vector3(-dz / length, 0, dx / length);
     const center = new THREE.Vector3((w.a[0] + w.b[0]) / 2, w.high + 0.5, (w.a[1] + w.b[1]) / 2);
     const hits = new THREE.Raycaster(center.clone().add(normal), normal.clone().negate()).intersectObject(mesh);
-    assert(hits.length && hits[0].distance <= 1 - 0.45 / 2 + 1e-4, '牆太薄');
+    assert(hits.length && hits[0].distance <= 1 - 0.45 / 2 + 1e-4, `牆太薄：${JSON.stringify(w)}，射線 ${hits[0]?.distance}`);
     assert(boxes.some(c => distance({ x: center.x, z: center.z }, c) < 1e-6 && c.hz >= 0.25));
   }
 });
@@ -238,7 +244,7 @@ test('D4 連續牆串減半，每段中點仍被碰撞擋住', async () => {
   assert(chains.length < segments.length / 2);
   assert.equal(chains.reduce((n, c) => n + c.segments.length, 0), segments.length);
   const walls = greyboxColliders().filter(c => c.kind === 'wall');
-  assert.equal(walls.length, chains.length);
+  assert.equal(walls.length, chains.filter(c => !c.ramp).length + 4);
   const model = createGreybox();
   assert.equal(model.getObjectByName('擋土牆').userData.chains, chains.length);
   assert.equal(model.getObjectByName('擋土牆描邊').userData.chains, chains.length);
@@ -298,4 +304,91 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
     }
   }
   for (const { x, z } of Object.values(ANCHORS)) verify(x, z, 0.6);
+});
+
+
+test('7a ramp surface follows continuous height without instanced steps', async () => {
+  const { createGreybox } = await import('../greybox.js');
+  const model = createGreybox(); model.updateMatrixWorld(true);
+  const surfaces = model.children.filter(m => m.userData.surface);
+  const ray = new THREE.Raycaster();
+  for (let z = -9; z >= -19; z -= 0.1) {
+    const x = -11.8 + (z + 8.1) * 0.2 / 12.2;
+    ray.set(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0));
+    const hit = ray.intersectObjects(surfaces)[0];
+    assert(hit && Math.abs(hit.point.y - heightAt(x, z)) < 1e-4, `smooth surface: ${z}, ${hit?.point.y}`);
+    assert(!hit.object.isInstancedMesh);
+  }
+});
+
+
+test('7a elevated connection leaves the asphalt route clear at ground level', async () => {
+  const { createGreybox, greyboxColliders } = await import('../greybox.js');
+  const model = createGreybox(); model.updateMatrixWorld(true);
+  const boxes = greyboxColliders();
+  const route = [[-92,18.1],[-84.6,9.4],[-73.7,-1.3],[-68.3,-5.2],[-60.5,-8.1],[-45.5,-8],[-39.6,-7.9],[-11.8,-8.1]];
+  for (let i = 1; i < route.length; i++) {
+    const [a,b] = [route[i-1],route[i]], n = Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/0.25);
+    for (let j = 0; j <= n; j++) {
+      const x = a[0]+(b[0]-a[0])*j/n, z = a[1]+(b[1]-a[1])*j/n;
+      assert.equal(heightAt(x,z),12);
+      assert(boxes.every(c => distance({x,z},c) >= 0.4), `road blocked: ${x},${z}`);
+      const hits = new THREE.Raycaster(new THREE.Vector3(x,12.5,z),new THREE.Vector3(0,-1,0))
+        .intersectObject(model.getObjectByName('道路'));
+      assert(hits.length && Math.abs(hits[0].point.y-12.03)<1e-4, `road missing: ${x},${z}`);
+    }
+  }
+  const {p,visited} = path(route,boxes);
+  assert(Math.hypot(p.x+11.8,p.z+8.1)<0.01);
+  assert(visited.every(v=>Math.abs(heightAt(v.x,v.z)-12)<1e-9));
+  const bridge = model.getObjectByName('高架連通段'); assert(bridge);
+  const hits = new THREE.Raycaster(new THREE.Vector3(-42.5,40,-8), new THREE.Vector3(0,-1,0))
+    .intersectObjects([bridge,model.getObjectByName('道路')]);
+  assert(hits.some(h=>Math.abs(h.point.y-24)<1e-4));
+  assert(hits.some(h=>Math.abs(h.point.y-15.4)<1e-4));
+  assert(Math.abs(hits.at(-1).point.y-12.03)<1e-4);
+  const visible = new THREE.Raycaster(new THREE.Vector3(-42.5,40,-8), new THREE.Vector3(0,-1,0))
+    .intersectObjects([bridge,model.getObjectByName('建築描邊'),model.getObjectByName('道路')]);
+  assert(visible.filter(h=>h.point.y>12.04).every(h=>h.point.y>=15.4-1e-4), '描邊也必須保留 3.4 m 淨空');
+});
+
+
+test('7a sloping wall top follows endpoint profiles without half-metre ledges', async () => {
+  const {createGreybox,wallChains} = await import('../greybox.js');
+  const model=createGreybox(); model.updateMatrixWorld(true);
+  const mesh=model.getObjectByName('擋土牆');
+  let samples=0;
+  for(const chain of wallChains().filter(c=>c.ramp)) for(const s of chain.segments) {
+    for(const t of [0.2,0.8]) {
+      const x=s.a[0]+(s.b[0]-s.a[0])*t, z=s.a[1]+(s.b[1]-s.a[1])*t;
+      const hits=new THREE.Raycaster(new THREE.Vector3(x,40,z),new THREE.Vector3(0,-1,0)).intersectObject(mesh);
+      const expected=s.highA+(s.highB-s.highA)*t+1.1;
+      assert(hits.length && Math.abs(hits[0].point.y-expected)<1e-4, `wall profile: ${x},${z}, ${hits[0]?.point.y} != ${expected}`);
+      samples++;
+    }
+  }
+  assert(samples>20);
+});
+
+
+test('7a 玩家沿坡道雙向通行，側牆兩側往返不穿牆或卡住', async () => {
+  const {greyboxColliders} = await import('../greybox.js');
+  const boxes=greyboxColliders();
+  for(const points of [RAMPS[0].path,[...RAMPS[0].path].reverse()]) {
+    const {p,visited}=path(points,boxes), end=points.at(-1);
+    assert(Math.hypot(p.x-end[0],p.z-end[1])<0.01);
+    for(let i=1;i<visited.length;i++) {
+      const v=visited[i],previous=visited[i-1];
+      assert(project(v.x,v.z,points)<0.01);
+      assert(Math.abs(heightAt(v.x,v.z)-heightAt(previous.x,previous.z))<0.3);
+    }
+  }
+  for(const c of boxes.filter(c=>c.ramp)) {
+    const nx=c.sn,nz=c.cs;
+    for(const side of [-1,1]) {
+      const {p}=path([[c.cx+nx*side,c.cz+nz*side],[c.cx-nx*side,c.cz-nz*side]],boxes);
+      assert((p.x-c.cx)*nx*side+(p.z-c.cz)*nz*side>0);
+      assert(distance(p,c)>=0.4-1e-6);
+    }
+  }
 });

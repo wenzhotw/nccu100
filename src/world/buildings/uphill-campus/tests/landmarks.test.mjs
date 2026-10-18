@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { spawnSync } from 'node:child_process';
-import { ANCHORS, LAYOUT, STAIRS, RAMPS, R } from '../layout.js';
+import { ANCHORS, LAYOUT, STAIRS, RAMPS, R, STOP, SPAWN } from '../layout.js';
 import { heightAt } from '../terrain.js';
 import { createGreybox, greyboxColliders } from '../greybox.js';
 
@@ -128,13 +128,20 @@ test('五個主要路口的指路牌在可達空地，完整牌面離建築與�
   const signs = landmarkSigns(); assert(signs.length >= 5);
   for (const name of ['好漢坡下', '好漢坡上', '外部斜坡下', '外部斜坡上', '山居下車點']) {
     const sign = signs.find(s => s.anchor === name); assert(sign, name);
-    const a = ANCHORS[name]; assert(Math.hypot(sign.x - a.x, sign.z - a.z) < 8);
+    // 山居牌跟著 Task 7 搬到山居南側的站牌 STOP，其他牌照錨點。
+    const a = name === '山居下車點' ? STOP : ANCHORS[name]; assert(Math.hypot(sign.x - a.x, sign.z - a.z) < 8);
     assert.equal(sign.base, heightAt(sign.x, sign.z));
     assert(sign.text.includes('舍') || sign.text.includes('食堂'));
     const c = landmarkColliders().find(c => c.sign === name); assert(c);
     verifyClear(c, 0.5);
     assert(corners(c).every(([x, z]) => x > R.x0 && x < R.x1 && z > R.z0 && z < R.z1));
   }
+  // 山居牌不能擋出生畫面：離出生點至少 4 公尺，也不在出生點背後鏡頭方向 8 公尺、寬 4 公尺的範圍內。
+  const home = signs.find(s => s.anchor === '山居下車點');
+  assert(Math.hypot(home.x - SPAWN.x, home.z - SPAWN.z) >= 4, '山居牌離出生點太近');
+  const back = [-Math.sin(SPAWN.face), -Math.cos(SPAWN.face)], rel = [home.x - SPAWN.x, home.z - SPAWN.z];
+  const along = rel[0] * back[0] + rel[1] * back[1], across = Math.abs(rel[0] * back[1] - rel[1] * back[0]);
+  assert(!(along > 0 && along < 8 && across < 2 + 1.1), '山居牌在出生點與鏡頭之間');
   const model = createLandmarks(); assert(model.getObjectByName('指路牌'));
   // 從鄰近通路到牌子前方逐步走，灰盒與新碰撞不能擋住接近路線。
   const { resolve, setActiveColliders, setRoomClamp } = await import('../../../../core/collision.js');
@@ -142,11 +149,9 @@ test('五個主要路口的指路牌在可達空地，完整牌面離建築與�
   setRoomClamp(() => {});
   try {
     for (const s of signs) {
-      const anchor = ANCHORS[s.anchor];
+      const anchor = s.anchor === '山居下車點' ? STOP : ANCHORS[s.anchor];
       const length = Math.hypot(s.x - anchor.x, s.z - anchor.z);
-      const route = s.anchor === '山居下車點'
-        ? [[-1.5, 9], [-1.5, 2], [-2.05, 2], [-2.05, 0]]
-        : [[anchor.x, anchor.z], [s.x - (s.x - anchor.x) * 0.9 / length, s.z - (s.z - anchor.z) * 0.9 / length]];
+      const route = [[anchor.x, anchor.z], [s.x - (s.x - anchor.x) * 0.9 / length, s.z - (s.z - anchor.z) * 0.9 / length]];
       for (let i = 1; i < route.length; i++) {
         const a = route[i - 1], b = route[i], steps = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.1);
         for (let j = 0; j <= steps; j++) {
@@ -173,8 +178,8 @@ test('指路牌兩面箭頭依讀者面向換算，還原世界方向後指向�
     '好漢坡上': [ANCHORS['五舍入口'].x, ANCHORS['五舍入口'].z],
     '外部斜坡下': RAMPS[0].path[0],
     '外部斜坡上': RAMPS[0].path.at(-1),
-    // 沿既有可接近路線離開牆邊，再由南側道路往安九。
-    '山居下車點': [-2.05, 2],
+    // 沿山居南側道路往東走向安九。
+    '山居下車點': [14.9, 4.6],
   };
   for (const sign of landmarkSigns()) {
     const [x, z] = firstSteps[sign.anchor];

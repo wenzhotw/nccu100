@@ -1,8 +1,8 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS } from './layout.js';
-import { heightAt, platformLevel, wallSegments } from './terrain.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES } from './layout.js';
+import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight } from './terrain.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -60,6 +60,7 @@ function addRoads(group) {
       const cx = x + CELL / 2, cz = z + CELL / 2;
       const t = Math.max(0, Math.min(1, ((cx - ax) * dx + (cz - az) * dz) / squared));
       if ((cx - ax - t * dx) ** 2 + (cz - az - t * dz) ** 2 > 9) continue;
+      if (RAMPS.some(ramp => projectToPath(cx, cz, ramp.path).distance <= (ramp.width / 2) ** 2)) continue;
       const key = `${x},${z}`;
       if (cells.has(key)) continue;
       const h = heightAt(cx, cz);
@@ -78,6 +79,15 @@ function addRoads(group) {
         start = null;
       }
       if (cell && start === null) { start = x; h = cell.h; }
+    }
+  }
+  // 核可柏油路中線保留完整水平窄帶，補足階梯與坡道挖槽邊緣的小格。
+  for (const road of LAYOUT.roads.filter(r => [510739837,1313447898,1313447899].includes(r.osm))) {
+    const points = road.osm === 1313447899 ? road.pts.slice(-2) : road.pts;
+    for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], dx = b[0] - a[0], dz = b[1] - a[1];
+      geometries.push(TOP.clone().scale(Math.hypot(dx, dz), 1, 1.6)
+        .rotateY(-Math.atan2(dz, dx)).translate((a[0]+b[0])/2, 12.03, (a[1]+b[1])/2));
     }
   }
   addMerged(group, '道路', geometries, roadMaterial);
@@ -99,25 +109,92 @@ function buildings() {
   }));
 }
 
+/** 沿核可切線保留原輪廓，不以包圍盒取代建築外形。 */
+function clipBuilding(pts, cutZ, north) {
+  const result = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i], b = pts[(i + 1) % pts.length];
+    const inside = p => north ? p[1] <= cutZ : p[1] >= cutZ;
+    if (inside(a)) result.push(a);
+    if (inside(a) !== inside(b)) {
+      const t = (cutZ - a[1]) / (b[1] - a[1]);
+      result.push([a[0] + t * (b[0] - a[0]), cutZ]);
+    }
+  }
+  return result;
+}
+
+/** 斜坡牆用共用接點連成封閉牆帶，內部取樣處不產生端蓋或描邊。 */
+function rampWallGeometry(segments, outline = 0) {
+  const nodes = [{ p: segments[0].a, low: segments[0].lowA, high: segments[0].highA },
+    ...segments.map(s => ({ p: s.b, low: s.lowB, high: s.highB }))];
+  const vertices = [], indices = [];
+  const normals = segments.map(s => {
+    const dx = s.b[0]-s.a[0], dz = s.b[1]-s.a[1], length = Math.hypot(dx,dz);
+    return [-dz/length,dx/length];
+  });
+  nodes.forEach(({p,low,high},i) => {
+    const a=normals[Math.max(0,i-1)], b=normals[Math.min(i,normals.length-1)];
+    const d=1+a[0]*b[0]+a[1]*b[1], width=0.25+outline;
+    const nx=(a[0]+b[0])/d*width, nz=(a[1]+b[1])/d*width;
+    vertices.push(p[0]+nx,low-outline,p[1]+nz, p[0]-nx,low-outline,p[1]-nz,
+      p[0]+nx,high+1.1+outline,p[1]+nz, p[0]-nx,high+1.1+outline,p[1]-nz);
+  });
+  const face=(a,b,c,d)=>indices.push(a,c,b,a,d,c);
+  for(let i=1;i<nodes.length;i++) {
+    const a=(i-1)*4,b=i*4;
+    face(a,a+2,b+2,b); face(a+1,b+1,b+3,a+3);
+    face(a+2,a+3,b+3,b+2); face(a,b,b+1,a+1);
+  }
+  face(0,1,3,2);
+  const last=(nodes.length-1)*4; face(last,last+2,last+3,last+1);
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(Array(nodes.length*8).fill(0),2));
+  geometry.setIndex(indices); geometry.computeVertexNormals();
+  return geometry;
+}
+
 /** 各棟擠出後才合併，描邊也以每棟中心膨脹，避免整座校區一起放大。 */
 function addBuildingsAndWalls(group) {
   const shapes = [], edges = [];
   group.userData.buildings = buildings().map(b => ({ osm: b.osm, base: b.base, height: b.height }));
   for (const b of buildings()) {
-    const shape = new THREE.Shape(b.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
-    const g = new THREE.ExtrudeGeometry(shape, { depth: b.height, bevelEnabled: false, steps: 1 });
-    g.rotateX(-Math.PI / 2).translate(0, b.base, 0); shapes.push(g);
-    g.computeBoundingBox();
-    const center = g.boundingBox.getCenter(new THREE.Vector3()), size = g.boundingBox.getSize(new THREE.Vector3());
-    edges.push(g.clone().translate(-center.x, -center.y, -center.z)
-      .scale(1 + 0.08 / size.x, 1 + 0.08 / size.y, 1 + 0.08 / size.z)
-      .translate(center.x, center.y, center.z));
+    const bridge = BRIDGES.find(v => v.building === b.osm);
+    const parts = bridge ? [
+      { pts: clipBuilding(b.pts, bridge.cutZ, true), base: b.base, height: b.height },
+      { pts: clipBuilding(b.pts, bridge.cutZ, false), base: bridge.bottom, height: b.base + b.height - bridge.bottom, bridge: true },
+    ] : [b];
+    for (const part of parts) {
+      const shape = new THREE.Shape(part.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
+      const g = new THREE.ExtrudeGeometry(shape, { depth: part.height, bevelEnabled: false, steps: 1 });
+      g.rotateX(-Math.PI / 2).translate(0, part.base, 0);
+      if (part.bridge) {
+        const mesh = new THREE.Mesh(g, new THREE.MeshToonMaterial({ color: '#d8d4cc', side: THREE.DoubleSide }));
+        mesh.name = '高架連通段'; group.add(mesh);
+      } else shapes.push(g);
+      g.computeBoundingBox();
+      const center = g.boundingBox.getCenter(new THREE.Vector3()), size = g.boundingBox.getSize(new THREE.Vector3());
+      edges.push(g.clone().translate(-center.x, -center.y, -center.z)
+        .scale(1 + 0.08 / size.x, part.bridge ? 1 : 1 + 0.08 / size.y, 1 + 0.08 / size.z)
+        .translate(center.x, center.y, center.z));
+    }
+    if (bridge) for (const [x, z] of bridge.posts) {
+      const base = heightAt(x, z);
+      shapes.push(BOX.clone().scale(bridge.postWidth, bridge.bottom - base, bridge.postWidth)
+        .translate(x, (bridge.bottom + base) / 2, z));
+    }
   }
   addMerged(group, '建築', shapes, buildingMaterial);
   addMerged(group, '建築描邊', edges, edgeMaterial);
   const walls = [], wallEdges = [];
   const chains = wallChains();
-  for (const { a, b, segments } of chains) {
+  for (const { a, b, segments, ramp } of chains) {
+    if (ramp) {
+      walls.push(rampWallGeometry(segments));
+      wallEdges.push(rampWallGeometry(segments, 0.03));
+      continue;
+    }
     const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
     const theta = -Math.atan2(b[1] - a[1], b[0] - a[0]);
     const along = p => ((p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1])) / length;
@@ -220,17 +297,32 @@ export function createGreybox() {
   tops.forEach(g => g.dispose());
   const platform = new THREE.Mesh(platformGeometry, grass);
   platform.name = '平台'; platform.userData.surface = true; group.add(platform);
-  for (const kind of ['stairs', 'ramp']) {
-    const parts = rects.filter(r => r.kind === kind);
+  {
+    const parts = rects.filter(r => r.kind === 'stairs');
     const inst = new THREE.InstancedMesh(BOX, concrete, parts.length), o = new THREE.Object3D();
     parts.forEach((r, i) => {
-      const depth = kind === 'stairs' ? 0.3 : 0.05;
+      const depth = 0.3;
       o.position.set((r.x0 + r.x1) / 2, r.h - depth / 2, (r.z0 + r.z1) / 2);
       o.scale.set(r.x1 - r.x0, depth, r.z1 - r.z0); o.updateMatrix(); inst.setMatrixAt(i, o.matrix);
     });
-    inst.name = kind === 'stairs' ? '階梯與休息平台' : '坡道細台階';
+    inst.name = '階梯與休息平台';
     inst.userData.surface = true; group.add(inst);
   }
+  const slopes = rects.filter(r => r.kind === 'ramp').map(r => {
+    const geometry = TOP.clone().scale(r.x1 - r.x0, 1, r.z1 - r.z0)
+      .translate((r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2);
+    const ramp = RAMPS.reduce((best, candidate) =>
+      projectToPath((r.x0 + r.x1) / 2, (r.z0 + r.z1) / 2, candidate.path).distance
+      < projectToPath((r.x0 + r.x1) / 2, (r.z0 + r.z1) / 2, best.path).distance ? candidate : best);
+    const vertices = geometry.attributes.position;
+    for (let i = 0; i < vertices.count; i++) {
+      vertices.setY(i, vertices.getZ(i) >= ramp.path[0][1] ? ramp.from
+        : rampHeight(ramp, projectToPath(vertices.getX(i), vertices.getZ(i), ramp.path).s));
+    }
+    geometry.computeVertexNormals();
+    return geometry;
+  });
+  addMerged(group, '坡道斜面', slopes, concrete).userData.surface = true;
   addBuildingsAndWalls(group);
   addRoads(group);
   return group;
@@ -238,16 +330,33 @@ export function createGreybox() {
 
 /** 本地長軸沿牆，角度配合 collision.js 的旋轉座標慣例。 */
 export function greyboxColliders() {
-  const walls = wallChains().map(({ a, b }) => {
+  const runs = wallChains().flatMap(chain => {
+    if (!chain.ramp) return [chain];
+    const result = [];
+    for (const s of chain.segments) {
+      const last = result.at(-1);
+      if (last && Math.abs((last.b[0]-last.a[0])*(s.b[1]-s.a[1])
+        -(last.b[1]-last.a[1])*(s.b[0]-s.a[0])) < 1e-6) last.b = s.b;
+      else result.push({ ...s });
+    }
+    return result;
+  });
+  const walls = runs.map(({ a, b, ramp, side }) => {
     const th = -Math.atan2(b[1] - a[1], b[0] - a[0]);
-    return { kind: 'wall', obb: true, cx: (a[0] + b[0]) / 2, cz: (a[1] + b[1]) / 2,
+    return { kind: 'wall', ...(ramp ? { ramp, side } : {}), obb: true, cx: (a[0] + b[0]) / 2, cz: (a[1] + b[1]) / 2,
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...buildings().flatMap(buildingBoxes)];
+  return [...walls, ...buildings().flatMap(b => {
+    const bridge = BRIDGES.find(v => v.building === b.osm);
+    if (!bridge) return buildingBoxes(b);
+    return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),
+      ...bridge.posts.map(([cx, cz]) => ({ kind: 'post', bridge: b.osm, obb: true,
+        cx, cz, hx: bridge.postWidth / 2, hz: bridge.postWidth / 2, th: 0, cs: 1, sn: 0 }))];
+  })];
 }
 
-/** 僅接合同來源、同方向且首尾相接的段，保留通路開口。 */
+/** 一般牆接合同方向段，斜坡牆連同轉角接成牆帶，保留階梯與路口開口。 */
 export function wallChains() {
   const chains = [];
   for (const segment of wallSegments()) {
@@ -255,9 +364,10 @@ export function wallChains() {
     const dx = b[0] - a[0], dz = b[1] - a[1];
     const lx = last ? last.b[0] - last.a[0] : 0, lz = last ? last.b[1] - last.a[1] : 0;
     if (last && last.source === source && Math.hypot(last.b[0] - a[0], last.b[1] - a[1]) < 1e-6
-      && Math.abs(lx * dz - lz * dx) < 1e-6 && lx * dx + lz * dz > 0) {
+      && ((segment.ramp && last.ramp === segment.ramp && last.side === segment.side)
+        || (Math.abs(lx * dz - lz * dx) < 1e-6 && lx * dx + lz * dz > 0))) {
       last.b = b; last.segments.push(segment);
-    } else chains.push({ a, b, source, segments: [segment] });
+    } else chains.push({ a, b, source, ...(segment.ramp ? { ramp: segment.ramp, side: segment.side } : {}), segments: [segment] });
   }
   return chains;
 }

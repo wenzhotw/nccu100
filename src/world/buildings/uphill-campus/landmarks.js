@@ -1,6 +1,6 @@
 /** 山上校區的純地標模型與碰撞資料，文字貼圖由地圖入口建立。 */
 import * as THREE from 'three';
-import { ANCHORS, FLOOR_H, LAYOUT, LEVELS, RAMPS } from './layout.js';
+import { ANCHORS, FLOOR_H, LAYOUT, LEVELS, STOP, RAMPS } from './layout.js';
 import { heightAt, platformLevel } from './terrain.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
@@ -20,12 +20,12 @@ export function landmarkSigns() {
   return [
     ['好漢坡下', -3.5, -0.5, Math.PI / 2, '自強五舍・六舍', ANCHORS['好漢坡下']],
     ['好漢坡上', 0.5, 4.5, 0, '自強五舍・六舍', ANCHORS['五舍入口']],
-    ['外部斜坡下', 2, 5, 0, '自強九舍・十舍', { x: RAMPS[0].path[0][0], z: RAMPS[0].path[0][1] }],
+    ['外部斜坡下', -2.5, 4, 0, '自強九舍・十舍', { x: RAMPS[0].path[0][0], z: RAMPS[0].path[0][1] }],
     ['外部斜坡上', 5.5, 1, Math.PI / 2, '自強九舍・十舍', { x: RAMPS[0].path.at(-1)[0], z: RAMPS[0].path.at(-1)[1] }],
-    // 先沿已驗證的接近路線離開牆邊，再循南側道路前往安九，避免直指建築穿牆。
-    ['山居下車點', -1.5, 0, Math.PI / 2, '安九食堂・自強九舍', { x: -2.05, z: 2 }],
+    // 山居牌以站牌 STOP 為基準，放在道路對面的空地，沿南側道路往東指向安九。
+    ['山居下車點', 0, 6.7, 0, '安九食堂・自強九舍', { x: 14.9, z: 4.6 }],
   ].map(([anchor, dx, dz, yaw, destination, target]) => {
-    const a = ANCHORS[anchor], x = a.x + dx, z = a.z + dz;
+    const a = anchor === '山居下車點' ? STOP : ANCHORS[anchor], x = a.x + dx, z = a.z + dz;
     const toward = { x: target.x, z: target.z };
     const faces = [1, -1].map(side => {
       const facing = yaw + (side < 0 ? Math.PI : 0);
