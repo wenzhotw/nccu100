@@ -1,5 +1,5 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
-import { REGIONS, LEVELS, STAIRS, RAMPS } from './layout.js';
+import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 function projectToPath(x, z, path) {
@@ -117,8 +117,15 @@ export function heightAt(x, z) {
   }
   if (nearestRamp) return rampHeight(nearestRamp, nearestProjection.s);
 
+  return LEVELS[platformLevel(x, z)];
+}
+
+/** 原分區、補區優先，只有補區之外才沿用最近分區備援。 */
+export function platformLevel(x, z) {
   const level = regionAt(x, z);
-  if (level !== null) return LEVELS[level];
+  if (level !== null) return level;
+  const fill = FILL_REGIONS.find(region => pointInPoly(x, z, region.poly));
+  if (fill) return fill.level;
 
   let nearestLevel = REGIONS[0].level;
   let nearestDistance = Infinity;
@@ -129,5 +136,84 @@ export function heightAt(x, z) {
       nearestLevel = region.level;
     }
   }
-  return LEVELS[nearestLevel];
+  return nearestLevel;
+}
+
+/** 將來源線裁到地圖內，不在地圖外產生牆。 */
+function clipToMap(a, b) {
+  let start = 0, end = 1;
+  for (const [axis, min, max] of [[0, R.x0, R.x1], [1, R.z0, R.z1]]) {
+    const delta = b[axis] - a[axis];
+    if (delta === 0) {
+      if (a[axis] < min || a[axis] > max) return null;
+    } else {
+      const t0 = (min - a[axis]) / delta, t1 = (max - a[axis]) / delta;
+      start = Math.max(start, Math.min(t0, t1));
+      end = Math.min(end, Math.max(t0, t1));
+    }
+  }
+  if (start >= end) return null;
+  return [start, end].map(t => a.map((v, i) =>
+    Math.max(i === 0 ? R.x0 : R.z0, Math.min(i === 0 ? R.x1 : R.z1, v + t * (b[i] - v)))));
+}
+
+/** 在來源線法線兩側量測，回傳牆的上下緣。 */
+function wallHeights(a, b) {
+  const dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
+  const x = (a[0] + b[0]) / 2, z = (a[1] + b[1]) / 2;
+  const d = length < 0.2 ? 0.1 : 0.3;
+  const heights = [heightAt(x - dz / length * d, z + dx / length * d),
+    heightAt(x + dz / length * d, z - dx / length * d)];
+  return { low: Math.min(...heights), high: Math.max(...heights) };
+}
+
+/**
+ * 依來源線每半公尺取樣，合併同高的連續牆點。
+ * source 區分分區邊與通路側邊，供驗收辨識通路開口。
+ */
+export function wallSegments() {
+  const walls = [];
+  const passages = [...STAIRS, ...RAMPS];
+  function sampleLine(rawA, rawB, source, owner = null) {
+    const clipped = clipToMap(rawA, rawB);
+    if (!clipped) return;
+    const [a, b] = clipped;
+    const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const count = Math.ceil(length / 0.5);
+    const at = t => a.map((v, i) => v + (b[i] - v) * t);
+    let run = null;
+    for (let i = 0; i < count; i++) {
+      const start = at(i / count), end = at((i + 1) / count);
+      const middle = at((i + 0.5) / count);
+      // 保留整個取樣小段的開口，避免小段端點伸入通路。
+      const blocked = passages.some(passage => passage !== owner
+        && projectToPath(...middle, passage.path).distance <= (passage.width / 2 + length / count / 2) ** 2);
+      if (blocked) { run = null; continue; }
+      const heights = wallHeights(start, end);
+      if (heights.high - heights.low <= 0.5) { run = null; continue; }
+      const merged = run && wallHeights(run.a, end);
+      if (run && Math.abs(run.low - heights.low) < 1e-8 && Math.abs(run.high - heights.high) < 1e-8
+        && Math.abs(merged.low - run.low) < 1e-8 && Math.abs(merged.high - run.high) < 1e-8) {
+        run.b = end;
+      } else {
+        run = { a: start, b: end, ...heights, source };
+        walls.push(run);
+      }
+    }
+  }
+  for (const region of [...REGIONS, ...FILL_REGIONS]) {
+    region.poly.forEach((a, i) => sampleLine(a, region.poly[(i + 1) % region.poly.length], 'region'));
+  }
+  for (const passage of passages) {
+    for (let i = 1; i < passage.path.length; i++) {
+      const a = passage.path[i - 1], b = passage.path[i];
+      const dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
+      for (const sign of [-1, 1]) {
+        const offset = p => [p[0] - sign * dz / length * passage.width / 2,
+          p[1] + sign * dx / length * passage.width / 2];
+        sampleLine(offset(a), offset(b), 'passage', passage);
+      }
+    }
+  }
+  return walls;
 }
