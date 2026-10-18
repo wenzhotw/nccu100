@@ -1,5 +1,5 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
-import { REGIONS, LEVELS, STAIRS } from './layout.js';
+import { REGIONS, LEVELS, STAIRS, RAMPS } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 function projectToPath(x, z, path) {
@@ -22,6 +22,15 @@ function projectToPath(x, z, path) {
 function pathLength(path) {
   return path.slice(1).reduce((sum, [x, z], i) =>
     sum + Math.hypot(x - path[i][0], z - path[i][1]), 0);
+}
+
+/** 沿路徑線性升高，再往下取整為細台階，兩端夾回核可高度。 */
+export function rampHeight(ramp, s) {
+  const length = pathLength(ramp.path);
+  if (s <= 0) return ramp.from;
+  if (s >= length) return ramp.to;
+  const steps = Math.floor(s / length * (ramp.to - ramp.from) / ramp.step + 1e-9);
+  return ramp.from + steps * ramp.step;
 }
 
 /** 每階踏面走完才升高，多餘路長平均分配給休息平台。 */
@@ -80,7 +89,7 @@ function distanceToPolySquared(x, z, poly) {
   return nearest;
 }
 
-/** 平台高度查詢，後續階梯與坡道可在平台判斷前優先處理。 */
+/** 高度依階梯、坡道、平台順序查詢。 */
 export function heightAt(x, z) {
   let nearestStair = null;
   let nearestProjection = { distance: Infinity };
@@ -94,6 +103,19 @@ export function heightAt(x, z) {
     }
   }
   if (nearestStair) return stairHeight(nearestStair, nearestProjection.s);
+
+  let nearestRamp = null;
+  nearestProjection = { distance: Infinity };
+  for (const ramp of RAMPS) {
+    const projection = projectToPath(x, z, ramp.path);
+    // 坡道重疊沿用階梯規則，等距保留配置順序與較小的 s。
+    if (projection.distance <= (ramp.width / 2) ** 2
+      && projection.distance < nearestProjection.distance) {
+      nearestRamp = ramp;
+      nearestProjection = projection;
+    }
+  }
+  if (nearestRamp) return rampHeight(nearestRamp, nearestProjection.s);
 
   const level = regionAt(x, z);
   if (level !== null) return LEVELS[level];

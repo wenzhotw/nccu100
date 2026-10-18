@@ -10,23 +10,23 @@ test('三個地標回傳核可的平台高度', () => {
   assert.equal(heightAt(73, -36), 15);
 });
 
-test('地圖內每兩公尺取樣都回傳有限高度，階梯外維持平台層高', async () => {
-  // Task 3 加入階梯後，範圍內會有 0.3 的倍數；依 Review Focus 5 檢查有限高度。
-  // 只有幾何上落在階梯範圍內的樣本可用階高，範圍外仍保留原本層高斷言。
-  const { STAIRS } = await import('../layout.js');
-  const inStairs = (x, z) => STAIRS.some(stair => stair.path.slice(1).some(([bx, bz], i) => {
-    const [ax, az] = stair.path[i];
+test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維持平台層高', async () => {
+  // Task 4 加入坡道後，階梯與坡道範圍內都可有中間高度，仍須有限且介於零至十五。
+  // 以獨立幾何距離判斷通路範圍，不使用正式投影函式；通路外保留平台層高斷言。
+  const { STAIRS, RAMPS } = await import('../layout.js');
+  const inPassage = (x, z) => [...STAIRS, ...RAMPS].some(passage => passage.path.slice(1).some(([bx, bz], i) => {
+    const [ax, az] = passage.path[i];
     const dx = bx - ax, dz = bz - az, length = Math.hypot(dx, dz);
     const along = ((x - ax) * dx + (z - az) * dz) / length;
     const distance = along < 0 ? Math.hypot(x - ax, z - az)
       : along > length ? Math.hypot(x - bx, z - bz)
         : Math.abs((x - ax) * dz - (z - az) * dx) / length;
-    return distance <= stair.width / 2;
+    return distance <= passage.width / 2;
   }));
   const checkSample = (x, z) => {
     const height = heightAt(x, z);
     assert.ok(Number.isFinite(height) && height >= 0 && height <= 15, `地面（${x}，${z}）`);
-    if (!inStairs(x, z)) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
+    if (!inPassage(x, z)) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
   };
   for (let x = R.x0; x <= R.x1; x += 2) {
     for (let z = R.z0; z <= R.z1; z += 2) {

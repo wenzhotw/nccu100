@@ -2,3 +2,4 @@
 import './layout.test.mjs';
 import './terrain.test.mjs';
 import './stairs.test.mjs';
+import './ramp.test.mjs';
