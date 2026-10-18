@@ -2,3 +2,8 @@
 import './layout.test.mjs';
 import './terrain.test.mjs';
 import './stairs.test.mjs';
+import './ramp.test.mjs';
+import './walls.test.mjs';
+import './greybox.test.mjs';
+import './zones.test.mjs';
+import './landmarks.test.mjs';
