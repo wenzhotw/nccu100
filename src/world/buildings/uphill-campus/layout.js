@@ -82,3 +82,11 @@ export const PLATFORMS = [];
 
 /** 最多幾層平台（給規劃的同學參考，check 不會強制） */
 export const MAX_LEVELS = 3;
+
+/** 好漢坡沿核可折線配置，東支線起點高度由主線接點取得。 */
+export const STAIRS = [
+  { id: 'haohanpo', width: 3.2, from: 0, to: 12,
+    path: [[-43.1,-43.1],[-38.2,-43.4],[-40.3,-39.3],[-46.5,-32.1],[-46.6,-28.4],[-56.5,-19.5],[-60.5,-8.1]] },
+  { id: 'haohanpo-east', width: 2.4, joinStair: 'haohanpo', to: 15,
+    path: [[-46.6,-28.4],[-29.1,-25.2],[-19.6,-22.6],[-12,-20.3]] },
+];
