@@ -2,7 +2,7 @@
 import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
-function projectToPath(x, z, path) {
+export function projectToPath(x, z, path) {
   let nearest = { distance: Infinity, s: 0 };
   let walked = 0;
   for (let i = 1; i < path.length; i++) {

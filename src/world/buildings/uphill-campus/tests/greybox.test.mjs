@@ -191,7 +191,7 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
         }
       }
     }
-    assert.equal(mapZone({ x: 0, z: 0 }), '山上公車站');
+    assert.equal(mapZone({ x: 0, z: 0 }), '山居學習中心');
     const lights = new THREE.Scene(); mapLight(lights);
     assert.equal(lights.children.filter(o => o.isLight).length, 2);
     assert(lights.children.every(o => !o.castShadow));

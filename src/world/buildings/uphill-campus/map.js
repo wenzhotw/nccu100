@@ -14,6 +14,8 @@ import { boxC, obbC } from '../../../core/collision.js';
 import { R, SIZE, STOP } from './layout.js';
 import { heightAt } from './terrain.js';
 import { createGreybox, greyboxColliders, fenceRails } from './greybox.js';
+import { zoneName } from './zone-names.js';
+import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
 
 const SKY = '#bfe4f6';
 
@@ -95,6 +97,26 @@ export function buildGreybox() {
   for (const c of greyboxColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
 }
 
+/** 純模型與碰撞接入場景，只有此處需要瀏覽器的文字畫布。 */
+export function buildLandmarks() {
+  const group = createLandmarks(); scene.add(group);
+  for (const c of landmarkColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
+  for (const sign of landmarkSigns()) {
+    const board = group.getObjectByName(`指路牌：${sign.anchor}`);
+    for (const { side, text } of sign.faces) {
+      const texture = canvasTex(512, 128, (g, w, h) => {
+        g.fillStyle = '#24563e'; g.fillRect(0, 0, w, h);
+        g.fillStyle = '#fff8df'; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.font = '700 36px "Noto Sans TC",sans-serif'; g.fillText(text, w / 2, h / 2, w - 32);
+      });
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(sign.width - 0.08, sign.height - 0.08), basic({ map: texture }));
+      face.name = `指路文字：${sign.anchor}`;
+      face.position.set(0, 2.05, side * 0.076); face.rotation.y = side > 0 ? 0 : Math.PI;
+      board.add(face);
+    }
+  }
+}
+
 /** 建立山上校區（第一次搭公車上山時呼叫一次） */
 export function buildMap() {
   ground();
@@ -102,6 +124,7 @@ export function buildMap() {
   hills();
   busStop();
   buildGreybox();
+  buildLandmarks();
 }
 
 /** 燈光與天空：跟山下差不多的明亮白天，加一點霧讓遠山變淡 */
@@ -118,8 +141,7 @@ export function mapHeight(x, z) {
   return heightAt(x, z);
 }
 
-/** 區域名稱：公車站附近是「山上公車站」，其他地方是「山上校區」。之後可以照建築細分 */
+/** 地標、通路、建築與平台共用同一份區域名稱判斷。 */
 export function mapZone(p) {
-  if (p.z > STOP.z - 6) return '山上公車站';
-  return '山上校區';
+  return zoneName(p);
 }
