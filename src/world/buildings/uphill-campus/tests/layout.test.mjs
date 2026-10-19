@@ -15,7 +15,7 @@ test('配置保留規格資料與授權，包含原始零值符號', () => {
 const requiredAnchors = ['五舍入口', '六舍入口', '七八舍入口', '九舍D區入口', '安九正門', '十舍入口', '好漢坡下', '好漢坡上', '好漢坡東支線上', '外部斜坡下', '外部斜坡上', '觀景步道'];
 
 test('外部斜坡下對應核可斜坡路徑的 L2 起點', () => {
-  assert.deepEqual(layout.ANCHORS['外部斜坡下'], { x: -4.9, z: 10.3, level: 'L2' });
+  assert.deepEqual(layout.ANCHORS['外部斜坡下'], { x: -11.8, z: -8.1, level: 'L2' });
 });
 
 function contains(poly, { x, z }) {
@@ -73,9 +73,9 @@ test('三層高度與分區', () => {
   }
 });
 
-test('公車站在原點，地圖範圍包含所有地標', () => {
+test('公車站在山居學習中心南側路邊（Task 7 由原點移入），地圖範圍包含所有地標', () => {
   const { STOP, R, SIZE, LAYOUT } = layout;
-  assert.deepEqual(STOP, { x: 0, z: 0 });
+  assert.deepEqual(STOP, { x: 5, z: 6.8 });
   assert.deepEqual(R, { x0: -120, x1: 120, z0: -95, z1: 100 });
   assert.deepEqual(SIZE, { w: 240, d: 195 });
   for (const [name, [x, z]] of Object.entries(LAYOUT.landmarks)) {

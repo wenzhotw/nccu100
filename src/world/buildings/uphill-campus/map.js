@@ -1,8 +1,7 @@
 /**
  * 山上校區地圖內容。
  *
- * 目前只有骨架：草地、四周圍籬、遠山、南邊的車道與山上公車站、中間一塊「規劃中」看板。
- * 規劃的同學從 buildMap() 的「在這裡加山上校區的建築」開始加東西就好。
+ * 灰盒地形、道路、建築與擋土牆由純模型產生，這裡負責場景與碰撞接線。
  *
  * 跟室內一樣：build 期間用 block()、mk()、flat()、boxC() 加的東西，
  * 會自動搬進山上校區自己的場景與碰撞清單（core/rooms.js），不會出現在山下。
@@ -10,30 +9,20 @@
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
-import { BOX, GRAD, basic, block, canvasTex, flat, mk, outline, plane, toon } from '../../../render/kit.js';
-import { boxC } from '../../../core/collision.js';
-import { R, SIZE, STOP, PLATFORMS } from './layout.js';
+import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon } from '../../../render/kit.js';
+import { boxC, obbC } from '../../../core/collision.js';
+import { BUS_SHELTER, R, SIZE, STOP } from './layout.js';
+import { heightAt } from './terrain.js';
+import { createGreybox, greyboxColliders, fenceRails } from './greybox.js';
+import { zoneName } from './zone-names.js';
+import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
 
 const SKY = '#bfe4f6';
 
-/* ---------- 地面：校區草地、外圍山坡、南邊車道 ---------- */
+/* ---------- 外圍山坡，校區地面由灰盒建立 ---------- */
 function ground() {
   // 外圍（看得到但走不到）：比校區暗一點的山坡綠
   flat(SIZE.w + 600, SIZE.d + 600, '#6fae5c', 0, -0.05, 0);
-  // 校區草地：淡淡的格紋，方便規劃時目測距離（一格 10 公尺）
-  const grass = canvasTex(128, 128, (g, w, h) => {
-    g.fillStyle = '#8fca6c'; g.fillRect(0, 0, w, h);
-    g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(0, 0, w / 2, h / 2); g.fillRect(w / 2, h / 2, w / 2, h / 2);
-  }, [SIZE.w / 20, SIZE.d / 20]);
-  flat(SIZE.w, SIZE.d, toon('#ffffff', { map: grass }), 0, 0, 0);
-  // 車道：東西向，在公車站南側
-  const road = canvasTex(256, 64, (g, w, h) => {
-    g.fillStyle = '#6e7177'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#f2f2ee'; for (let x = 8; x < w; x += 64) g.fillRect(x, h / 2 - 2, 36, 4);
-  }, [SIZE.w / 16, 1]);
-  flat(SIZE.w, 7, toon('#ffffff', { map: road }), 0, 0.02, STOP.z + 4.5);
-  // 人行道：站牌前
-  flat(SIZE.w, 2.4, '#d9d3c4', 0, 0.03, STOP.z - 0.2);
 }
 
 /* ---------- 四周圍籬：木樁加兩條橫木（木樁用 InstancedMesh，手機也順） ---------- */
@@ -43,12 +32,16 @@ function fence() {
   for (let x = R.x0; x <= R.x1 + 0.01; x += gap) posts.push([x, R.z0], [x, R.z1]);
   for (let z = R.z0 + gap; z < R.z1 - 0.01; z += gap) posts.push([R.x0, z], [R.x1, z]);
   const inst = new THREE.InstancedMesh(BOX, wood, posts.length), o = new THREE.Object3D();
-  posts.forEach(([x, z], i) => { o.position.set(x, H / 2, z); o.scale.set(0.18, H, 0.18); o.updateMatrix(); inst.setMatrixAt(i, o.matrix); });
-  inst.userData.noOcc = true; scene.add(inst);
-  [0.45, 0.9].forEach(y => {
-    block(0, y, R.z0, SIZE.w, 0.09, 0.08, wood); block(0, y, R.z1, SIZE.w, 0.09, 0.08, wood);
-    block(R.x0, y, 0, 0.08, 0.09, SIZE.d, wood); block(R.x1, y, 0, 0.08, 0.09, SIZE.d, wood);
+  posts.forEach(([x, z], i) => { o.position.set(x, heightAt(x, z) + H / 2, z); o.scale.set(0.18, H, 0.18); o.updateMatrix(); inst.setMatrixAt(i, o.matrix); });
+  inst.name = '圍籬木樁'; inst.userData.noOcc = true; scene.add(inst);
+  const rails = fenceRails();
+  const bars = new THREE.InstancedMesh(BOX, wood, rails.length);
+  rails.forEach(({ a, b, y }, i) => {
+    o.position.set((a[0] + b[0]) / 2, y, (a[1] + b[1]) / 2);
+    o.scale.set(Math.abs(b[0] - a[0]) || 0.08, 0.09, Math.abs(b[1] - a[1]) || 0.08);
+    o.updateMatrix(); bars.setMatrixAt(i, o.matrix);
   });
+  bars.name = '圍籬橫木'; bars.userData.noOcc = true; scene.add(bars);
 }
 
 /* ---------- 遠山：圍一圈綠色山丘，北邊高（往更高的山上），南邊低（看得到山下） ---------- */
@@ -68,15 +61,16 @@ function hills() {
 
 /* ---------- 山上公車站：候車亭、長椅、站牌 ---------- */
 function busStop() {
+  const start = scene.children.length, base = heightAt(STOP.x, STOP.z);
   const { x, z } = STOP, steel = '#7d8a96', roof = '#2f6f4f';
-  // 候車亭：在站牌東邊，背對校區、面向車道
-  const sx = x + 9;
-  [-1.8, 1.8].forEach(dx => block(sx + dx, 1.25, z - 0.9, 0.12, 2.5, 0.12, steel));
-  block(sx, 2.55, z - 0.3, 4.4, 0.14, 2.0, roof, 0.03);
-  block(sx, 1.4, z - 1.0, 3.8, 1.6, 0.05, toon('#cfe6ef', { transparent: true, opacity: 0.55 }));
-  block(sx, 0.45, z - 0.7, 3.2, 0.08, 0.5, '#8a6a42', 0.02);
-  [-1.3, 1.3].forEach(dx => block(sx + dx, 0.22, z - 0.7, 0.08, 0.44, 0.42, '#6b7178'));
-  boxC(sx - 2, sx + 2, z - 1.1, z - 0.4);
+  // 候車亭：在站牌東邊建築退縮處，背對校區、面向車道（位置見 layout.js 的 BUS_SHELTER）
+  const sx = BUS_SHELTER.x, sz = BUS_SHELTER.z;
+  [-1.8, 1.8].forEach(dx => block(sx + dx, 1.25, sz - 0.9, 0.12, 2.5, 0.12, steel));
+  block(sx, 2.55, sz - 0.3, 4.4, 0.14, 2.0, roof, 0.03);
+  block(sx, 1.4, sz - 1.0, 3.8, 1.6, 0.05, toon('#cfe6ef', { transparent: true, opacity: 0.55 }));
+  block(sx, 0.45, sz - 0.7, 3.2, 0.08, 0.5, '#8a6a42', 0.02);
+  [-1.3, 1.3].forEach(dx => block(sx + dx, 0.22, sz - 0.7, 0.08, 0.44, 0.42, '#6b7178'));
+  boxC(sx - 2, sx + 2, sz - 1.1, sz - 0.4, base + 2.5);
   // 站牌：和山下行政大樓乘車處同樣的綠底白字
   mk(new THREE.CylinderGeometry(0.06, 0.06, 2.6, 8), toon('#9aa3ab'), x, 1.3, z, { out: 0.02 });
   const t = canvasTex(256, 320, (g, w, h) => {
@@ -94,36 +88,33 @@ function busStop() {
   const c = '#f2c94c', bz = STOP.z + 3.2, bx0 = x - 6, bx1 = x + 6;
   flat(bx1 - bx0, 0.15, c, x, 0.04, bz - 0.8); flat(bx1 - bx0, 0.15, c, x, 0.04, bz + 0.8);
   flat(0.15, 1.6, c, bx0, 0.04, bz); flat(0.15, 1.6, c, bx1, 0.04, bz);
+  scene.children.slice(start).forEach(object => { object.position.y += base; });
 }
 
-/* ---------- 規劃中看板：校區中間，提醒這裡還沒蓋 ---------- */
-function planningSign() {
-  const t = canvasTex(512, 256, (g, w, h) => {
-    g.fillStyle = '#fff7e0'; g.fillRect(0, 0, w, h);
-    g.strokeStyle = '#e8a33d'; g.lineWidth = 14; g.strokeRect(7, 7, w - 14, h - 14);
-    g.fillStyle = '#4a3520'; g.textAlign = 'center';
-    g.font = '900 64px "Noto Sans TC",sans-serif'; g.fillText('山上校區', w / 2, 100);
-    g.font = '700 36px "Noto Sans TC",sans-serif'; g.fillText('規劃建設中，敬請期待', w / 2, 170);
-  });
-  const x = 0, z = 0;
-  [-1.6, 1.6].forEach(dx => block(x + dx, 1.1, z, 0.16, 2.2, 0.16, '#8a6a42', 0.02));
-  block(x, 2.3, z, 3.8, 1.9, 0.12, '#e8a33d', 0.03);
-  plane(3.6, 1.8, basic({ map: t }), x, 2.3, z + 0.07);
-  boxC(x - 1.9, x + 1.9, z - 0.2, z + 0.2);
-  // 三角錐
-  [[-3, 1.5], [3, 1.5], [0, 2.6]].forEach(([dx, dz]) => {
-    const cone = mk(new THREE.ConeGeometry(0.3, 0.75, 10), toon('#ff7a3a'), x + dx, 0.38, z + dz, {});
-    outline(cone, 0.03);
-    block(x + dx, 0.32, z + dz, 0.4, 0.08, 0.4, '#ffffff');
-  });
+/** 場景與碰撞的登記入口，純模型留在 greybox.js 供離線驗收。 */
+export function buildGreybox() {
+  scene.add(createGreybox());
+  for (const c of greyboxColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
 }
 
-/* ---------- 高低差平台（layout.js 的 PLATFORMS）：照設定自動蓋出來 ---------- */
-function platforms() {
-  PLATFORMS.forEach(p => {
-    const w = p.x1 - p.x0, d = p.z1 - p.z0;
-    block((p.x0 + p.x1) / 2, p.h / 2, (p.z0 + p.z1) / 2, w, p.h, d, p.color || '#c9b98f', 0.04);
-  });
+/** 純模型與碰撞接入場景，只有此處需要瀏覽器的文字畫布。 */
+export function buildLandmarks() {
+  const group = createLandmarks(); scene.add(group);
+  for (const c of landmarkColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
+  for (const sign of landmarkSigns()) {
+    const board = group.getObjectByName(`指路牌：${sign.anchor}`);
+    for (const { side, text } of sign.faces) {
+      const texture = canvasTex(512, 128, (g, w, h) => {
+        g.fillStyle = '#24563e'; g.fillRect(0, 0, w, h);
+        g.fillStyle = '#fff8df'; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.font = '700 36px "Noto Sans TC",sans-serif'; g.fillText(text, w / 2, h / 2, w - 32);
+      });
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(sign.width - 0.08, sign.height - 0.08), basic({ map: texture }));
+      face.name = `指路文字：${sign.anchor}`;
+      face.position.set(0, 2.05, side * 0.076); face.rotation.y = side > 0 ? 0 : Math.PI;
+      board.add(face);
+    }
+  }
 }
 
 /** 建立山上校區（第一次搭公車上山時呼叫一次） */
@@ -132,9 +123,8 @@ export function buildMap() {
   fence();
   hills();
   busStop();
-  planningSign();
-  platforms();
-  /* ---------- 在這裡加山上校區的建築 ---------- */
+  buildGreybox();
+  buildLandmarks();
 }
 
 /** 燈光與天空：跟山下差不多的明亮白天，加一點霧讓遠山變淡 */
@@ -146,15 +136,12 @@ export function mapLight(s) {
   sun.position.set(40, 80, 30); s.add(sun);
 }
 
-/** 地面高度：在平台上就是平台高度，其他地方是 0 */
+/** 角色腳底與灰盒使用同一份地形高度。 */
 export function mapHeight(x, z) {
-  let h = 0;
-  for (const p of PLATFORMS) if (x >= p.x0 && x <= p.x1 && z >= p.z0 && z <= p.z1 && p.h > h) h = p.h;
-  return h;
+  return heightAt(x, z);
 }
 
-/** 區域名稱：公車站附近是「山上公車站」，其他地方是「山上校區」。之後可以照建築細分 */
+/** 地標、通路、建築與平台共用同一份區域名稱判斷。 */
 export function mapZone(p) {
-  if (p.z > STOP.z - 6) return '山上公車站';
-  return '山上校區';
+  return zoneName(p);
 }
