@@ -27,7 +27,7 @@ registerZone(80, p => (Math.abs(p.x + 88) < 2.8 && p.z < 18) ? '環山一道' : 
 registerZone(15, p => (p.x > BACK_ROAD_X - BACK_ROAD_HW - 1 && p.x < BACK_ROAD_X + BACK_ROAD_HW + 1 && p.z > BACK_PLAZA_Z0 && p.z < 18) ? '側門' : null);
 registerZone(90, p => ((Math.abs(p.x - BACK_ROAD_X) < BACK_ROAD_HW + 2.8 && p.z < BACK_PLAZA_Z0 && p.z > swZ(p.x) + 2)
   || (Math.abs(p.z - BACK_BRANCH_Z) < BACK_BRANCH_HW + 0.3 && p.x > BACK_ROAD_X && p.x < 178.5)) ? '校內道路' : null);
-registerZone(100, p => { const l = inLot(p.x, p.z); return l ? l.name + '．預定地' : null; });
+registerZone(100, p => { const l = inLot(p.x, p.z); return l && !l.built ? l.name + '．預定地' : null; });
 registerZone(110, p => Math.hypot(p.x, p.z - FZ) < 10 ? '噴水池' : null);
 registerZone(120, p => { const d = p.z - bdZ(p.x); return (Math.abs(d) < 2.4 || (p.x > 12 && p.x < 92.5 && d > -5.6 && d < 4.8)) ? '八德道' : null; });   // 樂活館到電算中心那段含兩側人行道
 registerZone(130, p => (p.x > SIWEI.x0 && p.x < SIWEI.x1 && Math.abs(p.z - swZ(p.x)) < 5.2) ? '四維道' : null);
