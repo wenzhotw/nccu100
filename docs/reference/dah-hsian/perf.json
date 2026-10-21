@@ -1,0 +1,45 @@
+{
+  "calibration": {
+    "empty": {
+      "renderCalls": 9,
+      "triangles": 18,
+      "pixelRatio": 1,
+      "bloom": true,
+      "postProcessing": true,
+      "viewport": [
+        1280,
+        800
+      ]
+    },
+    "cube": {
+      "renderCalls": 10,
+      "triangles": 30,
+      "pixelRatio": 1,
+      "bloom": true,
+      "postProcessing": true,
+      "viewport": [
+        1280,
+        800
+      ]
+    }
+  },
+  "full": {
+    "renderCalls": 195,
+    "triangles": 39678,
+    "pixelRatio": 1,
+    "bloom": true,
+    "postProcessing": true,
+    "viewport": [
+      1280,
+      800
+    ]
+  },
+  "sameQuality": true,
+  "delta": {
+    "renderCalls": 186,
+    "triangles": 39660
+  },
+  "uniqueMaterialsIncludingSharedTrees": 26,
+  "iconColor": "rgb(255, 250, 239)",
+  "method": "1280x800 fixed front camera; same DPR/Bloom/post state; toggle this area root and shared trees; calibrate an actual known box (+1 render call,+12 triangles); whole-frame perf.snapshot includes all passes. Not device FPS."
+}

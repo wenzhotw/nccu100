@@ -1,0 +1,384 @@
+{
+  "checked_at": "2026-10-21",
+  "local_reference_directory": ".references/dah-hsian",
+  "images": [
+    {
+      "id": "official-101",
+      "file": "101-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/101.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "610f1809292fd3f03c312bd08750855624d26a86e00248d0f381054eb6be8c76",
+      "bytes": 371857
+    },
+    {
+      "id": "official-102",
+      "file": "102-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/102.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "47993258f75cbaa260edc9f676193a113ca37e7713a4aba9f7610eb9bb22db57",
+      "bytes": 374145
+    },
+    {
+      "id": "official-103",
+      "file": "103-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/103.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "036744066ebb1ca71887a58734701641c78e566428901ae38a593a819f41cd3f",
+      "bytes": 305663
+    },
+    {
+      "id": "official-403",
+      "file": "403-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/403.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "4a7a1ad71ade9431a4c07817c0c586b5756142333f6efe65f8ca3a93e64282bd",
+      "bytes": 459654
+    },
+    {
+      "id": "official-401",
+      "file": "401-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/401.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "5eb7f3afb235ce9fcb3b916de9024e4cdf01c31336891c4ee6a45079dbdc1124",
+      "bytes": 423684
+    },
+    {
+      "id": "official-402",
+      "file": "402-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/402.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "6b9518abd2138c8c7ac7c0c792f5ffa764513fa069573c2bf6df6382850b2967",
+      "bytes": 363243
+    },
+    {
+      "id": "official-801",
+      "file": "801-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/801.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "608a475641694940ed7a150bb5a915d8fddd2b855ef83ec8615abb9d5b563fc8",
+      "bytes": 403927
+    },
+    {
+      "id": "official-802",
+      "file": "802-view.jpg",
+      "url": "https://dhl.lib.nccu.edu.tw/var/file/1/1001/img/24/802.jpg",
+      "source": "https://dhl.lib.nccu.edu.tw/p/404-1001-2150.php?Lang=zh-tw",
+      "role": "戶外建築與園景",
+      "observed": true,
+      "sha256": "7298c2876d65cf3193478ed7580afdf72cb87f000ac7d47bb81f708ccd99ec4e",
+      "bytes": 415860
+    },
+    {
+      "id": "architect-1",
+      "file": "architect-1-view.jpg",
+      "url": "https://www.twarchitect.org.tw/web2015/wp-content/uploads/2022/02/202203a6-1.jpg",
+      "source": "https://www.twarchitect.org.tw/works/政治大學司徒達賢圖書館/",
+      "role": "建築師與潤泰提供影像；第二張僅作屋頂結構參考，室內不製作",
+      "observed": true,
+      "sha256": "bf599971826deeb186317681a8347dc01858b7e4a212c9c828ad99d4ce7414e0",
+      "bytes": 230965
+    },
+    {
+      "id": "architect-2",
+      "file": "architect-2-view.jpg",
+      "url": "https://www.twarchitect.org.tw/web2015/wp-content/uploads/2022/02/202203a6-2.jpg",
+      "source": "https://www.twarchitect.org.tw/works/政治大學司徒達賢圖書館/",
+      "role": "建築師與潤泰提供影像；第二張僅作屋頂結構參考，室內不製作",
+      "observed": true,
+      "sha256": "1b502c63d9d05efd991c3cbe26a73473e061460bd1aac07ccbfccdc78d5462ee",
+      "bytes": 412616
+    },
+    {
+      "id": "architect-3",
+      "file": "architect-3-view.jpg",
+      "url": "https://www.twarchitect.org.tw/web2015/wp-content/uploads/2022/02/202203a6-3.jpg",
+      "source": "https://www.twarchitect.org.tw/works/政治大學司徒達賢圖書館/",
+      "role": "建築師與潤泰提供影像；第二張僅作屋頂結構參考，室內不製作",
+      "observed": true,
+      "sha256": "cf947d992c18e51fa4ea9559ecdf29c7cecd7a837e6cc2c8fa67d77e6fe40ebc",
+      "bytes": 402154
+    },
+    {
+      "id": "gallery-01",
+      "file": "gallery-01-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/3ace74376bd879eea602fd079f059a4f.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "達賢‧後 / 閔瑞基",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "792a51887587870bec150cdaa8157899cb8a3c2ce86ebe525a95795e144da258",
+      "bytes": 302485
+    },
+    {
+      "id": "gallery-02",
+      "file": "gallery-02-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/2da67a3495dd2e26b30bd65a3bbf0731.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "後花園 / 梁慧瑩",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "a5fbb1b67aed616932665e8708a99dd4edc1a1399c4d344941322d40592eb1e5",
+      "bytes": 489238
+    },
+    {
+      "id": "gallery-03",
+      "file": "gallery-03-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/c89382b34b5a0b6bbacc81ab36c3a9bc.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "偏草小徑步達賢 / 何琇琪",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "d55266df8f0002fc6dfaac201905a89863c79884d9f05970ec8456a69ff9b49b",
+      "bytes": 441576
+    },
+    {
+      "id": "gallery-04",
+      "file": "gallery-04-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/023b1bf3f8a9d2725ef2ae8016db84ca.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "自然.生態.現代 / 洪靖翔",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "bee62ba201fee3669c46c8456d2009c40c814f7e70dd059a8fae53b46c6c2f73",
+      "bytes": 319309
+    },
+    {
+      "id": "gallery-05",
+      "file": "gallery-05-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/c36e14277f2a1a57082ed65436470701.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "森林圖書館 / 徐聖淮",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "6044dbd3ffa1190c348076e92c2bf838eebf6f7d25f47a3ac9403e2b7e50c217",
+      "bytes": 390905
+    },
+    {
+      "id": "gallery-06",
+      "file": "gallery-06-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/fda2bff6ff08a34a281eb90f51117bac.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "清晨達賢 / 黃翊唐",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "0d477071958aac5bd5118cbaa03565acde5041cb23db60801e439f165400f351",
+      "bytes": 378945
+    },
+    {
+      "id": "gallery-07",
+      "file": "gallery-07-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/986d4a1127bc4be24f35f00e06bfd201.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "政大指南船塢-政大達賢號準備出航 / 程于晏",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "5fca96f73184543915fd6c1951333f999c1f6d10f713821ad9fe83c1a6168bed",
+      "bytes": 511618
+    },
+    {
+      "id": "gallery-08",
+      "file": "gallery-08-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/3817ae381069c2c079e1fda65577a0f9.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "廣廈達賢 / 陳相如",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "981618a8b2dd2321de660f6610c376d9967288f2daa511ff336a72d19262fe50",
+      "bytes": 424181
+    },
+    {
+      "id": "gallery-09",
+      "file": "gallery-09-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/2610cb95e970666b1a5b525a1cc937a1.jpeg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "角、線、面 / 張欣伊",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "6ffb2abe60df67a761bb42793e484cd79aa6d3e49ad4ccd75d071c695b9bd4ba",
+      "bytes": 162655
+    },
+    {
+      "id": "gallery-10",
+      "file": "gallery-10-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/d4b336e4df9c34cf1d36c041bb9a6b12.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "幾何世界 / 江釧池",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "1d557d2a6f9481845a039fc7109856409a60bcea93f0149da2deafc7e9c28e75",
+      "bytes": 269055
+    },
+    {
+      "id": "gallery-11",
+      "file": "gallery-11-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/68f294f3d15a69f82d119444da9139c6.jpeg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "當花兒成為主角 / 謝孟慈",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "cdbf19a53848e9de70fb10fdb44156144dc9c6530c2ac71af6fd641bcd2b25bb",
+      "bytes": 186066
+    },
+    {
+      "id": "gallery-12",
+      "file": "gallery-12-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/26d07ba1842c75fec0961a0f6d774fc6.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "層次 / 蕭舜文",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "63783aa0456998897979f75e4638c1db630029924553269d61470ae9107952e8",
+      "bytes": 350162
+    },
+    {
+      "id": "gallery-13",
+      "file": "gallery-13-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/e6ef107a29ba975f87116b7d2f9be5fe.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "圓中樓 / 陳子瑄",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "8922cbffcd324b30854bd62d460a3b70501b4ce005851d98e4aa364df2d286b6",
+      "bytes": 212229
+    },
+    {
+      "id": "gallery-14",
+      "file": "gallery-14-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/75b03d229a23c296b0414df69ecf5839.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "天堂在綠地盡頭 / 唐中純",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "4d0962e34fabbf2da9d0d56a8c9773e2f98ecb7d36f61c72e0ff8ae962ae09a8",
+      "bytes": 412019
+    },
+    {
+      "id": "gallery-15",
+      "file": "gallery-15-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/889c97c44e78d23902bf4617fddaae2f.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "堆砌 / 張詠宜",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "d190b2a8990043464885dfbbf64545883def53f54c2fd096f80963f907d3b9b5",
+      "bytes": 323561
+    },
+    {
+      "id": "gallery-16",
+      "file": "gallery-16-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/7c34e75f387aa2b54dea52d8b6a96a32.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "湖濱小屋Shack by Lake / 徐麗振",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "e418608ff9c8243a34807a9a0b1f9185a5e6ad4934dfe455ba70e7511fb50c3f",
+      "bytes": 340757
+    },
+    {
+      "id": "gallery-17",
+      "file": "gallery-17-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/2091a1692c4bc9c86a075651e591b37e.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "池畔一隅 / 張詠宜",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "514305424e9edd4a3ecd9061dc353051b40191e055c11079d26ea16f0b375ea6",
+      "bytes": 330438
+    },
+    {
+      "id": "gallery-18",
+      "file": "gallery-18-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/carousel.p.12/77ba705d08adc7149182885b3a18e519.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "湖畔時光 / 黃翊唐",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "9cecabee356b915bcbb02cbbde258c3eea9f8011bba4fb21ac3414701bad42ae",
+      "bytes": 437826
+    },
+    {
+      "id": "gallery-19",
+      "file": "gallery-19-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/p.12//855f9202c162bebd7e86d84583617ea0.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "連結Connection / 徐麗振",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "b5f959b84037bebd56e3867f5320b5e72d300b121cd9421c9164cb02cf033f03",
+      "bytes": 278018
+    },
+    {
+      "id": "gallery-20",
+      "file": "gallery-20-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/p.12//129bf1fa3c94fd09ff59a73809f77da3.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "湖畔達賢 / 許晏誠",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "9c49725df51c28c5e4a6c55a56edc6a4045645915ad32cab74955bec79b5d421",
+      "bytes": 511641
+    },
+    {
+      "id": "gallery-21",
+      "file": "gallery-21-view.jpg",
+      "url": "https://lib.video.nccu.edu.tw/sysdata/attach/p.12//a5e569af6760a90ea2c364d6192214ea.jpg",
+      "source": "https://lib.video.nccu.edu.tw/p/DHphotocontest",
+      "title": "錯身於綠林湖畔，曠然 / 司立偉",
+      "role": "空拍／立面／園景交叉核對",
+      "observed": true,
+      "sha256": "d2fe7fb190e54499fad34e92e52692e7f877ba228b46b117c38b2ec1c0a5a991",
+      "bytes": 373261
+    },
+    {
+      "id": "plan-2f",
+      "file": "plan-2f-view.jpg",
+      "source": "https://www.lib.nccu.edu.tw/p/404-1000-567.php?Lang=zh-tw",
+      "role": "官方平面輪廓與入口核對",
+      "observed": true,
+      "sha256": "a7ccbe569476d492e285c4d4cd526ec3afb4526a04757b436a98a3e0c9e652a7",
+      "bytes": 367510
+    },
+    {
+      "id": "plan-house-1f",
+      "file": "plan-house-1f-view.jpg",
+      "source": "https://www.lib.nccu.edu.tw/p/404-1000-567.php?Lang=zh-tw",
+      "role": "官方平面輪廓與入口核對",
+      "observed": true,
+      "sha256": "cbadc84d04d723126c42c615cff0eafdca687f4ebb8d312f2f9b35ce52b0e5a5",
+      "bytes": 255664
+    },
+    {
+      "id": "plan-house-2f",
+      "file": "plan-house-2f-view.jpg",
+      "source": "https://www.lib.nccu.edu.tw/p/404-1000-567.php?Lang=zh-tw",
+      "role": "官方平面輪廓與入口核對",
+      "observed": false,
+      "sha256": "4d4d2a8649cbcd06efa266b6ca281bb3efe2c3beb849d9843de5debb8a8cd57e",
+      "bytes": 215560
+    },
+    {
+      "id": "aerial",
+      "file": "aerial-view.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:NCCU_station_and_Dah_Hsian_Library_aerialphoto.jpg",
+      "title": "Yu tptw，2025-02-08，CC BY-SA 4.0",
+      "role": "前草坡、階梯與屋頂；畫面未覆蓋完整池畔",
+      "observed": true,
+      "sha256": "f522294a263e613f419e9c1c15f435e8eab5aa7a5d44f037096ad95a42593d85",
+      "bytes": 400237
+    }
+  ]
+}
