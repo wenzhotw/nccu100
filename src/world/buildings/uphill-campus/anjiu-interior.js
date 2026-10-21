@@ -4,7 +4,8 @@ import {lobbyBox,lobbyColors,lobbyOBB} from './lobby.js';
 
 export const ANJIU={id:'anjiu',name:'安九',
   entrance:{x:34.6,z:-28.6,r:1.6,room:'uphill-campus',label:'走下旋轉樓梯'},
-  returnTo:{x:35.8,z:-30.5,face:-Math.PI/2,room:'uphill-campus'},
+  // 返回房間沿用 main 的 core/room-navigation.js 契約（returnRoom）。
+  returnRoom:'uphill-campus',returnTo:{x:35.8,z:-30.5,face:-Math.PI/2},
   spawn:{x:0,z:1.8,yaw:Math.PI,face:0,pitch:0.22},
   exit:{x:0,z:0,r:1.5,label:'走上旋轉樓梯'},
   bounds:{x0:-3.5,x1:3.5,z0:-1,z1:7},

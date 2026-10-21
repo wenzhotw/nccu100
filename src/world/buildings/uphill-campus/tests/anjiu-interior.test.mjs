@@ -10,7 +10,7 @@ test('8c 安九入口與返回點在大廳，出生與返回點不在碰撞裡',
   const {resolve,setActiveColliders,setRoomClamp}=await import('../../../../core/collision.js');
   assert.equal(ANJIU.id,'anjiu');assert.equal(ANJIU.entrance.room,'uphill-campus');
   assert.equal(ANJIU.entrance.label,'走下旋轉樓梯');assert.equal(ANJIU.exit.label,'走上旋轉樓梯');
-  assert.equal(ANJIU.returnTo.room,'uphill-campus');
+  assert.equal(ANJIU.returnRoom,'uphill-campus');
   assert.ok(Math.hypot(ANJIU.returnTo.x-ANJIU.entrance.x,ANJIU.returnTo.z-ANJIU.entrance.z)>=ANJIU.entrance.r+0.5,'返回後應離開下樓互動範圍至少半公尺');
   assert.deepEqual([ANJIU.entrance.x,ANJIU.entrance.z],[34.6,-28.6]);
   const model=createAnjiu();for(const name of ['旋轉樓梯下端','木雕擺飾','藍色椅子'])assert.ok(model.getObjectByName(name),name);

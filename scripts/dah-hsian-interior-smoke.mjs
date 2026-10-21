@@ -1,0 +1,70 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+const base=process.env.NCCU_BASE_URL||'http://127.0.0.1:5187/';
+const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+try{
+ const page=await browser.newPage({viewport:{width:960,height:600}}),errors=[];
+ page.on('pageerror',e=>errors.push(String(e)));
+ page.on('console',m=>{if(m.type()==='error'&&!(m.text().startsWith('Failed to load resource')&&m.location().url.endsWith('/favicon.ico')))errors.push(m.text());});
+ const url=new URL(base);url.searchParams.set('area','dah-hsian');url.searchParams.set('debug','');
+ await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:120000});
+ await page.waitForFunction(()=>window.__game,null,{timeout:90000});
+ assert.ok(await page.evaluate(()=>__game.rooms['dah-hsian-2f']?.def),'已登記可進入的2樓');
+ assert.equal(await page.evaluate(()=>__game.rooms['dah-hsian-2f'].built),false,'進館前不建立模型');
+ await page.locator('#go').click();
+ await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
+ await page.evaluate(()=>{__game.pos.set(14.2,4,18.6);__game.state.vy=0;});
+ await page.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});
+ await page.keyboard.press('e');
+ await page.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
+ assert.equal(await page.evaluate(()=>__game.pos.y),0);
+ const progress=await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap}));
+ const modelId=await page.evaluate(()=>__game.rooms['dah-hsian-2f'].scene.getObjectByName('達賢2樓公開空間').uuid);
+ const waitTime=async(seconds)=>{const t=await page.evaluate(()=>__game.state.time);await page.waitForFunction(({t,seconds})=>__game.state.time>t+seconds,{t,seconds},{timeout:90000});};
+ for(const [x,z]of [[-16,-12],[-16,-5],[-12,-4],[-12,3],[-9,8],[-9,18],[4,20]]){
+  await page.evaluate(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);},{x,z});
+  await page.keyboard.down('w');
+  try{await page.waitForFunction(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<.6,{x,z},{timeout:90000});}
+  finally{await page.keyboard.up('w');}
+  await waitTime(.15);
+  assert.ok(await page.evaluate(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<1.3&&Math.abs(__game.pos.y)<.02,{x,z}),'真鍵盤沿公開動線走到 '+x+','+z);
+ }
+ console.log('PASS 實際鍵盤：入口→大廳→閘門→挑空→窗邊閱覽');
+ await page.evaluate(()=>{__game.pos.set(-16,0,-12);__game.state.yaw=0;__game.state.pitch=1.15;});await waitTime(.2);
+ assert.ok(await page.evaluate(()=>__game.state.camD<3.7),'正常仰視鏡頭留在天花下方');
+ await page.evaluate(()=>{__game.pos.set(-20.5,0,-12);__game.state.vy=0;});
+ await page.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-exit',null,{timeout:60000});
+ await page.keyboard.press('e');
+ await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
+ assert.ok(await page.evaluate(()=>Math.abs(__game.pos.y-4)<.02&&document.body.classList.contains('dah-hsian-mode')));
+ assert.deepEqual(await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap})),progress,'往返不改進度');
+ await page.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});await page.keyboard.press('e');
+ await page.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
+ assert.equal(await page.evaluate(()=>__game.rooms['dah-hsian-2f'].scene.getObjectByName('達賢2樓公開空間').uuid),modelId,'重入不重建');
+ await page.evaluate(()=>__game.enterRoom('gym'));await page.waitForFunction(()=>__game.state.room==='gym'&&!__game.state.busy,null,{timeout:90000});
+ await page.evaluate(()=>__game.exitRoom());await page.waitForFunction(()=>__game.state.room===null&&!__game.state.busy,null,{timeout:90000});
+ assert.equal(await page.evaluate(()=>document.body.classList.contains('dah-hsian-mode')),false,'其他房間仍回校園且樣式清除');
+ await page.close();
+ const mobile=await browser.newPage({viewport:{width:375,height:812},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+ mobile.on('pageerror',e=>errors.push(String(e)));
+ mobile.on('console',m=>{if(m.type()==='error'&&!(m.text().startsWith('Failed to load resource')&&m.location().url.endsWith('/favicon.ico')))errors.push(m.text());});
+ await mobile.goto(url.href,{waitUntil:'domcontentloaded',timeout:120000});await mobile.waitForFunction(()=>window.__game,null,{timeout:90000});
+ await mobile.tap('#go');await mobile.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
+ await mobile.evaluate(()=>{__game.pos.set(14.2,4,18.6);__game.state.vy=0;});
+ await mobile.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});await mobile.tap('#act');
+ await mobile.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
+ assert.ok(await mobile.locator('#stick').isVisible());
+ const before=await mobile.evaluate(()=>({x:__game.pos.x,time:__game.state.time})),stick=await mobile.locator('#stick').boundingBox();
+ await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:7,pointerType:'touch',clientX:stick.x+stick.width/2,clientY:stick.y+10});
+ await mobile.waitForFunction(t=>__game.state.time>t+.5,before.time,{timeout:60000});
+ await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:7,pointerType:'touch'});
+ assert.ok(await mobile.evaluate(x=>__game.pos.x>x+.2,before.x),'手機搖桿能在館內走動');
+ await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:8,pointerType:'touch',clientX:stick.x+stick.width/2,clientY:stick.y+stick.height-10});
+ await mobile.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-exit',null,{timeout:60000});
+ await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:8,pointerType:'touch'});await mobile.tap('#act');
+ await mobile.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
+ assert.ok(await mobile.evaluate(()=>Math.abs(__game.pos.y-4)<.02&&document.documentElement.scrollWidth<=innerWidth),'手機出口與寬度正常');
+ await mobile.close();
+ assert.deepEqual(errors,[]);
+ console.log('PASS 達賢2F：真鍵盤與手機進出／公開路線／鏡頭防穿／重入不重建／進度／舊建築回校園');
+}finally{await browser.close();}

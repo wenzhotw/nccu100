@@ -49,9 +49,10 @@ export default defineBuilding({
 | --- | --- | --- |
 | `build` | ✓ | 建模函式。裡面照常用 `block()`、`mk()`、`plane()`、`boxC()`，系統會把它們搬進房間的場景和碰撞 |
 | `entrance` | ✓ | 戶外的門：`{ x, z, r, label }`，`r` 是多近會出現按鈕（預設 2.8） |
-| `spawn` | ✓ | 進門後主角的位置：`{ x, z, face, yaw, pitch }`。`face` 是主角面向，`yaw`、`pitch` 是鏡頭角度 |
+| `spawn` | ✓ | 進門後主角的位置：`{ x, z, y?, face, yaw, pitch }`。`face` 是主角面向，`yaw`、`pitch` 是鏡頭角度 |
 | `exit` | ✓ | 房間裡的出口：`{ x, z, r, label }` |
-| `returnTo` | ✓ | 出來後主角在校園的位置：`{ x, z, face, yaw, pitch }` |
+| `returnTo` | ✓ | 出來後主角的位置：`{ x, z, y?, face, yaw, pitch }`；指定 `y` 可回到高處平台，省略則問目標場景地面 |
+| `returnRoom` | | 離開後返回的場景id，例如達賢2樓回 `dah-hsian`；省略或null仍回原校園 |
 | `bounds` | ✓ | 主角能走的範圍：`{ x0, x1, z0, z1 }` |
 | `camera` |  | 鏡頭範圍：`{ x0, x1, z0, z1, ceil, maxDist }`。`ceil` 天花板高度、`maxDist` 鏡頭最遠距離（預設 6.5） |
 | `id` |  | 房間代號，預設是建築 id。一棟建築有好幾個房間時要各自取名 |
@@ -80,6 +81,18 @@ interior: [
 房間之間的樓梯或電梯，用 `enterRoom('admin-3f')` 切換（從 `core/gameplay.js` 匯入）。
 
 同一個建築裡相連的空間（例如游泳館的大廳、更衣室、泳池）建議放在同一個房間裡用牆和門洞隔開，直接走過去，不用每次都淡出淡入。
+
+### 獨立區域裡的建築入口
+
+像達賢戶外本身已是獨立場景時，子房間用 `entrance.room` 限定門前互動的來源；搭配 `returnRoom` 回到所屬戶外，不能誤回山下校園。例如：
+
+```js
+entrance: { x: 11.8, z: 18.6, r: 2.8, room: 'dah-hsian', label: '進入達賢圖書館2樓' },
+returnRoom: 'dah-hsian',
+returnTo: { x: 14.2, y: 4, z: 18.6 },
+```
+
+原建築不寫這些欄位時，入口仍在null校園、離開仍回null。場景間切換會呼叫離開端 `onExit()`、到達端 `onEnter()`，讓區域樣式等狀態正確切換。
 
 ## 房間裡的 NPC、校園故事
 

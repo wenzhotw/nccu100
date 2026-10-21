@@ -9,6 +9,7 @@ import { AU } from '../systems/audio.js';
 import { heightAt, zoneAt } from '../world/registry.js';
 import { player, shadowBlob } from '../actors/player.js';
 import { rooms, switchTo, carry } from './rooms.js';
+import { entranceRoom, exitDestination } from './room-navigation.js';
 import { bubble } from '../actors/pangolin.js';
 import { crystals } from '../systems/stories.js';
 import { dlg, openDialog, toast } from '../ui/dialog.js';
@@ -29,13 +30,13 @@ const groundH=(x,z,room=state.room)=>{ if(!room) return heightAt(x,z); const d=r
 carry(player); carry(shadowBlob);
 /** 走進房間：換場景、把主角放到房間的出生點 */
 function enterRoom(id){ const d=roomDef(id); transition(()=>{
-  switchTo(id); state.room=id; late.onSceneChange&&late.onSceneChange();
-  const s=d.spawn; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.22; player.rotation.y=s.face??Math.PI;
+  roomDef(state.room)?.onExit?.(); switchTo(id); state.room=id; late.onSceneChange&&late.onSceneChange();
+  const s=d.spawn; pos.set(s.x,s.y??0,s.z); pos.y=s.y??groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.22; player.rotation.y=s.face??Math.PI;
   d.onEnter&&d.onEnter(); },d.ride&&d.ride.up); }
-/** 走出房間：回到指定房間的門口，未指定仍回戶外。 */
+/** 走出房間：回到戶外門口 */
 function exitRoom(){ const d=roomDef(state.room); transition(()=>{
-  d&&d.onExit&&d.onExit(); const target=d.returnTo.room??null; switchTo(target); state.room=target; late.onSceneChange&&late.onSceneChange();
-  const s=d.returnTo; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; },d&&d.ride&&d.ride.down); }
+  const target=exitDestination(d); d?.onExit?.(); switchTo(target.room); state.room=target.room; late.onSceneChange&&late.onSceneChange();
+  const s=target.spawn; pos.set(s.x,s.y??0,s.z); pos.y=s.y??groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; roomDef(target.room)?.onEnter?.(); },d&&d.ride&&d.ride.down); }
 function jump(){ if(state.grounded&&dlg.hidden&&!state.busy&&!state.driving&&!state.swimming){ AU.sfx('jump'); state.vy=6.6; state.grounded=false; } }
 /**
  * 換場景的圓形轉場。ride 是搭車時的說明文字（例如搭公車上山）：
@@ -51,9 +52,9 @@ function transition(fn,ride){
 const spots=[
   {id:'pangolin',x:0,z:0,r:2.6,label:'交談',ok:()=>!indoor(),fn:()=>openDialog(DIALOGS.pangolin.title,pickDialog(DIALOGS.pangolin.dialog).lines,()=>{ state.dogTalked=true; })},
 ];
-// 每個登記的房間：指定房間或戶外一個入口，房間裡一個出口。
+// 每個登記的房間：戶外一個入口、房間裡一個出口（id 是「房間-enter」「房間-exit」）
 Object.values(rooms).forEach(r=>{ const d=r.def; if(!d) return;
-  if(d.entrance) spots.push({id:d.id+'-enter',x:d.entrance.x,z:d.entrance.z,r:d.entrance.r||2.8,label:d.entrance.label||('進入'+d.name),room:d.entrance.room??null,ok:()=>!state.driving&&!state.holdPang,fn:()=>enterRoom(d.id)});
+  if(d.entrance) spots.push({id:d.id+'-enter',x:d.entrance.x,z:d.entrance.z,r:d.entrance.r||2.8,label:d.entrance.label||('進入'+d.name),room:entranceRoom(d),ok:()=>!state.driving&&!state.holdPang,fn:()=>enterRoom(d.id)});
   if(d.exit) spots.push({id:d.id+'-exit',x:d.exit.x,z:d.exit.z,r:d.exit.r||2.6,label:d.exit.label||('離開'+d.name),room:d.id,ok:()=>true,fn:exitRoom});
 });
 crystals.forEach(c=>spots.push({x:c.g.position.x,z:c.g.position.z,room:c.room||null,r:2.1,label:'拾取',ok:()=>!c.got,fn:()=>{
