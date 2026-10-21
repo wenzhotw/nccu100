@@ -283,8 +283,9 @@ try {
     const indoorMini = await miniMapImage();
     if (indoorMini === outdoorMini) errors.push(id + ' 進入室內後小地圖未更新');
     await page.evaluate(() => window.__game.exitRoom());
-    // 達賢2F回所屬戶外；其餘既有房間仍回原校園。明確驗證產品契約，不從實作讀預期值。
-    const returnRoom = id === 'dah-hsian-2f' ? 'dah-hsian' : null;
+    // 達賢2F回所屬戶外、安九回山上九舍大廳；其餘既有房間仍回原校園。明確驗證產品契約，不從實作讀預期值。
+    const RETURN_ROOMS = { 'dah-hsian-2f': 'dah-hsian', anjiu: 'uphill-campus' };
+    const returnRoom = RETURN_ROOMS[id] ?? null;
     try {
       await page.waitForFunction(room => window.__game.state.room === room && !window.__game.state.busy, returnRoom, { timeout: 60000 });
     } catch (error) {
