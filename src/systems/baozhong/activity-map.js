@@ -9,6 +9,7 @@ const CSS = `
 #bz-activity-map section{background:#f4f4ee;border:3px solid #2f6f4f;border-radius:16px;padding:14px;width:min(840px,100%);max-height:90dvh;overflow:auto;box-sizing:border-box;font-family:'Noto Sans TC',sans-serif}
 #bz-activity-map header{display:flex;align-items:center;justify-content:space-between;gap:10px}#bz-activity-map h2{font-size:22px;margin:0}
 #bz-activity-map button,#bz-activity-map input,#bz-activity-map select,#bz-activity-button{min-height:44px;font:inherit;border:1px solid #9aa3ab;border-radius:8px;padding:8px;background:#f4f4ee;color:#2a2c4a;box-sizing:border-box}
+#bz-activity-button{pointer-events:auto;cursor:pointer}
 #bz-activity-map button{cursor:pointer}#bz-activity-map :focus-visible,#bz-activity-button:focus-visible{outline:3px solid #1f3c8f;outline-offset:2px}
 #bz-activity-map .bz-map-filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}#bz-activity-map input{flex:1;min-width:140px}#bz-activity-map select{max-width:100%}
 #bz-activity-map .bz-map-content{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(170px,1fr);gap:10px}
