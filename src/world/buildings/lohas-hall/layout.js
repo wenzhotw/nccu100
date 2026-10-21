@@ -1,6 +1,9 @@
-/** 樂活館共用尺寸。主體沿用預定地，低翼朝向正門，長立面面向八德道。 */
+/**
+ * 樂活館共用尺寸。低翼朝向正門，長立面面向八德道。
+ * 依 OpenNCCU 3D 模型：主體緊貼拉直後的八德道南側人行道，東西範圍約 x 32～58（原本 x 38、z 3）。
+ */
 export const LOHAS = Object.freeze({
-  x: 38, z: 3, width: 26, depth: 10,
+  x: 45, z: -1.4, width: 26, depth: 10,
   front: -5, back: 5, height: 12.4, towerHeight: 15.5,
   wingLeft: -20.3, wingRight: -13, wingFront: -4.6, wingBack: 4.6,
   arcadeRight: -15.5, landingHeight: .72,
