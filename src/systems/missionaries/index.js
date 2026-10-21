@@ -19,19 +19,22 @@ import { showEnding } from '../../ui/ending.js';
 import { closeBattle, startBattle } from '../battle/index.js';
 import { setFlag } from '../../content/index.js';
 import M from '../../content/missionaries.json';
+import { createStoryClock, festivalStoriesPaused } from '../festival-story-pause.js';
+const storyClock = createStoryClock(state);
 
 const SEE = 11;          // 多近會被發現（公尺）
 const COOLDOWN = 45;     // 一次遭遇之後，多久才會再衝過來（秒）
 
 const [lead, buddy] = M.pair.map(p => addNPC({
   ...p, title: M.title, speed: 1.1, chaseSpd: 7.5,
+  pauseWhen: () => festivalStoriesPaused(state),
   dialog: [{ lines: M.greeting }],
 }));
-let nextTime = performance.now() + 15000, active = false;
+let nextTime = storyClock.now() + 15000, active = false;
 
 function goHome() {
   [lead, buddy].forEach(n => { n.state = 'return'; n.onCatch = null; });
-  nextTime = performance.now() + COOLDOWN * 1000;
+  nextTime = storyClock.now() + COOLDOWN * 1000;
   active = false;
 }
 
@@ -61,6 +64,7 @@ async function onChoice(i) {
 
 /** 遭遇：打招呼之後跳出選項 */
 function encounter() {
+  if (festivalStoriesPaused(state)) return;
   active = true; setFlag('missionaryMet');
   [lead, buddy].forEach(n => { n.state = 'talk'; });
   openDialog(M.title, M.greeting, () => openChoice(M.choices.map(c => c.label), onChoice));
@@ -72,10 +76,12 @@ buddy.spot.fn = encounter;
 
 // 每 0.2 秒看一次主角有沒有走近
 setInterval(() => {
+  storyClock.now();
+  if (festivalStoriesPaused(state)) return;
   // 追到一半主角上車或進室內：放棄，走回去
   if (active && lead.state === 'chase' && (state.driving || indoor())) { goHome(); return; }
   if (active || !state.started || state.busy || state.driving || state.holdPang || !dlg.hidden || indoor()) return;
-  if (state.missionaryMet || performance.now() < nextTime) return;   // 遇過一次就不再主動衝過來
+  if (state.missionaryMet || storyClock.now() < nextTime) return;   // 遇過一次就不再主動衝過來
   const p = lead.g.position;
   if (Math.hypot(pos.x - p.x, pos.z - p.z) > SEE) return;
   active = true; setFlag('missionaryMet');

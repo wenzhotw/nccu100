@@ -116,6 +116,8 @@ function addNPC(o){
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 function npcUpdate(n,dt){
+  // 劇情角色可暫停，保留追逐與 onCatch，避免活動旗標與會場同步之間漏跑。
+  if(n.pauseWhen?.()) return;
   // 不在主角所在的場景：不畫也不動（一般遊戲換場景後，其他場景的角色會暫停）
   if((n.room||null)!==(state.room||null)) return;
   const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=true;

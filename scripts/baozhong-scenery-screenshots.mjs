@@ -36,7 +36,7 @@ const manifest = {
   sourceFiles: beforeBuild, sourceDigest: sha(JSON.stringify(beforeBuild)), distFiles: inventory('dist'),
   query: '?debug', captureMethod: 'Playwright screenshots of freshly built application; no fixture injection or AI images',
   limitations: ['Debug teleport and fixed camera are staging only, not evidence of a walkable route.', 'Mobile means Chromium touch/viewport emulation, not a physical device.', 'Screenshots require visual review; structural assertions do not establish visual quality.'],
-  captures: [], errors: [], profiles: [],
+  captures: [], errors: [], profiles: [], storyChecks: [],
 };
 const save = () => fs.writeFileSync(path.join(output, 'manifest.json'), JSON.stringify(manifest, null, 2));
 save();
@@ -93,6 +93,62 @@ try {
       }, id);
       await page.keyboard.press('e');
     }
+    async function captureCostume(id, costumeCount, angle = 'front') {
+      // 只移動玩家與鏡頭。NPC 留在原站位，讓正式轉身邏輯面向玩家，不改模型或遮擋物。
+      const staging = await page.evaluate(id => {
+        const n = window.__bz26.venueNPCs.find(n => n.id === `bz26-${id}`);
+        if (!n?.g.userData.bz26Costume) throw new Error(`${id} 缺少正式 NPC 服裝`);
+        const p = n.g.getWorldPosition(n.g.position.clone());
+        const forward = p.clone().set(Math.sin(n.face || 0), 0, Math.cos(n.face || 0));
+        // 3 公尺仍會自然轉身，也不進入 2.4 公尺交談範圍。
+        const player = p.clone().addScaledVector(forward, 3);
+        window.__game.teleport(player.x, player.z);
+        return { id, player: player.toArray(), npcPosition: p.toArray() };
+      }, id);
+      await page.waitForFunction(({ id, player, npcPosition }) => {
+        const n = window.__bz26.venueNPCs.find(n => n.id === `bz26-${id}`);
+        if (!n?.g.visible || !document.querySelector('#dlg').hidden) return false;
+        const p = n.g.getWorldPosition(n.g.position.clone());
+        const toPlayer = window.__game.pos.clone().sub(p).setY(0);
+        const distance = toPlayer.length();
+        const facing = n.g.getWorldDirection(p.clone()).dot(toPlayer.normalize());
+        return Math.hypot(p.x - npcPosition[0], p.z - npcPosition[2]) < .01
+          && Math.hypot(window.__game.pos.x - player[0], window.__game.pos.z - player[2]) < .06
+          && distance > 2.9 && distance < 3.1 && facing > .99995 && !n.sp.visible;
+      }, staging);
+      const npc = await page.evaluate(({ id, angle }) => {
+        const n = window.__bz26.venueNPCs.find(n => n.id === `bz26-${id}`), g = n.g;
+        g.updateWorldMatrix(true, true);
+        const p = g.getWorldPosition(g.position.clone());
+        // 正面保留完整服裝；側背鏡頭繞到帳篷開口外側，人物仍面向原玩家。
+        const cameraLocal = angle === 'front' ? [0, .73, 2.1] : [2.25, .85, -1];
+        const eye = g.localToWorld(g.position.clone().set(...cameraLocal));
+        const at = g.localToWorld(g.position.clone().set(0, .68, 0));
+        window.__game.view(...eye.toArray(), ...at.toArray());
+        const toPlayer = window.__game.pos.clone().sub(p).setY(0);
+        const playerDistance = toPlayer.length();
+        const cameraDirection = eye.clone().sub(p).setY(0).normalize();
+        const forward = g.getWorldDirection(p.clone());
+        let meshes = 0;
+        g.traverse(o => { if (o.isMesh) meshes++; });
+        return {
+          id: n.id, title: n.title, costume: g.userData.bz26Costume,
+          visible: g.visible, originalScene: g.parent === window.__game.scene,
+          originalRig: n.rig.parent === g, meshes, position: p.toArray(), scale: g.scale.toArray(),
+          facingPlayer: forward.dot(toPlayer.normalize()), facingCamera: forward.dot(cameraDirection),
+          playerDistance, cameraDistance: Math.hypot(eye.x - p.x, eye.z - p.z),
+          cameraLocal, targetLocal: [0, .68, 0],
+        };
+      }, { id, angle });
+      assert.equal(npc.id, `bz26-${id}`); assert.equal(npc.costume.id, id);
+      assert.ok(npc.visible && npc.originalScene && npc.originalRig && npc.meshes > 0, `${id} 必須為原場景內可見的正式 NPC`);
+      assert.ok(npc.facingPlayer > .99995, `${id} 必須維持面向玩家`);
+      if (angle === 'front') {
+        assert.ok(npc.facingCamera > .99995, `${id} 正面樣本必須面向鏡頭`);
+        assert.ok(npc.playerDistance - npc.cameraDistance > .3, `${id} 玩家必須留在正面鏡頭後方`);
+      } else assert.ok(npc.facingCamera < -.3, `${id} 側背樣本必須看到背面`);
+      await capture(`${id}-npc-costume-${angle}`, { costumeCount, npc });
+    }
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => window.__game && window.__bz26);
@@ -129,6 +185,21 @@ try {
         const evidence=await page.evaluate(id=>{const t=window.__bz26.tents.tents.get(id),g=t.group;g.updateWorldMatrix(true,false);const at=g.localToWorld(g.position.clone().set(0,1.7,0)),eye=g.localToWorld(g.position.clone().set(-4,4.2,8)),p=g.localToWorld(g.position.clone().set(0,0,3.5));window.__game.teleport(p.x,p.z);window.__game.view(...eye.toArray(),...at.toArray());return {id,walls:t.parts.walls.length,parts:t.parts.smallProp.length};},id);
         assert.equal(evidence.walls,3);assert.ok(evidence.parts>0);await capture(`${id}-landmark`,{evidence});
       }
+      const costumeInventory = await page.evaluate(() => window.__bz26.venueNPCs
+        .filter(n => n.g.userData.bz26Costume)
+        .map(n => ({ id: n.id, costume: n.g.userData.bz26Costume }))
+        .sort((a, b) => a.id.localeCompare(b.id)));
+      assert.equal(costumeInventory.length, 23, '正式活動必須掛載 23 位服裝 NPC');
+      assert.equal(new Set(costumeInventory.map(n => n.id)).size, 23, '服裝 NPC 不得重複');
+      for (const n of costumeInventory) assert.equal(n.id, `bz26-${n.costume.id}`);
+      manifest.profiles.find(profile => profile.name === name).costumeNPCs = costumeInventory;
+      const costumeIds = name === 'desktop'
+        ? ['D26', 'D27', 'D11', 'D31', 'D01', 'D19', 'D21', 'D37']
+        : ['D26', 'D27', 'D31', 'D37'];
+      for (const id of costumeIds) await captureCostume(id, costumeInventory.length);
+      if (name === 'desktop') {
+        for (const id of ['D26', 'D21']) await captureCostume(id, costumeInventory.length, 'back-three-quarter');
+      }
       const sign=await page.evaluate(()=>{const s=window.__bz26.activitySign;if(!s||!s.group.parent||!s.group.visible||!window.__game.spots.includes(s.spot))return null;const p=s.group.position;window.__game.teleport(s.spot.x,s.spot.z+.6);window.__game.view(p.x+5,p.y+4.5,p.z+11,p.x,p.y+2,p.z);return {placement:s.placement,fountain:s.fountain};});
       if(!sign){manifest.signFailure=await page.evaluate(()=>({error:window.__bz26.activitySignError,colliders:window.__game.colliders}));save();}
       assert.ok(sign,'活動看板必須實際存在並有互動點');await capture('fountain-2026-guide',{sign});
@@ -147,6 +218,63 @@ try {
       assert.deepEqual(runtimeErrors, [], '瀏覽器出現錯誤，截圖不得標為通過');
     } catch (error) { manifest.errors.push({ profile: name, message: String(error), stack: error.stack }); try { await capture('failure-context',{error:String(error)}); } catch {} }
     finally { await context.close(); save(); }
+  }
+  // 獨立存檔與場景驗證正常距離觸發，不呼叫 encounter、wakeLion 等劇情捷徑。
+  for (const subject of ['lion-festival-pause', 'missionary-festival-pause']) {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await context.newPage(); page.setDefaultTimeout(60000);
+    const check = { subject, status: 'running', runtimeErrors: [] };
+    manifest.storyChecks.push(check); save();
+    page.on('pageerror', error => check.runtimeErrors.push(String(error)));
+    page.on('console', message => { if (message.type() === 'error') check.runtimeErrors.push(message.text()); });
+    const snapshot = () => page.evaluate(() => ({
+      active: window.__bz26.venue.on, player: window.__game.pos.toArray(),
+      busy: !!window.__game.state.busy, raining: window.__weather.raining,
+      missionaryMet: !!window.__game.state.missionaryMet,
+      missionaries: [window.__missionaries.lead, window.__missionaries.buddy]
+        .map(n => ({ id: n.id, state: n.state, visible: n.g.visible, position: n.g.position.toArray() })),
+      dialogVisible: !document.querySelector('#dlg').hidden,
+      dialogName: document.querySelector('#dname').textContent,
+    }));
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => window.__game && window.__bz26 && window.__weather && window.__missionaries);
+      await page.locator('#go').click();
+      await page.waitForFunction(() => window.__game.state.started);
+      await page.evaluate(subject => {
+        window.__bz26.accept();
+        if (subject === 'lion-festival-pause') window.__game.teleport(-46, -79);
+        else { const p = window.__missionaries.lead.g.position; window.__game.teleport(p.x, p.z + 1); }
+      }, subject);
+      check.pausedWaitMs = subject === 'lion-festival-pause' ? 2000 : 16000;
+      await page.waitForTimeout(check.pausedWaitMs);
+      check.paused = await snapshot(); save();
+      assert.ok(check.paused.active && !check.paused.busy && !check.paused.raining, '活動中不得觸發石獅或雨劇情');
+      assert.equal(check.paused.dialogVisible, false, '活動中不得彈出劇情對話');
+      if (subject === 'lion-festival-pause') {
+        await page.evaluate(() => { window.__bz26.leave(); window.__game.teleport(-46, -79); });
+        await page.waitForFunction(() => window.__game.state.busy, null, { timeout: 15000 });
+      } else {
+        assert.equal(check.paused.missionaryMet, false, '活動中不得消耗傳教士首次遭遇旗標');
+        for (const n of check.paused.missionaries) {
+          assert.equal(n.visible, false, `${n.id} 活動中應隱藏`);
+          assert.notEqual(n.state, 'chase', `${n.id} 活動中不得追逐`);
+        }
+        await page.evaluate(() => { window.__bz26.leave(); window.__game.teleport(0, 14); });
+        check.resumedWaitMs = 16000;
+        await page.waitForTimeout(check.resumedWaitMs);
+        await page.evaluate(() => { const p = window.__missionaries.lead.g.position; window.__game.teleport(p.x, p.z + 1); });
+        await page.waitForFunction(() => window.__game.state.missionaryMet, null, { timeout: 15000 });
+      }
+      check.resumed = await snapshot();
+      assert.equal(check.resumed.active, false);
+      assert.deepEqual(check.runtimeErrors, [], '劇情生命週期驗證出現瀏覽器錯誤');
+      check.status = 'passed';
+    } catch (error) {
+      check.status = 'failed'; check.error = String(error);
+      try { check.failureContext = await snapshot(); } catch {}
+      manifest.errors.push({ subject, message: String(error), stack: error.stack });
+    } finally { await context.close(); save(); }
   }
   assert.deepEqual(sources(), beforeBuild, '執行期間來源已變更，證據版本不一致');
   assert.deepEqual(inventory('dist'), manifest.distFiles, '執行期間打包內容已變更');
