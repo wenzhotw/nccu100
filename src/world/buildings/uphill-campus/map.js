@@ -9,13 +9,15 @@
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
-import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon, vText } from '../../../render/kit.js';
+import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon, vText, hText } from '../../../render/kit.js';
 import { boxC, obbC } from '../../../core/collision.js';
 import { BUS_SHELTER, R, SIZE, STOP } from './layout.js';
 import { heightAt } from './terrain.js';
 import { createGreybox, greyboxColliders, fenceRails } from './greybox.js';
 import { zoneName } from './zone-names.js';
 import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
+
+import { buildCourtyardScenery, batchCourtyardScene } from './courtyard-scenery.js';
 
 const SKY = '#bfe4f6';
 
@@ -102,7 +104,7 @@ export function buildGreybox() {
   }, [1,1]);
   group.traverse(o => {
     if(o.isMesh && o.material.isMeshToonMaterial) o.material.gradientMap=GRAD;
-    if(['東側人行道','九舍磚砌踏面'].includes(o.name)) {
+    if(o.userData.brick || ['東側人行道','九舍磚砌踏面'].includes(o.name)) {
       o.material.map=brick;
       const p=o.geometry.attributes.position;
       const uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
@@ -111,6 +113,12 @@ export function buildGreybox() {
       uv.needsUpdate=true;
     }
   });
+  for(const [name,text,vertical] of [['九舍大廳橫幅','政大學生宿舍歡迎您',false],['九舍大廳直式牌','自強第九宿舍',true]]) {
+    const sign=group.getObjectByName(name);
+    const tex=vertical?vText(text,'#385846','700 54px "Noto Sans TC",sans-serif',96,64)
+      :hText(text,'#385846','700 48px "Noto Sans TC",sans-serif',1024,80,44);
+    sign.material=basic({map:tex,transparent:true});
+  }
   scene.add(group);
   for (const c of greyboxColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
 }
@@ -146,6 +154,8 @@ export function buildMap() {
   busStop();
   buildGreybox();
   buildLandmarks();
+  const scenery=buildCourtyardScenery();
+  batchCourtyardScene(scene.getObjectByName('山上校區灰盒'),scenery);
 }
 
 /** 燈光與天空：跟山下差不多的明亮白天，加一點霧讓遠山變淡 */

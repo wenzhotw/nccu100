@@ -19,6 +19,7 @@ test('最近八公尺內的地標使用玩家看得懂的名稱', async () => {
 test('地圖區域入口回傳地標、通路、建築與空地的新名稱', async () => {
   // 只隔離 WebGL 引擎初始化，區域判斷與地形資料使用正式模組。
   const hooks = registerHooks({ resolve(specifier, context, next) {
+    if (specifier.endsWith('courtyard-scenery.js')) return { url: 'data:text/javascript,export function buildCourtyardScenery(){};export function batchCourtyardScene(){}', shortCircuit: true };
     if (specifier.endsWith('core/engine.js')) {
       return { url: 'data:text/javascript,export const scene = null;', shortCircuit: true };
     }
@@ -92,4 +93,11 @@ test('九舍步行樓梯顯示自己的名稱，不算好漢坡', async () => {
   const { zoneName } = await import('../zone-names.js');
   // 樓梯中點 (-5.1,-18)，依 2026-10-20 照片 9034 由坡道東側通往九舍廣場。
   assert.equal(zoneName({ x: -5.1, z: -18 }), '九舍樓梯');
+});
+
+test('中庭中央顯示九舍中庭，北側廣場保留宿舍區名稱', async () => {
+  const {zoneName}=await import('../zone-names.js');
+  assert.equal(zoneName({x:20,z:-27.8}),'自強九舍中庭');
+  assert.equal(zoneName({x:8,z:-31.7}),'自強九舍・十舍');
+  assert.notEqual(zoneName({x:20,z:-20}),'自強九舍中庭');
 });

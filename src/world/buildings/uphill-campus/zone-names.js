@@ -21,6 +21,7 @@ export function zoneName({ x, z }) {
     if (d <= 8 ** 2 && d < distance) { nearest = name; distance = d; }
   }
   if (nearest) return displayNames[nearest] ?? nearest.replace(/\([^)]*\)|（[^）]*）/g, '');
+  if (x >= 8 && x < 25.2 && z >= -30.8 && z <= -24) return '自強九舍中庭';
   const stair = STAIRS.find(candidate => projectToPath(x, z, candidate.path).distance <= (candidate.width / 2) ** 2);
   if (stair) return stair.id === 'jiu-plaza' ? '九舍樓梯' : '好漢坡';
   if (RAMPS.some(ramp => projectToPath(x, z, ramp.path).distance <= (ramp.width / 2) ** 2)) return '外部斜坡';

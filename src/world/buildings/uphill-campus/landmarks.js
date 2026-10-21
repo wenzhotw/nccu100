@@ -1,7 +1,7 @@
 /** 山上校區的純地標模型與碰撞資料，文字貼圖由地圖入口建立。 */
 import * as THREE from 'three';
-import { ANCHORS, FLOOR_H, LAYOUT, LEVELS, STOP, RAMPS, STAIRS } from './layout.js';
-import { heightAt, platformLevel } from './terrain.js';
+import { ANCHORS, STOP, RAMPS, STAIRS } from './layout.js';
+import { heightAt } from './terrain.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const stone = new THREE.MeshToonMaterial({ color: '#b4b0a2' });
@@ -117,11 +117,6 @@ export function createLandmarks() {
     return [p.x - west.x, p.base - canopy.position.y + h / 2, p.z - west.z, 0.24, h, 0.24];
   }));
   boxes(canopy, '遮雨棚頂', roofMaterial, [[(east.x - west.x) / 2, 2.9, 0, east.x - west.x + 0.4, 0.2, 2.6]]);
-  const marker = placed(root, '旋轉樓梯(銜接建築)');
-  const connection = LAYOUT.buildings.find(b => b.osm === 510739855);
-  // 灰盒跨層建築從輪廓最低平台起蓋，不能從地標所在的較高平台估屋頂。
-  const roof = Math.min(...connection.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])) + 2 * FLOOR_H;
-  boxes(marker, '旋轉樓梯屋頂色帶', blue, [[-1.5, roof - marker.position.y + 0.16, 0, 9, 0.3, 1.2]]);
   const signs = new THREE.Group(); signs.name = '指路牌'; root.add(signs);
   for (const s of landmarkSigns()) {
     const g = new THREE.Group(); g.name = `指路牌：${s.anchor}`;

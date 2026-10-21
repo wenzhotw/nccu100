@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
-import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS } from '../layout.js';
+import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY } from '../layout.js';
 import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath } from '../terrain.js';
 
 function distance(p, c) {
@@ -122,9 +122,9 @@ test('範圍內建築依輪廓最低層擠出，並提供至多四個碰撞盒',
   assert.equal(model.userData.buildings.length, expected.length);
   for (const b of expected) {
     const info = model.userData.buildings.find(v => v.osm === b.osm);
-    const floors = /十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2;
+    const floors = BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2);
     assert.equal(info.height, floors * FLOOR_H);
-    assert.equal(info.base, Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])));
+    assert.equal(info.base, b.osm === LOBBY.osm ? 15 : Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])));
     const boxes = colliders.filter(c => c.building === b.osm);
     assert(boxes.length >= 1 && boxes.length <= 4);
     for (const c of boxes) assert(c.hx > 0 && c.hz > 0);
@@ -164,16 +164,26 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
     return next(specifier, context);
   } });
   const savedDocument = globalThis.document, savedColliders = colliders.slice();
-  const context = { fillRect() {}, clearRect() {}, fillText() {}, strokeRect() {} };
+  const context = new Proxy({ measureText() { return { width: 20 }; }, createLinearGradient() { return {addColorStop(){}}; } }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} });
   globalThis.document = { createElement() { return { width: 0, height: 0, getContext() { return context; } }; } };
   try {
     const { buildMap, mapHeight, mapZone, mapLight } = await import('../map.js');
     hooks.deregister();
     assert.equal(mapHeight(0, 0), 12);
     assert.equal(mapHeight(-0.6, -34.9), 15);
+    const {flushPrefabs}=await import('../../../prefabs/index.js');
+    flushPrefabs();
     buildMap();
     const scene = globalThis.__uphillScene; scene.updateMatrixWorld(true);
     assert(scene.getObjectByName('山上校區灰盒'));
+    assert.ok(scene.getObjectByName('九舍中庭植栽'));
+    assert.equal(scene.getObjectByName('九舍中庭植栽').userData.trees,6);
+    assert.equal(scene.getObjectByName('九舍中庭植栽').userData.lamps,6);
+    let visibleMeshes=0;
+    for(const root of [scene.getObjectByName('山上校區灰盒'),scene.getObjectByName('九舍中庭植栽')]) root.traverseVisible(o=>{if(o.isMesh)visibleMeshes++;});
+    assert.ok(visibleMeshes<=30, '中庭合批後可見網格超過 8a 基線二十加十');
+    assert.ok(scene.getObjectByName('九舍大廳橫幅').material.map);
+    assert.ok(scene.getObjectByName('九舍中庭車道').material.map);
     const { GRAD } = await import('../../../../render/kit.js');
     for(const name of ['坡道斜面','東側人行道','東側草坡','不鏽鋼欄杆','九舍磚砌踏面']) {
       const m=scene.getObjectByName(name); assert.ok(m.material.gradientMap===GRAD,name);
@@ -494,4 +504,71 @@ test('草坡與九舍樓梯旁不露出舊平台的內部直立側面',async()=>
     const ray=new THREE.Raycaster(new THREE.Vector3(x,h+1,z),new THREE.Vector3(-dz/l,0,dx/l),0,4);
     assert.equal(ray.intersectObject(mesh).length,0,'樓梯側露出高於矮牆的舊平台壁');
   }
+});
+
+test('九舍照片樓層表控制實際量體，大廳從十五公尺起蓋', async () => {
+  const { createGreybox } = await import('../greybox.js');
+  const model = createGreybox();
+  for (const [osm, base, height] of [[510739853,12,12],[510739854,15,9.6],[510739855,15,2.4]]) {
+    const info = model.userData.buildings.find(b => b.osm === osm);
+    assert.equal(info.base, base);
+    assert.equal(info.height, height);
+  }
+});
+
+test('大廳有鏤空屋頂欄杆與西面淺綠玻璃入口，招牌可供場景接線', async () => {
+  const { createGreybox } = await import('../greybox.js');
+  const model=createGreybox(); model.updateMatrixWorld(true);
+  const rails=model.getObjectByName('九舍大廳欄杆'); assert.ok(rails);
+  const rb=new THREE.Box3().setFromObject(rails);
+  assert.ok(Math.abs(rb.max.y-rb.min.y-0.9)<0.001);
+  const door=model.getObjectByName('九舍大廳入口'); assert.ok(door);
+  const db=new THREE.Box3().setFromObject(door), center=db.getCenter(new THREE.Vector3());
+  assert.ok(Math.hypot(center.x-25.2,center.z+27.8)<=0.5);
+  assert.equal(door.material.transparent,true);
+  assert.ok(model.getObjectByName('九舍大廳橫幅'));
+  assert.ok(model.getObjectByName('九舍大廳直式牌'));
+  // 西面欄杆的空隙應能被水平射線穿過，橫桿高度應有命中。
+  const cast=y=>new THREE.Raycaster(new THREE.Vector3(24,y,-28.5),new THREE.Vector3(1,0,0),0,2).intersectObject(rails);
+  assert.equal(cast(17.8).length,0);
+  assert.ok(cast(18.25).length>0);
+});
+
+test('大廳底部頂點低於十五公尺，填充體補到南端十二公尺平台', async () => {
+  const {createGreybox}=await import('../greybox.js');const model=createGreybox();model.updateMatrixWorld(true);
+  const b=LAYOUT.buildings.find(b=>b.osm===510739855);
+  for(const [x,z] of b.pts)assert.ok(heightAt(x,z)<=15);
+  const fill=model.getObjectByName('九舍大廳下層填充');assert.ok(fill);
+  const bounds=new THREE.Box3().setFromObject(fill);
+  assert.equal(bounds.min.y,12);assert.equal(bounds.max.y,15);
+  for(const [x,z] of [[26,-11],[36,-11],[31,-14]]) {
+    const hit=new THREE.Raycaster(new THREE.Vector3(x,11,z),new THREE.Vector3(0,1,0)).intersectObject(fill)[0];
+    assert.ok(hit && hit.point.y<=heightAt(x,z)+0.01,`牆底浮空：${x},${z}`);
+  }
+});
+
+test('中庭紅磚車道連到西側廣場，新增設施逐個能繞行且擋住', async () => {
+  const {createGreybox,greyboxColliders}=await import('../greybox.js');
+  const model=createGreybox();model.updateMatrixWorld(true);
+  const lane=model.getObjectByName('九舍中庭車道');assert.ok(lane);
+  const bounds=new THREE.Box3().setFromObject(lane);
+  assert.ok(Math.abs(bounds.min.x-8)<0.001 && Math.abs(bounds.max.x-25.2)<0.001);
+  assert.ok(Math.abs(bounds.max.z-bounds.min.z-3.6)<0.001);
+  const plaza=model.getObjectByName('九舍北側廣場');assert.ok(plaza);
+  const pb=new THREE.Box3().setFromObject(plaza);
+  assert.ok(Math.abs(pb.min.x)<0.001 && Math.abs(pb.max.x-15)<0.001);
+  assert.ok(Math.abs(pb.min.z+35)<0.001 && Math.abs(pb.max.z+24)<0.001);
+  const boxes=greyboxColliders().filter(c=>c.courtyard);
+  assert.ok(boxes.some(c=>c.kind==='bike-rack'));
+  assert.ok(boxes.some(c=>c.kind==='plaza-jersey'));
+  for(const c of boxes) {
+    const nx=c.sn,nz=c.cs,clear=c.hz+0.6;
+    const crossed=path([[c.cx+nx*(c.hz+1),c.cz+nz*(c.hz+1)],[c.cx-nx*(c.hz+1),c.cz-nz*(c.hz+1)]],[c]);
+    assert.ok((crossed.p.x-c.cx)*nx+(crossed.p.z-c.cz)*nz>c.hz,c.kind);
+    const a=[c.cx-c.cs*(c.hx+0.6)+nx*clear,c.cz+c.sn*(c.hx+0.6)+nz*clear];
+    const b=[c.cx+c.cs*(c.hx+0.6)+nx*clear,c.cz-c.sn*(c.hx+0.6)+nz*clear];
+    const pass=path([a,b],[c]);assert.ok(Math.hypot(pass.p.x-b[0],pass.p.z-b[1])<1e-6,c.kind);
+  }
+  const pass=path([[8,-27.8],[24,-27.8]],greyboxColliders());
+  assert.ok(Math.hypot(pass.p.x-24,pass.p.z+27.8)<1e-6);
 });

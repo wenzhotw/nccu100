@@ -1,9 +1,11 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES } from './layout.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY } from './layout.js';
 import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampLandscape } from './terrain.js';
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
+import { addLobbyExterior } from './lobby-exterior.js';
+import { addCourtyard, courtyardColliders } from './courtyard.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -105,8 +107,8 @@ function addMerged(group, name, geometries, material) {
 function buildings() {
   return LAYOUT.buildings.filter(b => b.pts.every(([x, z]) =>
     x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1)).map(b => ({ ...b,
-    base: Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])),
-    height: (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2) * FLOOR_H,
+    base: b.osm === LOBBY.osm ? LOBBY.base : Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])),
+    height: (BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2)) * FLOOR_H,
   }));
 }
 
@@ -186,6 +188,15 @@ function addBuildingsAndWalls(group) {
         .translate(x, (bridge.bottom + base) / 2, z));
     }
   }
+  // 南端外牆由十二公尺平台補至大廳地板，避免牆底浮空。
+  const lobby = buildings().find(b => b.osm === LOBBY.osm);
+  const fillShape = new THREE.Shape(clipBuilding(lobby.pts, -23.7, false).map(([x,z]) => new THREE.Vector2(x,-z)));
+  const fill = new THREE.ExtrudeGeometry(fillShape, { depth: 3, bevelEnabled: false, steps: 1 });
+  fill.rotateX(-Math.PI/2).translate(0,12,0);
+  fill.computeBoundingBox();
+  const fc=fill.boundingBox.getCenter(new THREE.Vector3()), fs=fill.boundingBox.getSize(new THREE.Vector3());
+  edges.push(fill.clone().translate(-fc.x,-fc.y,-fc.z).scale(1+0.08/fs.x,1+0.08/fs.y,1+0.08/fs.z).translate(fc.x,fc.y,fc.z));
+  addMerged(group, '九舍大廳下層填充', [fill], buildingMaterial);
   addMerged(group, '建築', shapes, buildingMaterial);
   addMerged(group, '建築描邊', edges, edgeMaterial);
   const walls = [], wallEdges = [];
@@ -326,6 +337,8 @@ export function createGreybox() {
   addMerged(group, '坡道斜面', slopes, roadMaterial).userData.surface = true;
   addBuildingsAndWalls(group);
   addRoads(group);
+  addLobbyExterior(group, { addMerged, BOX, buildingMaterial, edgeMaterial });
+  addCourtyard(group, { addMerged, TOP, BOX, wallMaterial, edgeMaterial });
   addRampDetails(group, rects, { addMerged, TOP, BOX, grass, concrete, edgeMaterial });
   return group;
 }
@@ -349,7 +362,7 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...rampDetailColliders(), ...buildings().flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...buildings().flatMap(b => {
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
     return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),
