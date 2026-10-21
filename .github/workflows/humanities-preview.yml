@@ -1,0 +1,26 @@
+name: 文學院三系模型預覽截圖
+on:
+  push:
+    branches: [preview/humanities-booths-20261022]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/*landmarks*.test.mjs
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/humanities-preview-screenshots.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: humanities-preview
+          path: test-results/humanities-preview/
+          retention-days: 7

@@ -1,6 +1,7 @@
 // 三十七系大型代表物預覽。六院首批加鳥居為基準，其餘抽取既有Dxx實物。
 // 只改佈景，不新增活動機制或文字。所有尺寸為帳篷本地公尺，前方為 +z。
 import * as THREE from 'three';
+import { HUMANITIES_IDS, buildHumanitiesLandmark } from './humanities-landmarks.js';
 import { createDecorCtx } from './decor-ctx.js';
 import { SOURCE_LANDMARKS } from './landmark-source-registry.js';
 import { buildSourceLandmark } from './landmark-source-builder.js';
@@ -17,7 +18,8 @@ export const LANDMARK_SOURCES = Object.freeze({
 const M = LANDMARK_MOUNT;
 
 /** 使用正式 decor ctx 的共用幾何與呼叫端材質，碰撞取實際低處零件。 */
-export function buildDepartmentLandmark(group, id, { toon, OUT }) {
+export function buildDepartmentLandmark(group, id, { toon, OUT, canvasTex }) {
+  if (HUMANITIES_IDS.includes(id)) return buildHumanitiesLandmark(group, id, { toon, OUT, canvasTex });
   if (!LANDMARK_SAMPLE_IDS.includes(id)) return buildSourceLandmark(group, id, { toon, OUT });
   const root = new THREE.Group(); root.name = `bz26-landmark-${id}`;
   root.userData.noOcc = true; group.add(root);
