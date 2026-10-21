@@ -1,0 +1,79 @@
+/** 達賢真實瀏覽器驗收；NCCU_BASE_URL 可指向本機、preview 或既有正式網址。 */
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { insidePolygon, POND } from '../src/world/buildings/dah-hsian/layout.js';
+const base = process.env.NCCU_BASE_URL || 'http://127.0.0.1:5187/';
+const browser = await chromium.launch({ args: ['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
+try {
+  const page = await browser.newPage({ viewport: {width:960,height:600} });
+  const errors=[];page.on('pageerror', e=>errors.push(String(e)));
+  page.on('console',m=>{if(m.type()==='error'&&!(m.text().startsWith('Failed to load resource')&&m.location().url.endsWith('/favicon.ico')))errors.push(m.text());});
+  const url=new URL(base);url.searchParams.set('debug','');url.searchParams.set('area','dah-hsian');
+  await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:120000});
+  await page.waitForFunction(()=>window.__game,null,{timeout:120000});
+  assert.equal(await page.evaluate(()=>window.__game.rooms['dah-hsian'].built),false,'進入前不建立達賢模型');
+  const progress=await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap}));
+  await page.click('#go');
+  // 等待真正換場景完成，軟體 WebGL 與首次模組載入不保證在固定毫秒內完成。
+  await page.waitForFunction(()=>window.__game.state.room==='dah-hsian'&&!window.__game.state.busy,null,{timeout:60000});
+  assert.equal(await page.evaluate(()=>window.__game.state.room),'dah-hsian','預覽開始後必須切到獨立的達賢區域');
+  const frameTime=async()=>page.evaluate(()=>__game.state.time);
+  const waitTime=async(start,seconds)=>page.waitForFunction(({start,seconds})=>__game.state.time>=start+seconds,{start,seconds},{timeout:60000});
+  await page.evaluate(()=>{
+    const tree=__game.rooms['dah-hsian'].scene.getObjectByName('達賢共用樹');
+    if(!tree)throw new Error('達賢必須使用校園共用樹');
+    __game.view(tree.position.x,tree.position.y+4,tree.position.z,tree.position.x+4,tree.position.y+4,tree.position.z);
+  });
+  let treeTime=await frameTime();await waitTime(treeTime,0.5);
+  assert.ok(await page.evaluate(()=>{
+    const tree=__game.rooms['dah-hsian'].scene.getObjectByName('達賢共用樹');
+    return tree.children[1].material.transparent&&tree.children[1].material.opacity<0.8;
+  }),'延後建立的共用樹仍會在鏡頭進入樹冠時淡出');
+  await page.evaluate(()=>__game.view());
+  const spawn=await page.evaluate(()=>({x:__game.pos.x,z:__game.pos.z}));
+  let time=await frameTime();await page.keyboard.down('w');await waitTime(time,0.6);await page.keyboard.up('w');
+  assert.ok(await page.evaluate(z=>__game.pos.z<z-0.5,spawn.z),'實際鍵盤可由草坡向入口前進');
+  await page.evaluate(()=>{__game.teleport(0,29);__game.state.yaw=0;});
+  time=await frameTime();await page.keyboard.down('w');await waitTime(time,0.8);await page.keyboard.up('w');
+  assert.ok(await page.evaluate(()=>__game.pos.z>=27.89),'主樓前牆擋住角色');
+  await page.evaluate(()=>{__game.teleport(15,-50);__game.state.yaw=0;});
+  time=await frameTime();await page.keyboard.down('a');await waitTime(time,1.3);await page.keyboard.up('a');
+  const shore=await page.evaluate(()=>({x:__game.pos.x,z:__game.pos.z}));
+  assert.equal(insidePolygon(shore.x,shore.z,POND),false,'實際行走不會跨入水池');
+  const modelId=await page.evaluate(()=>__game.rooms['dah-hsian'].scene.getObjectByName('達賢戶外區域').uuid);
+  await page.setViewportSize({width:375,height:812});
+  assert.ok(await page.locator('#hud').evaluate(el=>[...el.querySelectorAll('.chip')].filter(c=>c.getBoundingClientRect().width).every(c=>{
+    const r=c.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth;
+  })),'達賢地區名稱與故事資訊不可擠出手機畫面');
+  await page.evaluate(()=>__game.exitRoom());
+  await page.waitForFunction(()=>__game.state.room===null&&!__game.state.busy,null,{timeout:60000});
+  assert.deepEqual(await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap})),progress,'場景切換不改故事與道具');
+  assert.equal(await page.evaluate(()=>document.body.classList.contains('dah-hsian-mode')),false,'離開時清除區域樣式');
+  await page.evaluate(()=>__game.enterRoom('dah-hsian'));
+  await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:60000});
+  assert.equal(await page.evaluate(()=>__game.rooms['dah-hsian'].scene.getObjectByName('達賢戶外區域').uuid),modelId,'重入不重建場景');
+  await page.close();
+  const normal=await browser.newPage({viewport:{width:640,height:360}});
+  const plain=new URL(base);plain.searchParams.set('debug','');
+  await normal.goto(plain.href,{waitUntil:'domcontentloaded',timeout:120000});
+  await normal.waitForFunction(()=>window.__game,null,{timeout:120000});
+  assert.equal(await normal.evaluate(()=>__game.rooms['dah-hsian'].built),false,'正常網址不建立達賢模型');
+  await normal.close();
+  const mobile=await browser.newPage({viewport:{width:375,height:812},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+  mobile.on('pageerror',e=>errors.push(String(e)));
+  mobile.on('console',m=>{if(m.type()==='error'&&!(m.text().startsWith('Failed to load resource')&&m.location().url.endsWith('/favicon.ico')))errors.push(m.text());});
+  await mobile.goto(url.href,{waitUntil:'domcontentloaded',timeout:120000});
+  await mobile.waitForFunction(()=>window.__game,null,{timeout:120000});await mobile.tap('#go');
+  await mobile.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:60000});
+  assert.equal(await mobile.locator('#stick').isVisible(),true,'觸控裝置顯示搖桿');
+  const before=await mobile.evaluate(()=>({z:__game.pos.z,time:__game.state.time}));
+  const stick=await mobile.locator('#stick').boundingBox();
+  await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:7,pointerType:'touch',clientX:stick.x+stick.width/2,clientY:stick.y+12});
+  await mobile.waitForFunction(t=>__game.state.time>t+0.5,before.time,{timeout:60000});
+  await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:7,pointerType:'touch'});
+  assert.ok(await mobile.evaluate(z=>__game.pos.z<z-0.2,before.z),'搖桿可移動達賢角色');
+  assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'手機沒有橫向捲動');
+  await mobile.close();
+  assert.deepEqual(errors,[]);
+  console.log('達賢驗收通過：預覽、延後建立、鍵盤、牆面、池岸、重入、進度保留、正常網址、手機觸控與畫面寬度');
+} finally {await browser.close();}

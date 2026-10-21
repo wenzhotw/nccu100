@@ -1,0 +1,9 @@
+/* 達賢的地區名稱較長，小螢幕保留兩側資訊，不擠出畫面。 */
+@media (max-width: 520px) {
+  .dah-hsian-mode #hud .chip {
+    font-size: 11px;
+    letter-spacing: 0;
+    gap: 5px;
+    padding-right: 9px;
+  }
+}

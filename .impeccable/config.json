@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "rgb(0, 0, 0)",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-21T07:37:44.881Z",
+        "reason": "Agent: HTML 獨立掃描未載入 Vite JS 匯入的 styles.css；實際 Chromium computed style 為 rgb(255, 250, 239)，符合 .ico 的 paper #fffaef。此檔僅更新版本號。"
+      }
+    ]
+  }
+}

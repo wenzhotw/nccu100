@@ -1,0 +1,33 @@
+# 達賢圖書館戶外獨立區域
+
+- 分工：本輪由奧樂遊戲使用者接手，GitHub 帳號 Hunter20041004。主維護者仍依既有 CODEOWNERS，不自行改共同分工。
+- 範圍：本館外觀、前草坡與石板路、入口門廊、湖濱步道、景觀池、小屋外觀及空橋。
+- 獨立場景，第一次進入才建立。沒有正式交通入口；本館及小屋室內未開放。
+- 本機預覽：http://127.0.0.1:5187/?area=dah-hsian
+- 正式站預覽（需本輪部署後）：https://wenzhotw.github.io/nccu100/?area=dah-hsian
+
+## 還原與來源
+
+詳見根目錄 docs/reference/dah-hsian/README.md。逐圖來源、用途與 SHA256 見同目錄 manifest.json；本機研究影像在根目錄 .references/dah-hsian/。
+
+site-data.js 保存三個 OSM 地標輪廓，© OpenStreetMap contributors，ODbL。地圖正面對 +z，採統一 0.8 倍遊戲比例，官方建築高度 31.7m 作比例參考。草坡高差、窗格間距、遮陽板角度與細部位置仍為照片估計，不宣稱測繪精度。
+
+## 檔案
+
+- layout.js：高度、碰撞、水岸限制與區域名稱。
+- model.js：可在 Node 建立的靜態模型與地形。
+- map.js：接既有材質、文字、燈光及碰撞清單。
+- index.js：獨立場景登記與指定查詢參數的預覽入口。
+
+## 驗證
+
+```sh
+node --test scripts/dah-hsian.test.mjs
+node scripts/dah-hsian-smoke.mjs
+npm test
+npm run check
+npm run build
+npm run smoke
+```
+
+地面高度／碰撞有實際行為測試；視覺還原仍需依多方向遊戲畫面與實景對照。不能以 Node 測試或單一截圖代替手機實機效能測量。
