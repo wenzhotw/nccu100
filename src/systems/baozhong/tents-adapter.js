@@ -7,9 +7,9 @@ import { heightAt } from '../../world/registry.js';
 import { buildTents } from './tents.js';
 
 /** 建 40 頂帳篷並加進校園場景；預設關閉（不顯示、沒有碰撞），由 index.js 依 bz26_active 開關。 */
-export function createTents(layout, content, booths) {
+export function createTents(layout, content, booths, options = {}) {
   const api = buildTents(layout, content.colleges, {
-    content, booths, colliders, heightAt: (x, z) => heightAt(x, z),
+    content, booths, colliders, openCanopyD26: options.openCanopyD26 === true, landmarkPreview: options.landmarkPreview === true, heightAt: (x, z) => heightAt(x, z),
     deps: { toon, OUT, canvasTex },
   });
   api.group.userData.noOcc = true;

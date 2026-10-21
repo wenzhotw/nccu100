@@ -25,6 +25,7 @@ import { OUT } from '../../render/kit.js';
 
 const CHUNK = 48;                // 區塊大小（公尺）：同一區塊的同款東西合成一批，鏡頭看不到的區塊整批不畫
 const batches = new Map();       // key → { geo, mat, cast, items: [{ m, fade, sway }] }
+const HIDDEN_MATRIX = new THREE.Matrix4().makeScale(0, 0, 0);
 const swayers = [];              // 會搖晃的樹冠：{ node, root, items: [{ batch, i, local }] }
 let flushed = false;
 
@@ -76,7 +77,11 @@ function record(mesh, fadeSet, swayNode, swayInv) {
  * 回傳 { setFade(a) } 給樹冠淡出用。
  */
 export function asPrefab(fn, opts = {}) {
-  if (flushed) { fn(); return { setFade() {} }; }   // 全部建好之後才呼叫的：照舊加進場景
+  if (flushed) {
+    const n = scene.children.length; fn(); const roots = scene.children.slice(n);
+    const visible = roots.map(r => r.visible); let shown = true;
+    return { setFade() {}, isVisible: () => shown, setVisible(on) { shown = !!on; roots.forEach((r, i) => { r.visible = shown ? visible[i] : false; }); } };
+  }   // 全部建好之後才呼叫的：照舊加進場景
   const n0 = scene.children.length;
   fn();
   const added = scene.children.splice(n0);
@@ -84,7 +89,8 @@ export function asPrefab(fn, opts = {}) {
   const fadeList = typeof opts.fade === 'function' ? opts.fade() : opts.fade;
   const swayNode = typeof opts.sway === 'function' ? opts.sway() : opts.sway;
   const fadeSet = fadeList ? new Set(fadeList) : null;
-  const fadeHandles = [];
+  const fadeHandles = [], visibilityHandles = [];
+  let visible = true;
   const sway = swayNode ? { node: swayNode, items: [] } : null;
   added.forEach(root => {
     root.updateMatrixWorld(true);
@@ -94,6 +100,7 @@ export function asPrefab(fn, opts = {}) {
       let under = false;
       if (sway) for (let p = o; p; p = p.parent) if (p === sway.node) { under = true; break; }
       const { handle, fades } = record(o, fadeSet, under ? sway.node : null, swayInv);
+      visibilityHandles.push(handle);
       if (fades) fadeHandles.push(handle);
       if (under) sway.items.push(handle);
     });
@@ -101,6 +108,14 @@ export function asPrefab(fn, opts = {}) {
   });
   if (sway) swayers.push(sway);
   return {
+    setVisible(on) {
+      visible = !!on;
+      visibilityHandles.forEach(h => {
+        h.item.hidden = !visible;
+        if (h.b.mesh) { h.b.mesh.setMatrixAt(h.item.idx, visible ? h.item.m : HIDDEN_MATRIX); h.b.mesh.instanceMatrix.needsUpdate = true; }
+      });
+    },
+    isVisible: () => visible,
     setFade(a) { fadeHandles.forEach(h => { h.item.fade = a; if (h.b.fadeAttr) { h.b.fadeAttr.array[h.item.idx] = a; h.b.fadeAttr.needsUpdate = true; } }); },
   };
 }
@@ -123,7 +138,7 @@ export function flushPrefabs() {
     b.items.forEach(it => { maxScale = Math.max(maxScale, it.m.getMaxScaleOnAxis()); });
     g.boundingSphere = new THREE.Sphere(sphere.center.clone(), sphere.radius + r0 * maxScale + 0.5);
     const mesh = new THREE.InstancedMesh(g, b.mat, b.items.length);
-    b.items.forEach((it, i) => { mesh.setMatrixAt(i, it.m); it.idx = i; });
+    b.items.forEach((it, i) => { mesh.setMatrixAt(i, it.hidden ? HIDDEN_MATRIX : it.m); it.idx = i; });
     mesh.castShadow = b.cast; mesh.receiveShadow = b.recv;
     mesh.userData.noOcc = true; mesh.userData.prefab = true;
     if (b.fades) {
@@ -146,7 +161,7 @@ export function updatePrefabs() {
     s.root.updateMatrixWorld(true);
     for (const h of s.items) {
       tmp.multiplyMatrices(s.node.matrixWorld, h.local);
-      h.b.mesh.setMatrixAt(h.item.idx, tmp);
+      h.b.mesh.setMatrixAt(h.item.idx, h.item.hidden ? HIDDEN_MATRIX : tmp);
       dirty.add(h.b.mesh);
     }
   }

@@ -1,0 +1,52 @@
+{
+  "id": "D26",
+  "title": "日本語文學系：四年怎麼學？",
+  "intro": [
+    "日文系不只學單字，也練聽、說、讀、寫、譯，探索語言、文學與歷史文化。",
+    "大一、大二上日語會話演習，打好聽說基礎；大三讀日本名著，大四做日本專題研究。這是113學年度起適用課程地圖的規劃。",
+    "系上和日本山梨縣的都留文科大學有交換合作，可依公告申請。",
+    "校友傅天余是編劇、導演與作家；臺灣文學館資料明載她畢業於政大日文系。",
+    "系上列出的未來方向包括翻譯編輯、觀光導遊、日語教學與繼續升學。這些是探索方向，不是職涯保證。"
+  ],
+  "pairs": [
+    {
+      "id": "conversation",
+      "left": "大一、大二",
+      "right": "日語會話演習，打聽說基礎",
+      "source": "course-map-113"
+    },
+    {
+      "id": "literature",
+      "left": "大三",
+      "right": "讀日本名著",
+      "source": "course-map-113"
+    },
+    {
+      "id": "research",
+      "left": "大四",
+      "right": "日本專題研究",
+      "source": "course-map-113"
+    }
+  ],
+  "author": "Grok，GPT僅轉成配對介面資料",
+  "sourceCell": "Grok工作區!D69",
+  "reviewStatus": "GPT已獨立讀取官方系網、113課程地圖與國立臺灣文學館資料；預覽內容，非部署驗收",
+  "sources": [
+    {
+      "id": "department-introduction",
+      "url": "https://japanese.nccu.edu.tw/PageDoc/Detail?fid=371&id=308"
+    },
+    {
+      "id": "course-map-113",
+      "url": "https://japanese.nccu.edu.tw/upload/6/doc/27608/113日本語文學課程地圖(學碩).pdf"
+    },
+    {
+      "id": "exchange",
+      "url": "https://japanese.nccu.edu.tw/PageDoc?fid=14487"
+    },
+    {
+      "id": "alumna-fu",
+      "url": "https://tln.nmtl.gov.tw/ch/m2/nmtl_w1_m2_c_2.aspx?person_number=L01001"
+    }
+  ]
+}
