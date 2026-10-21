@@ -6,3 +6,6 @@ test-results/
 .screenshots/
 .playwright-cli/
 .references/
+
+v2-landing-save-results.json
+tests/poster-sightline-results.json
