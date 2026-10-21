@@ -30,6 +30,7 @@ test('All 37 IDs have opt-in large physical objects and four-sided open canopy; 
 test('All 30 extracted primary objects preserve exact source fragments, safe bounds and unpolluted sign cache', () => {
   const signs = _caches.SIGN.size;
   for (const [id, spec] of Object.entries(SOURCE_LANDMARKS)) {
+    if (['D02', 'D03'].includes(id)) continue; // 新原創模型由 humanities-landmarks.test.mjs 覆蓋。
     const model = buildDepartmentLandmark(new THREE.Group(), id, deps), b = model.bounds;
     assert.equal(model.sourceCount, spec.count, id);
     assert.ok(b.min.y >= -1e-7 && b.max.y > 3.1 && b.max.y < 4.2, `${id}: ${b.max.y}`);

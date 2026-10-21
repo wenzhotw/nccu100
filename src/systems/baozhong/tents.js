@@ -100,7 +100,7 @@ export function buildTents(layout, colleges, opts = {}) {
     const ensureTex = () => { if (textured || !canvasTex) return; textured = true; lazy.forEach((f, k) => { const tex = f(); if (tex) { mats[k].map = tex; mats[k].needsUpdate = true; } }); };
     let landmark = null;
     if (landmarkPreview && t.id !== 'D26') {
-      landmark = buildDepartmentLandmark(g, t.id, { toon, OUT });
+      landmark = buildDepartmentLandmark(g, t.id, { toon, OUT, canvasTex });
       parts.landmark = landmark.parts;
       g.userData.bz26OpenCanopy = true;
       g.userData.bz26LandmarkBounds = landmark.bounds;

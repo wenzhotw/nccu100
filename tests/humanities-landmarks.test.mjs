@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as THREE from 'three';
+import { buildHumanitiesLandmark, HUMANITIES_IDS } from '../src/systems/baozhong/humanities-landmarks.js';
+import { departmentLandmarkColliders } from '../src/systems/baozhong/department-landmarks.js';
+import { colliderClearance, collidersOf } from '../src/systems/baozhong/tents-logic.js';
+const layout=JSON.parse(fs.readFileSync(new URL('../src/systems/baozhong/layout.json',import.meta.url)));
+const deps={toon:c=>new THREE.MeshToonMaterial({color:c}),OUT:new THREE.MeshBasicMaterial({side:THREE.BackSide})};
+const world=(t,x,z)=>({x:t.x+x*Math.cos(t.rotY)+z*Math.sin(t.rotY),z:t.z-x*Math.sin(t.rotY)+z*Math.cos(t.rotY)});
+const report=[];
+for(const id of HUMANITIES_IDS)test(`${id} official ctx, safe actual layout, shared geometry and measured budget`,()=>{
+ const t=layout.tents.find(t=>t.id===id),m=buildHumanitiesLandmark(new THREE.Group(),id,deps),b=m.bounds;
+ assert.ok(b.min.x>=-1.45&&b.max.x<=1.45&&b.min.z>1.5&&b.max.z<2.5,JSON.stringify(b));assert.ok(b.max.y<4.6);
+ const cs=departmentLandmarkColliders(t,m);const anchor={x:t.anchor[0],z:t.anchor[1]};assert.ok(cs.every(c=>colliderClearance(anchor,c)>=.4));
+ for(let v=0;v<3;v+=.04)for(const [x,z]of [[v,0],[-v,0],[0,-v],[0,1.71+v]])assert.ok(cs.every(c=>colliderClearance(world(t,x,z),c)>=.4-1e-6),`${x},${z}`);
+ for(const other of layout.tents.filter(n=>n.id!==id))for(const b of m.boxes)for(const x of[b.min.x,b.max.x])for(const z of[b.min.z,b.max.z])assert.ok(collidersOf(other).every(c=>colliderClearance(world(t,x,z),c)>.8));
+ let triangles=0,meshes=0;const geometries=new Set();m.root.traverse(p=>{if(!p.isMesh)return;meshes++;geometries.add(p.geometry);triangles+=(p.geometry.index?.count??p.geometry.attributes.position.count)/3;assert.ok(['MeshToonMaterial','MeshBasicMaterial'].includes(p.material.type));if(p.material===deps.OUT)return;const pb=p.geometry.boundingBox.clone().applyMatrix4(p.matrixWorld);assert.ok(pb.max.x<-.8||pb.min.x>.8||pb.min.y>2.4||pb.max.y<1.5,'sign clearance');});
+ assert.ok(triangles<5000,triangles);const again=buildHumanitiesLandmark(new THREE.Group(),id,deps);again.root.traverse(p=>{if(p.isMesh)assert.ok(geometries.has(p.geometry));});report.push({id,meshes,triangles,bounds:{min:b.min.toArray(),max:b.max.toArray()},solidBoxes:m.boxes.length,layout:t});
+});
+test.after(()=>fs.writeFileSync(new URL('../docs/baozhong/humanities-metrics.json',import.meta.url),JSON.stringify(report,null,2)));
