@@ -64,9 +64,9 @@ test('外部斜坡中段與全寬邊界顯示通路名稱', async () => {
   assert.equal(zoneName({ x: -11.8, z: -8.1 }), '外部斜坡');
   assert.equal(zoneName({ x: -4.9, z: 10.3 }), '自強宿舍區');
   const dx = -0.2, dz = -12.2, length = Math.hypot(dx, dz);
-  const p = { x: -11.9 - dz / length * 3.5, z: -14.2 + dx / length * 3.5 };
+  const p = { x: -11.9 + dz / length * 3, z: -14.2 - dx / length * 3 };
   assert.equal(zoneName(p), '外部斜坡');
-  assert.notEqual(zoneName({ x: p.x + 0.01, z: p.z }), '外部斜坡');
+  assert.notEqual(zoneName({ x: p.x - 0.01, z: p.z }), '外部斜坡');
 });
 
 test('階梯主線與東支線優先於附近建築和觀景步道', async () => {
@@ -86,4 +86,10 @@ test('山居學習中心以搬到山居南側的站牌為準，下車出生點�
   assert.equal(zoneName({ x: STOP.x + 7.9, z: STOP.z }), '山居學習中心');
   // 舊原點已不是站牌，回到建築或層別名稱。
   assert.notEqual(zoneName({ x: -4, z: -6 }), '山居學習中心');
+});
+
+test('九舍步行樓梯顯示自己的名稱，不算好漢坡', async () => {
+  const { zoneName } = await import('../zone-names.js');
+  // 樓梯中點 (-5.1,-18)，依 2026-10-20 照片 9034 由坡道東側通往九舍廣場。
+  assert.equal(zoneName({ x: -5.1, z: -18 }), '九舍樓梯');
 });

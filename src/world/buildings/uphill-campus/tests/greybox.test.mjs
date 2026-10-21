@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
 import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS } from '../layout.js';
-import { heightAt, platformLevel, wallSegments } from '../terrain.js';
+import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath } from '../terrain.js';
 
 function distance(p, c) {
   const dx = p.x - c.cx, dz = p.z - c.cz;
@@ -92,10 +92,11 @@ test('平台挖槽後，射線地表高度符合平台、階梯與坡道查詢',
     ray.set(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0));
     const hits = ray.intersectObjects(surfaces, false);
     assert(hits.length, `地表缺口：${x},${z}`);
-    const stair = STAIRS.some(s => project(x, z, s.path) <= s.width / 2);
+    // 地表以 0.25 公尺小格取中心高度，階梯邊緣的小格最多外凸半條對角線（約 0.18 公尺），落在側牆底下。
+    const stair = STAIRS.some(s => project(x, z, s.path) <= s.width / 2 + 0.25 * Math.SQRT1_2);
     const ramp = RAMPS.some(s => project(x, z, s.path) <= s.width / 2);
     const tolerance = stair ? 0.31 : ramp ? 0.06 : 0.01;
-    assert(Math.abs(hits[0].point.y - heightAt(x, z)) <= tolerance,
+    assert(Math.abs((hits[0].point.y - (hits[0].object.userData.surfaceOffset ?? 0)) - heightAt(x, z)) <= tolerance,
       `地表不合：${x},${z}，模型 ${hits[0].point.y}，高度 ${heightAt(x, z)}`);
     samples++;
   }
@@ -128,7 +129,7 @@ test('範圍內建築依輪廓最低層擠出，並提供至多四個碰撞盒',
     assert(boxes.length >= 1 && boxes.length <= 4);
     for (const c of boxes) assert(c.hx > 0 && c.hz > 0);
   }
-  assert.equal(colliders.filter(c => c.kind === 'wall').length, wallChains().filter(c => !c.ramp).length + 4);
+  assert.equal(colliders.filter(c => c.kind === 'wall').length, wallChains().filter(c => !c.ramp).length + 2);
   assert(model.getObjectByName('擋土牆'));
   assert(model.getObjectByName('建築描邊'));
 });
@@ -173,6 +174,12 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
     buildMap();
     const scene = globalThis.__uphillScene; scene.updateMatrixWorld(true);
     assert(scene.getObjectByName('山上校區灰盒'));
+    const { GRAD } = await import('../../../../render/kit.js');
+    for(const name of ['坡道斜面','東側人行道','東側草坡','不鏽鋼欄杆','九舍磚砌踏面']) {
+      const m=scene.getObjectByName(name); assert.ok(m.material.gradientMap===GRAD,name);
+    }
+    assert.ok(scene.getObjectByName('東側人行道').material.map);
+
     assert.equal(scene.getObjectByName('uphill-bus-sign').position.y, 14.2);
     assert(colliders.some(c => c.top === 14.5));
     // 站牌在 STOP，候車亭碰撞以 BUS_SHELTER 為中心（Task 7 移到山居南側）。
@@ -244,7 +251,7 @@ test('D4 連續牆串減半，每段中點仍被碰撞擋住', async () => {
   assert(chains.length < segments.length / 2);
   assert.equal(chains.reduce((n, c) => n + c.segments.length, 0), segments.length);
   const walls = greyboxColliders().filter(c => c.kind === 'wall');
-  assert.equal(walls.length, chains.filter(c => !c.ramp).length + 4);
+  assert.equal(walls.length, chains.filter(c => !c.ramp).length + 2);
   const model = createGreybox();
   assert.equal(model.getObjectByName('擋土牆').userData.chains, chains.length);
   assert.equal(model.getObjectByName('擋土牆描邊').userData.chains, chains.length);
@@ -390,5 +397,101 @@ test('7a 玩家沿坡道雙向通行，側牆兩側往返不穿牆或卡住', as
       assert((p.x-c.cx)*nx*side+(p.z-c.cz)*nz*side>0);
       assert(distance(p,c)>=0.4-1e-6);
     }
+  }
+});
+
+
+test('照片坡道以柏油材質接回道路', async () => {
+  const { createGreybox } = await import('../greybox.js');
+  const model = createGreybox();
+  assert.equal(model.getObjectByName('坡道斜面').material.color.getHexString(), model.getObjectByName('道路').material.color.getHexString());
+});
+
+
+test('東側步道欄杆有實體且保留九舍樓梯全程中線', async () => {
+  const { createGreybox, greyboxColliders } = await import('../greybox.js');
+  const model = createGreybox();
+  assert.ok(model.getObjectByName('東側人行道'));
+  assert.ok(model.getObjectByName('不鏽鋼欄杆'));
+  assert.ok(model.getObjectByName('東側草坡'));
+  const boxes=greyboxColliders();
+  assert.ok(boxes.some(c=>c.kind==='sidewalk-rail'));
+  const jiu=STAIRS.find(s=>s.id==='jiu-plaza');
+  const {visited}=path(jiu.path,boxes);
+  for(const p of visited.slice(1)) assert.ok(Math.hypot(p.x-p.intended.x,p.z-p.intended.z)<1e-6);
+});
+
+
+test('坡道西側護欄、樓梯磁磚矮牆花台及三角錐完整，碰撞逐個能繞也擋住', async () => {
+  const {createGreybox,greyboxColliders}=await import('../greybox.js');
+  const model=createGreybox();
+  for(const name of ['紐澤西護欄','九舍磁磚側牆','九舍入口花台','入口三角錐','東支線矮牆']) assert.ok(model.getObjectByName(name),name);
+  const boxes=greyboxColliders().filter(c=>['sidewalk-rail','jersey','stair-wall','planter','cone','east-stair-wall','slope-fence'].includes(c.kind));
+  assert.ok(boxes.some(c=>c.kind==='jersey'));
+  assert.ok(boxes.some(c=>c.kind==='slope-fence'));
+  assert.equal(boxes.filter(c=>c.kind==='planter').length,2);
+  assert.equal(boxes.filter(c=>c.kind==='cone').length,2);
+  for(const c of boxes) {
+    // 在中心橫穿應受阻，沿外側平行走過應暢通。已知 OBB 法線由旋轉定義取得。
+    const nx=c.sn,nz=c.cs,clear=c.hz+0.6;
+    const crossed=path([[c.cx+nx*2,c.cz+nz*2],[c.cx-nx*2,c.cz-nz*2]],[c]);
+    assert.ok((crossed.p.x-c.cx)*nx+(crossed.p.z-c.cz)*nz > c.hz);
+    const a=[c.cx-c.cs*(c.hx+0.6)+nx*clear,c.cz+c.sn*(c.hx+0.6)+nz*clear];
+    const b=[c.cx+c.cs*(c.hx+0.6)+nx*clear,c.cz-c.sn*(c.hx+0.6)+nz*clear];
+    const pass=path([a,b],[c]);
+    assert.ok(Math.hypot(pass.p.x-b[0],pass.p.z-b[1])<1e-6,c.kind);
+  }
+  const jiu=STAIRS.find(s=>s.id==='jiu-plaza');
+  const {visited}=path(jiu.path,greyboxColliders());
+  for(const p of visited.slice(1)) assert.ok(Math.hypot(p.x-p.intended.x,p.z-p.intended.z)<1e-6);
+});
+
+
+test('照片細節包含坡頂圍籬、紅色禁停線、排水溝及磚砌踏面',async()=>{
+  const {createGreybox}=await import('../greybox.js');const model=createGreybox();
+  for(const name of ['坡頂圍籬','紅色禁停線','西側排水溝','九舍磚砌踏面']) {
+    const item=model.getObjectByName(name);assert.ok(item,name);
+    assert.ok(item.geometry.attributes.position.count>0);
+  }
+});
+
+
+test('坡道禁停線與排水溝頂點連續貼坡面，不形成鋸齒浮線',async()=>{
+  const {createGreybox}=await import('../greybox.js');const model=createGreybox(),ramp=RAMPS[0];
+  for(const name of ['紅色禁停線','西側排水溝']) {
+    const p=model.getObjectByName(name).geometry.attributes.position;
+    for(let i=0;i<p.count;i++) {
+      const h=rampHeight(ramp,projectToPath(p.getX(i),p.getZ(i),ramp.path).s);
+      assert.ok(Math.abs(p.getY(i)-h-0.025)<0.003,name);
+    }
+  }
+});
+
+
+test('樓梯頂花台的底座向下接地，不懸浮在草坡上',async()=>{
+  const {createGreybox}=await import('../greybox.js');const {rampProps}=await import('../ramp-details.js');
+  const model=createGreybox();model.updateMatrixWorld(true);
+  const mesh=model.getObjectByName('坡道與樓梯設施');
+  for(const p of rampProps().filter(p=>p.kind==='planter')) {
+    const hit=new THREE.Raycaster(new THREE.Vector3(p.x,10,p.z),new THREE.Vector3(0,1,0)).intersectObject(mesh)[0];
+    assert.ok(hit && hit.point.y<=heightAt(p.x,p.z)+0.03,`花台懸空：${hit?.point.y}`);
+  }
+});
+
+
+test('西側護欄落在柏油路緣，不浮在低層平台上',async()=>{
+  const {rampProps}=await import('../ramp-details.js');
+  for(const p of rampProps().filter(p=>p.kind==='jersey')) assert.ok(Math.abs(p.base-heightAt(p.x,p.z))<0.15);
+});
+
+
+test('草坡與九舍樓梯旁不露出舊平台的內部直立側面',async()=>{
+  const {createGreybox}=await import('../greybox.js');const model=createGreybox();model.updateMatrixWorld(true);
+  const mesh=model.getObjectByName('平台側面'),jiu=STAIRS.find(s=>s.id==='jiu-plaza');
+  const [a,b]=jiu.path,dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);
+  for(const t of [0.25,0.5,0.75]) {
+    const x=a[0]+dx*t,z=a[1]+dz*t,h=heightAt(x,z);
+    const ray=new THREE.Raycaster(new THREE.Vector3(x,h+1,z),new THREE.Vector3(-dz/l,0,dx/l),0,4);
+    assert.equal(ray.intersectObject(mesh).length,0,'樓梯側露出高於矮牆的舊平台壁');
   }
 });

@@ -26,7 +26,12 @@ test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維�
   const checkSample = (x, z) => {
     const height = heightAt(x, z);
     assert.ok(Number.isFinite(height) && height >= 0 && height <= 15, `地面（${x}，${z}）`);
-    if (!inPassage(x, z)) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
+    const inLandscape = RAMPS.some(r=>r.path.slice(1).some((b,i)=>{
+      const a=r.path[i],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);
+      const along=((x-a[0])*dx+(z-a[1])*dz)/l,side=((x-a[0])*-dz+(z-a[1])*dx)/l;
+      return along>=0 && along<=l && side>=r.width/2 && side<=r.width/2+4.2;
+    }));
+    if (!inPassage(x, z) && !inLandscape) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
   };
   for (let x = R.x0; x <= R.x1; x += 2) {
     for (let z = R.z0; z <= R.z1; z += 2) {

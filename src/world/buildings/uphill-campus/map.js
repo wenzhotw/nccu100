@@ -9,7 +9,7 @@
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
-import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon } from '../../../render/kit.js';
+import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon, vText } from '../../../render/kit.js';
 import { boxC, obbC } from '../../../core/collision.js';
 import { BUS_SHELTER, R, SIZE, STOP } from './layout.js';
 import { heightAt } from './terrain.js';
@@ -93,7 +93,25 @@ function busStop() {
 
 /** 場景與碰撞的登記入口，純模型留在 greybox.js 供離線驗收。 */
 export function buildGreybox() {
-  scene.add(createGreybox());
+  const group = createGreybox();
+  // 純幾何模組不載入 WebGL 引擎，進場時接上工具箱共用的卡通光階與畫布磚紋。
+  const brick = canvasTex(256, 256, (g,w,h) => {
+    g.fillStyle='#fff4e5';g.fillRect(0,0,w,h);
+    g.strokeStyle='#b9a99b';g.lineWidth=3;
+    for(let row=0;row<4;row++) for(let col=-1;col<4;col++) g.strokeRect(col*128+(row%2)*64,row*64,128,64);
+  }, [1,1]);
+  group.traverse(o => {
+    if(o.isMesh && o.material.isMeshToonMaterial) o.material.gradientMap=GRAD;
+    if(['東側人行道','九舍磚砌踏面'].includes(o.name)) {
+      o.material.map=brick;
+      const p=o.geometry.attributes.position;
+      const uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
+      o.geometry.setAttribute('uv',uv);
+      for(let i=0;i<p.count;i++) uv.setXY(i,p.getX(i),p.getZ(i));
+      uv.needsUpdate=true;
+    }
+  });
+  scene.add(group);
   for (const c of greyboxColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
 }
 
@@ -104,10 +122,13 @@ export function buildLandmarks() {
   for (const sign of landmarkSigns()) {
     const board = group.getObjectByName(`指路牌：${sign.anchor}`);
     for (const { side, text } of sign.faces) {
-      const texture = canvasTex(512, 128, (g, w, h) => {
-        g.fillStyle = '#24563e'; g.fillRect(0, 0, w, h);
+      const texture = sign.anchor==='九舍樓梯下'
+        ? vText(text.replace(/[ ・]/g,''),'#fff8df','900 68px "Noto Sans TC",sans-serif',128,68)
+        : canvasTex(512, 128, (g, w, h) => {
+        g.fillStyle = sign.color; g.fillRect(0, 0, w, h);
         g.fillStyle = '#fff8df'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.font = '700 36px "Noto Sans TC",sans-serif'; g.fillText(text, w / 2, h / 2, w - 32);
+        g.font = '700 36px "Noto Sans TC",sans-serif';
+        g.fillText(text, w / 2, h / 2, w - 32);
       });
       const face = new THREE.Mesh(new THREE.PlaneGeometry(sign.width - 0.08, sign.height - 0.08), basic({ map: texture }));
       face.name = `指路文字：${sign.anchor}`;

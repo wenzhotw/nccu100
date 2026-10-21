@@ -2,7 +2,8 @@
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES } from './layout.js';
-import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight } from './terrain.js';
+import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampLandscape } from './terrain.js';
+import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -217,7 +218,7 @@ function addBuildingsAndWalls(group) {
 }
 
 /** 只在通路包圍框附近作精確投影，其餘直接取平台，避免整圖重算階梯。 */
-const passages = [...STAIRS.map(p => ({ ...p, kind: 'stairs' })),
+const passages = [...STAIRS.map(p => ({ ...p, kind: p.id === 'jiu-plaza' ? 'jiu-stairs' : 'stairs' })),
   ...RAMPS.map(p => ({ ...p, kind: 'ramp' }))].map(p => ({ ...p,
   x0: Math.min(...p.path.map(v => v[0])) - p.width / 2,
   x1: Math.max(...p.path.map(v => v[0])) + p.width / 2,
@@ -237,7 +238,7 @@ function surfaceAt(x, z) {
       }
     }
   }
-  return { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
+  return rampLandscape(x, z) ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
 }
 
 /** 等高網格先合併成水平長條，再合併上下相同長條，通路自動挖槽。 */
@@ -262,11 +263,11 @@ function surfaceRects() {
       const [bx, bz] = region.poly[(i + 1) % region.poly.length];
       if ((az > cz) !== (bz > cz)) cut(ax + (bx - ax) * (cz - az) / (bz - az));
     });
-    const nearby = passages.filter(p => cz >= p.z0 && cz <= p.z1);
-    nearby.forEach(p => { cut(p.x0); cut(p.x1); });
+    const nearby = passages.filter(p => cz >= p.z0 - 8 && cz <= p.z1 + 8);
+    nearby.forEach(p => { cut(p.x0 - 8); cut(p.x1 + 8); });
     const xs = [...cuts].sort((a, b) => a - b);
     for (let j = 1; j < xs.length; j++) {
-      const detailed = nearby.some(p => xs[j] > p.x0 && xs[j - 1] < p.x1);
+      const detailed = nearby.some(p => xs[j] > p.x0 - 8 && xs[j - 1] < p.x1 + 8);
       for (let x = xs[j - 1]; x < xs[j];) {
         const end = detailed ? Math.min(xs[j], x + CELL) : xs[j];
         const value = surfaceAt(x + CELL / 2, z + CELL / 2);
@@ -322,9 +323,10 @@ export function createGreybox() {
     geometry.computeVertexNormals();
     return geometry;
   });
-  addMerged(group, '坡道斜面', slopes, concrete).userData.surface = true;
+  addMerged(group, '坡道斜面', slopes, roadMaterial).userData.surface = true;
   addBuildingsAndWalls(group);
   addRoads(group);
+  addRampDetails(group, rects, { addMerged, TOP, BOX, grass, concrete, edgeMaterial });
   return group;
 }
 
@@ -347,7 +349,7 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...buildings().flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...buildings().flatMap(b => {
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
     return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),
