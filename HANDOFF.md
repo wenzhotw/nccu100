@@ -12,6 +12,8 @@
 - Impeccable documenter確認普通延伸保留DESIGN；既有缺design.json不擅補。detect僅一次，暖白世界招牌#eee9df單檔單值例外，舊例外不動。詳QA docs/reference/dah-hsian/interior-qa.md（含兩輪八項與九項理解檢查點、美術十項）。
 - .github/workflows/ci.yml在既有全場smoke後新增本館真瀏覽器鍵盤／手機往返，preview程序有trap收尾。全場smoke將由本分支CI與main CI執行，不把Node測試當全場瀏覽器通過。
 
+- 分支CI 39603305028全場smoke失敗於舊「所有房間離開皆null」假設；2F應回dah-hsian，本機完整流程已證實。現將smoke明確列2F返回dah-hsian，其餘仍null，保留逾時斷言並加安全診斷；重跑CI後才合併。
+
 ## 下一步
 
 本機完整鍵盤／手機流程已通過。[PR #64](https://github.com/wenzhotw/nccu100/pull/64) 已建立並附本聊天；發布結果在PR驗證欄追蹤。確認分支完整CI（含全場smoke與新2F步驟）成功，再依既有授權合併main、main重跑全測/check/build、push沿Pages原網址、驗收正式SHA/v1.54／真進出。若失敗修復，不帶失敗發布。發布結果以PR驗證欄追蹤，這裡保留提交前快照。
