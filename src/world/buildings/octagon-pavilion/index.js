@@ -1,42 +1,66 @@
 /**
- * 八角亭（田徑場西南角、沿溪道路旁）。
+ * 八角亭（田徑場西南角、沿溪道路旁，B、C 類停車場邊）。
  * 位置沿用原本的預定地 (44, -150)，亭子中心往西挪 2.5 公尺，避開田徑場的「運動場使用須知」看板。
- * 外觀參考 OpenNCCU 3D 模型：八角形石砌基座、八根紅褐色柱子、兩層綠色八角屋頂，頂上一根木色寶頂。
- * 基座可以走上去（一階 0.18、平台 0.36 公尺），中間一張石桌。
+ * 外觀依 photos/ 實景照片（名字叫八角亭，其實是方形的現代風涼亭）：
+ * - 白色方形平頂薄屋頂，屋頂底面從柱子往四邊斜上去，邊緣很薄
+ * - 四根白色圓柱
+ * - 抬高的深灰色地坪，前面兩階，三面是深色低矮牆可以坐
+ * - 四周一圈黃綠色矮樹籬，入口那側留開口，旁邊一根「B.C類停車場」牌子
+ * 入口朝 +z。地坪可以走上去（一階 0.2、地坪 0.4 公尺）。
  */
 import * as THREE from 'three';
-import { mk, toon } from '../../../render/kit.js';
-import { circC } from '../../../core/collision.js';
+import { basic, block, canvasTex, mk, plane, toon } from '../../../render/kit.js';
+import { boxC, circC } from '../../../core/collision.js';
 import { defineBuilding } from '../../registry.js';
 
 const X = 41.5, Z = -149.5;
-const R = 3.3, STEP = 0.18, BASE = 0.36, COL_R = 2.75, COL_H = 2.7;
-const C = { stone: '#c9c3b6', step: '#bdb6a8', col: '#b5624f', roof: '#6fa37a', roofTop: '#5e9469', eave: '#efe4cf', wood: '#a57a4f' };
-const oct = (rt, rb, h) => new THREE.CylinderGeometry(rt, rb, h, 8);
+const P = 3.0;                    // 地坪半寬（6 × 6）
+const STEP = 0.2, FLOOR = 0.4;    // 前階、地坪高度
+const COL = 1.9, COL_H = 2.9;     // 柱子離中心、柱高
+const ROOF = 3.9;                 // 屋頂半寬（7.8 × 7.8）
+const C = { white: '#f2f1ec', soffit: '#e6e4dc', floor: '#7a7f84', base: '#b9b6ae', wall: '#4f565c', hedge: '#8dbb4c', hedgeDark: '#7fb045' };
+const COLUMN = new THREE.CylinderGeometry(0.2, 0.2, COL_H + 0.2, 12);   // 多 0.2 伸進斜的屋頂底面
+// 屋頂底面：四角錐台，倒過來放（上寬下窄），轉 45 度讓四邊對齊 x、z 軸
+const SOFFIT = new THREE.CylinderGeometry(ROOF * Math.SQRT2, 1.2 * Math.SQRT2, 0.55, 4, 1);
 
 function build() {
-  const rot = m => { m.rotation.y = Math.PI / 8; return m; };   // 讓八角形的平邊對齊 x、z 軸
-  rot(mk(oct(R + 0.45, R + 0.45, STEP), toon(C.step), X, STEP / 2, Z, { out: 0.02 }));
-  rot(mk(oct(R, R, BASE), toon(C.stone), X, BASE / 2, Z, { out: 0.02 }));
-  /* 八根柱子與柱間上緣的橫樑 */
-  const COL = new THREE.CylinderGeometry(0.16, 0.18, COL_H, 8);
-  for (let i = 0; i < 8; i++) {
-    const a = i / 8 * Math.PI * 2, x = X + Math.cos(a) * COL_R, z = Z + Math.sin(a) * COL_R;
-    mk(COL, toon(C.col), x, BASE + COL_H / 2, z, { out: 0.02 });
-    circC(x, z, 0.22);
-  }
-  rot(mk(oct(COL_R + 0.25, COL_R + 0.25, 0.3), toon(C.col), X, BASE + COL_H - 0.1, Z, { out: 0.02 }));
-  /* 兩層八角屋頂：下層寬簷、上層小攢尖，屋簷下緣淺色 */
-  const y0 = BASE + COL_H + 0.05;
-  rot(mk(oct(R + 1.05, R + 1.05, 0.14), toon(C.eave), X, y0, Z, { out: 0.02 }));
-  rot(mk(oct(1.7, R + 1.0, 1.0), toon(C.roof), X, y0 + 0.57, Z, { out: 0.04 }));
-  rot(mk(oct(1.75, 1.75, 0.35), toon(C.eave), X, y0 + 1.25, Z, { out: 0.02 }));
-  rot(mk(new THREE.ConeGeometry(2.25, 1.3, 8), toon(C.roofTop), X, y0 + 2.07, Z, { out: 0.04 }));
-  mk(new THREE.CylinderGeometry(0.1, 0.14, 0.7, 8), toon(C.wood), X, y0 + 2.95, Z, { out: 0.015 });
-  /* 中間的石桌 */
-  mk(new THREE.CylinderGeometry(0.7, 0.7, 0.1, 12), toon('#d9d3c6'), X, BASE + 0.75, Z, { out: 0.015 });
-  mk(new THREE.CylinderGeometry(0.2, 0.28, 0.7, 10), toon(C.step), X, BASE + 0.35, Z, { out: 0.015 });
-  circC(X, Z, 0.75);
+  /* 基座、前階、深灰地坪 */
+  block(X, FLOOR / 2, Z, P * 2, FLOOR, P * 2, C.base, 0.02);
+  block(X, FLOOR + 0.01, Z, P * 2 - 0.3, 0.02, P * 2 - 0.3, C.floor, 0);
+  block(X, STEP / 2, Z + P + 0.35, 3.2, STEP, 0.7, C.base, 0.015);
+  /* 三面深色低矮牆（入口那面 +z 不擋） */
+  [[X, Z - P + 0.15, P * 2 - 0.4, 0.3], [X - P + 0.15, Z, 0.3, P * 2 - 0.4], [X + P - 0.15, Z, 0.3, P * 2 - 0.4]].forEach(([x, z, w, d]) => {
+    block(x, FLOOR + 0.25, z, w, 0.5, d, C.wall, 0.02);
+    boxC(x - w / 2, x + w / 2, z - d / 2, z + d / 2, FLOOR + 0.5);
+  });
+  // 入口兩側的短矮牆
+  [-1, 1].forEach(s => { block(X + s * 2.1, FLOOR + 0.25, Z + P - 0.15, 1.4, 0.5, 0.3, C.wall, 0.02); boxC(X + s * 2.1 - 0.7, X + s * 2.1 + 0.7, Z + P - 0.3, Z + P, FLOOR + 0.5); });
+  /* 四根白色圓柱 */
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+    mk(COLUMN, toon(C.white), X + sx * COL, FLOOR + (COL_H + 0.2) / 2, Z + sz * COL, { out: 0.02 });
+    circC(X + sx * COL, Z + sz * COL, 0.25);
+  });
+  /* 屋頂：倒角錐台的底面加上面一片薄平板 */
+  const top = FLOOR + COL_H;
+  const s = mk(SOFFIT, toon(C.soffit), X, top + 0.275, Z, { out: 0.03 }); s.rotation.y = Math.PI / 4;
+  block(X, top + 0.62, Z, ROOF * 2, 0.14, ROOF * 2, C.white, 0.04);
+  /* 四周矮樹籬（入口那側中間留開口） */
+  const H = 0.8, G = P + 1.0;
+  [[X, Z - G, G * 2 + 0.9, 0.9], [X - G, Z, 0.9, G * 2 + 0.9], [X + G, Z, 0.9, G * 2 + 0.9],
+   [X - (G + 2) / 2 - 0.2, Z + G, G - 1.6, 0.9], [X + (G + 2) / 2 + 0.2, Z + G, G - 1.6, 0.9]].forEach(([x, z, w, d], i) => {
+    block(x, H / 2, z, w, H, d, i % 2 ? C.hedge : C.hedgeDark, 0.04);
+    boxC(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
+  });
+  /* 入口旁的「B.C類停車場」牌子 */
+  const t = canvasTex(64, 192, (g, w, h) => {
+    g.fillStyle = '#f4f1ea'; g.fillRect(0, 0, w, h); g.strokeStyle = '#c0392b'; g.lineWidth = 4; g.strokeRect(3, 3, w - 6, h - 6);
+    g.fillStyle = '#c0392b'; g.textAlign = 'center'; g.font = '900 20px Arial,sans-serif'; g.fillText('B.C', w / 2, 30);
+    g.font = '900 26px "Noto Sans TC",sans-serif'; ['類', '停', '車', '場'].forEach((c, i) => g.fillText(c, w / 2, 64 + i * 32));
+  });
+  const sx = X - 2.4, sz = Z + G + 1.0;
+  block(sx, 0.9, sz, 0.08, 1.8, 0.08, '#7a5a43', 0.01);
+  plane(0.35, 1.05, basic({ map: t }), sx, 1.45, sz + 0.05);
+  circC(sx, sz, 0.1);
 }
 
 export default defineBuilding({
@@ -44,11 +68,11 @@ export default defineBuilding({
   name: '八角亭',
   build,
   heightAt(x, z) {
-    const d = Math.hypot(x - X, z - Z);
-    if (d < R) return BASE;
-    if (d < R + 0.45) return STEP;
+    const dx = Math.abs(x - X), dz = z - Z;
+    if (dx < P && Math.abs(dz) < P) return FLOOR;
+    if (dx < 1.6 && dz >= P && dz < P + 0.7) return STEP;
     return null;
   },
-  zones: [{ priority: 96, test: p => Math.hypot(p.x - X, p.z - Z) < R + 1.5 ? '八角亭' : null }],
-  map: [{ x: X, z: Z, w: 8, d: 8, color: '#6fa37a', label: '八角亭' }],
+  zones: [{ priority: 96, test: p => (Math.abs(p.x - X) < P + 1.5 && Math.abs(p.z - Z) < P + 1.5) ? '八角亭' : null }],
+  map: [{ x: X, z: Z, w: ROOF * 2, d: ROOF * 2, color: '#f2f1ec', label: '八角亭' }],
 });
