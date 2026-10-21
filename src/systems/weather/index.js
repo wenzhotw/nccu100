@@ -25,6 +25,10 @@ import { closeBattle, startBattle } from '../battle/index.js';
 import { hemi, sky, sun, clouds } from '../../world/environment/sky.js';
 import { copSVG } from './cop-svg.js';
 import W from '../../content/weather.json';
+import { createStoryClock, festivalStoriesPaused } from '../festival-story-pause.js';
+const storyClock = createStoryClock(state);
+// 會場同步移除原 NPC 前也不能讓追傘警察抵達並消耗 onCatch。
+if (cop) cop.pauseWhen = () => festivalStoriesPaused(state);
 
 const $el = (tag, css, parent = document.body) => { const e = document.createElement(tag); e.style.cssText = css; parent.appendChild(e); return e; };
 
@@ -76,7 +80,7 @@ function makeUmbrella(color = '#5b8ed6') {
 }
 const held = makeUmbrella(); held.position.set(0.31, 1.72, 0.03); held.rotation.z = 0.12; held.visible = false; rig.add(held);
 const ground = makeUmbrella(); ground.visible = false; scene.add(ground);
-const umbrellaSpot = { x: 0, z: 0, r: 2.2, label: W.umbrella.label, ok: () => ground.visible && !state.driving && !state.holdPang, fn: takeUmbrella };
+const umbrellaSpot = { x: 0, z: 0, r: 2.2, label: W.umbrella.label, ok: () => !festivalStoriesPaused(state) && ground.visible && !state.driving && !state.holdPang, fn: takeUmbrella };
 spots.push(umbrellaSpot);
 
 /* ---------- 下雨時路上的人都撐傘（騎馬的老校長和室內的人除外） ---------- */
@@ -99,12 +103,13 @@ function setHP(v) {
   hpFill.style.background = hp > 50 ? 'linear-gradient(#7fd17a,#3f9a4f)' : hp > 20 ? 'linear-gradient(#f6d465,#e0a92e)' : 'linear-gradient(#f28b7d,#d8433f)';
 }
 function startRain() {
+  if (festivalStoriesPaused(state)) return;
   raining = true; rainT = W.rain.seconds; setHP(100); hpBox.style.display = 'flex'; rain.visible = true;
   AU.sfx('thunder'); flash.style.transition = 'none'; flash.style.opacity = 0.85;
   requestAnimationFrame(() => { flash.style.transition = 'opacity .9s'; flash.style.opacity = 0; });
   toast(W.rain.start);
   // 眼前出現一把雨傘
-  setTimeout(() => {
+  storyClock.after(() => {
     if (!raining || holding) return;
     const a = state.yaw;
     const fx = -Math.sin(state.yaw), fz = -Math.cos(state.yaw);
@@ -116,16 +121,18 @@ function startRain() {
 function stopRain() {
   raining = false; hpBox.style.display = 'none'; ground.visible = false;
   if (holding) { holding = false; held.visible = false; toast(W.umbrella.returned); } else toast(W.rain.stop);
-  lionNext = performance.now() + W.lion.cooldownSeconds * 1000;
+  lionNext = storyClock.now() + W.lion.cooldownSeconds * 1000;
 }
 function gameOver(e) { if (over) return; over = true; closeBattle(); showEnding({ title: e.title, sub: e.sub, tone: 'dark' }); }
 
 /* ---------- 撿傘 → 警察 ---------- */
 function takeUmbrella() {
+  if (festivalStoriesPaused(state)) return;
   ground.visible = false; holding = true; held.visible = true; AU.sfx('grab'); toast(W.umbrella.taken);
-  setTimeout(sendCop, W.umbrella.copDelaySeconds * 1000);
+  storyClock.after(sendCop, W.umbrella.copDelaySeconds * 1000);
 }
 function sendCop() {
+  if (festivalStoriesPaused(state)) return;
   if (!holding || over || !cop) return;
   // 從主角背後不遠的地方衝過來
   const bx = Math.sin(state.yaw), bz = Math.cos(state.yaw);
@@ -136,6 +143,7 @@ function sendCop() {
 function copDone() { cop.state = 'return'; cop.onCatch = null; }
 function loseUmbrella(msg) { holding = false; held.visible = false; toast(msg); }
 function copTalk() {
+  if (festivalStoriesPaused(state)) return;
   openDialog(W.cop.title, W.cop.lines, () => openChoice(W.cop.choices, async i => {
     if (i === 0) { AU.sfx('over'); gameOver(W.cop.arrested); return; }
     const result = await startBattle({ ...W.battle, enemySVG: copSVG, enemyAI: copAI });
@@ -164,6 +172,7 @@ const eyes = lions.map(l => {
 lions.forEach(l => { l.userData.home = { p: l.position.clone(), r: l.rotation.y }; });
 
 function wakeLion() {
+  if (festivalStoriesPaused(state)) return;
   lion = lions.reduce((a, b) => (a.position.distanceTo(pos) < b.position.distanceTo(pos) ? a : b));
   eyes[lions.indexOf(lion)].visible = true; state.busy = true;
   AU.sfx('encounter');
@@ -206,6 +215,7 @@ function updateLion(dt) {
 /* ---------- 四維道會噴水的磁磚 ---------- */
 const drops = [];
 function splash() {
+  if (festivalStoriesPaused(state)) return;
   AU.sfx('splash');
   for (let i = 0; i < 40; i++) {
     const m = mk(SPH, toon('#bfe3f5', { transparent: true, opacity: 0.85 }), pos.x, pos.y + 0.05, pos.z); m.scale.setScalar(0.05 + Math.random() * 0.05);
@@ -216,15 +226,19 @@ function splash() {
 }
 
 /* ---------- 每一幀 ---------- */
-let last = performance.now();
-function tick(now) {
+let last = performance.now(), storyLast = storyClock.now();
+function tick() {
   requestAnimationFrame(tick);
+  const now = performance.now(), storyNow = storyClock.now();
+  const storyDt = Math.min(0.1, (storyNow - storyLast) / 1000); storyLast = storyNow;
+  const paused = festivalStoriesPaused(state);
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   if (!state.started) return;
+  if (!paused) storyClock.flush();
   state.holdUmbrella = holding && held.visible && !indoor();
   if (!npcUmbrellas.length) giveNpcUmbrellas();
   const open = gloom > 0.35; npcUmbrellas.forEach(u => { u.visible = open; });
-  updateLion(dt);
+  if (!paused) updateLion(storyDt);
   // 雨滴噴濺
   for (let i = drops.length - 1; i >= 0; i--) { const d = drops[i]; d.v.y -= 18 * dt; d.m.position.addScaledVector(d.v, dt); if (d.m.position.y < 0) { scene.remove(d.m); drops.splice(i, 1); } }
   // 天色漸變
@@ -245,21 +259,21 @@ function tick(now) {
   }
   // 地上那把傘輕輕晃
   if (ground.visible) ground.position.y = groundH(ground.position.x, ground.position.z) + 0.35 + Math.sin(now / 300) * 0.05;
-  if (over) return;
+  if (over || paused) return;
 
   // 石獅子：走到圖書館前觸發
-  if (!raining && !lionMode && lions.length && now > lionNext && dlg.hidden && !state.busy && !state.driving && !indoor()) {
+  if (!raining && !lionMode && lions.length && storyNow > lionNext && dlg.hidden && !state.busy && !state.driving && !indoor()) {
     const T = W.lion.trigger;
     if (Math.hypot(pos.x - T.x, pos.z - T.z) < T.r) wakeLion();
   }
   if (!raining) return;
-  rainT -= dt; if (rainT <= 0) { stopRain(); return; }
-  rainTick -= dt; if (rainTick <= 0) { rainTick = 0.38; if (!indoor()) AU.sfx('rain'); }
+  rainT -= storyDt; if (rainT <= 0) { stopRain(); return; }
+  rainTick -= storyDt; if (rainTick <= 0) { rainTick = 0.38; if (!indoor()) AU.sfx('rain'); }
   const free = dlg.hidden && !state.busy && !state.driving;
   // 淋雨扣體力
-  if (free && !holding && !indoor()) { setHP(hp - W.rain.drainPerSecond * dt); if (hp <= 0) gameOver(W.rain.soaked); }
+  if (free && !holding && !indoor()) { setHP(hp - W.rain.drainPerSecond * storyDt); if (hp <= 0) gameOver(W.rain.soaked); }
   // 四維道踩到噴水磁磚
-  tileT -= dt;
+  tileT -= storyDt;
   if (free && tileT <= 0) {
     tileT = 1;
     if (Math.hypot(vel.x, vel.z) > 1 && zoneOf(pos) === '四維道' && Math.random() < W.tile.chancePerSecond) splash();

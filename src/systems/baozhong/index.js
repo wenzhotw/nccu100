@@ -15,6 +15,9 @@ import { mountActivityMap } from './activity-map.js';
 import { createActivitySign } from './activity-sign.js';
 import { createVenueFocus } from './venue-focus.js';
 import { SMALL_PROP_IDS } from './small-props.js';
+import { costumeLook } from './npc-costume-profiles.js';
+import { mountNpcCostume } from './npc-costumes.js';
+import { toon, OUT } from '../../render/kit.js';
 import { AU, NPCS, FOLIAGE, spots, addNPC, colliders, createTents, mountDecor, mountPassport, openChoice, openDialog, openQuiz, pos, groundH, player, shadowBlob, setFlag, showAchievement, state, toast, unmountAllDecor, updateDecor } from './deps.js';
 
 // Gemini 的 baozhong-booths.json 還沒交時 glob 是空的，帳篷照 tents-logic 的預設（英文名留空、海報摘自凍結內容）。
@@ -50,7 +53,8 @@ const tents = createTents(LAYOUT, CONTENT, BOOTHS, { restoreSmallProps: true });
 const byId = new Map(LAYOUT.tents.map(t => [t.id, t]));
 const venueNPCs = [];
 function venueNPC(o, fn) {
-  const n = addNPC({ ...o, dialog: [{ lines: ['……'] }] });
+  const n = addNPC({ ...o, look: costumeLook(o.id, o.look), dialog: [{ lines: ['……'] }] });
+  mountNpcCostume(n, { toon, OUT });
   const ok0 = n.spot.ok;
   n.spot.ok = () => venue.on && ok0();
   n.spot.fn = fn;
