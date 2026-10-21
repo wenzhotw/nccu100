@@ -1,0 +1,3180 @@
+{
+  "schemaVersion": "1.0",
+  "status": "research_in_progress",
+  "scope": "repo原37攤位；招生組別獨立對照，不假設一攤一招生碼",
+  "cautions": [
+    "一階篩選級分不是錄取分數，也不保證未來通過。",
+    "同級分超額篩選另有規則；表列通過倍率篩選最低級分不是全部條件。",
+    "學測檢定的數學A/B是否擇一，須以校系分則說明為準，不只讀摘要表。"
+  ],
+  "departments": [
+    {
+      "id": "D01",
+      "dept": "中國文學系",
+      "college": "C01",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006012",
+            "name": "中國文學系",
+            "quota": 35,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 8.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "英文11",
+              "國文14"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://chinese.nccu.edu.tw/PageDoc?fid=13021"
+      ],
+      "boothId": "D01"
+    },
+    {
+      "id": "D02",
+      "dept": "歷史學系",
+      "college": "C01",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006022",
+            "name": "歷史學系",
+            "quota": 19,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 6.0,
+              "自然": null,
+              "學測科目組合": 10.0
+            },
+            "screeningResultsInOrder": [
+              "國英社35",
+              "社會14",
+              "國文+英文26"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://history.nccu.edu.tw/PageDoc?fid=13788",
+        "https://history.nccu.edu.tw/PageDoc?fid=13783"
+      ],
+      "boothId": "D02"
+    },
+    {
+      "id": "D03",
+      "dept": "哲學系",
+      "college": "C01",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006032",
+            "name": "哲學系",
+            "quota": 23,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 5.0
+            },
+            "screeningResultsInOrder": [
+              "國英社37",
+              "國文13",
+              "英文12"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://thinker.nccu.edu.tw/PageDoc?fid=13601",
+        "https://thinker.nccu.edu.tw/PageDoc?fid=13794",
+        "https://thinker.nccu.edu.tw/PageDoc?fid=10435"
+      ],
+      "boothId": "D03"
+    },
+    {
+      "id": "D04",
+      "dept": "政治學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006052",
+            "name": "政治學系",
+            "quota": 18,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "均標",
+              "數學B": "均標",
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 8.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 3.0,
+              "自然": null,
+              "學測科目組合": 10.0
+            },
+            "screeningResultsInOrder": [
+              "英社25",
+              "英文13",
+              "社會15"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://politics.nccu.edu.tw/PageDoc?fid=5133",
+        "https://politics.nccu.edu.tw/PageDoc?fid=14766"
+      ],
+      "boothId": "D04"
+    },
+    {
+      "id": "D05",
+      "dept": "社會學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006062",
+            "name": "社會學系",
+            "quota": 21,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "均標",
+              "數學B": "均標",
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 6.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 3.0,
+              "自然": null,
+              "學測科目組合": 10.0
+            },
+            "screeningResultsInOrder": [
+              "英社25",
+              "英文13",
+              "社會14"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://sociology.nccu.edu.tw/PageDoc?fid=5768（系烤",
+        "https://sociology.nccu.edu.tw/PageDoc/Detail?fid=5768&id=40354",
+        "https://sociology.nccu.edu.tw/PageDoc?fid=5768"
+      ],
+      "boothId": "D05"
+    },
+    {
+      "id": "D06",
+      "dept": "財政學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006072",
+            "name": "財政學系",
+            "quota": 31,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 4.0,
+              "數學A": 3.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 6.0
+            },
+            "screeningResultsInOrder": [
+              "國英數A34",
+              "國文13",
+              "英文13",
+              "數學A10"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://pf.nccu.edu.tw/PageDoc?fid=14920",
+        "https://pf.nccu.edu.tw/PageDoc?fid=4753",
+        "https://pf.nccu.edu.tw/PageDoc?fid=4755"
+      ],
+      "boothId": "D06"
+    },
+    {
+      "id": "D07",
+      "dept": "公共行政學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006082",
+            "name": "公共行政學系",
+            "quota": 15,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "均標",
+              "數學B": "前標",
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 5.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會14",
+              "國文13",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://pa.nccu.edu.tw/PageDoc?fid=8728",
+        "https://pa.nccu.edu.tw/PageAlbum?fid=148",
+        "https://pa.nccu.edu.tw/PageDoc?fid=2234",
+        "https://pa.nccu.edu.tw/PageDoc/Detail?fid=159&id=283"
+      ],
+      "boothId": "D07"
+    },
+    {
+      "id": "D08",
+      "dept": "地政學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006092",
+            "name": "地政學系土地資源規劃組",
+            "quota": 20,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.5,
+              "數學A": 3.5,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "國文13",
+              "英文+數學A22",
+              "國英數A社49"
+            ],
+            "sameScoreAdditionalScreening": false,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006102",
+            "name": "地政學系土地管理組",
+            "quota": 20,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 4.0,
+              "數學A": 3.5,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "國文+英文25",
+              "數學A10",
+              "國英數A社49"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006112",
+            "name": "地政學系土地測量與資訊組",
+            "quota": 17,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": "前標",
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.5,
+              "數學A": 3.5,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "國文12",
+              "英文+數學A21",
+              "國英數A自46"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://landeconomics.nccu.edu.tw/PageDoc?fid=4476",
+        "https://landeconomics.nccu.edu.tw/PageDoc?fid=4473",
+        "https://landeconomics.nccu.edu.tw/PageDoc/Detail?fid=4474&id=1701"
+      ],
+      "boothId": "D08"
+    },
+    {
+      "id": "D09",
+      "dept": "經濟學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006122",
+            "name": "經濟學系",
+            "quota": 41,
+            "thresholds": {
+              "國文": null,
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 6.0
+            },
+            "screeningResultsInOrder": [
+              "數A社23",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://econo.nccu.edu.tw/PageDoc?fid=6293",
+        "https://econo.nccu.edu.tw/PageDoc?fid=13724",
+        "https://econo.nccu.edu.tw/PageDoc?fid=3111"
+      ],
+      "boothId": "D09"
+    },
+    {
+      "id": "D10",
+      "dept": "民族學系",
+      "college": "C02",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006132",
+            "name": "民族學系",
+            "quota": 17,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 6.0,
+              "英文": 6.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 3.0,
+              "自然": null,
+              "學測科目組合": 10.0
+            },
+            "screeningResultsInOrder": [
+              "國英數B社37",
+              "國文+英文24",
+              "社會13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://ethnos.nccu.edu.tw/PageDoc/Detail?fid=9235&id=42182",
+        "https://ethnos.nccu.edu.tw/PageDoc?fid=9252",
+        "https://ethnos.nccu.edu.tw/PageAlbum/Detail?fid=9885&id=1595",
+        "https://ethnos.nccu.edu.tw/PageDoc?fid=9683"
+      ],
+      "boothId": "D10"
+    },
+    {
+      "id": "D11",
+      "dept": "國際經營與貿易學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006152",
+            "name": "國際經營與貿易學系",
+            "quota": 30,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 4.0,
+              "數學A": 3.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 6.0
+            },
+            "screeningResultsInOrder": [
+              "國英數A社50",
+              "國文+英文27",
+              "數學A11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=300&Dept=301_1",
+        "https://ib.nccu.edu.tw/zh_tw/Programs/Bachelor_program/Global_Business/-%E5%85%A8%E7%90%83%E5%95%86%E6%83%85%E9%A0%90%E6%B8%AC%E8%88%87%E6%8A%95%E8%B3%87%E5%88%86%E6%9E%90%E5%B0%88%E9%95%B7%E5%AD%B8%E7%A8%8B-%E4%BF%AE%E7%BF%92%E7%A7%91%E7%9B%AE%E4%B8%80%E8%A6%BD%E8%A1%A8-62341925"
+      ],
+      "boothId": "D11"
+    },
+    {
+      "id": "D12",
+      "dept": "金融學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006162",
+            "name": "金融學系",
+            "quota": 26,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 3.0,
+              "數學A": 6.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "數學A11",
+              "英文14"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://banking.nccu.edu.tw/zh_tw/course1"
+      ],
+      "boothId": "D12"
+    },
+    {
+      "id": "D13",
+      "dept": "會計學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006172",
+            "name": "會計學系",
+            "quota": 33,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 5.0,
+              "數學A": 5.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "英文+數學A23",
+              "國英數A社51"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://acct.nccu.edu.tw/zh_tw/Programs/CIMA",
+        "https://acct.nccu.edu.tw/zh_tw/Programs/fast5"
+      ],
+      "boothId": "D13"
+    },
+    {
+      "id": "D14",
+      "dept": "統計學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006182",
+            "name": "統計學系甲組",
+            "quota": 13,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 5.0,
+              "數學A": 6.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.5
+            },
+            "screeningResultsInOrder": [
+              "數學A11",
+              "英文12",
+              "國英數A社50"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006192",
+            "name": "統計學系乙組",
+            "quota": 6,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 5.0,
+              "數學A": 6.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.5
+            },
+            "screeningResultsInOrder": [
+              "數學A12",
+              "英文12",
+              "國英數A自49"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://stat.nccu.edu.tw/zh_tw/intro/about2（特色段",
+        "https://stat.nccu.edu.tw/zh_tw/Program/BigData/programmethod2（主辦/協辦、特色、實施對象及申請程序"
+      ],
+      "boothId": "D14"
+    },
+    {
+      "id": "D15",
+      "dept": "企業管理學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "企管不是只學當老闆，而是練習替組織做決定：產品賣給誰、人怎麼招募、資金怎麼使用。課堂透過企業個案練習分析與團隊討論。",
+        "courses": [
+          "行銷管理",
+          "人力資源管理",
+          "財務管理"
+        ],
+        "sources": [
+          {
+            "url": "https://ba.nccu.edu.tw/zh_tw/old/highschool/courses",
+            "title": "企管系高中生專區：課程學程",
+            "supports": "列人力資源、財務管理與行銷管理學習領域。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可朝企業行銷、人力資源與營運管理等方向累積實務，或繼續攻讀管理研究所；管理職需要後續工作經驗。",
+        "sources": [
+          {
+            "url": "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=300&Dept=305_1",
+            "title": "企管系官方課程地圖",
+            "supports": "大學部培養實作與管理人才，強調個案分析與決策。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "司徒達賢",
+            "affiliation": "企管系，民國59年畢業",
+            "career": "管理學者；政大名譽教授及講座教授",
+            "sources": [
+              {
+                "url": "https://www.alumni.nccu.edu.tw/Distinguished_alumni",
+                "title": "政大傑出校友名單",
+                "supports": "企管系，民國59年畢業；管理學者；政大名譽教授及講座教授",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006202",
+            "name": "企業管理學系",
+            "quota": 35,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": "頂標",
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 4.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "國文+社會27",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://ba.nccu.edu.tw/zh_tw/introduction/feature（特色/工作重點",
+        "https://ba.nccu.edu.tw/zh_tw/Programs/Programs105（學程簡介及申請資格"
+      ],
+      "boothId": "D15"
+    },
+    {
+      "id": "D16",
+      "dept": "資訊管理學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "一邊寫程式，一邊理解企業問題。從資料庫、系統分析到連續三學期的資訊系統專案，把需求做成能使用的系統。",
+        "courses": [
+          "程式設計一／二",
+          "資料結構",
+          "資料庫管理",
+          "系統分析與設計",
+          "資訊系統專案設計"
+        ],
+        "sources": [
+          {
+            "url": "https://mis2.nccu.edu.tw/zh_tw/Announcement/學士班必修課選課須知-80247354",
+            "title": "資管系學士班必修課選課須知（113學年度）",
+            "supports": "列程式設計、系統分析、資料庫與三學期專案。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索資訊系統開發、系統分析與企業資訊管理等工作；也可深造資訊管理，研究科技如何改善組織。",
+        "sources": [
+          {
+            "url": "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=300&Dept=306_1",
+            "title": "資管系官方課程地圖",
+            "supports": "資訊技術與商學管理並重，培養專業及管理人才。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "邱銘乾",
+            "affiliation": "資訊管理學系博士班，2019年取得博士學位（不是學士班校友例子）",
+            "career": "家登精密創辦人；校方報導時任董事長",
+            "sources": [
+              {
+                "url": "https://mis2.nccu.edu.tw/zh_tw/Announcement/administration/畢業校友回饋政大資管系-74181599",
+                "title": "畢業校友回饋政大資管系",
+                "supports": "資訊管理學系博士班，2019年取得博士學位（不是學士班校友例子）；家登精密創辦人；校方報導時任董事長",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006212",
+            "name": "資訊管理學系",
+            "quota": 26,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 4.0,
+              "數學A": 3.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "國文13",
+              "英文13",
+              "數學A11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://mis2.nccu.edu.tw/zh_tw/Introduction/about1（一、資訊科技與經營管理之整合",
+        "https://mis2.nccu.edu.tw/zh_tw/Introduction/about4",
+        "https://mis2.nccu.edu.tw/zh_tw/Introduction/about4/lab10",
+        "https://mis2.nccu.edu.tw/zh_tw/Introduction/about4/lab1"
+      ],
+      "boothId": "D16"
+    },
+    {
+      "id": "D17",
+      "dept": "財務管理學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006222",
+            "name": "財務管理學系",
+            "quota": 22,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": 4.0,
+              "數學A": 4.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 6.0
+            },
+            "screeningResultsInOrder": [
+              "國英數A38",
+              "英文+數學A26",
+              "國文14"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://finance.nccu.edu.tw/zh_tw/Curriculum/admission_06"
+      ],
+      "boothId": "D17"
+    },
+    {
+      "id": "D18",
+      "dept": "風險管理與保險學系",
+      "college": "C03",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006232",
+            "name": "風險管理與保險學系",
+            "quota": 15,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": 3.0,
+              "數學A": 3.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 4.0
+            },
+            "screeningResultsInOrder": [
+              "國英數A社51",
+              "國文+英文+數學A38"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://rmi.nccu.edu.tw/zh_tw/SHSS/hg102"
+      ],
+      "boothId": "D18"
+    },
+    {
+      "id": "D19",
+      "dept": "新聞學系",
+      "college": "C04",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "把好奇變成可查證的報導：練習採訪、寫作、編輯，並用影音與數據說故事；《大學報》讓學生實際做新聞。",
+        "courses": [
+          "英文採訪寫作",
+          "新聞媒體實驗",
+          "校外業務實習"
+        ],
+        "sources": [
+          {
+            "url": "https://jschool.nccu.edu.tw/PageDoc/Detail?fid=11314&id=18237",
+            "title": "新聞系：新聞與資訊",
+            "supports": "列採訪、寫作、編輯、影音及實習，說明大學報媒體實驗。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索採訪編輯、數位內容與新聞相關工作；也能往公共溝通方向發展，是否適合要看作品、實習與個人專長。",
+        "sources": [
+          {
+            "url": "https://jschool.nccu.edu.tw/PageDoc/Detail?fid=11314&id=18237",
+            "title": "新聞系：新聞與資訊",
+            "supports": "列採訪、寫作、編輯、影音及實習，說明大學報媒體實驗。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "孔誠志",
+            "affiliation": "新聞系，民國65年畢業",
+            "career": "精英公關集團創辦人暨董事長（2024傑出校友資料）",
+            "sources": [
+              {
+                "url": "https://www.alumni.nccu.edu.tw/Distinguished_alumni",
+                "title": "政大2024傑出校友名單",
+                "supports": "新聞系，民國65年畢業；精英公關集團創辦人暨董事長（2024傑出校友資料）",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "no_independent_application_code",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115官方全校申請入學表沒有新聞／廣告／廣電獨立招生碼；應查看傳播學院大一大二不分系社會組與自然組，勿把分發入學資料冒充申請門檻。",
+        "relatedBooth": "D22",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://jschool.nccu.edu.tw/PageDoc?fid=11796",
+        "https://jschool.nccu.edu.tw/PageDoc?fid=11314"
+      ],
+      "boothId": "D19"
+    },
+    {
+      "id": "D20",
+      "dept": "廣告學系",
+      "college": "C04",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "no_independent_application_code",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115官方全校申請入學表沒有新聞／廣告／廣電獨立招生碼；應查看傳播學院大一大二不分系社會組與自然組，勿把分發入學資料冒充申請門檻。",
+        "relatedBooth": "D22",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://ad.nccu.edu.tw/PageDoc?fid=6381",
+        "https://ad.nccu.edu.tw/PageDoc?fid=6373",
+        "https://ad.nccu.edu.tw/PageDoc?fid=6374",
+        "https://ad.nccu.edu.tw/PageDoc?fid=11940"
+      ],
+      "boothId": "D20"
+    },
+    {
+      "id": "D21",
+      "dept": "廣播電視學系",
+      "college": "C04",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "no_independent_application_code",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115官方全校申請入學表沒有新聞／廣告／廣電獨立招生碼；應查看傳播學院大一大二不分系社會組與自然組，勿把分發入學資料冒充申請門檻。",
+        "relatedBooth": "D22",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://rtv.nccu.edu.tw/PageDoc?fid=1220",
+        "https://vnccu.nccu.edu.tw/",
+        "https://rtv.nccu.edu.tw/PageDoc?fid=4126",
+        "https://rtv.nccu.edu.tw/PageDoc/Detail?fid=4126&id=41710"
+      ],
+      "boothId": "D21"
+    },
+    {
+      "id": "D22",
+      "dept": "傳播學院大一大二不分系",
+      "college": "C04",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006242",
+            "name": "傳播學院大一大二不分系社會組",
+            "quota": 59,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 4.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "國文+英文25",
+              "國英數B社49"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006252",
+            "name": "傳播學院大一大二不分系自然組",
+            "quota": 11,
+            "thresholds": {
+              "國文": null,
+              "英文": "前標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 4.0,
+              "數學A": 4.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 3.5
+            },
+            "screeningResultsInOrder": [
+              "英文+數學A24",
+              "國英數A自47"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://umicc.nccu.edu.tw/PageDoc?fid=11063",
+        "https://umicc.nccu.edu.tw/PageDoc?fid=11053"
+      ],
+      "boothId": "D22"
+    },
+    {
+      "id": "D23",
+      "dept": "英國語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006262",
+            "name": "英國語文學系",
+            "quota": 23,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "頂標",
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": "A級"
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 8.0
+            },
+            "screeningResultsInOrder": [
+              "國英數B社45",
+              "英文15"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://english.video.nccu.edu.tw/media/166",
+        "https://english.nccu.edu.tw/PageDoc?fid=1699",
+        "https://english.nccu.edu.tw/PageDoc?fid=10369"
+      ],
+      "boothId": "D23"
+    },
+    {
+      "id": "D24",
+      "dept": "阿拉伯語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006272",
+            "name": "阿拉伯語文學系",
+            "quota": 17,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "頂標",
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 5.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會9",
+              "國文12",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://arabic.nccu.edu.tw/PageDoc?fid=7565",
+        "https://arabic.nccu.edu.tw/PageDoc?fid=6928"
+      ],
+      "boothId": "D24"
+    },
+    {
+      "id": "D25",
+      "dept": "斯拉夫語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006282",
+            "name": "斯拉夫語文學系",
+            "quota": 20,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 4.0,
+              "英文": 3.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 5.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "國文12",
+              "英文12"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://slavic.nccu.edu.tw/eng/PageDoc?fid=8345",
+        "https://slavic.nccu.edu.tw/eng/PageDoc?fid=8349"
+      ],
+      "boothId": "D25"
+    },
+    {
+      "id": "D26",
+      "dept": "日本語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "從日語會話、讀寫開始，再用日本文學、歷史與社會課理解語言背後的文化；也可把日文用在新聞、商務與翻譯。",
+        "courses": [
+          "初級日語",
+          "日語會話演習",
+          "日文習作",
+          "日本文學史",
+          "日譯中理論與實務",
+          "商務日語"
+        ],
+        "sources": [
+          {
+            "url": "https://japanese.nccu.edu.tw/upload/6/doc/35033/課程地圖.pdf",
+            "title": "日文系課程地圖（111學年度起）",
+            "supports": "列有基礎日語、認識日本、實務選修及就業與升學方向。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索翻譯編輯、日語教學、觀光、跨國企業或公務工作，也可深造日本語學、文學與文化研究。",
+        "sources": [
+          {
+            "url": "https://japanese.nccu.edu.tw/upload/6/doc/35033/課程地圖.pdf",
+            "title": "日文系課程地圖（111學年度起）",
+            "supports": "列有基礎日語、認識日本、實務選修及就業與升學方向。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006292",
+            "name": "日本語文學系",
+            "quota": 12,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 4.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 5.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "國文+社會26",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://japanese.nccu.edu.tw/upload/6/doc/27608/113日本語文學課程地圖(學碩).pdf",
+        "https://japanese.nccu.edu.tw/PageDoc?fid=14487"
+      ],
+      "boothId": "D26"
+    },
+    {
+      "id": "D27",
+      "dept": "韓國語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006302",
+            "name": "韓國語文學系",
+            "quota": 11,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 5.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "英文+社會26",
+              "國文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://korean.nccu.edu.tw/PageDoc?fid=5182",
+        "https://korean.nccu.edu.tw/PageDoc?fid=14882"
+      ],
+      "boothId": "D27"
+    },
+    {
+      "id": "D28",
+      "dept": "土耳其語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006312",
+            "name": "土耳其語文學系",
+            "quota": 11,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 3.5,
+              "數學A": null,
+              "數學B": null,
+              "社會": 6.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會10",
+              "國文12",
+              "英文11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://turkish.nccu.edu.tw/PageDoc/Detail?fid=265&id=280",
+        "https://turkish.nccu.edu.tw/PageDoc?fid=6441"
+      ],
+      "boothId": "D28"
+    },
+    {
+      "id": "D29",
+      "dept": "歐洲語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006322",
+            "name": "歐洲語文學系法文組",
+            "quota": 8,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 7.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 9.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會13",
+              "國文13",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006332",
+            "name": "歐洲語文學系德文組",
+            "quota": 8,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 7.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 9.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "國文12",
+              "英文11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006342",
+            "name": "歐洲語文學系西班牙文組",
+            "quota": 8,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 7.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 9.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "國文12",
+              "英文13"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://european.nccu.edu.tw/PageDoc?fid=3740",
+        "https://european.nccu.edu.tw/PageDoc?fid=6553"
+      ],
+      "boothId": "D29"
+    },
+    {
+      "id": "D30",
+      "dept": "東南亞語文學系",
+      "college": "C05",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006352",
+            "name": "東南亞語文學系越文組",
+            "quota": 6,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 10.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "國文+英文25"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006362",
+            "name": "東南亞語文學系泰文組",
+            "quota": 6,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 10.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會12",
+              "國文+英文25"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006372",
+            "name": "東南亞語文學系印尼文組",
+            "quota": 6,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 5.0,
+              "數學A": null,
+              "數學B": null,
+              "社會": 10.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "社會10",
+              "國文+英文24"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://sealc.nccu.edu.tw/PageDoc?fid=10088",
+        "https://aca.nccu.edu.tw/download/minor/115/115-510.pdf",
+        "https://sealc.nccu.edu.tw/PageDoc?fid=13071"
+      ],
+      "boothId": "D30"
+    },
+    {
+      "id": "D31",
+      "dept": "法律學系",
+      "college": "C06",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "法律不只背法條，而是學會分析權利、責任與爭議。先打好民法、刑法和行政法基礎，再往有興趣的法律領域深化。",
+        "courses": [
+          "民法總則",
+          "民法債編總論",
+          "刑法",
+          "行政法"
+        ],
+        "sources": [
+          {
+            "url": "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=600&Dept=601_1",
+            "title": "法律系官方課程地圖",
+            "supports": "列基礎科目與擋修課名；培育司法、公務、企業及非營利法律人才。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索法律實務、公務、企業法務、非營利組織或學術研究；律師等專業須另符合考試與資格要求。",
+        "sources": [
+          {
+            "url": "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=600&Dept=601_1",
+            "title": "法律系官方課程地圖",
+            "supports": "列基礎科目與擋修課名；培育司法、公務、企業及非營利法律人才。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "劉秋德",
+            "affiliation": "法律系，民國56年畢業",
+            "career": "怡泰創投公司董事長（官方名單所載經歷）",
+            "sources": [
+              {
+                "url": "https://www.alumni.nccu.edu.tw/Distinguished_alumni",
+                "title": "政大傑出校友名單",
+                "supports": "法律系，民國56年畢業；怡泰創投公司董事長（官方名單所載經歷）",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006382",
+            "name": "法律學系",
+            "quota": 63,
+            "thresholds": {
+              "國文": "均標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": "均標",
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 5.0,
+              "英文": 3.5,
+              "數學A": null,
+              "數學B": null,
+              "社會": 3.5,
+              "自然": null,
+              "學測科目組合": 3.0
+            },
+            "screeningResultsInOrder": [
+              "國文13",
+              "英文+社會28",
+              "國英數B社53"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://www.law.nccu.edu.tw/zh_tw/departments/department_law/department_profile",
+        "https://www.law.nccu.edu.tw/zh_tw/school_life/service/service2",
+        "https://www.law.nccu.edu.tw/zh_tw/school_life/service/Answer"
+      ],
+      "boothId": "D31"
+    },
+    {
+      "id": "D32",
+      "dept": "應用數學系",
+      "college": "C07",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006392",
+            "name": "應用數學系",
+            "quota": 15,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": "均標",
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": 3.0,
+              "數學A": 8.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "數學A10",
+              "英文11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://ms.nccu.edu.tw/upload/25/doc/33348/精算基礎微學程.pdf",
+        "https://ms.nccu.edu.tw/PageDoc?fid=7824"
+      ],
+      "boothId": "D32"
+    },
+    {
+      "id": "D33",
+      "dept": "心理學系",
+      "college": "C07",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "用研究方法理解人的行為，而不是猜心。除了心理學理論，也學統計、實驗與測量，探討認知、發展、人格和社會互動。",
+        "courses": [
+          "普通心理學",
+          "心理及教育統計學",
+          "心理實驗法",
+          "心理測驗",
+          "發展心理學",
+          "社會心理學"
+        ],
+        "sources": [
+          {
+            "url": "https://psy.nccu.edu.tw/upload/5/download_file/1540/105學年度課程手冊.pdf",
+            "title": "心理系105學年度課程手冊",
+            "supports": "列基礎必修及工商、組織、諮商與臨床選修方向。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名取自105官方課程手冊作學科例子，尚待以115課表更新，不宣稱115必修安排。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索研究、工商與組織心理相關領域；若想成為心理師，需再完成相應研究所、實習及專業資格，學士畢業不等於取得心理師資格。",
+        "sources": [
+          {
+            "url": "https://psy.nccu.edu.tw/upload/5/download_file/1540/105學年度課程手冊.pdf",
+            "title": "心理系105學年度課程手冊",
+            "supports": "列基礎必修及工商、組織、諮商與臨床選修方向。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "周守倉",
+            "affiliation": "心理系校友；校友誌記錄其後完成研究所並考取諮商心理師",
+            "career": "曾在學校輔導身心障礙學生，亦為角公園咖啡創辦人",
+            "sources": [
+              {
+                "url": "https://nccualumni.nccu.edu.tw/index.php?did=90&id=2&inter=interview",
+                "title": "打造放鬆「心」空間",
+                "supports": "心理系校友；校友誌記錄其後完成研究所並考取諮商心理師；曾在學校輔導身心障礙學生，亦為角公園咖啡創辦人",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006402",
+            "name": "心理學系",
+            "quota": 13,
+            "thresholds": {
+              "國文": "均標",
+              "英文": "均標",
+              "數學A": "均標",
+              "數學B": null,
+              "社會": null,
+              "自然": "均標",
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 6.0,
+              "英文": 5.0,
+              "數學A": 3.5,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "國文14",
+              "英文13",
+              "數學A11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://psy.nccu.edu.tw/PageDoc?fid=2877",
+        "https://psy.nccu.edu.tw/PageDoc?fid=2889",
+        "https://tmbic.nccu.edu.tw/zh_tw/Instrument_related/intro14"
+      ],
+      "boothId": "D33"
+    },
+    {
+      "id": "D34",
+      "dept": "外交學系",
+      "college": "C08",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "理解國家為何合作或衝突，也練習談判。從國際關係、國際法到區域研究，把世界新聞放進更完整的脈絡。",
+        "courses": [
+          "國際關係",
+          "國際公法",
+          "國際安全",
+          "國際組織",
+          "國際談判",
+          "國際政治經濟學"
+        ],
+        "sources": [
+          {
+            "url": "https://diplomacy.nccu.edu.tw/upload/28/doc/2047/113學士班課程地圖2.pdf",
+            "title": "外交系113學士班課程地圖",
+            "supports": "列國際關係、國際公法、安全、談判、政治經濟等必修。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "課名為官方課程規劃中的例子；實際開課與畢業規定以入學年度公告為準。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可朝國際事務、外交實務或公共行政發展，也可結合語言與專題能力探索其他工作；外交官仍須通過相應甄選與訓練。",
+        "sources": [
+          {
+            "url": "https://cis.nccu.edu.tw/coursemap/students/ProCourseMap.aspx?College=800&Dept=203_1",
+            "title": "外交系官方課程地圖",
+            "supports": "宗旨為國際事務、外交實務與公共行政人才培育。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "李蔚華",
+            "affiliation": "外交系，民國58年畢業",
+            "career": "美南新聞集團創辦人（2024傑出校友資料）",
+            "sources": [
+              {
+                "url": "https://www.alumni.nccu.edu.tw/Distinguished_alumni",
+                "title": "政大2024傑出校友名單",
+                "supports": "外交系，民國58年畢業；美南新聞集團創辦人（2024傑出校友資料）",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006142",
+            "name": "外交學系",
+            "quota": 21,
+            "thresholds": {
+              "國文": "前標",
+              "英文": "前標",
+              "數學A": "後標",
+              "數學B": "均標",
+              "社會": "前標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": 3.0,
+              "英文": null,
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "國文15"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://diplomacy.nccu.edu.tw/PageDoc?fid=4922",
+        "https://diplomacy.nccu.edu.tw/PageDoc/Detail?fid=4392&id=42436"
+      ],
+      "boothId": "D34"
+    },
+    {
+      "id": "D35",
+      "dept": "教育學系",
+      "college": "C09",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "verified",
+        "text": "研究人怎麼學、教學怎麼設計，也走進教學現場練習。教育系不只有站上講台，還關心學習、教育制度與實務。",
+        "courses": [
+          "教育心理學"
+        ],
+        "sources": [
+          {
+            "url": "https://newdoc.nccu.edu.tw/teaschm/1091/schmPrv.jsp-yy%3D109%26smt%3D1%26num%3D102013%26gop%3D00%26s%3D1.html",
+            "title": "教育系教育心理學教學大綱（109-1）",
+            "supports": "102開頭之教育系課程，說明教育心理學基礎。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "目前課名先採已核官方歷史教學大綱，115課表下載內容待讀，不宣稱完整最新課表。"
+      },
+      "careers": {
+        "status": "verified_or_curriculum_based",
+        "text": "可探索教學、教育研究及教育相關產業；若想成為教師，仍須完成適用的師資培育與資格程序。",
+        "sources": [
+          {
+            "url": "https://edu.nccu.edu.tw/PageDoc/Detail?fid=9779&id=13637",
+            "title": "教育系招生簡介",
+            "supports": "說明實務實習、附中實小合作及教師、學者、出版等系友職涯。",
+            "checkedAt": "2026-10-21",
+            "publisher": "國立政治大學"
+          }
+        ],
+        "note": "是可探索的職涯方向，不表示畢業即取得職位或證照。"
+      },
+      "alumni": {
+        "status": "verified",
+        "items": [
+          {
+            "name": "王榮文",
+            "affiliation": "教育系，民國60年畢業；另有企家班經歷",
+            "career": "遠流出版事業公司董事長（2024傑出校友資料）",
+            "sources": [
+              {
+                "url": "https://www.alumni.nccu.edu.tw/Distinguished_alumni",
+                "title": "政大2024傑出校友名單",
+                "supports": "教育系，民國60年畢業；另有企家班經歷；遠流出版事業公司董事長（2024傑出校友資料）",
+                "checkedAt": "2026-10-21",
+                "publisher": "國立政治大學"
+              }
+            ],
+            "note": "職業按官方報導記錄，非宣稱目前仍在任。"
+          }
+        ],
+        "note": "明列學位層級；個別校友職涯不是全系就業保證。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006042",
+            "name": "教育學系",
+            "quota": 23,
+            "thresholds": {
+              "國文": "均標",
+              "英文": "前標",
+              "數學A": null,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": null,
+              "數學B": null,
+              "社會": 3.0,
+              "自然": null,
+              "學測科目組合": 4.0
+            },
+            "screeningResultsInOrder": [
+              "國英數B27",
+              "社會12"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://edu.nccu.edu.tw/PageDoc/Detail?fid=9779&id=13637",
+        "https://edu.nccu.edu.tw/PageDoc/Detail?fid=10212&id=14440"
+      ],
+      "boothId": "D35"
+    },
+    {
+      "id": "D36",
+      "dept": "創新國際學院學士班",
+      "college": "C10",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006452",
+            "name": "創新國際學院學士班",
+            "quota": 12,
+            "thresholds": {
+              "國文": "均標",
+              "英文": "頂標",
+              "數學A": null,
+              "數學B": "均標",
+              "社會": "前標",
+              "自然": null,
+              "英聽": "A級"
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": null,
+              "數學B": 4.0,
+              "社會": 4.0,
+              "自然": null,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "數學B+社會24"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://ici.nccu.edu.tw/PageDoc/Detail?fid=14343&id=37642",
+        "https://ici.nccu.edu.tw/PageDoc?fid=14353"
+      ],
+      "boothId": "D36"
+    },
+    {
+      "id": "D37",
+      "dept": "資訊科學系",
+      "college": "C11",
+      "checkedAt": "2026-10-21",
+      "learning": {
+        "status": "pending",
+        "text": "",
+        "courses": [],
+        "sources": []
+      },
+      "careers": {
+        "status": "pending",
+        "text": "",
+        "sources": []
+      },
+      "alumni": {
+        "status": "not_yet_verified",
+        "items": [],
+        "note": "尚未完成具名系友與職業的官方交叉查核，不以其他系或研究所校友代替。"
+      },
+      "admissions": {
+        "status": "official_summary_verified",
+        "year": 115,
+        "route": "大學申請入學",
+        "groups": [
+          {
+            "code": "006412",
+            "name": "資訊科學系",
+            "quota": 9,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": "均標",
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": 10.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 5.5
+            },
+            "screeningResultsInOrder": [
+              "數學A10",
+              "國英數A自50"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006422",
+            "name": "資訊科學系跨領域組",
+            "quota": 2,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": "均標",
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": 10.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 7.5
+            },
+            "screeningResultsInOrder": [
+              "數學A12",
+              "國英數A社47"
+            ],
+            "sameScoreAdditionalScreening": false,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006442",
+            "name": "資訊科學系資安組",
+            "quota": 4,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": 10.0,
+              "數學B": null,
+              "社會": null,
+              "自然": null,
+              "學測科目組合": 12.0
+            },
+            "screeningResultsInOrder": [
+              "國英數A自48",
+              "數學A11"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null
+          },
+          {
+            "code": "006432",
+            "name": "資訊科學系APCS組",
+            "quota": 3,
+            "thresholds": {
+              "國文": null,
+              "英文": "均標",
+              "數學A": "前標",
+              "數學B": null,
+              "社會": null,
+              "自然": "均標",
+              "英聽": null
+            },
+            "ratios": {
+              "國文": null,
+              "英文": null,
+              "數學A": 10.0,
+              "數學B": null,
+              "社會": null,
+              "自然": 10.0,
+              "學測科目組合": null
+            },
+            "screeningResultsInOrder": [
+              "數學A+自然23",
+              "APCS實作3"
+            ],
+            "sameScoreAdditionalScreening": true,
+            "sameScoreThreshold": null,
+            "APCS": {
+              "thresholds": {
+                "識讀": 4,
+                "實作": 3
+              },
+              "ratios": {
+                "識讀": null,
+                "實作": 5
+              }
+            }
+          }
+        ],
+        "sources": [
+          "https://www.cac.edu.tw/CacLink/apply115/115Apply_sievE_Result_querY_615JG8Wgh9d/html_sieve_result_115_Zx57f1dW/Standard/report/006.htm"
+        ],
+        "note": "115學年度官方一階篩選表轉錄。檢定與倍率分欄；數A/數B擇一規則、組合細項與同級分超額規則仍應查該年校系分則。這是已發生的一階結果，不是保證錄取分數。",
+        "latestRulesFoundYear": 115,
+        "latestResultsFoundYear": 115,
+        "nextYearStatus": "截至2026-10-21尚未查得116本國大學申請入學正式校系分則，勿與外國學生招生混用。"
+      },
+      "legacySourceCandidates": [
+        "https://www.cs.nccu.edu.tw/uploads/regulation/tw/undergrad_project_classSOP.pdf",
+        "https://www.cs.nccu.edu.tw/uploads/file/tw/115Preparation%20GuidelinesR.pdf"
+      ],
+      "boothId": "D37"
+    }
+  ]
+}

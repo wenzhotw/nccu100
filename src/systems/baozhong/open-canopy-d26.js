@@ -35,7 +35,7 @@ export function buildOpenCanopyTorii(group, { mesh, toon, outline }) {
 }
 
 /** 真實柱子與桌子才有碰撞，沒有側牆、後牆或封住鳥居通道的整片碰撞。 */
-export function openCanopyColliders(t, ground = 0) {
+export function openCanopyColliders(t, ground = 0, includeTorii = true) {
   const cs = Math.cos(t.rotY), sn = Math.sin(t.rotY), result = [];
   const box = (x, z, hx, hz, top) => result.push({ obb: true,
     cx: t.x + x * cs + z * sn, cz: t.z - x * sn + z * cs,
@@ -43,7 +43,7 @@ export function openCanopyColliders(t, ground = 0) {
   for (const x of [-TENT.pole, TENT.pole]) for (const z of [-TENT.pole, TENT.pole]) {
     box(x, z, TENT.poleR, TENT.poleR, 2.2);
   }
-  for (const x of [-G.postX, G.postX]) box(x, G.z, G.postWidth / 2, G.postWidth / 2, G.postHeight);
+  if (includeTorii) for (const x of [-G.postX, G.postX]) box(x, G.z, G.postWidth / 2, G.postWidth / 2, G.postHeight);
   const T = TENT.table;
   box((T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2, (T.x1 - T.x0) / 2, (T.z1 - T.z0) / 2, T.h);
   return result;

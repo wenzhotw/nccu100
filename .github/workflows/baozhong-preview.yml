@@ -17,7 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - name: 新切片邏輯與生命週期
-        run: node --test tests/open-canopy-d26.test.mjs tests/baozhong-activity-map*.test.mjs src/systems/baozhong/matching.test.js
+        run: node --test tests/open-canopy-d26.test.mjs tests/department-landmarks.test.mjs tests/venue-focus.test.mjs tests/prefab-venue-visibility.test.mjs tests/baozhong-sign-map.test.mjs tests/baozhong-department-intro.test.mjs tests/baozhong-activity-map*.test.mjs src/systems/baozhong/matching.test.js
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: 真實預覽截圖，不部署

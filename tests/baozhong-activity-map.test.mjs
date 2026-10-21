@@ -22,12 +22,12 @@ test('玩家在範圍外仍可繪製，室內不混入座標',()=>{
 });
 test('噴水池西側看板不碰池緣、大道或現存碰撞，無空位拒絕建立',()=>{
   const fountain={c:true,x:0,z:-32,r:5.8};const p=signPlacement(-32,[fountain]);assert.equal(p.z,-35.7);assert.ok(p.box.x1 < -6.3);assert.ok(p.box.z1 < -34.2);
-  const obstacle={x0:-7.5,x1:-7,z0:-36,z1:-35.5};assert.ok(signPlacement(-32,[fountain,obstacle]).x < -10.2);
+  const obstacle={x0:-7.5,x1:-7,z0:-36,z1:-35.5};assert.ok(signPlacement(-32,[fountain,obstacle]).x < -9.6);
   assert.throws(()=>signPlacement(-32,[{x0:-20,x1:-6,z0:-40,z1:-20}]));
 });
 
 test('看板避開所有實際配置帳篷與近旁樹幹，保留橫向步道',()=>{
   const futureTents=layout.tents.map(t=>({x0:t.box[0],x1:t.box[1],z0:t.box[2],z1:t.box[3]}));
   const fixed=[{c:true,x:0,z:-32,r:5.8},{c:true,x:-10.5,z:-39.5,r:.48},{c:true,x:-17.5,z:-36.5,r:.4}];
-  const p=signPlacement(-32,[...futureTents,...fixed]);assert.equal(p.x,-10.2);assert.equal(p.z,-35.7);assert.ok(p.box.z1 < -34.2);
+  const p=signPlacement(-32,[...futureTents,...fixed]);assert.equal(p.x,-9.6);assert.equal(p.z,-35.7);assert.ok(p.box.z1 < -34.2);
 });

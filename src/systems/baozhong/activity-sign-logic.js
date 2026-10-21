@@ -8,13 +8,18 @@ export function signPlacement(fountainZ, colliders) {
     }
     return b.x0 < c.x1+.45 && b.x1 > c.x0-.45 && b.z0 < c.z1+.45 && b.z1 > c.z0-.45;
   };
-  for (const x of [-10.2,-11.2,-12.2]) {
+  const rejected = [];
+  for (const x of [-9.6,-9.2,-10.2,-11.2,-12.2]) {
     // ground.js 的橫向步道寬 4.4 公尺，讓看板離北緣再退 1.5 公尺。
     const z = fountainZ - 2.2 - 1.5;
-    const box = {x0:x-2.8,x1:x+2.8,z0:z-.3,z1:z+.3,top:3.5};
+    const box = {x0:x-2.8,x1:x+2.8,z0:z-.3,z1:z+.3,top:4.7};
     // 同時保留面向大道的互動站位，不讓玩家站進既有碰撞體。
     const approach = {x0:x-.6,x1:x+.6,z0:z+.4,z1:z+2};
-    if (!colliders.some(c => overlaps(box,c) || overlaps(approach,c))) return {x,z,box};
+    const blocking = colliders.filter(c => overlaps(box,c) || overlaps(approach,c));
+    if (!blocking.length) return {x,z,box,approach};
+    rejected.push({x,z,blocking});
   }
-  throw new Error('噴水池西側沒有已確認的看板空位');
+  const error = new Error('噴水池西側沒有已確認的看板空位');
+  error.placements = rejected;
+  throw error;
 }

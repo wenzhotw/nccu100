@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { scene } from '../core/engine.js';
 import { SPH, mk, toon } from '../render/kit.js';
-import { circC } from '../core/collision.js';
+import { circC, colliders } from '../core/collision.js';
 import { inLot } from './layout.js';
 import { asPrefab } from './prefabs/index.js';
 import { inPhotoDistrict } from './photo-district.js';
@@ -29,8 +29,8 @@ function tree(x,z,s){
       const m=mk(SPH,toon(greens[(i+Math.floor(Math.abs(x)))%3]),b[0]*s,b[1]*s,b[2]*s,{parent:g,out:0.1}); m.scale.setScalar(b[3]*s); parts.push(m);
     });
   },{fade:()=>parts});
-  FOLIAGE.push({x,z,r:2.3*s,y0:1.9*s,y1:5.8*s,parts,setFade:pf.setFade});
-  circC(x,z,0.4*s);
+  FOLIAGE.push({x,z,r:2.3*s,y0:1.9*s,y1:5.8*s,parts,setFade:pf.setFade,setVisible:pf.setVisible,isVisible:pf.isVisible});
+  circC(x,z,0.4*s); FOLIAGE[FOLIAGE.length - 1].collider = colliders[colliders.length - 1];
 }
 const FROND=new THREE.ConeGeometry(0.34,3.6,4);
 FROND.rotateX(Math.PI/2);
@@ -56,8 +56,8 @@ function palm(x,z,h,fan){
       if(fan) f.scale.set(2.6,0.2,0.5+Math.random()*0.15); else f.scale.set(1.7,0.22,1+Math.random()*0.25); }
   },{fade:()=>crown.children.map(p=>p.children[0]),sway:()=>crown});
   const top=crown.position.y;
-  FOLIAGE.push({x,z,r:fan?2.6:3.4,y0:top-(fan?1.6:2.2),y1:top+1.4,parts:crown.children.map(p=>p.children[0]),setFade:pf.setFade});
-  palms.push(crown); circC(x,z,0.4);
+  FOLIAGE.push({x,z,r:fan?2.6:3.4,y0:top-(fan?1.6:2.2),y1:top+1.4,parts:crown.children.map(p=>p.children[0]),setFade:pf.setFade,setVisible:pf.setVisible,isVisible:pf.isVisible});
+  palms.push(crown); circC(x,z,0.4); FOLIAGE[FOLIAGE.length - 1].collider = colliders[colliders.length - 1];
 }
 [[-14,-68],[14,-68],[-17,-60],[16,-58]].forEach(p=>palm(p[0],p[1],8.5+Math.random()));
 [-1,1].forEach(s=>{
@@ -82,8 +82,8 @@ function banyan(x,z,s){
   for(let i=0;i<14;i++){ const a=Math.random()*Math.PI*2, d=(1+Math.random()*3)*s, h=(1.6+Math.random()*2.2)*s;
     const r=mk(ROOT,toon('#8f8068'),Math.cos(a)*d,4.3*s-h/2,Math.sin(a)*d,{parent:g}); r.scale.y=h; }
   },{fade:()=>parts});
-  FOLIAGE.push({x,z,r:4.2*s,y0:3.6*s,y1:7.4*s,parts,setFade:pf.setFade});
-  circC(x,z,0.9*s);
+  FOLIAGE.push({x,z,r:4.2*s,y0:3.6*s,y1:7.4*s,parts,setFade:pf.setFade,setVisible:pf.setVisible,isVisible:pf.isVisible});
+  circC(x,z,0.9*s); FOLIAGE[FOLIAGE.length - 1].collider = colliders[colliders.length - 1];
 }
 
 export { FOLIAGE, banyan, palm, palms, tree };

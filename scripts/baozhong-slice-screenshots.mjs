@@ -138,6 +138,9 @@ try {
         window.__game.view(p.x + 5, p.y + 4.5, p.z + 11, p.x, p.y + 1.7, p.z);
         return { placement: s.placement, fountain: s.fountain, groupName: s.group.name };
       });
+      if (!sign) {
+        manifest.signFailure = await page.evaluate(() => ({ error: window.__bz26.activitySignError, colliders: window.__game.colliders, focus: window.__bz26.venueFocus?.counts() })); save();
+      }
       assert.ok(sign, '活動看板放置失敗或互動點未註冊');
       await capture('fountain-2026-sign', { sign });
       await page.waitForFunction(() => window.__game.state.near === window.__bz26.activitySign.spot);

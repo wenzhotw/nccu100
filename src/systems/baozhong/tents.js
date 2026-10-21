@@ -3,6 +3,7 @@
 // (c) 系上主招牌自動移位（在 decor-ctx.js）、(d) 桌板加學院色桌巾、正面 3 張手繪海報。座標沿用 A25（layout.json）。
 // 遊戲相依（toon、OUT、canvasTex、碰撞清單、地面高度）由 tents-adapter.js 注入，所以 node 也能建模測試。
 import * as THREE from 'three';
+import { LANDMARK_PREVIEW_IDS, buildDepartmentLandmark, departmentLandmarkColliders } from './department-landmarks.js';
 import { buildOpenCanopyTorii, openCanopyColliders } from './open-canopy-d26.js';
 import { TENT, boothInfo, clothColor, collidersOf, drawOfficialSign, drawPoster, faceColors, signVisibility, recoverTentOverlap } from './tents-logic.js';
 
@@ -30,6 +31,7 @@ const asList = (b) => Array.isArray(b) ? b : (b && Array.isArray(b.booths) ? b.b
 /**
  * buildTents(layout, colleges, opts) → { group, tents, setActive(on), update(playerPos), refreshSigns(id), isActive() }
  * layout：layout.json；colleges：baozhong.json 的 colleges（取學院色）；
+ * opts.landmarkPreview：六院大型代表物加 D26，預設關閉；呼叫端須略過 LANDMARK_PREVIEW_IDS 舊佈景。
  * opts.openCanopyD26：僅 D26 的開放帳篷原型，預設關閉；啟用時呼叫端須略過舊 D26 佈景。
  * opts：{ content（baozhong.json）, booths（baozhong-booths.json，可缺）, deps:{ toon, OUT, canvasTex }, colliders（遊戲碰撞清單）, heightAt(x,z) }
  */
@@ -51,7 +53,8 @@ export function buildTents(layout, colleges, opts = {}) {
   const mesh = (g, mat, x, y, z, parent) => { const m = new THREE.Mesh(g, mat); m.position.set(x, y, z); m.castShadow = false; m.receiveShadow = true; parent.add(m); return m; };
 
   layout.tents.forEach((t, i) => {
-    const openCanopy = opts.openCanopyD26 === true && t.id === 'D26';
+    const landmarkPreview = opts.landmarkPreview === true && LANDMARK_PREVIEW_IDS.includes(t.id);
+    const openCanopy = landmarkPreview || (opts.openCanopyD26 === true && t.id === 'D26');
     const dept = depts.get(t.id), info = boothInfo(t.id, booths.get(t.id), dept, fns.get(t.id));
     const collegeColor = dept ? colColor.get(dept.college) : null;
     const g = new THREE.Group(); g.name = `bz26-tent-${t.id}`;
@@ -95,12 +98,18 @@ export function buildTents(layout, colleges, opts = {}) {
     const mats = [...parts.signs.map(s => s.material)];
     let textured = false;
     const ensureTex = () => { if (textured || !canvasTex) return; textured = true; lazy.forEach((f, k) => { const tex = f(); if (tex) { mats[k].map = tex; mats[k].needsUpdate = true; } }); };
-    if (openCanopy) {
+    let landmark = null;
+    if (landmarkPreview && t.id !== 'D26') {
+      landmark = buildDepartmentLandmark(g, t.id, { toon, OUT });
+      parts.landmark = landmark.parts;
+      g.userData.bz26OpenCanopy = true;
+      g.userData.bz26LandmarkBounds = landmark.bounds;
+    } else if (openCanopy) {
       const torii = buildOpenCanopyTorii(g, { mesh, toon, outline });
       parts.landmark = torii.parts;
       g.userData.bz26OpenCanopy = true;
     }
-    if (colliders) mine.push(...(openCanopy ? openCanopyColliders : collidersOf)(t, g.position.y));
+    if (colliders) mine.push(...(landmark ? departmentLandmarkColliders(t, landmark, g.position.y) : (openCanopy ? openCanopyColliders : collidersOf)(t, g.position.y)));
     tents.set(t.id, { id: t.id, group: g, parts, info, collegeColor: collegeColor || clothColor(t.id, null), colors, ensureTex, layout: t });
   });
 
