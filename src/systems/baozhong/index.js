@@ -17,7 +17,8 @@ import { createVenueFocus } from './venue-focus.js';
 import { SMALL_PROP_IDS } from './small-props.js';
 import { costumeLook } from './npc-costume-profiles.js';
 import { mountNpcCostume } from './npc-costumes.js';
-import { toon, OUT } from '../../render/kit.js';
+import { departmentNpcHome } from './department-npc-placement.js';
+import { toon, OUT, canvasTex } from '../../render/kit.js';
 import { AU, NPCS, FOLIAGE, spots, addNPC, colliders, createTents, mountDecor, mountPassport, openChoice, openDialog, openQuiz, pos, groundH, player, shadowBlob, setFlag, showAchievement, state, toast, unmountAllDecor, updateDecor } from './deps.js';
 
 // Gemini 的 baozhong-booths.json 還沒交時 glob 是空的，帳篷照 tents-logic 的預設（英文名留空、海報摘自凍結內容）。
@@ -54,7 +55,7 @@ const byId = new Map(LAYOUT.tents.map(t => [t.id, t]));
 const venueNPCs = [];
 function venueNPC(o, fn) {
   const n = addNPC({ ...o, look: costumeLook(o.id, o.look), dialog: [{ lines: ['……'] }] });
-  mountNpcCostume(n, { toon, OUT });
+  mountNpcCostume(n, { toon, OUT, canvasTex, groundH });
   const ok0 = n.spot.ok;
   n.spot.ok = () => venue.on && ok0();
   n.spot.fn = fn;
@@ -64,7 +65,7 @@ function venueNPC(o, fn) {
 }
 for (const b of CONTENT.booths) {
   const t = byId.get(b.id); if (!t) continue;
-  venueNPC({ id: `bz26-${b.id}`, title: b.npc.title, tag: b.npc.tag, home: { x: t.anchor[0], z: t.anchor[1] }, face: t.rotY, look: b.npc.look, tagCol: '#90caf9' }, () => onBooth(b.id));
+  venueNPC({ id: `bz26-${b.id}`, title: b.npc.title, tag: b.npc.tag, home: departmentNpcHome(t), face: t.rotY, look: b.npc.look, tagCol: '#90caf9' }, () => onBooth(b.id));
 }
 { const t = byId.get('F01'); venueNPC({ id: 'bz26-F01', title: CONTENT.service.title, tag: '服務台', home: { x: t.anchor[0], z: t.anchor[1] }, face: t.rotY, look: CONTENT.service.look, tagCol: '#f5a623' }, onService); }
 for (const f of CONTENT.functions || []) {

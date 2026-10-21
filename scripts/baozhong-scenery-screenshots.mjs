@@ -189,16 +189,16 @@ try {
         .filter(n => n.g.userData.bz26Costume)
         .map(n => ({ id: n.id, costume: n.g.userData.bz26Costume }))
         .sort((a, b) => a.id.localeCompare(b.id)));
-      assert.equal(costumeInventory.length, 23, '正式活動必須掛載 23 位服裝 NPC');
-      assert.equal(new Set(costumeInventory.map(n => n.id)).size, 23, '服裝 NPC 不得重複');
+      assert.equal(costumeInventory.length, 39, '正式活動必須掛載37系與2關主共39位服裝NPC');
+      assert.equal(new Set(costumeInventory.map(n => n.id)).size, 39, '服裝 NPC 不得重複');
       for (const n of costumeInventory) assert.equal(n.id, `bz26-${n.costume.id}`);
       manifest.profiles.find(profile => profile.name === name).costumeNPCs = costumeInventory;
       const costumeIds = name === 'desktop'
-        ? ['D26', 'D27', 'D11', 'D31', 'D01', 'D19', 'D21', 'D37']
-        : ['D26', 'D27', 'D31', 'D37'];
+        ? ['D26', 'D27', 'D31', 'D01', 'D19', 'D21', 'D37', 'D02', 'D03', 'D04', 'D10', 'D20', 'D35', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18']
+        : ['D26', 'D27', 'D31', 'D37', 'D03', 'D04', 'D10', 'D35', 'D11', 'D13'];
       for (const id of costumeIds) await captureCostume(id, costumeInventory.length);
       if (name === 'desktop') {
-        for (const id of ['D26', 'D21']) await captureCostume(id, costumeInventory.length, 'back-three-quarter');
+        for (const id of ['D26', 'D21', 'D04']) await captureCostume(id, costumeInventory.length, 'back-three-quarter');
       }
       const sign=await page.evaluate(()=>{const s=window.__bz26.activitySign;if(!s||!s.group.parent||!s.group.visible||!window.__game.spots.includes(s.spot))return null;const p=s.group.position;window.__game.teleport(s.spot.x,s.spot.z+.6);window.__game.view(p.x+5,p.y+4.5,p.z+11,p.x,p.y+2,p.z);return {placement:s.placement,fountain:s.fountain};});
       if(!sign){manifest.signFailure=await page.evaluate(()=>({error:window.__bz26.activitySignError,colliders:window.__game.colliders}));save();}
