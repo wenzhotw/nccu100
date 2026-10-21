@@ -1,0 +1,882 @@
+{
+  "researchedOn": "2026-10-21",
+  "note": "Source panorama station views, not measured game matches. Four headings per station; dates from public StreetView metadata. No third-party image binaries published.",
+  "views": [
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWEtd0FF",
+      "position": {
+        "lat": 24.988396032397514,
+        "lng": 121.57888956454968
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 0.8715906,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJ3Y3c."
+        },
+        {
+          "description": "",
+          "heading": -90.8623,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": 113.90415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFRd2dF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-atrium-000.png",
+      "station": "atrium",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "c49d9110bc9052eeeeff7faafd7f96c3ca3709a358b4c788e37112b55331fa77",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWEtd0FF",
+      "position": {
+        "lat": 24.988396032397514,
+        "lng": 121.57888956454968
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 0.8715906,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJ3Y3c."
+        },
+        {
+          "description": "",
+          "heading": -90.8623,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": 113.90415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFRd2dF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-atrium-090.png",
+      "station": "atrium",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "39c9ea0be9008a5603c1147250da2894effce2805b0688fe6cf642ec19760a55",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWEtd0FF",
+      "position": {
+        "lat": 24.988396032397514,
+        "lng": 121.57888956454968
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 0.8715906,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJ3Y3c."
+        },
+        {
+          "description": "",
+          "heading": -90.8623,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": 113.90415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFRd2dF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-atrium-180.png",
+      "station": "atrium",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "61b78f64034f1bbbbc9d67980cb0f8a46d46abb61a36e9c16b1c4d84a5b4a8af",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWEtd0FF",
+      "position": {
+        "lat": 24.988396032397514,
+        "lng": 121.57888956454968
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 0.8715906,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJ3Y3c."
+        },
+        {
+          "description": "",
+          "heading": -90.8623,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": 113.90415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFRd2dF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-atrium-270.png",
+      "station": "atrium",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "cf75812f4a97323f7c49b7327a143d186bb6b56a56088ad4b1f4907aa77429d4",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E.",
+      "position": {
+        "lat": 24.98839301432259,
+        "lng": 121.5787906388405
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.0348818,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2JMRmc."
+        },
+        {
+          "description": "",
+          "heading": 85.112305,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": -98.15544,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-counter-000.png",
+      "station": "counter",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "61c2055f818d930bd1d191404ef6dd25b5c4f6219f354d3c0884c0a033abbc79",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E.",
+      "position": {
+        "lat": 24.98839301432259,
+        "lng": 121.5787906388405
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.0348818,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2JMRmc."
+        },
+        {
+          "description": "",
+          "heading": 85.112305,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": -98.15544,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-counter-090.png",
+      "station": "counter",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "adbfdb4c134acb8e598d9fa91298e449a0ccc1f0c8067d7a78438a5191ebd559",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E.",
+      "position": {
+        "lat": 24.98839301432259,
+        "lng": 121.5787906388405
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.0348818,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2JMRmc."
+        },
+        {
+          "description": "",
+          "heading": 85.112305,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": -98.15544,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-counter-180.png",
+      "station": "counter",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "af32268574b5bcf9a49a8f8f7796ba0c6ffdc625d9296e91c6d053ddfc5b0744",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E.",
+      "position": {
+        "lat": 24.98839301432259,
+        "lng": 121.5787906388405
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.0348818,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2JMRmc."
+        },
+        {
+          "description": "",
+          "heading": 85.112305,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFxLWdF"
+        },
+        {
+          "description": "",
+          "heading": -98.15544,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-counter-270.png",
+      "station": "counter",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "e31fbde74aa3ade8006dde5c7cebd5254ad5da0c6a25be9cabba07e77fb6df49",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF",
+      "position": {
+        "lat": 24.988381646280637,
+        "lng": 121.578703120866
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 81.84456,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E."
+        },
+        {
+          "description": "",
+          "heading": -95.23532,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-gates-000.png",
+      "station": "gates",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "04d71f986608017f905d4c38bebc6672c31bd838836856a087b37843d52da73f",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF",
+      "position": {
+        "lat": 24.988381646280637,
+        "lng": 121.578703120866
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 81.84456,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E."
+        },
+        {
+          "description": "",
+          "heading": -95.23532,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-gates-090.png",
+      "station": "gates",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "deaef6ed9424079b6632e46b870026d72a69027bbb0c3ea17b81c4673778f2cf",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF",
+      "position": {
+        "lat": 24.988381646280637,
+        "lng": 121.578703120866
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 81.84456,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E."
+        },
+        {
+          "description": "",
+          "heading": -95.23532,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-gates-180.png",
+      "station": "gates",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "6644d6a20d11f41a806d44df5d0a0b9f433e6448c7c877747d52da0102a2ddd7",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmJ6MGdF",
+      "position": {
+        "lat": 24.988381646280637,
+        "lng": 121.578703120866
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": 81.84456,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXpzR0E."
+        },
+        {
+          "description": "",
+          "heading": -95.23532,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-gates-270.png",
+      "station": "gates",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "c93f0dfe3507e1f1abfea182b9de0144755c384ebb14bf3d4b9f797d7ffa409c",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJlREE.",
+      "position": {
+        "lat": 24.988342211712286,
+        "lng": 121.57868396269345
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.7214415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        },
+        {
+          "description": "",
+          "heading": 179.64966,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-lobby-000.png",
+      "station": "lobby",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "cf10023c0d903dbc21d5204029569a40b791a5494229d91cd84c73264a6657e0",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJlREE.",
+      "position": {
+        "lat": 24.988342211712286,
+        "lng": 121.57868396269345
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.7214415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        },
+        {
+          "description": "",
+          "heading": 179.64966,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-lobby-090.png",
+      "station": "lobby",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "4e87982474d3b86287335edc452d7c7b4a6f6969c60c77d79f618c54b68dc8a7",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJlREE.",
+      "position": {
+        "lat": 24.988342211712286,
+        "lng": 121.57868396269345
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.7214415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        },
+        {
+          "description": "",
+          "heading": 179.64966,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-lobby-180.png",
+      "station": "lobby",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "0e9b5157d2046df86ca43f4a7227fc6a8215f5b6570c5fc222e9091412670cff",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJlREE.",
+      "position": {
+        "lat": 24.988342211712286,
+        "lng": 121.57868396269345
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -3.7214415,
+          "pano": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF"
+        },
+        {
+          "description": "",
+          "heading": 179.64966,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-lobby-270.png",
+      "station": "lobby",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "a10eec886df56a2fc944e06705343250eda72be0f563b61dc01e0ed15870d22d",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJoYlE.",
+      "position": {
+        "lat": 24.988490252493868,
+        "lng": 121.57900947702396
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -4.8865027,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZWFHVEE."
+        },
+        {
+          "description": "",
+          "heading": -88.91826,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXp3UUE."
+        },
+        {
+          "description": "",
+          "heading": 124.68982,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXl6SlE."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reading-000.png",
+      "station": "reading",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "13d07d5c63233ef82efa39a2bde457aa1c61e809cae2004f216d3d5064e12777",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJoYlE.",
+      "position": {
+        "lat": 24.988490252493868,
+        "lng": 121.57900947702396
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -4.8865027,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZWFHVEE."
+        },
+        {
+          "description": "",
+          "heading": -88.91826,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXp3UUE."
+        },
+        {
+          "description": "",
+          "heading": 124.68982,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXl6SlE."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reading-090.png",
+      "station": "reading",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "e2b5cac563ba41e58f0969a159d992c1e2da4c08cfe9cd8382a3846d3d6fe135",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJoYlE.",
+      "position": {
+        "lat": 24.988490252493868,
+        "lng": 121.57900947702396
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -4.8865027,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZWFHVEE."
+        },
+        {
+          "description": "",
+          "heading": -88.91826,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXp3UUE."
+        },
+        {
+          "description": "",
+          "heading": 124.68982,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXl6SlE."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reading-180.png",
+      "station": "reading",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "df3d8c49dbec749b294ed0d8a20e8a19c38d92d2c547bd7d9c436a42a1a9bf0d",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGJoYlE.",
+      "position": {
+        "lat": 24.988490252493868,
+        "lng": 121.57900947702396
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -4.8865027,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZWFHVEE."
+        },
+        {
+          "description": "",
+          "heading": -88.91826,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXp3UUE."
+        },
+        {
+          "description": "",
+          "heading": 124.68982,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXl6SlE."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reading-270.png",
+      "station": "reading",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "0d21b943ad4ec2a2b836243df32d52f0d1ac5a11ee5f58deff720cff6ee2a752",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGE4ZEE.",
+      "position": {
+        "lat": 24.988494446612993,
+        "lng": 121.57877400607639
+      },
+      "pov": {
+        "heading": 0,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -91.12378,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2ExRUE."
+        },
+        {
+          "description": "",
+          "heading": 97.758995,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJtQ3c."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reserve-000.png",
+      "station": "reserve",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "370c6d3dfd6d4aa21c0851cd3d082d3906a8b8dd84c244662b52c0eafa02e0db",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGE4ZEE.",
+      "position": {
+        "lat": 24.988494446612993,
+        "lng": 121.57877400607639
+      },
+      "pov": {
+        "heading": 90,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -91.12378,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2ExRUE."
+        },
+        {
+          "description": "",
+          "heading": 97.758995,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJtQ3c."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reserve-090.png",
+      "station": "reserve",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "c31fb2d6b6708307264f3321a3a9c98d61858b340b60516e5a8d6dc37af6c1ed",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGE4ZEE.",
+      "position": {
+        "lat": 24.988494446612993,
+        "lng": 121.57877400607639
+      },
+      "pov": {
+        "heading": 180,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -91.12378,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2ExRUE."
+        },
+        {
+          "description": "",
+          "heading": 97.758995,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJtQ3c."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reserve-180.png",
+      "station": "reserve",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "366f368ec4ac133c6e853f63470eec52cfec07263168540d2d0f70f8425eab8b",
+      "gamePoseMatched": false
+    },
+    {
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3ZGE4ZEE.",
+      "position": {
+        "lat": 24.988494446612993,
+        "lng": 121.57877400607639
+      },
+      "pov": {
+        "heading": 270,
+        "pitch": 0,
+        "zoom": 0.6
+      },
+      "links": [
+        {
+          "description": "",
+          "heading": -91.12378,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3Y2ExRUE."
+        },
+        {
+          "description": "",
+          "heading": 97.758995,
+          "pano": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJtQ3c."
+        }
+      ],
+      "status": "OK",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "attribution": "© Nina Ku",
+      "file": "vr-reserve-270.png",
+      "station": "reserve",
+      "inspected": true,
+      "imageDate": "2020-02",
+      "copyright": "© Nina Ku",
+      "sha256": "2b9f7ea1974436c536ca9adf9757ab910ba52ed7b3cca072f0736c57371bf4c0",
+      "gamePoseMatched": false
+    }
+  ]
+}

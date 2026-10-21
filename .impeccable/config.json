@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-10-21T07:37:44.881Z",
         "reason": "Agent: HTML 獨立掃描未載入 Vite JS 匯入的 styles.css；實際 Chromium computed style 為 rgb(255, 250, 239)，符合 .ico 的 paper #fffaef。此檔僅更新版本號。"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#eee9df",
+        "files": [
+          "src/world/buildings/dah-hsian/interior-map.js"
+        ],
+        "createdAt": "2026-10-21T12:39:53.170Z",
+        "reason": "館內深色實體標示用暖白字，沿docs/art-style.md第八節世界招牌與核可卡通館內方向；DESIGN.md是HUD主色非所有建築材料色，僅此檔此值例外"
       }
     ]
   }

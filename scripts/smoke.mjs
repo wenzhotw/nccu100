@@ -283,7 +283,14 @@ try {
     const indoorMini = await miniMapImage();
     if (indoorMini === outdoorMini) errors.push(id + ' 進入室內後小地圖未更新');
     await page.evaluate(() => window.__game.exitRoom());
-    await page.waitForFunction(() => window.__game.state.room === null && !window.__game.state.busy, null, { timeout: 60000 });
+    // 達賢2F回所屬戶外；其餘既有房間仍回原校園。明確驗證產品契約，不從實作讀預期值。
+    const returnRoom = id === 'dah-hsian-2f' ? 'dah-hsian' : null;
+    try {
+      await page.waitForFunction(room => window.__game.state.room === room && !window.__game.state.busy, returnRoom, { timeout: 60000 });
+    } catch (error) {
+      console.error('房間返回失敗：', { id, expected: returnRoom, actual: await page.evaluate(() => ({ room: window.__game.state.room, busy: window.__game.state.busy })) });
+      throw error;
+    }
     await waitGameTime();
     if (await miniMapImage() === indoorMini) errors.push(id + ' 離開室內後小地圖未恢復');
     console.log('房間：', id, inside.zone);
