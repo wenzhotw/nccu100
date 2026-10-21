@@ -24,6 +24,14 @@ export const SCALE = 0.6;
 export const LEVELS = { L1: 0, L2: 12, L3: 15 };
 export const FLOOR_H = 2.4;
 
+/** 依 2026-10-20 照片，中庭兩翼各四層，ABC 另含下層山居。 */
+export const BUILDING_FLOORS = { 510739853: 5, 510739854: 4, 510739855: 1 };
+export const LOBBY = { osm: 510739855, name: '自強九舍大廳', base: 15,
+  bounds:{x0:25.2,x1:37.1,z0:-35.6,z1:-23.7},
+  door: { x: 25.2, z: -27.8, face: 'west' }, parapet: 0.9,
+  doors: [{x:25.2,z:-27.8,width:3},{x:37.1,z:-27.8,width:3}], ceiling:5.5,
+  well:{cx:31.2,cz:-28.6,rx:3.2,rz:2.2}, stairTop:{x:34.6,z:-28.6} };
+
 /** 三層分區沿核可輪廓，範圍外的頂點夾回地圖邊界。 */
 export const REGIONS = [
   { level: 'L1', poly: [[-188,-23.4],[-142.6,-39.5],[-71.1,-49.2],[-41.9,-57.2],[3.6,-78.2],[23.1,-87.9],[36.1,-78.2],[10.1,-62.1],[-28.9,-45.9],[-41.9,-42.7],[-71.1,-33],[-84.1,-21.8],[-92.2,-10.5],[-116.6,-4],[-184.8,-4]] },
@@ -68,12 +76,6 @@ const landmarkLevels = {
   '遮雨棚西端': 'L3', '遮雨棚東端': 'L3',
 };
 
-// 前段佔總長六成，東支線接點恰為 13.8 公尺，對齊二十五個階高。
-const rampRun = Math.hypot(0.2, 12.2);
-const rampExtension = rampRun / 0.6 - rampRun;
-const rampEnd = [-12 + 11.4 / Math.hypot(11.4, 14.6) * rampExtension,
-  -20.3 - 14.6 / Math.hypot(11.4, 14.6) * rampExtension];
-
 export const ANCHORS = {
   ...Object.fromEntries(Object.entries(landmarkLevels).map(([name, level]) => {
     const [x, z] = LAYOUT.landmarks[name];
@@ -93,7 +95,9 @@ export const ANCHORS = {
   '好漢坡東支線上': { x: -12, z: -20.3, level: 'L3' },
   // 外部斜坡取核可起訖點，東支線上端接在斜坡轉角旁。
   '外部斜坡下': { x: -11.8, z: -8.1, level: 'L2' },
-  '外部斜坡上': { x: rampEnd[0], z: rampEnd[1], level: 'L3' },
+  '外部斜坡上': { x: -0.6, z: -34.9, level: 'L3' },
+  // 依 2026-10-20 照片，步行樓梯由坡道東側接往九舍廣場。
+  '九舍樓梯下': { x: -7.6, z: -14, level: 'L2' },
   // 觀景步道取 viewpoint_road 中間的既有折點。
   '觀景步道': { x: -73.7, z: -1.3, level: 'L2' },
 };
@@ -115,12 +119,15 @@ export const STAIRS = [
     path: [[-43.1,-43.1],[-38.2,-43.4],[-40.3,-39.3],[-46.5,-32.1],[-46.6,-28.4],[-56.5,-19.5],[-60.5,-8.1]] },
   { id: 'haohanpo-east', width: 2.4, joinStair: 'haohanpo', joinRamp: 'z-p',
     path: [[-46.6,-28.4],[-29.1,-25.2],[-19.6,-22.6],[-15.4,-21.3]] },
+  // 樓梯口貼著坡道東側人行道，起步高度取坡道在樓梯口旁的高度。
+  { id: 'jiu-plaza', width: 2.4, fromRamp: 'z-p', to: 15,
+    path: [[-7.6,-14],[-2.6,-22]] },
 ];
 
 /** 外部斜坡沿道路連續線性升高，銜接第二層與第三層。 */
 export const RAMPS = [
-  { id: 'z-p', path: [[-11.8,-8.1],[-12,-20.3],rampEnd],
-    width: 7, from: 12, to: 15 },
+  { id: 'z-p', path: [[-11.8,-8.1],[-12,-20.3],[-0.6,-34.9]],
+    width: 6, from: 12, to: 15 },
 ];
 
 /** 五舍北伸連通段依原輪廓抬高，南端接本體，北端兩角落柱。 */

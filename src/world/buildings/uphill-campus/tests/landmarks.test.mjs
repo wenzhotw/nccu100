@@ -109,24 +109,17 @@ test('遮雨棚跨過道路，頂高十八公尺且只在路外立柱', async ()
   assert(hit && hit.point.y > 17.7);
 });
 
-test('旋轉樓梯只加既有屋頂色帶，不重複蓋銜接建築', async () => {
+test('旋轉樓梯藏在大廳內，屋外沒有藍色屋頂帶', async () => {
   const { createLandmarks, landmarkColliders } = await import('../landmarks.js');
-  const marker = createLandmarks().getObjectByName('旋轉樓梯(銜接建築)'); assert(marker);
-  const a = ANCHORS['旋轉樓梯(銜接建築)'];
-  assert.deepEqual(marker.position.toArray(), [a.x, heightAt(a.x, a.z), a.z]);
-  const bounds = modelBounds(marker);
-  assert(bounds.max.y - bounds.min.y <= 0.31);
-  const building = createGreybox().userData.buildings.find(b => b.osm === 510739855);
-  const roof = building.base + building.height;
-  assert(bounds.min.y >= roof && bounds.max.y <= roof + 0.32, `色帶未貼屋頂：${bounds.min.y}，屋頂 ${roof}`);
-  assert(!landmarkColliders().some(c => c.landmark === marker.name));
+  const model=createLandmarks();
+  assert.ok(!model.getObjectByName('旋轉樓梯屋頂色帶'));
+  assert.ok(!landmarkColliders().some(c=>c.landmark==='旋轉樓梯(銜接建築)'));
 });
-
 test('五個主要路口的指路牌在可達空地，完整牌面離建築與通路半公尺', async () => {
   // 用整片牌面而非中心點驗收，避免牌腳合格但牌面伸入道路。
   const { createLandmarks, landmarkSigns, landmarkColliders } = await import('../landmarks.js');
   const signs = landmarkSigns(); assert(signs.length >= 5);
-  for (const name of ['好漢坡下', '好漢坡上', '外部斜坡下', '外部斜坡上', '山居下車點']) {
+  for (const name of ['好漢坡下', '好漢坡上', '九舍樓梯下', '外部斜坡上', '山居下車點']) {
     const sign = signs.find(s => s.anchor === name); assert(sign, name);
     // 山居牌跟著 Task 7 搬到山居南側的站牌 STOP，其他牌照錨點。
     const a = name === '山居下車點' ? STOP : ANCHORS[name]; assert(Math.hypot(sign.x - a.x, sign.z - a.z) < 8);
@@ -176,7 +169,7 @@ test('指路牌兩面箭頭依讀者面向換算，還原世界方向後指向�
   const firstSteps = {
     '好漢坡下': [ANCHORS['好漢坡下'].x, ANCHORS['好漢坡下'].z],
     '好漢坡上': [ANCHORS['五舍入口'].x, ANCHORS['五舍入口'].z],
-    '外部斜坡下': RAMPS[0].path[0],
+    '九舍樓梯下': STAIRS.find(s=>s.id==='jiu-plaza').path.at(-1),
     '外部斜坡上': RAMPS[0].path.at(-1),
     // 沿山居南側道路往東走向安九。
     '山居下車點': [14.9, 4.6],
@@ -241,19 +234,23 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
       return next(specifier, context);
     }});
     const text = [];
-    globalThis.document = { createElement() { const canvas = { width: 0, height: 0, drawnText: [], getContext() { return {
-      fillRect() {}, clearRect() {}, fillText(value) { text.push(value); canvas.drawnText.push(value); }
-    }; } }; return canvas; } };
+    globalThis.document = { createElement() { const canvas = { width: 0, height: 0, drawnText: [], getContext() { return new Proxy({
+      fillRect() {}, clearRect() {}, strokeRect() {}, measureText() { return { width:20 }; }, createLinearGradient() { return { addColorStop(){} }; }, fillText(value) { text.push(value); canvas.drawnText.push(value); }
+    }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} }); } }; return canvas; } };
     const { buildMap, mapLight } = await import('./src/world/buildings/uphill-campus/map.js');
     const { landmarkSigns, landmarkColliders } = await import('./src/world/buildings/uphill-campus/landmarks.js');
     const { greyboxColliders } = await import('./src/world/buildings/uphill-campus/greybox.js');
     const { colliders } = await import('./src/core/collision.js');
+    const {flushPrefabs}=await import('./src/world/prefabs/index.js');
+    flushPrefabs();
+    __landmarkScene.clear();colliders.length=0;
     buildMap();
     const root = __landmarkScene.getObjectByName('山上校區地標'); assert(root, 'buildMap 未接入地標');
     assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1);
     for (const c of landmarkColliders()) assert(colliders.some(v => v.obb && v.cx === c.cx && v.cz === c.cz && v.hx === c.hx && v.hz === c.hz && Math.abs(v.sn - Math.sin(c.th)) < 1e-9));
     for (const s of landmarkSigns()) {
-      assert(text.includes(s.text));
+      if(s.anchor==='九舍樓梯下') { for(const c of s.text.replace(/[ ・]/g,'')) assert(text.includes(c)); }
+      else assert(text.includes(s.text));
       const sign = root.getObjectByName('指路牌：' + s.anchor);
       const faces = sign.children.filter(o => o.material?.map?.isCanvasTexture);
       assert.equal(faces.length, 2);
@@ -261,7 +258,7 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
       assert.equal(faces[0].rotation.y, 0); assert.equal(faces[1].rotation.y, Math.PI);
       for (const data of s.faces) {
         const face = faces.find(o => o.position.z * data.side > 0);
-        assert.deepEqual(face.material.map.image.drawnText, [data.text], s.anchor + '，面 ' + data.side);
+        assert.deepEqual(face.material.map.image.drawnText, s.anchor==='九舍樓梯下' ? [...data.text.replace(/[ ・]/g,'')] : [data.text], s.anchor + '，面 ' + data.side);
       }
       assert.notEqual(faces[0].material.map, faces[1].material.map);
     }
@@ -277,4 +274,17 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
   assert.equal(result.status, 0, result.stderr || result.error?.message);
   assert(JSON.parse(result.stdout).signs >= 5);
   t.diagnostic(result.stdout.trim());
+});
+
+
+test('九舍藍色指標立在樓梯口西側並指向樓梯頂', async () => {
+  const {landmarkSigns,createLandmarks}=await import('../landmarks.js');
+  const sign=landmarkSigns().find(s=>s.anchor==='九舍樓梯下');
+  assert.ok(sign);
+  assert.equal(sign.height,2.4);
+  const a=ANCHORS['九舍樓梯下'];
+  assert.ok(sign.x<a.x && Math.hypot(sign.x-a.x,sign.z-a.z)<=2.5);
+  const top=STAIRS.find(s=>s.id==='jiu-plaza').path.at(-1);
+  assert.deepEqual(sign.toward,{x:top[0],z:top[1]});
+  assert.equal(createLandmarks().getObjectByName('指路牌：九舍樓梯下').getObjectByName('指路牌板').material.color.getHexString(),'216aaf');
 });

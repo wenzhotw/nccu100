@@ -116,10 +116,10 @@ test('A4-4 主線進入 L2 後，三十公尺處左右各有通路側牆', () =>
   }
 });
 
-test('A4-5 坡道十公尺處有雙側牆，全程中線與頂端接縫不被牆阻擋', () => {
+test('A4-5 坡道十公尺處西側保留牆、東側改草坡，全程中線與頂端接縫不被牆阻擋', () => {
   const walls = terrain.wallSegments();
   const ramp = layout.RAMPS[0];
-  for (const p of sidesAt(ramp, 10)) {
+  for (const p of sidesAt(ramp, 10).slice(0,1)) {
     assert.ok(walls.some(w => w.source === 'passage' && distanceToSegment(p, w.a, w.b) <= 0.5), `缺坡道側牆：${p}`);
   }
   for (const wall of walls) for (let i = 1; i < ramp.path.length; i++) {
@@ -139,7 +139,8 @@ test('7a ramp walls retain continuous sloping profiles and bounded collision run
   const {wallChains,greyboxColliders} = await import('../greybox.js');
   const chains = wallChains().filter(c=>c.ramp === 'z-p');
   assert(chains.length >= 2 && chains.length <= 4);
-  for (const side of [-1,1]) {
+  assert.equal(chains.filter(c=>c.side===1).length,0);
+  for (const side of [-1]) {
     const own = chains.filter(c=>c.side===side);
     assert(own.length >= 1 && own.length <= 2, `side ${side}: ${own.length}`);
     for (const chain of own) {
@@ -154,5 +155,15 @@ test('7a ramp walls retain continuous sloping profiles and bounded collision run
       }
     }
     assert(greyboxColliders().filter(c=>c.ramp==='z-p' && c.side===side).length<=6);
+  }
+});
+
+
+test('九舍樓梯以照片矮牆取代自動高擋土牆，草坡內不長分區直牆',()=>{
+  const jiu=layout.STAIRS.find(s=>s.id==='jiu-plaza');
+  for(const w of terrain.wallSegments()) {
+    const x=(w.a[0]+w.b[0])/2,z=(w.a[1]+w.b[1])/2;
+    assert.ok(terrain.projectToPath(x,z,jiu.path).distance > 2.2**2,'九舍樓梯附近仍有高牆');
+    assert.ok(!(w.source==='region' && terrain.rampLandscape(x,z)),'草坡被分區牆截斷');
   }
 });

@@ -1,8 +1,12 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES } from './layout.js';
-import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight } from './terrain.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY } from './layout.js';
+import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampLandscape } from './terrain.js';
+import { addRampDetails, rampDetailColliders } from './ramp-details.js';
+import { addLobbyExterior } from './lobby-exterior.js';
+import { addCourtyard, courtyardColliders, dTowerGeometries } from './courtyard.js';
+import {createLobby,lobbyColliders} from './lobby.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -104,8 +108,8 @@ function addMerged(group, name, geometries, material) {
 function buildings() {
   return LAYOUT.buildings.filter(b => b.pts.every(([x, z]) =>
     x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1)).map(b => ({ ...b,
-    base: Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])),
-    height: (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2) * FLOOR_H,
+    base: b.osm === LOBBY.osm ? LOBBY.base : Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])),
+    height: (BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2)) * FLOOR_H,
   }));
 }
 
@@ -160,6 +164,7 @@ function addBuildingsAndWalls(group) {
   const shapes = [], edges = [];
   group.userData.buildings = buildings().map(b => ({ osm: b.osm, base: b.base, height: b.height }));
   for (const b of buildings()) {
+    if(b.osm===LOBBY.osm)continue;
     const bridge = BRIDGES.find(v => v.building === b.osm);
     const parts = bridge ? [
       { pts: clipBuilding(b.pts, bridge.cutZ, true), base: b.base, height: b.height },
@@ -185,6 +190,17 @@ function addBuildingsAndWalls(group) {
         .translate(x, (bridge.bottom + base) / 2, z));
     }
   }
+  // 南端外牆由十二公尺平台補至大廳地板，避免牆底浮空。
+  const lobby = buildings().find(b => b.osm === LOBBY.osm);
+  const fillShape = new THREE.Shape(clipBuilding(lobby.pts, -23.7, false).map(([x,z]) => new THREE.Vector2(x,-z)));
+  const fill = new THREE.ExtrudeGeometry(fillShape, { depth: 3, bevelEnabled: false, steps: 1 });
+  fill.rotateX(-Math.PI/2).translate(0,12,0);
+  fill.computeBoundingBox();
+  const fc=fill.boundingBox.getCenter(new THREE.Vector3()), fs=fill.boundingBox.getSize(new THREE.Vector3());
+  edges.push(fill.clone().translate(-fc.x,-fc.y,-fc.z).scale(1+0.08/fs.x,1+0.08/fs.y,1+0.08/fs.z).translate(fc.x,fc.y,fc.z));
+  addMerged(group, '九舍大廳下層填充', [fill], buildingMaterial);
+  // 照片 9022、9027 的九舍 D 區西端圓弧樓梯間，併進建築網格。
+  const tower = dTowerGeometries(); shapes.push(tower.body); edges.push(tower.edge);
   addMerged(group, '建築', shapes, buildingMaterial);
   addMerged(group, '建築描邊', edges, edgeMaterial);
   const walls = [], wallEdges = [];
@@ -217,7 +233,7 @@ function addBuildingsAndWalls(group) {
 }
 
 /** 只在通路包圍框附近作精確投影，其餘直接取平台，避免整圖重算階梯。 */
-const passages = [...STAIRS.map(p => ({ ...p, kind: 'stairs' })),
+const passages = [...STAIRS.map(p => ({ ...p, kind: p.id === 'jiu-plaza' ? 'jiu-stairs' : 'stairs' })),
   ...RAMPS.map(p => ({ ...p, kind: 'ramp' }))].map(p => ({ ...p,
   x0: Math.min(...p.path.map(v => v[0])) - p.width / 2,
   x1: Math.max(...p.path.map(v => v[0])) + p.width / 2,
@@ -237,7 +253,7 @@ function surfaceAt(x, z) {
       }
     }
   }
-  return { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
+  return rampLandscape(x, z) ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
 }
 
 /** 等高網格先合併成水平長條，再合併上下相同長條，通路自動挖槽。 */
@@ -262,11 +278,11 @@ function surfaceRects() {
       const [bx, bz] = region.poly[(i + 1) % region.poly.length];
       if ((az > cz) !== (bz > cz)) cut(ax + (bx - ax) * (cz - az) / (bz - az));
     });
-    const nearby = passages.filter(p => cz >= p.z0 && cz <= p.z1);
-    nearby.forEach(p => { cut(p.x0); cut(p.x1); });
+    const nearby = passages.filter(p => cz >= p.z0 - 8 && cz <= p.z1 + 8);
+    nearby.forEach(p => { cut(p.x0 - 8); cut(p.x1 + 8); });
     const xs = [...cuts].sort((a, b) => a - b);
     for (let j = 1; j < xs.length; j++) {
-      const detailed = nearby.some(p => xs[j] > p.x0 && xs[j - 1] < p.x1);
+      const detailed = nearby.some(p => xs[j] > p.x0 - 8 && xs[j - 1] < p.x1 + 8);
       for (let x = xs[j - 1]; x < xs[j];) {
         const end = detailed ? Math.min(xs[j], x + CELL) : xs[j];
         const value = surfaceAt(x + CELL / 2, z + CELL / 2);
@@ -286,9 +302,12 @@ export function createGreybox() {
   const rects = surfaceRects();
   const tops = [], sides = [];
   for (const r of rects.filter(r => r.kind === 'platform')) {
-    const geometry = TOP.clone().scale(r.x1 - r.x0, 1, r.z1 - r.z0)
-      .translate((r.x0 + r.x1) / 2, r.h, (r.z0 + r.z1) / 2);
-    tops.push(geometry);
+    let pieces=[r];
+    if(r.h===15&&r.x1>25.2&&r.x0<37.1&&r.z1>-35.6&&r.z0<-23.7) {
+      const x0=Math.max(r.x0,25.2),x1=Math.min(r.x1,37.1),z0=Math.max(r.z0,-35.6),z1=Math.min(r.z1,-23.7);
+      pieces=[{...r,x1:x0},{...r,x0:x1},{...r,x0,x1,z1:z0},{...r,x0,x1,z0:z1}].filter(p=>p.x1>p.x0&&p.z1>p.z0);
+    }
+    for(const p of pieces)tops.push(TOP.clone().scale(p.x1-p.x0,1,p.z1-p.z0).translate((p.x0+p.x1)/2,p.h,(p.z0+p.z1)/2));
     if (r.h > 0) sides.push(SIDES.clone().scale(r.x1 - r.x0, r.h, r.z1 - r.z0)
       .translate((r.x0 + r.x1) / 2, r.h / 2, (r.z0 + r.z1) / 2));
   }
@@ -322,9 +341,13 @@ export function createGreybox() {
     geometry.computeVertexNormals();
     return geometry;
   });
-  addMerged(group, '坡道斜面', slopes, concrete).userData.surface = true;
+  addMerged(group, '坡道斜面', slopes, roadMaterial).userData.surface = true;
   addBuildingsAndWalls(group);
   addRoads(group);
+  addLobbyExterior(group, { addMerged, BOX, buildingMaterial, edgeMaterial });
+  group.add(createLobby());
+  addCourtyard(group, { addMerged, TOP, BOX, wallMaterial, edgeMaterial });
+  addRampDetails(group, rects, { addMerged, TOP, BOX, grass, concrete, edgeMaterial });
   return group;
 }
 
@@ -347,7 +370,8 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...buildings().flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...buildings().flatMap(b => {
+    if(b.osm===LOBBY.osm)return buildingBoxes({...b,pts:clipBuilding(b.pts,-23.7,false)});
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
     return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),

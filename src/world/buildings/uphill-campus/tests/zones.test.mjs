@@ -19,6 +19,7 @@ test('最近八公尺內的地標使用玩家看得懂的名稱', async () => {
 test('地圖區域入口回傳地標、通路、建築與空地的新名稱', async () => {
   // 只隔離 WebGL 引擎初始化，區域判斷與地形資料使用正式模組。
   const hooks = registerHooks({ resolve(specifier, context, next) {
+    if (specifier.endsWith('courtyard-scenery.js')) return { url: 'data:text/javascript,export function buildCourtyardScenery(){};export function batchCourtyardScene(){}', shortCircuit: true };
     if (specifier.endsWith('core/engine.js')) {
       return { url: 'data:text/javascript,export const scene = null;', shortCircuit: true };
     }
@@ -64,9 +65,9 @@ test('外部斜坡中段與全寬邊界顯示通路名稱', async () => {
   assert.equal(zoneName({ x: -11.8, z: -8.1 }), '外部斜坡');
   assert.equal(zoneName({ x: -4.9, z: 10.3 }), '自強宿舍區');
   const dx = -0.2, dz = -12.2, length = Math.hypot(dx, dz);
-  const p = { x: -11.9 - dz / length * 3.5, z: -14.2 + dx / length * 3.5 };
+  const p = { x: -11.9 + dz / length * 3, z: -14.2 - dx / length * 3 };
   assert.equal(zoneName(p), '外部斜坡');
-  assert.notEqual(zoneName({ x: p.x + 0.01, z: p.z }), '外部斜坡');
+  assert.notEqual(zoneName({ x: p.x - 0.01, z: p.z }), '外部斜坡');
 });
 
 test('階梯主線與東支線優先於附近建築和觀景步道', async () => {
@@ -86,4 +87,25 @@ test('山居學習中心以搬到山居南側的站牌為準，下車出生點�
   assert.equal(zoneName({ x: STOP.x + 7.9, z: STOP.z }), '山居學習中心');
   // 舊原點已不是站牌，回到建築或層別名稱。
   assert.notEqual(zoneName({ x: -4, z: -6 }), '山居學習中心');
+});
+
+test('九舍步行樓梯顯示自己的名稱，不算好漢坡', async () => {
+  const { zoneName } = await import('../zone-names.js');
+  // 樓梯中點 (-5.1,-18)，依 2026-10-20 照片 9034 由坡道東側通往九舍廣場。
+  assert.equal(zoneName({ x: -5.1, z: -18 }), '九舍樓梯');
+});
+
+test('中庭中央顯示九舍中庭，北側廣場保留宿舍區名稱', async () => {
+  const {zoneName}=await import('../zone-names.js');
+  assert.equal(zoneName({x:20,z:-27.8}),'自強九舍中庭');
+  assert.equal(zoneName({x:8,z:-31.7}),'自強九舍・十舍');
+  assert.notEqual(zoneName({x:20,z:-20}),'自強九舍中庭');
+});
+
+test('D6 大廳使用大廳名稱，只有開口四公尺內顯示旋轉樓梯',async()=>{
+  const {zoneName}=await import('../zone-names.js');
+  for(const p of [{x:27,z:-34.5},{x:36,z:-24.5}])assert.equal(zoneName(p),'自強九舍大廳');
+  assert.equal(zoneName({x:31.2+3,z:-28.6}),'旋轉樓梯');
+  assert.equal(zoneName({x:31.2+4,z:-28.6}),'旋轉樓梯');
+  assert.equal(zoneName({x:31.2+4.01,z:-28.6}),'自強九舍大廳');
 });

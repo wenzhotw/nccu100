@@ -9,13 +9,22 @@
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
-import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon } from '../../../render/kit.js';
+import { BOX, GRAD, basic, block, canvasTex, flat, mk, plane, toon, vText, hText } from '../../../render/kit.js';
 import { boxC, obbC } from '../../../core/collision.js';
 import { BUS_SHELTER, R, SIZE, STOP } from './layout.js';
 import { heightAt } from './terrain.js';
 import { createGreybox, greyboxColliders, fenceRails } from './greybox.js';
 import { zoneName } from './zone-names.js';
 import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
+
+import { buildCourtyardScenery, batchCourtyardScene } from './courtyard-scenery.js';
+import {installLobbyRoof,signTextLayout} from './lobby.js';
+import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
+
+export function buildAnjiu() {
+  const group=createAnjiu();group.traverse(o=>{if(o.isMesh&&o.material.isMeshToonMaterial)o.material.gradientMap=GRAD;});
+  scene.add(group);for(const c of anjiuColliders())obbC(c.cx,c.cz,c.hx,c.hz,c.th);
+}
 
 const SKY = '#bfe4f6';
 
@@ -93,7 +102,51 @@ function busStop() {
 
 /** 場景與碰撞的登記入口，純模型留在 greybox.js 供離線驗收。 */
 export function buildGreybox() {
-  scene.add(createGreybox());
+  const group = createGreybox();
+  // 純幾何模組不載入 WebGL 引擎，進場時接上工具箱共用的卡通光階與畫布磚紋。
+  const brick = canvasTex(256, 256, (g,w,h) => {
+    g.fillStyle='#fff4e5';g.fillRect(0,0,w,h);
+    g.strokeStyle='#b9a99b';g.lineWidth=3;
+    for(let row=0;row<4;row++) for(let col=-1;col<4;col++) g.strokeRect(col*128+(row%2)*64,row*64,128,64);
+  }, [1,1]);
+  group.traverse(o => {
+    if(o.isMesh && o.material.isMeshToonMaterial) o.material.gradientMap=GRAD;
+    if(o.userData.brick || ['東側人行道','九舍磚砌踏面'].includes(o.name)) {
+      o.material.map=brick;
+      const p=o.geometry.attributes.position;
+      const uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
+      o.geometry.setAttribute('uv',uv);
+      for(let i=0;i<p.count;i++) uv.setXY(i,p.getX(i),p.getZ(i));
+      uv.needsUpdate=true;
+    }
+  });
+  const tile=canvasTex(256,256,(g,w,h)=>{
+    g.fillStyle='#f4eee0';g.fillRect(0,0,w,h);g.strokeStyle='#a6aaa4';g.lineWidth=2;
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++){if((i+j)%2===0){g.fillStyle='#e2ddd2';g.fillRect(i*64,j*64,64,64);}g.strokeRect(i*64,j*64,64,64);}
+  });
+  group.traverse(o=>{
+    if(o.isMesh&&o.name.includes('方磚地板')) {
+      o.material=toon('#ffffff',{map:tile});
+      const p=o.geometry.attributes.position,uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
+      for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/2,p.getY(i)/2);o.geometry.setAttribute('uv',uv);
+    }
+    if(o.userData.signAtlas) {
+      // hText 會把字平均拉滿整格，兩字的窄牌會左右交疊，這裡整串置中繪製。
+      const font=size=>`700 ${size}px "Noto Sans TC",sans-serif`;
+      const tex=canvasTex(2048,512,(g)=>o.userData.signAtlas.forEach(({text,atlas})=>{
+        const layout=signTextLayout(text,atlas,(t,size)=>{g.font=font(size);return g.measureText(t).width;});
+        g.font=font(layout.size);g.textAlign='center';g.textBaseline='middle';g.fillStyle='#385846';
+        g.shadowColor='rgba(0,0,0,.3)';g.shadowOffsetY=3;g.fillText(layout.text,layout.x,layout.y);
+      }));o.material=basic({map:tex,transparent:true});
+    }
+  });
+  for(const [name,text,vertical] of [['九舍大廳橫幅','政大學生宿舍歡迎您',false],['九舍大廳直式牌','自強第九宿舍',true]]) {
+    const sign=group.getObjectByName(name);
+    const tex=vertical?vText(text,'#385846','700 54px "Noto Sans TC",sans-serif',96,64)
+      :hText(text,'#385846','700 52px "Noto Sans TC",sans-serif',1024,80,64);
+    sign.material=basic({map:tex,transparent:true});
+  }
+  scene.add(group);
   for (const c of greyboxColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
 }
 
@@ -104,10 +157,13 @@ export function buildLandmarks() {
   for (const sign of landmarkSigns()) {
     const board = group.getObjectByName(`指路牌：${sign.anchor}`);
     for (const { side, text } of sign.faces) {
-      const texture = canvasTex(512, 128, (g, w, h) => {
-        g.fillStyle = '#24563e'; g.fillRect(0, 0, w, h);
+      const texture = sign.anchor==='九舍樓梯下'
+        ? vText(text.replace(/[ ・]/g,''),'#fff8df','900 68px "Noto Sans TC",sans-serif',128,68)
+        : canvasTex(512, 128, (g, w, h) => {
+        g.fillStyle = sign.color; g.fillRect(0, 0, w, h);
         g.fillStyle = '#fff8df'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.font = '700 36px "Noto Sans TC",sans-serif'; g.fillText(text, w / 2, h / 2, w - 32);
+        g.font = '700 36px "Noto Sans TC",sans-serif';
+        g.fillText(text, w / 2, h / 2, w - 32);
       });
       const face = new THREE.Mesh(new THREE.PlaneGeometry(sign.width - 0.08, sign.height - 0.08), basic({ map: texture }));
       face.name = `指路文字：${sign.anchor}`;
@@ -125,10 +181,13 @@ export function buildMap() {
   busStop();
   buildGreybox();
   buildLandmarks();
+  const scenery=buildCourtyardScenery();
+  batchCourtyardScene(scene.getObjectByName('山上校區灰盒'),scenery);
 }
 
 /** 燈光與天空：跟山下差不多的明亮白天，加一點霧讓遠山變淡 */
 export function mapLight(s) {
+  installLobbyRoof(s);
   s.background = new THREE.Color(SKY);
   s.fog = new THREE.Fog(SKY, 90, 320);
   s.add(new THREE.HemisphereLight('#eaf6ff', '#7aa060', 0.95));

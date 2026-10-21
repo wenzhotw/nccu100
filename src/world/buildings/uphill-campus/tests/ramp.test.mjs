@@ -25,8 +25,10 @@ test('坡道從新路口連續升到十五公尺，坡度固定且終點深入�
   const ramp = layout.RAMPS[0];
   assert.deepEqual(ramp.path.slice(0, 2), [[-11.8,-8.1],[-12,-20.3]]);
   assert.deepEqual({ id: ramp.id, width: ramp.width, from: ramp.from, to: ramp.to },
-    { id: 'z-p', width: 7, from: 12, to: 15 });
-  assert.ok(Math.abs(lengthOf(ramp.path) - 20.3) < 0.1);
+    { id: 'z-p', width: 6, from: 12, to: 15 });
+  assert.deepEqual(ramp.path, [[-11.8,-8.1],[-12,-20.3],[-0.6,-34.9]]);
+  assert.deepEqual(layout.ANCHORS['外部斜坡上'], { x: -0.6, z: -34.9, level: 'L3' });
+  close(terrain.heightAt(-12,-20.3), 12 + 3 * Math.hypot(0.2,12.2) / lengthOf(ramp.path));
   const end = ramp.path.at(-1);
   assert.equal(terrain.regionAt(...end), 'L3');
   const poly = layout.REGIONS.find(r => r.level === 'L3').poly;
@@ -126,10 +128,27 @@ test('坡道全寬網格採坡道高度，階梯交會處最多差一階', () =>
 test('東支線終點外延四公尺，每十公分的高度差最多一階', () => {
   const path = [...layout.STAIRS[1].path].reverse();
   let previous = terrain.heightAt(...path[0]);
-  close(previous, 13.8);
+  const ramp = layout.RAMPS[0];
+  const expected = terrain.rampHeight(ramp, terrain.projectToPath(...path[0], ramp.path).s);
+  assert.ok(Math.abs(previous - expected) <= 0.15);
   for (let i = 1; i <= 40; i++) {
     const h = terrain.heightAt(...pointAt(path, -i / 10));
     assert.ok(Math.abs(h - previous) <= 0.3 + 1e-9, `外延 ${i / 10}：${previous} → ${h}`);
     previous = h;
+  }
+});
+
+
+test('東側人行道與草坡連續貼坡道，九舍樓梯保有優先高度', () => {
+  const ramp = layout.RAMPS[0];
+  for (const along of [3,6,15,22,28]) {
+    const [x,z] = pointAt(ramp.path,along), i = along < Math.hypot(0.2,12.2) ? 0 : 1;
+    const a=ramp.path[i],b=ramp.path[i+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    const nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;
+    for (const d of [3.05,3.6,4.15]) {
+      const px=x+nx*d,pz=z+nz*d;
+      if (layout.STAIRS.some(s=>terrain.projectToPath(px,pz,s.path).distance <= (s.width/2)**2)) continue;
+      assert.ok(Math.abs(terrain.heightAt(px,pz)-terrain.rampHeight(ramp,terrain.projectToPath(px,pz,ramp.path).s)) < 0.01);
+    }
   }
 });

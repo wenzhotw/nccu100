@@ -10,7 +10,8 @@
  */
 import { defineBuilding } from '../../registry.js';
 import { R, SPAWN, STOP } from './layout.js';
-import { buildMap, mapHeight, mapLight, mapZone } from './map.js';
+import { buildMap, buildAnjiu, mapHeight, mapLight, mapZone } from './map.js';
+import {ANJIU} from './anjiu-interior.js';
 
 /** 山下乘車處：行政大樓左側騎樓的候車長椅與時刻表旁（校園座標） */
 const BOARD = { x: 32.2, z: -88.5 };
@@ -20,7 +21,7 @@ export default defineBuilding({
   name: '山上校區',
   // 山下校園裡沒有要蓋的東西（乘車處在行政大樓）
   build() {},
-  interior: {
+  interior: [{
     build: buildMap,
     light: mapLight,
     heightAt: mapHeight,
@@ -35,5 +36,5 @@ export default defineBuilding({
     bounds: { x0: R.x0 + 0.6, x1: R.x1 - 0.6, z0: R.z0 + 0.6, z1: R.z1 - 0.6 },
     // 戶外：鏡頭不限天花板，距離跟山下一樣
     camera: { x0: R.x0 - 40, x1: R.x1 + 40, z0: R.z0 - 40, z1: R.z1 + 40, ceil: 120, maxDist: 99 },
-  },
+  },{...ANJIU,build:buildAnjiu}],
 });
