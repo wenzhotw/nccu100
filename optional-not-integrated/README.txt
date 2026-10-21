@@ -1,0 +1,2 @@
+Gemini可選模組，不在預設遊戲入口接線。skin原始SHA 697b139568603865387fef813eb625406fcb15ea0dfd6d65ddaaae808f6bcb3f；D26 JSON SHA 4766dfc0e2e990ee6e4924864870b4cff889803c100c81f23e341840ea73d0bb。已獨立Node 6生命周期+2真quiz鍵盤/CSS靜態測試通過，非瀏覽器視覺。D26只有一攤，不是40份。不得把單物件直接當全量baozhong-booths.json；需按loader資料集合契約包裝後另驗。skin只用既有body.bz26，不能自行持有/刪除共用class；活動根/護照須先負責其生命週期。對話openDialog是callback介面，註解runDialog示意不是現成接線。此目錄測試為審核證據，預設portable runner不含它。
+本 PR 僅攜帶可選原始碼與資料；原交付包的兩組歷史測試依賴未附的 ui-skin-addon/ui-v3 fixture，因此不搬入不可重跑的測試與舊輸出，以上 6+2 通過為先前紀錄，不是本 PR 重測。
