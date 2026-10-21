@@ -1,0 +1,32 @@
+name: 包種茶節隔離預覽截圖
+on:
+  push:
+    branches: [preview/d26-open-canopy-20261021]
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: 新切片邏輯與生命週期
+        run: node --test tests/open-canopy-d26.test.mjs tests/baozhong-activity-map*.test.mjs src/systems/baozhong/matching.test.js
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: 真實預覽截圖，不部署
+        run: node scripts/baozhong-slice-screenshots.mjs
+      - name: 保留真實截圖與證據
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baozhong-slice-preview
+          path: test-results/baozhong-slice/
+          if-no-files-found: warn
+          retention-days: 7

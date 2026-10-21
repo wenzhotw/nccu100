@@ -3,6 +3,7 @@
 // (c) 系上主招牌自動移位（在 decor-ctx.js）、(d) 桌板加學院色桌巾、正面 3 張手繪海報。座標沿用 A25（layout.json）。
 // 遊戲相依（toon、OUT、canvasTex、碰撞清單、地面高度）由 tents-adapter.js 注入，所以 node 也能建模測試。
 import * as THREE from 'three';
+import { buildOpenCanopyTorii, openCanopyColliders } from './open-canopy-d26.js';
 import { TENT, boothInfo, clothColor, collidersOf, drawOfficialSign, drawPoster, faceColors, signVisibility, recoverTentOverlap } from './tents-logic.js';
 
 let WALL = null, ROOF = null, VAL = null, POLE = null, BOARD = null, DRAPE_F = null, DRAPE_S = null, POSTER = null, SIGN = null, BACK = null;
@@ -29,6 +30,7 @@ const asList = (b) => Array.isArray(b) ? b : (b && Array.isArray(b.booths) ? b.b
 /**
  * buildTents(layout, colleges, opts) → { group, tents, setActive(on), update(playerPos), refreshSigns(id), isActive() }
  * layout：layout.json；colleges：baozhong.json 的 colleges（取學院色）；
+ * opts.openCanopyD26：僅 D26 的開放帳篷原型，預設關閉；啟用時呼叫端須略過舊 D26 佈景。
  * opts：{ content（baozhong.json）, booths（baozhong-booths.json，可缺）, deps:{ toon, OUT, canvasTex }, colliders（遊戲碰撞清單）, heightAt(x,z) }
  */
 export function buildTents(layout, colleges, opts = {}) {
@@ -49,6 +51,7 @@ export function buildTents(layout, colleges, opts = {}) {
   const mesh = (g, mat, x, y, z, parent) => { const m = new THREE.Mesh(g, mat); m.position.set(x, y, z); m.castShadow = false; m.receiveShadow = true; parent.add(m); return m; };
 
   layout.tents.forEach((t, i) => {
+    const openCanopy = opts.openCanopyD26 === true && t.id === 'D26';
     const dept = depts.get(t.id), info = boothInfo(t.id, booths.get(t.id), dept, fns.get(t.id));
     const collegeColor = dept ? colColor.get(dept.college) : null;
     const g = new THREE.Group(); g.name = `bz26-tent-${t.id}`;
@@ -65,7 +68,7 @@ export function buildTents(layout, colleges, opts = {}) {
       const d = TENT.half - TENT.valanceT / 2;
       const v = mesh(VAL, toon(c), Math.sin(th) * d, (TENT.valanceBottom + TENT.valanceTop) / 2, Math.cos(th) * d, g); v.rotation.y = th; parts.canopy.push(v);
       v.userData.bz26Valance = true;
-      if (k > 0) {   // GPT-038：三面布幕（右、後、左），正面開放；貼在 ±1.45 外側，不碰 40 檔佈景的可用空間
+      if (k > 0 && !openCanopy) {   // GPT-038：三面布幕（右、後、左），正面開放；貼在 ±1.45 外側，不碰 40 檔佈景的可用空間
         const wd = TENT.half + TENT.wallT / 2;
         const w = mesh(WALL, toon(c), Math.sin(th) * wd, TENT.valanceBottom / 2, Math.cos(th) * wd, g); w.rotation.y = th; w.userData.bz26Wall = true; parts.walls.push(w);
       }
@@ -92,7 +95,12 @@ export function buildTents(layout, colleges, opts = {}) {
     const mats = [...parts.signs.map(s => s.material)];
     let textured = false;
     const ensureTex = () => { if (textured || !canvasTex) return; textured = true; lazy.forEach((f, k) => { const tex = f(); if (tex) { mats[k].map = tex; mats[k].needsUpdate = true; } }); };
-    if (colliders) mine.push(...collidersOf(t, g.position.y));
+    if (openCanopy) {
+      const torii = buildOpenCanopyTorii(g, { mesh, toon, outline });
+      parts.landmark = torii.parts;
+      g.userData.bz26OpenCanopy = true;
+    }
+    if (colliders) mine.push(...(openCanopy ? openCanopyColliders : collidersOf)(t, g.position.y));
     tents.set(t.id, { id: t.id, group: g, parts, info, collegeColor: collegeColor || clothColor(t.id, null), colors, ensureTex, layout: t });
   });
 
