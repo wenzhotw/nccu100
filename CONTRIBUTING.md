@@ -43,6 +43,10 @@ src/world/buildings/student-center/
 4. 寫 `zones`（走進去時畫面顯示的區域名稱）和 `map`（地圖上的圖示）。
 5. 如果這個位置原本有「預定地」告示牌，到 `src/world/lots.js` 把那一筆刪掉。
 
+### 美術風格
+
+動手建模前先讀 [docs/art-style.md](docs/art-style.md)。不管你用什麼工具（直接寫程式、Blender、Godot、OpenStreetMap……），進遊戲的成品都要符合同一套材質、顏色、描邊規則。送 PR 時照文件第十三節的檢查表逐項寫「已核」或「未核」，並附一張和旁邊既有建築同框的截圖。用 AI 工具的話，把文件第十四節的提示詞貼給它。
+
 ### 建築的三條規則
 
 - **不可以 import 別棟建築的檔案。** 需要共用的東西（例如窗戶材質）放到 `src/world/building-kit.js`，並在 PR 說明。
