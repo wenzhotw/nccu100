@@ -1,7 +1,7 @@
 /** 山上校區的純地標模型與碰撞資料，文字貼圖由地圖入口建立。 */
 import * as THREE from 'three';
-import { ANCHORS, FLOOR_H, LAYOUT, LEVELS, STOP, RAMPS } from './layout.js';
-import { heightAt, platformLevel } from './terrain.js';
+import { ANCHORS, STOP, RAMPS, STAIRS } from './layout.js';
+import { heightAt } from './terrain.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const stone = new THREE.MeshToonMaterial({ color: '#b4b0a2' });
@@ -20,7 +20,7 @@ export function landmarkSigns() {
   return [
     ['好漢坡下', -3.5, -0.5, Math.PI / 2, '自強五舍・六舍', ANCHORS['好漢坡下']],
     ['好漢坡上', 0.5, 4.5, 0, '自強五舍・六舍', ANCHORS['五舍入口']],
-    ['外部斜坡下', -2.5, 4, 0, '自強九舍・十舍', { x: RAMPS[0].path[0][0], z: RAMPS[0].path[0][1] }],
+    ['九舍樓梯下', -0.05, 2.4, 0, '自強九舍・十舍', { x: STAIRS[2].path.at(-1)[0], z: STAIRS[2].path.at(-1)[1] }],
     ['外部斜坡上', 5.5, 1, Math.PI / 2, '自強九舍・十舍', { x: RAMPS[0].path.at(-1)[0], z: RAMPS[0].path.at(-1)[1] }],
     // 山居牌以站牌 STOP 為基準，放在道路對面的空地，沿南側道路往東指向安九。
     ['山居下車點', 0, 6.7, 0, '安九食堂・自強九舍', { x: 14.9, z: 4.6 }],
@@ -38,7 +38,7 @@ export function landmarkSigns() {
         : Math.abs(angle) >= Math.PI * 3 / 4 ? '↓' : angle > 0 ? '→' : '←';
       return { side, toward: { ...toward }, text: `${arrow} ${destination}` };
     });
-    return { anchor, x, z, base: heightAt(x, z), yaw, toward, faces, text: faces[0].text, width: 2.2, height: 0.65 };
+    return { anchor, x, z, base: heightAt(x, z), yaw, toward, faces, text: faces[0].text, width: anchor === '九舍樓梯下' ? 0.7 : 2.2, height: anchor === '九舍樓梯下' ? 2.4 : 0.65, color: anchor === '九舍樓梯下' ? '#216aaf' : '#24563e' };
   });
 }
 
@@ -117,17 +117,12 @@ export function createLandmarks() {
     return [p.x - west.x, p.base - canopy.position.y + h / 2, p.z - west.z, 0.24, h, 0.24];
   }));
   boxes(canopy, '遮雨棚頂', roofMaterial, [[(east.x - west.x) / 2, 2.9, 0, east.x - west.x + 0.4, 0.2, 2.6]]);
-  const marker = placed(root, '旋轉樓梯(銜接建築)');
-  const connection = LAYOUT.buildings.find(b => b.osm === 510739855);
-  // 灰盒跨層建築從輪廓最低平台起蓋，不能從地標所在的較高平台估屋頂。
-  const roof = Math.min(...connection.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])) + 2 * FLOOR_H;
-  boxes(marker, '旋轉樓梯屋頂色帶', blue, [[-1.5, roof - marker.position.y + 0.16, 0, 9, 0.3, 1.2]]);
   const signs = new THREE.Group(); signs.name = '指路牌'; root.add(signs);
   for (const s of landmarkSigns()) {
     const g = new THREE.Group(); g.name = `指路牌：${s.anchor}`;
     g.position.set(s.x, s.base, s.z); g.rotation.y = s.yaw; signs.add(g);
     boxes(g, '指路牌柱', steel, [[0, 1.1, 0, 0.12, 2.2, 0.12]]);
-    boxes(g, '指路牌板', signMaterial, [[0, 2.05, 0, s.width, s.height, 0.14]]);
+    boxes(g, '指路牌板', s.anchor === '九舍樓梯下' ? blue : signMaterial, [[0, 2.05, 0, s.width, s.height, 0.14]]);
   }
   const viewpoint = ANCHORS['觀景步道'], city = new THREE.Group(); city.name = '台北市區遠景';
   const cx = viewpoint.x - 285, cz = viewpoint.z - 285;

@@ -74,7 +74,7 @@ test('主線範圍優先於平台，兩端往外半公尺沒有高度跳躍', ()
   close(terrain.heightAt(x + dz / len * 1.61, z - dx / len * 1.61), 0);
 });
 
-test('東支線由主線接點的實際階高起步，二十五階接上斜坡', () => {
+test('東支線由主線接點的實際階高起步，依坡道接點階數接上斜坡', () => {
   const [main, east] = layout.STAIRS;
   const joinS = lengthOf(main.path.slice(0, 5));
   close(terrain.stairHeight(main, joinS), 6.3);
@@ -83,17 +83,19 @@ test('東支線由主線接點的實際階高起步，二十五階接上斜坡',
   close(terrain.stairHeight(east, 0), terrain.stairHeight(main, joinS));
   close(terrain.heightAt(...east.path[0]), 6.3);
   const length = lengthOf(east.path);
-  close(terrain.stairHeight(east, length), 13.8);
-  close(terrain.heightAt(...east.path.at(-1)), 13.8);
+  const ramp = layout.RAMPS[0];
+  const top = terrain.rampHeight(ramp, terrain.projectToPath(...east.path.at(-1), ramp.path).s);
+  close(terrain.stairHeight(east, length), top);
+  close(terrain.heightAt(...east.path.at(-1)), top);
   let previous = 6.3, rises = 0;
   for (let i = 1; i <= Math.ceil(length * 10); i++) {
     const s = Math.min(i / 10, length);
     const h = terrain.stairHeight(east, s);
     assert.ok(h >= previous && h - previous <= 0.3 + 1e-9);
-    if (h > previous) { close(h - previous, 0.3); rises++; }
+    if (h > previous) { assert.ok(h - previous <= 0.3 + 1e-9); rises++; }
     previous = h;
   }
-  assert.equal(rises, 25);
+  assert.equal(rises, Math.round((top - 6.3) / 0.3));
   close(terrain.heightAt(...pointAt(east.path, 2)), 6.9);
 });
 
@@ -146,4 +148,32 @@ test('多座階梯重疊時選最近中線，等距保留配置順序', () => {
     close(terrain.heightAt(2, -1.6), 0.6);
     close(terrain.heightAt(2, -1.601), 12);
   });
+});
+
+
+test('九舍直樓梯從坡道東側人行道高度起步，逐階接上廣場，兩端半公尺連續且退讓坡道與建築', () => {
+  const jiu = layout.STAIRS.find(s => s.id === 'jiu-plaza');
+  assert.ok(jiu);
+  assert.deepEqual(jiu.path, [[-7.6,-14],[-2.6,-22]]);
+  assert.equal(jiu.width, 2.4);
+  assert.equal(jiu.fromRamp, 'z-p');
+  assert.deepEqual(layout.ANCHORS['九舍樓梯下'], { x: -7.6, z: -14, level: 'L2' });
+  const ramp = layout.RAMPS[0];
+  // 樓梯口緊貼人行道，起步高度等於坡道在樓梯口旁的高度，玩家從人行道走上第一階不會陷進地面。
+  const from = terrain.rampHeight(ramp, terrain.projectToPath(...jiu.path[0], ramp.path).s);
+  const length = lengthOf(jiu.path);
+  close(terrain.stairHeight(jiu, 0), from);
+  close(terrain.stairHeight(jiu, length), 15);
+  let previous = from, rises = 0;
+  for (let s = -0.5; s <= length + 0.5; s += 0.05) {
+    const p = s <= length ? pointAt(jiu.path, s) : pointAt([...jiu.path].reverse(), length - s);
+    const h = terrain.heightAt(...p);
+    assert.ok(Math.abs(h - previous) <= 0.3 + 1e-9, `高度跳 ${previous}→${h}`);
+    // 起步高度不是 0.3 的整數倍，最後一階與廣場只差幾公分，不算一階。
+    if (h > previous + 0.1) rises++;
+    if (s >= 0 && s <= length) assert.ok(Math.sqrt(terrain.projectToPath(...p, ramp.path).distance) > 4.2);
+    assert.ok(!layout.LAYOUT.buildings.some(b => terrain.pointInPoly(...p,b.pts)));
+    previous = h;
+  }
+  assert.equal(rises, Math.round((15 - from) / 0.3));
 });

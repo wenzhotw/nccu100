@@ -35,9 +35,10 @@ export function rampHeight(ramp, s) {
 /** 每階踏面走完才升高，多餘路長平均分配給休息平台。 */
 export function stairHeight(stair, s) {
   const parent = stair.joinStair ? STAIRS.find(candidate => candidate.id === stair.joinStair) : null;
+  const start = stair.fromRamp ? RAMPS.find(candidate => candidate.id === stair.fromRamp) : null;
   const from = parent
     ? stairHeight(parent, projectToPath(...stair.path[0], parent.path).s)
-    : stair.from;
+    : start ? rampHeight(start, projectToPath(...stair.path[0], start.path).s) : stair.from;
   const ramp = stair.joinRamp ? RAMPS.find(candidate => candidate.id === stair.joinRamp) : null;
   const to = ramp ? rampHeight(ramp, projectToPath(...stair.path.at(-1), ramp.path).s) : stair.to;
   const length = pathLength(stair.path);
@@ -90,6 +91,31 @@ function distanceToPolySquared(x, z, poly) {
   return nearest;
 }
 
+/** 照片中的東側步道與草坡，共用投影供碰撞、腳底與可見地表取用。 */
+export function rampLandscape(x, z) {
+  for (const ramp of RAMPS) {
+    const p = projectToPath(x, z, ramp.path);
+    let walked = 0;
+    for (let i = 1; i < ramp.path.length; i++) {
+      const a=ramp.path[i-1], b=ramp.path[i], dx=b[0]-a[0], dz=b[1]-a[1], length=Math.hypot(dx,dz);
+      if (p.s <= walked + length + 1e-9) {
+        const signed = ((x-a[0]) * -dz + (z-a[1]) * dx) / length;
+        const along = ((x-a[0])*dx+(z-a[1])*dz)/length;
+        if ((i === 1 && along < 0) || (i === ramp.path.length-1 && along > length)) break;
+        const d = Math.sqrt(p.distance), edge = ramp.width / 2;
+        if (signed > 0 && d > edge && d <= edge + 4.2) {
+          const h = rampHeight(ramp,p.s);
+          return { kind: d <= edge + 1.2 ? 'sidewalk' : 'grass-slope',
+            h: h + Math.max(0,(d-edge-1.2)/3) * (15-h) };
+        }
+        break;
+      }
+      walked += length;
+    }
+  }
+  return null;
+}
+
 /** 高度依階梯、坡道、平台順序查詢。 */
 export function heightAt(x, z) {
   let nearestStair = null;
@@ -128,7 +154,7 @@ export function heightAt(x, z) {
     return rampHeight(nearestRamp, nearestProjection.s);
   }
 
-  return LEVELS[platformLevel(x, z)];
+  return rampLandscape(x, z)?.h ?? LEVELS[platformLevel(x, z)];
 }
 
 /** 原分區、補區優先，只有補區之外才沿用最近分區備援。 */
@@ -196,6 +222,10 @@ export function wallSegments() {
     for (let i = 0; i < count; i++) {
       const start = at(i / count), end = at((i + 1) / count);
       const middle = at((i + 0.5) / count);
+      // 照片修正區由草坡與磁磚矮牆承接，不再沿舊分區或新樓梯長出高牆。
+      const jiu = STAIRS.find(stair => stair.id === 'jiu-plaza');
+      if ((jiu && projectToPath(...middle,jiu.path).distance <= 2.2 ** 2)
+        || (source === 'region' && rampLandscape(...middle))) { run=null;continue; }
       // 保留整個取樣小段的開口，避免小段端點伸入通路。
       const blocked = passages.some(passage => passage !== owner
         && projectToPath(...middle, passage.path).distance <= (passage.width / 2 + length / count / 2) ** 2);
@@ -225,6 +255,7 @@ export function wallSegments() {
     region.poly.forEach((a, i) => sampleLine(a, region.poly[(i + 1) % region.poly.length], 'region'));
   }
   for (const passage of passages) for (const sign of [-1, 1]) {
+    if(passage.id === 'jiu-plaza') continue;
     const normals = passage.path.slice(1).map((b, i) => {
       const a = passage.path[i], length = Math.hypot(b[0] - a[0], b[1] - a[1]);
       return [-(b[1] - a[1]) / length, (b[0] - a[0]) / length];
