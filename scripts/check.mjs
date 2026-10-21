@@ -3,6 +3,7 @@
 // 2. 建築之間不可以互相 import
 // 3. defineBuilding 的 id 和資料夾名稱一樣
 // 4. 內容 JSON 格式正確
+// 5、6. 美術風格硬規則（見檔案後段）
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -52,6 +53,24 @@ if (!errs.length) {
   if (!ids.has('cop')) errs.push('src/content/npcs.json: 駐校警察（id: cop）不能刪，追逐劇情會用到');
   const stories = JSON.parse(fs.readFileSync(path.join(C, 'stories.json'), 'utf8')).stories;
   stories.forEach((s, i) => ['id', 'title', 'lines'].forEach(k => { if (!s[k]) errs.push(`src/content/stories.json 第 ${i + 1} 個: 缺少 ${k}`); }));
+}
+
+// 美術風格硬規則（docs/art-style.md 第二節）
+// 5. 不用寫實材質（MeshStandardMaterial 等），一律 toon()、basic() 或帶 GRAD 的 MeshToonMaterial
+// 6. 不引用外部圖片當貼圖（import .jpg/.png/.webp、TextureLoader），貼圖用 canvasTex() 畫
+const S = path.join(root, 'src');
+const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+const STYLE = [
+  [/\bMesh(Standard|Physical|Phong|Lambert)Material\b/, '不可用寫實材質，請改用 render/kit.js 的 toon() 或 basic()（docs/art-style.md 第四節）'],
+  [/\bTextureLoader\b/, '不可載入外部圖片貼圖，請用 canvasTex() 畫（docs/art-style.md 第八節）'],
+  [/from\s+['"][^'"]+\.(jpe?g|png|webp|gif)(\?[^'"]*)?['"]/i, '不可 import 圖片當貼圖，參考照片只放 photos/（docs/art-style.md 第二節）'],
+];
+for (const f of walk(S).filter(f => f.endsWith('.js'))) {
+  const lines = fs.readFileSync(f, 'utf8').split('\n');
+  lines.forEach((line, i) => {
+    const code = line.replace(/\/\/.*$/, '');
+    for (const [re, msg] of STYLE) if (re.test(code)) errs.push(`${rel(f)} 第 ${i + 1} 行: ${msg}`);
+  });
 }
 
 if (errs.length) { console.error('檢查沒過：\n- ' + errs.join('\n- ')); process.exit(1); }
