@@ -26,7 +26,7 @@ export function createMapPainter({ MAP_BOUNDS, RIV, SIWEI, bdZ, swZ, CREEK_ROAD,
     shapes.forEach(m=>{ if(m.draw) m.draw(g,mx,my); else bld(m.x,m.z,m.w,m.d,m.color,m.label||'',m.dy); });
     g.beginPath(); g.arc(mx(0),my(FZ),9,0,7); g.fillStyle='#9cc7c9'; g.fill(); g.stroke();
     g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-175),my(-145));
-    g.fillText('四維道',mx(-120),my(swZ(-120))-12);
+    g.fillText('四維道',mx(-120),my(swZ(-120))-12); g.fillText('八德道',mx(-14),my(bdZ(-14))+24);
     return { lineCap:g.lineCap, lineJoin:g.lineJoin, textAlign:g.textAlign };
   }
   function drawDetails(c, { haveMap, crystals, player = null, baseStyle }) {

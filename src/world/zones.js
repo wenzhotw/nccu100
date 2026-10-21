@@ -29,7 +29,10 @@ registerZone(90, p => ((Math.abs(p.x - BACK_ROAD_X) < BACK_ROAD_HW + 2.8 && p.z 
   || (Math.abs(p.z - BACK_BRANCH_Z) < BACK_BRANCH_HW + 0.3 && p.x > BACK_ROAD_X && p.x < 178.5)) ? '校內道路' : null);
 registerZone(100, p => { const l = inLot(p.x, p.z); return l && !l.built ? l.name + '．預定地' : null; });
 registerZone(110, p => Math.hypot(p.x, p.z - FZ) < 10 ? '噴水池' : null);
-registerZone(120, p => { const d = p.z - bdZ(p.x); return (Math.abs(d) < 2.4 || (p.x > 12 && p.x < 92.5 && d > -5.6 && d < 4.8)) ? '八德道' : null; });   // 樂活館到電算中心那段含兩側人行道
+// 八德道：車道本身（環山一道到電算中心後面的路口），加上兩段的紅磚人行道（bade-road.js）
+registerZone(120, p => { const d = p.z - bdZ(p.x); return ((p.x > -88 && p.x < 94 && Math.abs(d) < 2.4)
+  || (p.x > 12 && p.x < 92.5 && d > -5.6 && d < 4.8)      // 東段：樂活館到電算中心
+  || (p.x > -85.2 && p.x < -7 && d > -5.8 && d < 3.6)) ? '八德道' : null; });   // 西段：學思樓、商學院之間
 registerZone(130, p => (p.x > SIWEI.x0 && p.x < SIWEI.x1 && Math.abs(p.z - swZ(p.x)) < 5.2) ? '四維道' : null);
 registerZone(131, p => Math.abs(p.z - swZ(p.x)) < 3 ? '校園步道' : null);
 registerZone(132, p => creekRoadDist(p.x, p.z) < 2.6 ? '醉夢溪畔道路' : null);

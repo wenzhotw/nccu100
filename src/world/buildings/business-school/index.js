@@ -105,6 +105,19 @@ function build() {
     plane(0.9,0.9,basic({map:badge,transparent:true}),sx+3.25,2.75,sz-0.33,0,Math.PI);
     boxC(sx-4.3,sx+4.3,sz-0.8,sz+0.8); }
   [[-40,-61],[-44,-61.5]].forEach(([x,z])=>tree(x,z,1.05));
+  /* 北面（八德道側）：基座立面與後門。總務處 2026-09 公告商學院前人行通道施工時，請改由八德道後門進出 */
+  { const NZ=BZ.z+33, DX=BZ.x+(-62-BZ.x)/BZK;   // 後門對著八德道對面的學思樓正門（世界 x = -62）
+    plane(46,10,tmB(podTex(1024,384,10)),BZ.x,5,NZ+0.04);
+    const door=canvasTex(512,352,(g,w,h)=>{ g.fillStyle='#2b2f35'; g.fillRect(0,0,w,h);
+      g.fillStyle='#3d5d86'; g.fillRect(14,14,w-28,h-14);
+      g.fillStyle='rgba(255,255,255,.14)'; g.beginPath(); g.moveTo(14,14); g.lineTo(w*0.42,14); g.lineTo(w*0.18,h); g.lineTo(14,h); g.fill();
+      g.fillStyle='#1a1d22'; [w/4,w/2,w*3/4].forEach(x=>g.fillRect(x-3,14,6,h)); g.fillRect(14,h*0.3-3,w-28,6);
+      g.fillStyle='#c9ccd0'; [w/2-14,w/2+8].forEach(x=>g.fillRect(x,h*0.55,6,46)); });
+    plane(6.4,4.6,basic({map:door}),DX,2.3,NZ+0.06);
+    block(DX,5.0,NZ+1.7,8.4,0.45,3.4,'#d8d3ca',0.04);   // 懸挑雨遮
+    block(DX,0.06,NZ+1.1,7.6,0.12,2.2,'#cdc8bf',0.01);  // 門前平台
+    const sign=hText('商學院後門','#f4f1ea','900 96px "Noto Sans TC",sans-serif',640,140,70);
+    plane(5.6,1.2,basic({map:sign,transparent:true}),DX,7.7,NZ+0.08); }
   boxC(BZ.x-23,BZ.x+23,BZ.z-11,BZ.z+33);
   { const k=BZK, ax=BZA.x, az=BZA.z, g=new THREE.Group(); g.position.set(ax,0,az); g.scale.setScalar(k);
     scene.children.slice(_bzS).forEach(c=>{ c.position.x-=ax; c.position.z-=az; g.add(c); }); scene.add(g);
