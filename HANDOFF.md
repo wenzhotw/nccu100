@@ -1,4 +1,4 @@
-# 本輪狀態：達賢2F照片站位重建 v1.55（驗收中）
+# 本輪狀態：達賢2F照片站位重建 v1.56（驗收中）
 
 - 使用者否定v1.54室內相似度，要求更多照片、以角色站位與朝向修正漂亮中庭；沿已核可2F公開範圍，其他樓層只可見不探索。
 - 工作區 `/Users/cengweiting/Developer/創業計畫/NCCU100`；分支fix/dah-hsian-interior-views，base main380d79e。原工作區乾淨；本輪全部未提交均自身修改，無新套件／服務。
@@ -7,7 +7,9 @@
 - 各行為逐一紅綠。獨立code review發現西南D梯與最西桌椅交疊、事後抬鏡頭進梯底；實際Box3/射線回歸先紅後修、原審查者兩項resolved。共享鏡頭未啟用144組比對僅浮點差。
 - 兩輪CLI1280×800/375×812完成；normal r2最高仰角與三站眼高比較提供獨立視覺審查。其disposition fix：天頂灰板/細桿不像實景、缺上層斜梯；已按清單補深鋼桁架/短跨透光格與斜梯，同檔recapture五圖完成，原視覺審查兩項resolved、限清單ship，不再自行開新瑕疵清單。
 - 最終139/139全測、check/build通過；針對18項通過，涵蓋最終視覺兩項與上層梯槽清空。產物index-f3eLdqCg.js。原審查者上層桌梯穿模也限項複核resolved。log /tmp/nccu100-2f-refine-*。手動detect僅一次[]，不重跑，原例外不擴。
-- 真鍵盤路線與原滑鼠拖曳仰視已走通，完整流程含手機已通過exec72744 exit0，/tmp/nccu100-2f-refine-flow.log；該次build在天頂/上層梯修正前。preview5187 exec96834供固定dist驗收；CLI已關閉，待該流程完再開一個3D瀏覽器複核。
+- 真鍵盤路線與原滑鼠拖曳仰視已走通，完整流程含手機已通過exec72744及最終模型exec96998 exit0，/tmp/nccu100-2f-refine-flow.log；該次build在天頂/上層梯修正前。preview5187 exec96834供固定dist驗收；CLI已關閉，待該流程完再開一個3D瀏覽器複核。
+
+- 遠端main於本輪期間新增PR65安九與PR66包種茶節，已合併origin/main98b80d7保留其內容；版本改1.56避免和安九已用1.55混淆，整合後test174+80項、check/build通過，/tmp/nccu100-2f-refine-integrated-tests-final.log、integrated-check.log、integrated-build.log；全場smoke待CI。原main安九返回測試過時與portable中文路徑問題已窄修、獨立複核正確，不改兩區產品。PR67已附本聊天，發布結果在PR驗證欄追蹤。
 
 ## 下一步
 

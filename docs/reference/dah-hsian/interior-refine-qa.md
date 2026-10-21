@@ -80,3 +80,9 @@ QA以首次玩家（移動／進出／拖曳與手機）、熟悉館內訪客（
 美術交件十項：1材質沿toon/basic/canvasTex；2色彩沿灰/木/藍毯；3實體描邊、透明/地面不套實心殼；4造型有退台/斜梯/深桁架；5貼圖全部自畫canvas非照片；6沿既有室內2燈無新增陰影燈；7眼高與角色尺度測試但非測繪；8書脊/桌腳/採光格合批共用幾何，軟體WebGL流程可運行但未測真機FPS及嚴格效能增量；9兩輪桌機/375與三站眼高比較；10 test/check/build通過，完整全場browser由CI與正式站另記。沒有冒稱第8項已全面通過。
 
 獨立documenter核對最後五圖與正式材質／PRODUCT/DESIGN/art-style後判No changes，保留既有設計系統；預先DESIGN戶外描述與缺sidecar不擅自修復。
+
+整合最新origin/main98b80d7（PR65安九/PR66包種茶節）保留其他成果，版本改1.56。該main原CI39614492276已失敗，日誌明確anjiu expected:null/actual:uphill-campus，為既有全場smoke契約過時；參照ANJIU.returnRoom與已核可功能，只補明確anjiu→uphill-campus預期並驗後續回山下，不改安九程式、不放寬逾時、不從實作讀預期。原失敗/tmp/nccu100-main-existing-failure.log；整合後需完整CI重新驗證。
+
+整合後174項程式測試通過，但新portable測試landing-save-v2.mjs的URL.pathname直接當檔案路徑，遇現有中文工作區時讀取%編碼路徑ENOENT。這是既有測試環境相容性問題（非達賢產品失敗），保留原失敗整合log；僅改readFileSync接收URL物件並用new URL解析相對路徑，不改落地/存檔斷言。先單跑portable綠，再完整測試，未修任何包種茶節產品程式。
+
+整合最終npm test成功：174項專案測試＋80項portable，check/build成功（/tmp/nccu100-2f-refine-integrated-{tests-final,check,build}.log）；其後僅文件。兩項測試相容修正由獨立審查者核對正確，未改安九/包種茶節產品。最終達賢模型版完整keyboard/mouse/touch/joystick流程另已通過/tmp/nccu100-2f-refine-final-flow.log exit0，整合版將由最新CI再覆蓋。
