@@ -1,0 +1,44 @@
+/* Scoped to the read-only department browser; does not restyle existing modals. */
+.bz-browser{position:fixed;inset:0;z-index:90;display:flex;justify-content:flex-end;background:rgb(17 35 48 / 45%);font-family:system-ui,"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#183447;isolation:isolate;overscroll-behavior:contain}
+.bz-browser[hidden]{display:none!important}
+.bz-browser *{box-sizing:border-box}
+.bz-browser__dialog{width:min(650px,65vw);height:100%;height:100dvh;display:flex;flex-direction:column;background:#fbf8ee;box-shadow:-14px 0 48px #132d3b35;animation:bz-browser-enter 180ms ease-out;min-height:0;min-width:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);padding-right:env(safe-area-inset-right)}
+.bz-browser__header{padding:22px 26px 16px;flex:none;border-bottom:1px solid #d7ddd0;display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
+.bz-browser__header h2{grid-column:1/-1;font-size:clamp(23px,3vw,32px);line-height:1.35;margin:0;letter-spacing:.02em;overflow-wrap:anywhere}
+.bz-browser__college{font-size:13px;font-weight:750;display:flex;gap:8px;align-items:center}
+.bz-browser__college::before{content:"";display:block;width:12px;height:12px;border-radius:50%;background:var(--college-color,#6a8a72);border:1px solid #18344733}
+.bz-browser button,.bz-browser select{font:inherit;color:inherit;touch-action:manipulation}
+.bz-browser button{cursor:pointer;min-height:44px;border:1px solid transparent}
+.bz-browser__close{background:transparent;border-radius:8px!important;padding:8px 10px;font-size:14px!important}
+.bz-browser__close:hover{background:#e6ebdf}
+.bz-browser__tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:0 18px;flex:none;border-bottom:1px solid #cbd6cb;background:#f5f4e9}
+.bz-browser__tabs button{background:transparent;border-radius:0;padding:12px 4px;line-height:1.4;font-size:14px;font-weight:650;border-bottom:3px solid transparent}
+.bz-browser__tabs button[aria-selected=true]{border-bottom-color:#375e4a;color:#294c39;background:#e8eedf}
+.bz-browser__content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:24px 28px 32px;line-height:1.85;overflow-wrap:anywhere;font-size:15px}
+.bz-browser h3{font-size:18px;line-height:1.5;margin:26px 0 10px;font-weight:750}
+.bz-browser h3:first-child{margin-top:0}
+.bz-browser p{margin:8px 0 13px}
+.bz-browser ul{margin:8px 0 16px;padding-left:23px}
+.bz-browser li{padding:3px 0}
+.bz-browser__intro{font-size:20px;font-weight:650;line-height:1.7;border-left:3px solid #7c9875;padding-left:16px;margin-top:0!important}
+.bz-browser__note{font-size:13px;color:#54635f}
+.bz-browser__notice{background:#edf0e2;border:1px solid #d2dbc4;border-radius:9px;padding:12px 14px;font-size:14px}
+.bz-browser__card{padding:16px 18px;background:#fffdf6;border:1px solid #d3dccc;border-radius:12px;margin:12px 0}
+.bz-browser__card h4{font-size:19px;margin:0 0 5px}
+.bz-browser__sources{border-top:1px solid #d8dfd1;margin-top:22px;padding-top:12px;font-size:12px;color:#52645e}
+.bz-browser summary{cursor:pointer;min-height:44px;display:list-item;padding:10px 2px;font-weight:650}
+.bz-browser a{color:#285b79;text-underline-offset:3px}
+.bz-browser__sources p{margin:6px 0}
+.bz-browser__group-label{display:block;font-weight:700;margin:20px 0 8px}
+.bz-browser select{display:block;width:100%;min-height:48px;padding:10px 12px;background:#fffdf6;border:1px solid #809b86;border-radius:8px;font-size:14px}
+.bz-browser__footer{flex:none;padding:14px 24px;border-top:1px solid #d5dccd;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f2f3e8}
+.bz-browser__footer span{font-size:12px;color:#54635f}
+.bz-browser__talk{padding:10px 18px;background:#284d3e;color:#fff!important;border-radius:9px;font-size:14px!important;font-weight:650;flex-shrink:0}
+.bz-browser :focus-visible{outline:3px solid #a96e16;outline-offset:2px}
+@keyframes bz-browser-enter{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media(max-width:700px){.bz-browser{padding:8px 0 0 8px}.bz-browser__dialog{width:100%;height:100%;max-height:100dvh;border-radius:16px 0 0 0}.bz-browser__header{padding:16px 18px 12px;gap:8px}.bz-browser__tabs{padding:0 8px}.bz-browser__tabs button{font-size:12px;padding:12px 2px}.bz-browser__content{padding:19px 19px 28px;font-size:14px}.bz-browser__intro{font-size:18px}.bz-browser__footer{padding:12px 16px;gap:7px}.bz-browser__footer span{font-size:11px}.bz-browser__talk{padding:10px 12px;font-size:13px!important}}
+@media(prefers-reduced-motion:reduce){.bz-browser__dialog{animation:none;scroll-behavior:auto}}
+#bz-booth-browse-button{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:55;min-height:48px;max-width:90vw;padding:12px 20px;border:1px solid #738b73;border-radius:12px;background:#faf6e9;color:#193a2c;box-shadow:0 4px 18px #18342730;font:650 15px/1.4 system-ui,sans-serif;cursor:pointer;touch-action:manipulation}
+#bz-booth-browse-button[hidden]{display:none!important}
+#bz-booth-browse-button:focus-visible{outline:3px solid #a96e16;outline-offset:3px}
+@media(max-width:700px){#bz-booth-browse-button{bottom:calc(180px + env(safe-area-inset-bottom));font-size:14px}}
