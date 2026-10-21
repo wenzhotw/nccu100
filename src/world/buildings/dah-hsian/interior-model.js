@@ -1,6 +1,7 @@
 /** 達賢2F模型。純Three幾何，Node可驗證，正式材質由interior-map注入。 */
 import * as THREE from 'three';
 import {FURNITURE,COLUMNS,WALLS} from './interior-layout.js';
+import {buildAtrium} from './interior-atrium.js';
 const BOX=new THREE.BoxGeometry(1,1,1);
 export const INTERIOR_COLORS={concrete:'#c7c6bd',wall:'#e4e2d8',floor:'#d7d1c2',carpet:'#51758a',white:'#ecebe6',wood:'#bb9469',woodDark:'#8b684c',glass:'#b1cfce',clear:'#bdd8da',ink:'#35495a',metal:'#b6c5c4',light:'#fff6d7',sofa:'#967b68',green:'#75a95a',bookRed:'#bc7969',bookGold:'#d6b465',bookBlue:'#7195a4',bookGreen:'#8ca68b'};
 export function createInteriorModel(materialFor){
@@ -17,7 +18,12 @@ export function createInteriorModel(materialFor){
  box(root,'floor',0,-.12,.5,46,.24,47,'2樓地板');
  box(root,'carpet',-11.4,-.013,8,22.8,.05,16,'挑空區藍地毯');
  box(root,'carpet',-.3,-.013,20,45,.05,8,'閱覽區藍地毯');
- for(const o of WALLS)box(root,o.kind||'concrete',o.x,o.h/2,o.z,o.w,o.h,o.d,'2樓邊界牆',o.kind!=='clear');
+ for(const o of WALLS){
+  if(o.x===-22.9||o.z===24){
+   box(root,'concrete',o.x,.14,o.z,o.w,.28,o.d,'窗下矮基座');
+   box(root,'concrete',o.x,4.08,o.z,o.w,.24,o.d,'窗上橫樑');
+  }else box(root,o.kind||'concrete',o.x,o.h/2,o.z,o.w,o.h,o.d,'2樓邊界牆',o.kind!=='clear');
+ }
  for(const z of [-22.75,-20,-17,-13.25])repeat('metal',-6.1,1.8,z,.1,3.6,.07);
  for(const y of [.05,3.55])repeat('metal',-6.1,y,-18,.1,.07,9.5);
  // 只封非公開作業區，從走道看見其門與特藏展示外牆。
@@ -29,12 +35,22 @@ export function createInteriorModel(materialFor){
  // 窗面不當成透明無形開口：邊界牆及玻璃共同阻擋。
  for(let z=-19;z<=22;z+=3){
   if(Math.abs(z+12)<2)continue;
-  box(root,'glass',-22.77,2.15,z,.07,3.5,2.8,'西側落地玻璃');
+  box(root,'clear',-22.77,2.15,z,.07,3.5,2.8,'西側落地玻璃');
   repeat('white',-22.68,2.1,z-1.5,.12,4.2,.09);
  }
  for(let x=-20;x<22;x+=3){
-  box(root,'glass',x,2.15,23.87,2.9,3.5,.06,'南側落地玻璃');
+  box(root,'clear',x,2.15,23.87,2.9,3.5,.06,'南側落地玻璃');
   repeat('white',x-1.5,2.1,23.8,.09,4.2,.13);
+ }
+ const garden=new THREE.Group();garden.name='窗外露台與植栽';root.add(garden);
+ box(garden,'woodDark',0,-.12,27,48,.18,6,'南側木露台');
+ box(garden,'green',0,-.25,42,76,.2,25,'窗外草坡');
+ box(garden,'green',-32,-.25,0,18,.2,65,'西側草坪');
+ for(let x=-23;x<24;x+=1.2)repeat('wood',x,-.015,27,.022,.016,5.9);
+ for(let x=-22;x<25;x+=3){repeat('metal',x,.52,30,.045,1,.045);repeat('metal',x,.95,30,3.1,.04,.045);}
+ for(const [x,z]of [[-24,35],[-16,38],[-7,37],[2,39],[12,37],[22,36],[-30,-16],[-32,-5],[-31,10],[-30,24]]){
+  box(garden,'woodDark',x,1.7,z,.35,3.4,.35,'窗外樹幹');
+  const canopy=new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),mat('green'));canopy.position.set(x,4,z);canopy.scale.set(2.6,3,2.4);garden.add(canopy);
  }
  // 西側風除入口，門前不放實體中央板，玩家由互動鈕進出。
  for(const z of [-13.65,-10.35])box(root,'metal',-22.78,2.05,z,.16,4.1,.12,'入口門框');
@@ -50,26 +66,7 @@ export function createInteriorModel(materialFor){
   for(const x of [-18,-10,-3])repeat('light',x,3.65,z+1.1,4,.045,.10);
  }
  for(let x=-20;x<20;x+=4)repeat('light',x,3.9,20.5,2.7,.04,.09);
- // 上方只做挑空中庭可見的迴廊與天窗，未製作樓層不能走到。
- for(const y of [4.5,7.6,10.7,13.8,16.9]){
-  box(root,'concrete',-11.5,y,0,23,.55,.65,'挑空北迴廊',true);
-  box(root,'concrete',-11.5,y,16,23,.55,.65,'挑空南迴廊',true);
-  box(root,'concrete',-22,y,8,.65,.55,16,'挑空西迴廊',true);
-  box(root,'concrete',-.6,y,8,.65,.55,16,'挑空東迴廊',true);
-  for(const z of [.38,15.62]){
-   box(root,'glass',-11.3,y+.8,z,21.2,.95,.06,'上層玻璃欄杆');
-   repeat('wood',-11.3,y+1.3,z,21.2,.07,.10);
-   for(let x=-21;x<0;x+=2.3)repeat('metal',x,y+.8,z,.045,1,.06);
-  }
-  for(const x of [-21.62,-.98]){
-   box(root,'glass',x,y+.8,8,.06,.95,14.8,'上層側欄杆');
-   repeat('wood',x,y+1.3,8,.1,.07,14.8);
-  }
-  for(let x=-20;x<0;x+=3.5)repeat('wood',x,y+1.3,16.5,2,.15,.4);
- }
- box(root,'glass',-11.5,20,8,23,.1,16,'中庭天窗');
- for(let z=0;z<=16;z+=2)repeat('white',-11.5,19.9,z,23,.16,.1);
- for(const x of [-22.5,-15,-8,-.5])repeat('concrete',x,12,16,.65,15,.65);
+ buildAtrium(root,mat);
  // 感恩牆：彩色陶片圍繞館名，採幾何與自畫字樣，不使用照片貼圖。
  box(root,'woodDark',-11.5,2.1,-22.77,16,3.7,.18,'感恩牆基底',true);
  const petal=new THREE.IcosahedronGeometry(1,1);
@@ -79,10 +76,6 @@ export function createInteriorModel(materialFor){
   const m=new THREE.Mesh(petal,mat(colors[i%colors.length]));
   m.position.set(-11.5+Math.cos(a)*r*2.1,2.15+Math.sin(a)*r*.49,-22.59);
   m.scale.set(.11+(i%3)*.025,.15,.07);m.rotation.z=a;root.add(m);
- }
- // 藍毯黃金QR圖樣，以抽象定位圖形呈現，不嵌真網址或生成假的可掃碼。
- for(const [x,z]of [[-13,5],[-7,5],[-13,11]]){
-  repeat('bookGold',x,.009,z,1.8,.014,1.8);repeat('carpet',x,.018,z,1.15,.012,1.15);repeat('bookGold',x,.026,z,.55,.01,.55);
  }
  // 服務櫃台外形是圓角弧端，碰撞採其保守外框；後方工作區不開放。
  for(const o of FURNITURE){
@@ -116,8 +109,12 @@ export function createInteriorModel(materialFor){
     }
    }
   }else if(o.kind==='stairs'){
-   for(let i=0;i<20;i++)box(g,'concrete',0,(i+1)*.1,-o.d/2+i*.3,o.w,(i+1)*.2,.3,'可見上樓階梯');
+   const flight=box(g,'concrete',0,1.9,-.15,o.w,.18,Math.hypot(o.d,4),'斜向樓梯底板');flight.rotation.x=-Math.atan2(4,o.d);
+   for(let i=0;i<20;i++)box(g,'concrete',0,(i+1)*.2-.07,-o.d/2+i*.3,o.w,.14,.3,'可見上樓階梯');
    for(const side of [-1,1])for(let i=0;i<20;i++)box(g,'metal',side*(o.w/2-.1),(i+1)*.2+.5,-o.d/2+i*.3,.045,1,.045,'樓梯扶手柱');
+   for(const side of [-1,1]){
+    const rail=box(g,'wood',side*(o.w/2-.1),2.6,0,.065,.065,Math.hypot(o.d,4),'樓梯連續扶手');rail.rotation.x=-Math.atan2(4,o.d);
+   }
    box(g,'metal',0,.55,-o.d/2-.05,o.w,1.1,.08,'關閉樓梯欄門',true);
   }else if(o.kind==='gate'){
    box(g,'metal',0,.52,0,o.w,1.04,o.d,'閘門機柱',true);
@@ -127,7 +124,13 @@ export function createInteriorModel(materialFor){
    box(g,'wood',0,.71,0,o.w,.1,o.d,'閱讀桌面',true);
    for(const x of [-o.w/2+.15,o.w/2-.15])for(const z of [-o.d/2+.15,o.d/2-.15])box(g,'metal',x,.34,z,.06,.68,.06,'桌腳');
   }else if(o.kind==='sofa'||o.kind==='chair'){
-   box(g,'sofa',0,.3,0,o.w,.5,o.d,'座墊',true);box(g,'sofa',0,.7,o.d/2-.12,o.w,.4,.25,'椅背',true);
+   const chair=o.kind==='chair',fabric=chair?'bookBlue':'sofa';
+   box(g,fabric,0,.4,0,o.w,.22,o.d,'座墊',true);
+   box(g,fabric,0,.72,chair?-o.d/2+.08:o.d/2-.1,o.w,.48,.16,'椅背',true);
+   for(const x of [-o.w/2+.09,o.w/2-.09]){
+    box(g,chair?'wood':'sofa',x,.58,0,.09,.16,o.d,'扶手');
+    for(const z of [-o.d/2+.09,o.d/2-.09])box(g,'wood',x,.18,z,.05,.36,.05,'座椅腳');
+   }
   }else{
    box(g,'white',0,o.h/2,0,o.w,o.h,o.d,'自助設備本體',true);
    box(g,'ink',0,o.h*.78,-o.d/2-.015,o.w*.75,o.h*.25,.03,'觸控螢幕');
@@ -135,13 +138,22 @@ export function createInteriorModel(materialFor){
    box(g,'ink',0,o.h*.35,-o.d/2-.02,o.w*.6,.08,.04,'取還書槽');
   }
  }
- // 特藏側展示龕與電梯外觀；門後不建立可走區。
- for(const z of [4,10]){
-  box(root,'woodDark',-.27,1.5,z,.1,2.4,4.8,'特藏展示牆');
-  for(const yy of [.5,1.4,2.3])for(const zz of [z-1.4,z,z+1.4]){
-   box(root,'wood',-.35,yy,zz,.25,.08,1.2,'展示層板');
-   repeat('bookGold',-.52,yy+.25,zz,.25,.4,.3);
+ // 特藏正面：中央展示螢幕、兩側暗底格櫃與陶器，保留書牆下的觀看焦點。
+ box(root,'wood',-.27,1.7,8,.16,3.4,14,'特藏正面飾板');
+ box(root,'ink',-.4,1.7,8,.08,1.85,6.2,'展示螢幕黑框');
+ box(root,'display',-.46,1.7,8,.04,1.65,6,'自畫典藏展示畫面');
+ const vaseProfile=[new THREE.Vector2(.13,0),new THREE.Vector2(.14,.05),new THREE.Vector2(.25,.15),new THREE.Vector2(.24,.3),new THREE.Vector2(.12,.4),new THREE.Vector2(.09,.53)];
+ const vaseGeo=new THREE.LatheGeometry(vaseProfile,10);
+ for(const z of [2.5,13.5]){
+  box(root,'ink',-.4,1.7,z,.12,2.7,3.9,'特藏暗底展示龕');
+  for(const yy of [.45,1.35,2.25]){
+   box(root,'wood',-.6,yy,z,.5,.055,3.8,'特藏水平層板');
+   for(let j=0;j<3;j++){
+    const v=new THREE.Mesh(vaseGeo,mat(['white','bookGold','bookGreen'][j]));v.name='典藏陶器';v.position.set(-.68,yy+.04,z-1.25+j*1.25);v.scale.setScalar(.8+(j%2)*.25);root.add(v);
+   }
   }
+  for(const zz of [z-1.9,z-.65,z+.65,z+1.9])box(root,'wood',-.6,1.7,zz,.5,2.7,.045,'展示豎框');
+  repeat('light',-.64,3.03,z,.44,.03,3.8);
  }
  for(const z of [2,8]){
   box(root,'metal',-22.55,1.55,z,.12,3,1.9,'電梯門');repeat('ink',-22.45,1.55,z,.015,2.9,.04);

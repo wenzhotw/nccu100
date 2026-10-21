@@ -30,6 +30,7 @@ import { camT, groundH, indoor, lerpA, pos, spots, vel, zoneOf } from './gamepla
 import { NPCS, npcUpdate } from '../actors/npc.js';
 import { carSpot, exitCar, sirenB, sirenR, updateDrive } from '../systems/police-drive.js';
 import { buildOccluders, camDir, camRay } from '../systems/camera-occlusion.js';
+import {frameRoomCamera,roomOrbitDirection} from '../systems/room-view.js';
 import { updateFoliage } from '../systems/foliage-fade.js';
 import { cameraFov, drawMini, heroJuice, placePrompt, puff, updatePuffs } from '../systems/feel.js';
 
@@ -122,16 +123,15 @@ function update(dt){
   if(state.driving&&Math.abs(state.carSpeed)>1&&state.camPtr===null) state.yaw=lerpA(state.yaw,state.carYaw+(state.carSpeed>0?Math.PI:0),1-Math.exp(-dt*2.5));
   const tf=(!dlg.hidden&&state.talkFocus)?state.talkFocus:null;
   camT.lerp(tf?new THREE.Vector3((pos.x+tf.x)/2,pos.y+1.05,(pos.z+tf.z)/2):new THREE.Vector3(pos.x,pos.y+(state.driving?1.5:0.9),pos.z),1-Math.exp(-dt*(tf?3:8)));
-  const cp=Math.cos(state.pitch); const RC=ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.camera;
+  const RC=ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.camera;
   let dWant=indoor()?Math.min(state.dist,(RC&&RC.maxDist)||6.5):(state.driving?Math.max(state.dist,10):state.dist); if(tf) dWant=Math.min(dWant,4.6);
-  camDir.set(Math.sin(state.yaw)*cp,Math.sin(state.pitch),Math.cos(state.yaw)*cp);
+  roomOrbitDirection(camDir,state.yaw,state.pitch,camT,dWant,RC);
   if(state.OCC.length){ camRay.set(camT,camDir); camRay.far=dWant+0.6; const hit=camRay.intersectObjects(state.OCC,false)[0]; if(hit) dWant=Math.max(0.9,hit.distance-0.45); }
   state.camD=dWant<state.camD?dWant:state.camD+(dWant-state.camD)*(1-Math.exp(-dt*3));
   camera.position.copy(camT).addScaledVector(camDir,state.camD);
   // 室內：鏡頭不能出房間、不能高過天花板（範圍由房間設定的 camera 決定）
   if(RC){ camera.position.x=Math.max(RC.x0,Math.min(RC.x1,camera.position.x)); camera.position.z=Math.max(RC.z0,Math.min(RC.z1,camera.position.z)); if(RC.ceil) camera.position.y=Math.min(RC.ceil,camera.position.y); }
-  if(camera.position.y<0.5) camera.position.y=0.5;
-  camera.lookAt(camT);
+  frameRoomCamera(camera,camT,state.pitch,RC);
   // 除錯用的自由視角（__game.view），平常不會用到
   if(state.viewCam){ const v=state.viewCam; camera.position.set(v[0],v[1],v[2]); camera.lookAt(v[3],v[4],v[5]); }
   updateFoliage(dt,camera,camT);   // 擋住視線的樹冠變透明

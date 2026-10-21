@@ -14,12 +14,28 @@ export function buildInterior(){
  const materials=new Map();
  const floor=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#d7d1c2';g.fillRect(0,0,w,h);g.strokeStyle='#bdb9ae';g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);},[32,32]);
  const carpet=canvasTex(128,128,(g,w,h)=>{g.fillStyle='#51758a';g.fillRect(0,0,w,h);g.strokeStyle='#5b7c8d';g.lineWidth=1;for(let i=0;i<128;i+=8){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.stroke();}},[3,3]);
+ const display=canvasTex(1024,256,(g,w,h)=>{
+  g.fillStyle='#c4d9e2';g.fillRect(0,0,w,h);
+  g.fillStyle='#75a95a';g.beginPath();g.moveTo(0,h);for(let x=0;x<=w;x+=40)g.lineTo(x,110+Math.sin(x*.014)*30);g.lineTo(w,h);g.fill();
+  g.fillStyle='#ecebe6';g.fillRect(90,80,360,130);g.fillRect(570,65,350,150);
+  g.fillStyle='#7195a4';for(let i=0;i<9;i++)for(let j=0;j<3;j++){g.fillRect(105+i*36,94+j*32,26,16);g.fillRect(585+i*36,80+j*34,26,18);}
+ });
+ const glyph=canvasTex(512,512,(g)=>{
+  g.strokeStyle='#d6b465';g.fillStyle='#d6b465';g.lineWidth=7;
+  for(const [x,y]of [[28,28],[358,28],[28,358],[358,358]]){g.strokeRect(x,y,126,126);g.strokeRect(x+23,y+23,80,80);g.fillRect(x+47,y+47,32,32);}
+  for(let y=0;y<25;y++)for(let x=0;x<25;x++){
+   if((x<8||x>16)&&(y<8||y>16))continue;
+   if(((x*13+y*7+x*y)%11)<5)g.fillRect(20+x*19,20+y*19,17,17);
+  }
+ });
  const materialFor=kind=>{
+  if(kind==='display')return basic({map:display});
   if(kind==='outline')return OUT;
-  if(!materials.has(kind))materials.set(kind,toon(INTERIOR_COLORS[kind]||'#e4e2d8',kind==='floor'?{map:floor}:kind==='carpet'?{map:carpet}:kind==='clear'?{transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide}:undefined));
+  if(!materials.has(kind))materials.set(kind,toon((kind==='floor'||kind==='carpet')?'#ffffff':INTERIOR_COLORS[kind]||'#e4e2d8',kind==='floor'?{map:floor}:kind==='carpet'?{map:carpet}:kind==='clear'?{transparent:true,opacity:.14,depthWrite:false,side:THREE.DoubleSide}:kind==='light'?{emissive:INTERIOR_COLORS.light,emissiveIntensity:.35}:undefined));
   return materials.get(kind);
  };
  const model=createInteriorModel(materialFor);scene.add(model);colliders.push(...interiorColliders());
+ const carpetArt=new THREE.Mesh(new THREE.PlaneGeometry(7,7),basic({map:glyph,transparent:true,depthWrite:false}));carpetArt.name='自畫藍毯金色圖樣';carpetArt.rotation.x=-Math.PI/2;carpetArt.position.set(-11.5,.026,8);model.add(carpetArt);
  sign(model,'國立政治大學　達賢圖書館',-11.5,2.25,-22.45,7.3,.55);
  sign(model,'Dah Hsian Seetoo Library',-11.5,1.7,-22.44,6.4,.28);
  sign(model,'諮詢・借閱服務',-7,2.9,-3.9,3.2,.4,Math.PI/2,'#35495a');

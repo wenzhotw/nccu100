@@ -24,7 +24,7 @@ export default defineBuilding({
     entrance:OUTDOOR_DOOR,spawn:INTERIOR_SPAWN,exit:INTERIOR_EXIT,
     returnRoom:'dah-hsian',returnTo:OUTDOOR_RETURN,bounds:INTERIOR_BOUNDS,zone:interiorZone,
     miniSub:'大廳・挑空展示・閱覽',
-    camera:{...INTERIOR_BOUNDS,ceil:19,maxDist:6},
+    camera:{...INTERIOR_BOUNDS,ceil:19,maxDist:6,lookUpHeight:6.5,eyeFloor:1.4},
   }],
 });
 

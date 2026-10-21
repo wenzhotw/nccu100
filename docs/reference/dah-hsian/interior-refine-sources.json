@@ -1,0 +1,251 @@
+{
+  "sources": [
+    "https://www.rtc.com.tw/en/projects/masterpiece1-en/",
+    "https://wakame.tw/en/work/others/others11.html",
+    "https://commons.wikimedia.org/wiki/File:Dah_Hsian_Seetoo_Library_inside.jpg"
+  ],
+  "photos": [
+    {
+      "name": "wakame-37",
+      "url": "https://wakame.tw/pic/work/others/others11/37.webp",
+      "file": "wakame-37.webp",
+      "view": "wakame-37-view.jpg",
+      "sha256": "de38a13bcedf4848f7555309ae554d927f376bbf8eb75c98e5c2e8496dad47ab",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-38",
+      "url": "https://wakame.tw/pic/work/others/others11/38.webp",
+      "file": "wakame-38.webp",
+      "view": "wakame-38-view.jpg",
+      "sha256": "895145c74d911235b44c554dfd93f6fbddfd2f35071e6ec2978975d2fbf89959",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-39",
+      "url": "https://wakame.tw/pic/work/others/others11/39.webp",
+      "file": "wakame-39.webp",
+      "view": "wakame-39-view.jpg",
+      "sha256": "3c1556eafef57378af574190efbe3fa0ffafb377a5504b97a10d0d3710e6d6f3",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-44",
+      "url": "https://wakame.tw/pic/work/others/others11/44.webp",
+      "file": "wakame-44.webp",
+      "view": "wakame-44-view.jpg",
+      "sha256": "4cb69f736c67c46b9809be345cbceef80d8efff52869b3558432567e1d3e2f98",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-45",
+      "url": "https://wakame.tw/pic/work/others/others11/45.webp",
+      "file": "wakame-45.webp",
+      "view": "wakame-45-view.jpg",
+      "sha256": "8857db45cb0c97b79abd9af001e927d382f7e08f731440f22bd5526fbd3e340c",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-46",
+      "url": "https://wakame.tw/pic/work/others/others11/46.webp",
+      "file": "wakame-46.webp",
+      "view": "wakame-46-view.jpg",
+      "sha256": "9281fba83b79612f50354b4b60a4c2540b9cfee7c7b721b56b597c907095c717",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-47",
+      "url": "https://wakame.tw/pic/work/others/others11/47.webp",
+      "file": "wakame-47.webp",
+      "view": "wakame-47-view.jpg",
+      "sha256": "df0bd82015011f83475de1644bcd34018431fceb1be149560997001780c95c3d",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-48",
+      "url": "https://wakame.tw/pic/work/others/others11/48.webp",
+      "file": "wakame-48.webp",
+      "view": "wakame-48-view.jpg",
+      "sha256": "bb895386510395c0645df89139bbc56332fd83e4fd1a9de087aefb5c82f2fad2",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-49",
+      "url": "https://wakame.tw/pic/work/others/others11/49.webp",
+      "file": "wakame-49.webp",
+      "view": "wakame-49-view.jpg",
+      "sha256": "3984798421ec30e41487cdb2529fe083fc2483897a1d570c910739278a2e8f42",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "wakame-50",
+      "url": "https://wakame.tw/pic/work/others/others11/50.webp",
+      "file": "wakame-50.webp",
+      "view": "wakame-50-view.jpg",
+      "sha256": "391f295e3718969dfae6afe458305773d8c7488be7c706da92d836cfe5788f97",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-51",
+      "url": "https://wakame.tw/pic/work/others/others11/51.webp",
+      "file": "wakame-51.webp",
+      "view": "wakame-51-view.jpg",
+      "sha256": "b65e2ae883dc85319e304a79f8b39ea50d12ab5c8da2731b4282e431c5e015ae",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-53",
+      "url": "https://wakame.tw/pic/work/others/others11/53.webp",
+      "file": "wakame-53.webp",
+      "view": "wakame-53-view.jpg",
+      "sha256": "bdb0a24f9ef8d4bbacd1725ef104d5a931378ccd2628195e68242c983ff47810",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-62",
+      "url": "https://wakame.tw/pic/work/others/others11/62.webp",
+      "file": "wakame-62.webp",
+      "view": "wakame-62-view.jpg",
+      "sha256": "bdd9b57e974576ad12935095989753d3c3d05663eddaab54309bd3abe63afd6b",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-63",
+      "url": "https://wakame.tw/pic/work/others/others11/63.webp",
+      "file": "wakame-63.webp",
+      "view": "wakame-63-view.jpg",
+      "sha256": "0ee40c3d15b7ed9b1a6df41defe7f5a029eb0bc0917701321bec873c82645146",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-72",
+      "url": "https://wakame.tw/pic/work/others/others11/72.webp",
+      "file": "wakame-72.webp",
+      "view": "wakame-72-view.jpg",
+      "sha256": "dd562b65da426520f25803de775fdd6999281019e9932ab1975105d752c6ba13",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-73",
+      "url": "https://wakame.tw/pic/work/others/others11/73.webp",
+      "file": "wakame-73.webp",
+      "view": "wakame-73-view.jpg",
+      "sha256": "0ed4aedbcd95b12a24fa88d52e7e99a65a2406662f9272190c8cbb944473b71a",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "wakame-74",
+      "url": "https://wakame.tw/pic/work/others/others11/74.webp",
+      "file": "wakame-74.webp",
+      "view": "wakame-74-view.jpg",
+      "sha256": "8e82852a7c4680d400116ad36a0701f0a3ed6fd2037b1e1e246673841f4125ec",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "commons-2022",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Dah_Hsian_Seetoo_Library_inside.jpg",
+      "file": "commons-2022.jpg",
+      "view": "commons-2022-view.jpg",
+      "sha256": "c86e6c7e6b64c601196777721a01a6eae67b2eee9a45d8bc85744b81b7d2310c",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "rtc-10",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/IMG_2499-retwofch4uaqur7j2d8z0ocwgecsuc5iitkw4t2h14.jpg",
+      "file": "rtc-10.jpg",
+      "view": "rtc-10-view.jpg",
+      "sha256": "2fc5e89ac4cfe5cd8bb1b2f157129e48e7d3d8ad8e3c3c9588a8bf05f83debf2",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "rtc-11",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/IMG_E2530-retwogabboc16d65wvnll64d1s862198uy8dm312uw.jpg",
+      "file": "rtc-11.jpg",
+      "view": "rtc-11-view.jpg",
+      "sha256": "4f5d0bc9b7a2956b61b30e40285c83d0ab8363237cc8f38ad1223cb28a1479b5",
+      "inspected": true,
+      "role": "upper-floor-context"
+    },
+    {
+      "name": "rtc-12",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/IMG_E2542-retwogabboc16d65wvnll64d1s862198uy8dm312uw.jpg",
+      "file": "rtc-12.jpg",
+      "view": "rtc-12-view.jpg",
+      "sha256": "19eae5792e0d94383ab5a9950f1711f981413e0dfb7846e20a502c2b58acf2a8",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "rtc-13",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/IMG_4203-retwogabboc16d65wvnll64d1s862198uy8dm312uw.jpg",
+      "file": "rtc-13.jpg",
+      "view": "rtc-13-view.jpg",
+      "sha256": "d6b15a0b9e5d95f147027b0bf0640b156325e5877aa260445033abe340899b21",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "rtc-17",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/DSC06693-retwiu70iandu7bpoyat7349bxw933yyf5yzflcq0o.jpg",
+      "file": "rtc-17.jpg",
+      "view": "rtc-17-view.jpg",
+      "sha256": "3bc91c537cf2d26c6c8fd2cdaad4dc7facc9fe614a5c9e303fa1681819e64257",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    },
+    {
+      "name": "rtc-18",
+      "url": "https://www.rtc.com.tw/wp-content/uploads/elementor/thumbs/%E5%9C%96%E7%89%873-1-retwiu70iandu7bpoyat7349bxw933yyf5yzflcq0o.jpg",
+      "file": "rtc-18.jpg",
+      "view": "rtc-18-view.jpg",
+      "sha256": "e8c44832174551e79809806eb2563d8f7a5c5429f942baa4627b8a05833bcae5",
+      "inspected": true,
+      "role": "2f-or-building-context"
+    }
+  ],
+  "additionalViews": [
+    {
+      "file": "vr-atrium-up.png",
+      "sha256": "600a3cd043f9088598f2c9481ac322bd1bb07ab49acee047fb5850deb87b9448",
+      "station": "atrium",
+      "heading": 0,
+      "pitch": 27,
+      "date": "2020-02",
+      "copyright": "Nina Ku",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "inspected": true,
+      "match": "同地標估算構圖，非測繪配準"
+    },
+    {
+      "file": "vr-reading-back.png",
+      "sha256": "0c401a7db88ed28832442d3c0ea2a72e194550bc53d33a491044ac3e41ce3013",
+      "station": "reading",
+      "heading": 270,
+      "pitch": 15,
+      "date": "2020-02",
+      "copyright": "Nina Ku",
+      "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "inspected": true,
+      "match": "同地標估算構圖，非測繪配準"
+    }
+  ]
+}
