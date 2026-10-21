@@ -5,7 +5,7 @@ import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDG
 import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampLandscape } from './terrain.js';
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 import { addLobbyExterior } from './lobby-exterior.js';
-import { addCourtyard, courtyardColliders } from './courtyard.js';
+import { addCourtyard, courtyardColliders, dTowerGeometries } from './courtyard.js';
 import {createLobby,lobbyColliders} from './lobby.js';
 
 const CELL = 0.25;
@@ -199,6 +199,8 @@ function addBuildingsAndWalls(group) {
   const fc=fill.boundingBox.getCenter(new THREE.Vector3()), fs=fill.boundingBox.getSize(new THREE.Vector3());
   edges.push(fill.clone().translate(-fc.x,-fc.y,-fc.z).scale(1+0.08/fs.x,1+0.08/fs.y,1+0.08/fs.z).translate(fc.x,fc.y,fc.z));
   addMerged(group, '九舍大廳下層填充', [fill], buildingMaterial);
+  // 照片 9022、9027 的九舍 D 區西端圓弧樓梯間，併進建築網格。
+  const tower = dTowerGeometries(); shapes.push(tower.body); edges.push(tower.edge);
   addMerged(group, '建築', shapes, buildingMaterial);
   addMerged(group, '建築描邊', edges, edgeMaterial);
   const walls = [], wallEdges = [];

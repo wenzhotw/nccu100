@@ -1,6 +1,6 @@
 /** 依 2026-10-20 的 9033、9034、9028 照片建立坡道東側步道與草坡。 */
 import * as THREE from 'three';
-import { RAMPS, STAIRS } from './layout.js';
+import { LAYOUT, RAMPS, STAIRS } from './layout.js';
 import { heightAt, projectToPath, rampHeight, rampLandscape } from './terrain.js';
 
 const silver = new THREE.MeshToonMaterial({ color: '#b9c7c9' });
@@ -20,10 +20,14 @@ JERSEY.computeVertexNormals();
 export function rampProps() {
   const parts=[], ramp=RAMPS[0],jiu=STAIRS.find(s=>s.id==='jiu-plaza');
   const add=(name,kind,x,z,w,h,d,th,base,color,shape='box')=>parts.push({name,kind,x,z,w,h,d,th,base,color,shape});
-  for(let i=1;i<ramp.path.length;i++) {
-    const a=ramp.path[i-1],b=ramp.path[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  // 照片 9027：坡頂以東到九舍 D 區西端的平路，西側護欄照坡道段的間距延續一段。
+  const road=LAYOUT.roads.find(r=>r.osm===510811176);
+  const top=road.pts.findIndex(([x,z])=>x===ramp.path.at(-1)[0]&&z===ramp.path.at(-1)[1]);
+  const path=[...ramp.path,road.pts[top+1]];
+  for(let i=1;i<path.length;i++) {
+    const a=path[i-1],b=path[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
     const ux=(b[0]-a[0])/length,uz=(b[1]-a[1])/length;
-    for(let s=1;s<length;s+=2) {
+    for(let s=i===ramp.path.length?2:1;s<length;s+=2) {
       if(i===1 && s<2) continue;
       const x=a[0]+ux*s+uz*2.7,z=a[1]+uz*s-ux*2.7;
       // 好漢坡支線接入道路處保留整個入口。

@@ -18,7 +18,7 @@ import { zoneName } from './zone-names.js';
 import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
 
 import { buildCourtyardScenery, batchCourtyardScene } from './courtyard-scenery.js';
-import {installLobbyRoof} from './lobby.js';
+import {installLobbyRoof,signTextLayout} from './lobby.js';
 import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
 
 export function buildAnjiu() {
@@ -131,9 +131,12 @@ export function buildGreybox() {
       for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/2,p.getY(i)/2);o.geometry.setAttribute('uv',uv);
     }
     if(o.userData.signAtlas) {
-      const tex=canvasTex(1024,256,(g)=>o.userData.signAtlas.forEach(({text},i)=>{
-        const t=hText(text,'#385846','700 40px "Noto Sans TC",sans-serif',512,64,28);
-        g.drawImage(t.image,(i%2)*512,Math.floor(i/2)*64);t.dispose();
+      // hText 會把字平均拉滿整格，兩字的窄牌會左右交疊，這裡整串置中繪製。
+      const font=size=>`700 ${size}px "Noto Sans TC",sans-serif`;
+      const tex=canvasTex(2048,512,(g)=>o.userData.signAtlas.forEach(({text,atlas})=>{
+        const layout=signTextLayout(text,atlas,(t,size)=>{g.font=font(size);return g.measureText(t).width;});
+        g.font=font(layout.size);g.textAlign='center';g.textBaseline='middle';g.fillStyle='#385846';
+        g.shadowColor='rgba(0,0,0,.3)';g.shadowOffsetY=3;g.fillText(layout.text,layout.x,layout.y);
       }));o.material=basic({map:tex,transparent:true});
     }
   });

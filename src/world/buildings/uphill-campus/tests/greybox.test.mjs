@@ -576,3 +576,75 @@ test('中庭紅磚車道連到西側廣場，新增設施逐個能繞行且擋�
   const pass=path([[8,-27.8],[24,-27.8]],greyboxColliders());
   assert.ok(Math.hypot(pass.p.x-24,pass.p.z+27.8)<1e-6);
 });
+
+// 2026-10-21 照片補件：9027 坡頂以東的道路西側護欄、9022／9027 九舍 D 區西端圓弧樓梯間。
+const ROAD_NE = [[-0.6, -34.9], [4.9, -43.9]];
+function walkLine(a, b, boxes) {
+  setActiveColliders(boxes); setRoomClamp(() => {});
+  let pushed = 0;
+  try {
+    const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.2);
+    for (let i = 1; i <= n; i++) {
+      const p = { x: a[0] + (b[0] - a[0]) * i / n, z: a[1] + (b[1] - a[1]) * i / n, y: 15 };
+      const x = p.x, z = p.z; resolve(p); pushed += Math.hypot(p.x - x, p.z - z);
+    }
+  } finally { setActiveColliders([]); setRoomClamp(null); }
+  return pushed;
+}
+
+test('照片 9027：坡頂以東道路西側的紐澤西護欄延續到九舍 D 區西端，路中線仍可通行', async () => {
+  const { rampProps } = await import('../ramp-details.js');
+  const { greyboxColliders } = await import('../greybox.js');
+  const [a, b] = ROAD_NE, dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
+  const beyond = rampProps().filter(p => p.kind === 'jersey').filter(p => {
+    const t = ((p.x - a[0]) * dx + (p.z - a[1]) * dz) / length ** 2;
+    return t > 0.05 && t <= 1;
+  });
+  assert.ok(beyond.length >= 4, `坡頂以東只有 ${beyond.length} 塊護欄`);
+  for (const p of beyond) {
+    const side = ((p.x - a[0]) * -dz + (p.z - a[1]) * dx) / length;
+    // 與坡道段相同，護欄在道路左側（西側），離中線 2.7 公尺。
+    assert.ok(side < 0 && Math.abs(Math.abs(side) - 2.7) < 0.05, `護欄偏離西側路緣：${p.x},${p.z}`);
+    assert.ok(Math.abs(p.base - heightAt(p.x, p.z)) < 0.15);
+  }
+  const boxes = greyboxColliders().map(c => ({ ...c, obb: true, cs: Math.cos(c.th), sn: Math.sin(c.th) }));
+  assert.ok(walkLine(a, b, boxes) < 1e-6, '路中線被擋住');
+  // 從路面往西直走會被新護欄擋下。
+  const mid = beyond[Math.floor(beyond.length / 2)], nx = -dz / length, nz = dx / length;
+  const from = [mid.x - nx * 1.5, mid.z - nz * 1.5], to = [mid.x + nx * 1.5, mid.z + nz * 1.5];
+  setActiveColliders(boxes); setRoomClamp(() => {});
+  try {
+    const p = { x: from[0], z: from[1], y: 15 };
+    for (let i = 1; i <= 15; i++) { p.x += (to[0] - from[0]) / 15; p.z += (to[1] - from[1]) / 15; resolve(p); }
+    assert.ok(((p.x - mid.x) * nx + (p.z - mid.z) * nz) < 0, '穿過護欄');
+  } finally { setActiveColliders([]); setRoomClamp(null); }
+});
+
+test('照片 9022／9027：九舍 D 區西端有四層高的圓弧樓梯間，擋得住也繞得過', async () => {
+  const { createGreybox, greyboxColliders } = await import('../greybox.js');
+  const model = createGreybox(); model.updateMatrixWorld(true);
+  // 從西側草地朝東打射線：牆面原在 x=5.7，圓弧樓梯間讓命中點提早到半徑 1.4 的圓上；四層樓都打得到。
+  const ray = new THREE.Raycaster(), targets = model.children.filter(m => m.name === '建築');
+  for (const floor of [0.5, 1.5, 2.5, 3.5]) {
+    const y = 15 + floor * FLOOR_H;
+    ray.set(new THREE.Vector3(2, y, -37.4), new THREE.Vector3(1, 0, 0));
+    const hit = ray.intersectObjects(targets, false)[0];
+    assert.ok(hit && Math.abs(hit.point.x - (6.4 - 1.4)) < 0.05, `第 ${floor + 0.5} 層沒有圓弧樓梯間：${hit?.point.x}`);
+  }
+  ray.set(new THREE.Vector3(2, 15 + BUILDING_FLOORS[510739854] * FLOOR_H + 0.3, -37.4), new THREE.Vector3(1, 0, 0));
+  assert.ok(!ray.intersectObjects(targets, false).some(h => h.point.x < 5.5), '樓梯間高過四層');
+  // 陽台帶在樓層交界外凸 0.08 公尺。
+  const bands = model.children.filter(m => m.name === '廣場機車架與護欄');
+  ray.set(new THREE.Vector3(2, 15 + FLOOR_H, -37.4), new THREE.Vector3(1, 0, 0));
+  const band = ray.intersectObjects(bands, false)[0];
+  assert.ok(band && Math.abs(band.point.x - (6.4 - 1.48)) < 0.05, '缺少樓層陽台帶');
+  const boxes = greyboxColliders().map(o => ({ ...o, obb: true, cs: Math.cos(o.th), sn: Math.sin(o.th) }));
+  setActiveColliders(boxes); setRoomClamp(() => {});
+  try {
+    const p = { x: 3.6, z: -37.4, y: 15 };
+    for (let i = 0; i < 20; i++) { p.x += 0.15; resolve(p); }
+    assert.ok(p.x < 6.4 - 1.4 + 0.05, '走進圓弧樓梯間');
+  } finally { setActiveColliders([]); setRoomClamp(null); }
+  // 沿樓梯間外側的草地往南北走不被擋。
+  assert.ok(walkLine([4.4, -35.2], [4.4, -39.6], boxes) < 1e-6, '樓梯間外側草地被擋');
+});

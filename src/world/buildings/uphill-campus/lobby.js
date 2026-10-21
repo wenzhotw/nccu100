@@ -50,28 +50,45 @@ const furniture=[['服務台',27.4,-34.95,2.4,0.55,1.1,'wood'],['紅色圓沙發
   ['飲料機',30.3,-34.95,1.1,0.7,1.9,'red'],['咖啡機',31.7,-34.95,1.1,0.7,1.9,'coffee'],['販賣機',33.1,-34.95,1.1,0.7,1.9,'pink'],
   ['交誼沙發',35.7,-24.5,1.2,0.65,0.7,'grey']];
 const chairs=[[27.3,-32.2],[28.7,-32.2],[28,-31.5],[28,-32.9]];
+/** 標示整串置中繪製，字級先取格子高的七成，太寬就等比縮到格子寬的九成；measure(text,size) 回傳字寬。 */
+export function signTextLayout(text,cell,measure) {
+  let size=Math.min(90,cell.h*0.72);const width=measure(text,size);
+  if(width>cell.w*0.9)size*=cell.w*0.9/width;
+  return {text,size,x:cell.x+cell.w/2,y:cell.y+cell.h/2};
+}
 export const lobbyOBB=(name,x,z,w,d,th=0)=>({kind:'lobby',name,obb:true,cx:x,cz:z,hx:w/2,hz:d/2,th,cs:Math.cos(th),sn:Math.sin(th)});
-export function isInsideLobby(x,z) {return x>=25.2&&x<=37.1&&z>=-35.6&&z<=-23.7;}
+export function isInsideLobby(x,z) {
+  const {x0,x1,z0,z1}=LOBBY.bounds;return x>=x0&&x<=x1&&z>=z0&&z<=z1;
+}
 /** 房間真正的 Scene 在 mapLight 才取得，不把 callback 掛在會被搬走的戶外 Scene。 */
 export function installLobbyRoof(s) {
   const previous=s.onBeforeRender;
+  const position=new THREE.Vector3();let objects;
   s.onBeforeRender=function(renderer,world,camera,...rest) {
     previous?.call(this,renderer,world,camera,...rest);
-    const p=camera.getWorldPosition(new THREE.Vector3()),visible=!isInsideLobby(p.x,p.z);
-    for(const name of ['九舍大廳屋頂','九舍大廳欄杆','九舍大廳欄杆描邊']) {
-      const o=s.getObjectByName(name);if(o)o.visible=visible;
-    }
+    objects??=['九舍大廳屋頂','九舍大廳欄杆','九舍大廳欄杆描邊'].map(name=>s.getObjectByName(name));
+    const p=camera.getWorldPosition(position),visible=!(isInsideLobby(p.x,p.z)&&p.y>LOBBY.base+LOBBY.ceiling);
+    for(const o of objects)if(o)o.visible=visible;
   };
 }
 function shellParts() {
-  const parts=[['北牆',31.15,-35.6,11.9,0.3],['南牆',31.15,-23.7,11.9,0.3]];
-  for(const {x,z,width} of LOBBY.doors) for(const [a,b] of [[-35.6,z-width/2],[z+width/2,-23.7]])
-    parts.push(['門側牆',x,(a+b)/2,0.3,b-a]);
+  const {x0,x1,z0,z1}=LOBBY.bounds,cx=(x0+x1)/2;
+  const parts=[['北牆',cx,z0,x1-x0,0.3],['南牆',cx,z1,x1-x0,0.3]];
+  for(const [side,{z,width}] of LOBBY.doors.entries()) for(const [a,b] of [[z0,z-width/2],[z+width/2,z1]])
+    parts.push(['門側牆',side?x1:x0,(a+b)/2,0.3,b-a]);
   return parts;
 }
 export function wellPoint(t) {
   const {cx,cz,rx,rz}=LOBBY.well;
-  return [cx+rx*Math.cos(t),cz+rz*Math.sin(t)*(0.72+0.28*Math.abs(Math.cos(t)))+0.35*Math.sin(2*t)];
+  // 兩個反向半圓的帶狀開口，內外弧共享圓心，端部以半圓封口。
+  const r=rx/2-0.25,half=rz/4,outer=r+half,inner=r-half;
+  const u=((t/(2*Math.PI))%1+1)%1*6,part=Math.floor(u),a=(u-part)*Math.PI;
+  const arcs=[
+    [cx+r,outer,-a],[cx-r,inner,a],[cx-2*r,half,-a],
+    [cx-r,outer,Math.PI-a],[cx+r,inner,Math.PI+a],[cx+2*r,half,Math.PI-a],
+  ];
+  const [x,radius,angle]=arcs[part];
+  return [x+radius*Math.cos(angle),cz+radius*Math.sin(angle)];
 }
 function wellParts() {
   const parts=[];
@@ -91,12 +108,14 @@ export function lobbyColliders() {
 }
 export function createLobby() {
   const g=new THREE.Group();g.name='九舍大廳室內';
-  for(const [n,x,z,w,d] of shellParts())lobbyBox(g,n,x,17.75,z,w,5.5,d,lobbyColors.mint,0.04);
-  for(const {x,z,width} of LOBBY.doors) {
+  const {x0,x1,z0,z1}=LOBBY.bounds;
+  for(const [n,x,z,w,d] of shellParts())lobbyBox(g,n,x,LOBBY.base+LOBBY.ceiling/2,z,w,LOBBY.ceiling,d,lobbyColors.mint,0.04);
+  for(const [side,{z,width}] of LOBBY.doors.entries()) {
+    const x=side?x1:x0;
     lobbyBox(g,'門楣',x,19,z,0.3,3,width,lobbyColors.mint,0.04);
     for(const dz of [-width/2,width/2])lobbyBox(g,'玻璃門框',x,16.25,z+dz,0.12,2.5,0.12,lobbyColors.ivory,0);
   }
-  const floor=new THREE.Shape([new THREE.Vector2(25.2,23.7),new THREE.Vector2(37.1,23.7),new THREE.Vector2(37.1,35.6),new THREE.Vector2(25.2,35.6)]);
+  const floor=new THREE.Shape([[x0,-z1],[x1,-z1],[x1,-z0],[x0,-z0]].map(([x,z])=>new THREE.Vector2(x,z)));
   const hole=new THREE.Path();
   for(let i=0;i<=64;i++){const [x,z]=wellPoint(i*Math.PI*2/64);if(!i)hole.moveTo(x,-z);else hole.lineTo(x,-z);}
   floor.holes.push(hole);
@@ -120,10 +139,11 @@ export function createLobby() {
   for(const [x,z] of columns)round(g,'圓柱',x,17.75,z,0.23,5.5,lobbyColors.mint);
   const stairs=new THREE.Group();stairs.name='旋轉樓梯';g.add(stairs);
   for(let arm=0;arm<2;arm++)for(let i=0;i<10;i++) {
-    const t=i*Math.PI/10+arm*Math.PI,x=31.2+(arm? -1.4:1.4)+Math.cos(t)*1.3,z=-28.6+Math.sin(t)*1.5;
-    const y=14.85-(arm*10+i)*0.15;
-    const step=lobbyBox(stairs,'弧形踏階',x,y,z,1.15,0.15,0.35,lobbyColors.ivory,0.01);step.rotation.y=-t;
-    const strip=lobbyBox(stairs,'黃色止滑條',x,y+0.08,z,1.1,0.02,0.06,lobbyColors.yellow,0);strip.rotation.y=-t;
+    const r=LOBBY.well.rx/2-0.25,t=(i+0.5)*Math.PI/10*(arm?1:-1);
+    const x=LOBBY.well.cx+(arm?-r:r)+Math.cos(t)*r,z=LOBBY.well.cz+Math.sin(t)*r;
+    const y=LOBBY.base-0.075-(arm*10+i)*0.15;
+    const step=lobbyBox(stairs,'弧形踏階',x,y,z,1.15,0.15,0.45,lobbyColors.ivory,0.01);step.rotation.y=-t;
+    const strip=lobbyBox(stairs,'黃色止滑條',x,y+0.085,z,1.1,0.02,0.06,lobbyColors.yellow,0);strip.rotation.y=-t;
   }
   for(const [n,x,z,w,d,h,c] of furniture) {
     if(n==='紅色圓沙發') {round(g,n,x,15+h/2,z,w/2,h,lobbyColors.red);round(g,'圓沙發中央靠背',x,15.85,z,0.23,0.9,lobbyColors.red);}
@@ -141,11 +161,14 @@ export function createLobby() {
   const partition=lobbyBox(g,'玻璃隔間',31.15,17.3,-35.35,10.6,2,0.04,lobbyColors.glass,0);partition.material=glassMaterial;
   for(const x of [26.4,28.6,30.8,33,35.2])lobbyBox(g,'隔間窗框',x,17.3,-35.29,0.07,2.1,0.08,lobbyColors.grey,0);
   lobbyBox(g,'公佈欄',35.9,16.9,-35.25,1.4,1.1,0.08,lobbyColors.wood,0.02);
-  for(const [text,x,y,z,w,h] of [['服務台',27.4,17,-35.2,2,0.5],['WELCOME to FRONT DESK',27.4,16.5,-35.18,2.4,0.34],['DORM 9',35.7,18.2,-35.2,1.3,0.45],['往安九',34.9,16.8,-29.7,1.2,0.45]])sign(g,text,x,y,z,w,h);
+  for(const [text,x,y,z,w,h] of [['服務台',26.6,18.7,-35.2,1.5,0.5],['WELCOME to FRONT DESK',29.3,18.7,-35.18,3.5,0.5],['DORM 9',35.7,18.2,-35.2,1.3,0.45],['往安九',34.9,16.8,-29.7,1.2,0.45]])sign(g,text,x,y,z,w,h);
   const signs=[];g.traverse(o=>{if(o.userData.sign)signs.push(o);});
   const signParts=signs.map((o,i)=>{
+    const {w,h}=o.userData.sign;
+    const rect={x:(i%2)*1024,y:Math.floor(i/2)*128,w:Math.round(128*w/h),h:128};
+    o.userData.sign.atlas=rect;
     o.updateMatrixWorld(true);const geo=o.geometry.clone().applyMatrix4(o.matrixWorld),uv=geo.attributes.uv;
-    for(let j=0;j<uv.count;j++)uv.setXY(j,(uv.getX(j)+i%2)/2,(uv.getY(j)+3-Math.floor(i/2))/4);
+    for(let j=0;j<uv.count;j++)uv.setXY(j,(rect.x+uv.getX(j)*rect.w)/2048,1-(rect.y+(1-uv.getY(j))*rect.h)/512);
     o.visible=false;return geo;
   });
   const atlas=new THREE.Mesh(mergeBufferGeometries(signParts),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true}));

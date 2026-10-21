@@ -1,6 +1,7 @@
 /** 依地標、通路、建築與平台判斷區域名稱，不載入場景或瀏覽器引擎。 */
-import { LAYOUT, STAIRS, RAMPS, STOP } from './layout.js';
+import { LAYOUT, STAIRS, RAMPS, STOP, LOBBY } from './layout.js';
 import { projectToPath, pointInPoly, platformLevel } from './terrain.js';
+import { isInsideLobby } from './lobby.js';
 
 const displayNames = {
   '山居下車點': '山居學習中心',
@@ -15,6 +16,7 @@ const landmarks = Object.entries(LAYOUT.landmarks).filter(([name]) => name !== '
 const levelNames = { L1: '環山一道', L2: '自強宿舍區', L3: '自強九舍・十舍' };
 
 export function zoneName({ x, z }) {
+  if(isInsideLobby(x,z))return Math.hypot(x-LOBBY.well.cx,z-LOBBY.well.cz)<=4+1e-9?'旋轉樓梯':LOBBY.name;
   let nearest = null, distance = Infinity;
   for (const [name, point] of landmarks) {
     const d = (x - point[0]) ** 2 + (z - point[1]) ** 2;

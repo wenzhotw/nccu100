@@ -11,6 +11,7 @@ test('8c 安九入口與返回點在大廳，出生與返回點不在碰撞裡',
   assert.equal(ANJIU.id,'anjiu');assert.equal(ANJIU.entrance.room,'uphill-campus');
   assert.equal(ANJIU.entrance.label,'走下旋轉樓梯');assert.equal(ANJIU.exit.label,'走上旋轉樓梯');
   assert.equal(ANJIU.returnTo.room,'uphill-campus');
+  assert.ok(Math.hypot(ANJIU.returnTo.x-ANJIU.entrance.x,ANJIU.returnTo.z-ANJIU.entrance.z)>=ANJIU.entrance.r+0.5,'返回後應離開下樓互動範圍至少半公尺');
   assert.deepEqual([ANJIU.entrance.x,ANJIU.entrance.z],[34.6,-28.6]);
   const model=createAnjiu();for(const name of ['旋轉樓梯下端','木雕擺飾','藍色椅子'])assert.ok(model.getObjectByName(name),name);
   assert.ok(new THREE.Box3().setFromObject(model.getObjectByName('旋轉樓梯下端')).min.z>=-1,'樓梯不得藏在北側端牆外');
@@ -46,8 +47,21 @@ test('8c gameplay 跨房間入口與返回，舊入口未填 room 仍屬山下',
     assert.equal(game.spotById('anjiu-enter').room,'uphill-campus');
     game.enterRoom('uphill-campus');assert.equal(state.room,'uphill-campus');assert.equal(game.pos.y,15);
     game.spotById('anjiu-enter').fn();assert.equal(state.room,'anjiu');assert.equal(game.pos.y,0);
-    game.exitRoom();assert.equal(state.room,'uphill-campus');assert.deepEqual([game.pos.x,game.pos.y,game.pos.z],[35.6,15,-28.6]);
+    game.exitRoom();assert.equal(state.room,'uphill-campus');assert.deepEqual([game.pos.x,game.pos.y,game.pos.z],[ANJIU.returnTo.x,15,ANJIU.returnTo.z]);
     assert.equal(globalThis.__roomTestPlayer.parent, (await import('./src/core/rooms.js')).rooms['uphill-campus'].scene);
     game.exitRoom();assert.equal(state.room,null);assert.deepEqual([game.pos.x,game.pos.z],[31,-88.5]);
   `],{cwd:process.cwd(),stdio:'pipe',timeout:20000});
+});
+
+test('D7 安九出生後朝樓梯走會被踏階擋住，也能沿旁邊繞行',async()=>{
+  const {ANJIU,anjiuColliders}=await import('../anjiu-interior.js');
+  const {resolve,setActiveColliders,setRoomClamp}=await import('../../../../core/collision.js');
+  setActiveColliders(anjiuColliders());setRoomClamp(()=>{});
+  try {
+    const p={x:ANJIU.spawn.x,z:ANJIU.spawn.z,y:0};let push=0;
+    for(let i=0;i<32;i++) {p.z-=0.1;const z=p.z;resolve(p);push+=Math.abs(p.z-z);}
+    assert.ok(push>0.5&&p.z> -0.3,'不能穿過樓梯下端');
+    const side={x:1.8,z:1.8,y:0};
+    for(let i=0;i<20;i++){side.z-=0.1;const before={...side};resolve(side);assert.ok(Math.hypot(side.x-before.x,side.z-before.z)<1e-6);}
+  } finally {setActiveColliders([]);setRoomClamp(null);}
 });

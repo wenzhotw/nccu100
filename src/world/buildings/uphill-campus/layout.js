@@ -27,6 +27,7 @@ export const FLOOR_H = 2.4;
 /** 依 2026-10-20 照片，中庭兩翼各四層，ABC 另含下層山居。 */
 export const BUILDING_FLOORS = { 510739853: 5, 510739854: 4, 510739855: 1 };
 export const LOBBY = { osm: 510739855, name: '自強九舍大廳', base: 15,
+  bounds:{x0:25.2,x1:37.1,z0:-35.6,z1:-23.7},
   door: { x: 25.2, z: -27.8, face: 'west' }, parapet: 0.9,
   doors: [{x:25.2,z:-27.8,width:3},{x:37.1,z:-27.8,width:3}], ceiling:5.5,
   well:{cx:31.2,cz:-28.6,rx:3.2,rz:2.2}, stairTop:{x:34.6,z:-28.6} };

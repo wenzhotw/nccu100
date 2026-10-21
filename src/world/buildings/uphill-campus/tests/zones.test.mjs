@@ -101,3 +101,11 @@ test('中庭中央顯示九舍中庭，北側廣場保留宿舍區名稱', async
   assert.equal(zoneName({x:8,z:-31.7}),'自強九舍・十舍');
   assert.notEqual(zoneName({x:20,z:-20}),'自強九舍中庭');
 });
+
+test('D6 大廳使用大廳名稱，只有開口四公尺內顯示旋轉樓梯',async()=>{
+  const {zoneName}=await import('../zone-names.js');
+  for(const p of [{x:27,z:-34.5},{x:36,z:-24.5}])assert.equal(zoneName(p),'自強九舍大廳');
+  assert.equal(zoneName({x:31.2+3,z:-28.6}),'旋轉樓梯');
+  assert.equal(zoneName({x:31.2+4,z:-28.6}),'旋轉樓梯');
+  assert.equal(zoneName({x:31.2+4.01,z:-28.6}),'自強九舍大廳');
+});
