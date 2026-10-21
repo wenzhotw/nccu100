@@ -8,3 +8,5 @@ import './greybox.test.mjs';
 import './zones.test.mjs';
 import './landmarks.test.mjs';
 import './spawn.test.mjs';
+import './lobby.test.mjs';
+import './anjiu-interior.test.mjs';

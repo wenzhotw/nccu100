@@ -32,9 +32,9 @@ function enterRoom(id){ const d=roomDef(id); transition(()=>{
   switchTo(id); state.room=id; late.onSceneChange&&late.onSceneChange();
   const s=d.spawn; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.22; player.rotation.y=s.face??Math.PI;
   d.onEnter&&d.onEnter(); },d.ride&&d.ride.up); }
-/** 走出房間：回到戶外門口 */
+/** 走出房間：回到指定房間的門口，未指定仍回戶外。 */
 function exitRoom(){ const d=roomDef(state.room); transition(()=>{
-  d&&d.onExit&&d.onExit(); switchTo(null); state.room=null; late.onSceneChange&&late.onSceneChange();
+  d&&d.onExit&&d.onExit(); const target=d.returnTo.room??null; switchTo(target); state.room=target; late.onSceneChange&&late.onSceneChange();
   const s=d.returnTo; pos.set(s.x,0,s.z); pos.y=groundH(s.x,s.z); state.yaw=s.yaw??0; state.pitch=s.pitch??0.3; player.rotation.y=s.face??0; },d&&d.ride&&d.ride.down); }
 function jump(){ if(state.grounded&&dlg.hidden&&!state.busy&&!state.driving&&!state.swimming){ AU.sfx('jump'); state.vy=6.6; state.grounded=false; } }
 /**
@@ -51,9 +51,9 @@ function transition(fn,ride){
 const spots=[
   {id:'pangolin',x:0,z:0,r:2.6,label:'交談',ok:()=>!indoor(),fn:()=>openDialog(DIALOGS.pangolin.title,pickDialog(DIALOGS.pangolin.dialog).lines,()=>{ state.dogTalked=true; })},
 ];
-// 每個登記的房間：戶外一個入口、房間裡一個出口（id 是「房間-enter」「房間-exit」）
+// 每個登記的房間：指定房間或戶外一個入口，房間裡一個出口。
 Object.values(rooms).forEach(r=>{ const d=r.def; if(!d) return;
-  if(d.entrance) spots.push({id:d.id+'-enter',x:d.entrance.x,z:d.entrance.z,r:d.entrance.r||2.8,label:d.entrance.label||('進入'+d.name),room:null,ok:()=>!state.driving&&!state.holdPang,fn:()=>enterRoom(d.id)});
+  if(d.entrance) spots.push({id:d.id+'-enter',x:d.entrance.x,z:d.entrance.z,r:d.entrance.r||2.8,label:d.entrance.label||('進入'+d.name),room:d.entrance.room??null,ok:()=>!state.driving&&!state.holdPang,fn:()=>enterRoom(d.id)});
   if(d.exit) spots.push({id:d.id+'-exit',x:d.exit.x,z:d.exit.z,r:d.exit.r||2.6,label:d.exit.label||('離開'+d.name),room:d.id,ok:()=>true,fn:exitRoom});
 });
 crystals.forEach(c=>spots.push({x:c.g.position.x,z:c.g.position.z,room:c.room||null,r:2.1,label:'拾取',ok:()=>!c.got,fn:()=>{

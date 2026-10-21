@@ -18,6 +18,13 @@ import { zoneName } from './zone-names.js';
 import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.js';
 
 import { buildCourtyardScenery, batchCourtyardScene } from './courtyard-scenery.js';
+import {installLobbyRoof} from './lobby.js';
+import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
+
+export function buildAnjiu() {
+  const group=createAnjiu();group.traverse(o=>{if(o.isMesh&&o.material.isMeshToonMaterial)o.material.gradientMap=GRAD;});
+  scene.add(group);for(const c of anjiuColliders())obbC(c.cx,c.cz,c.hx,c.hz,c.th);
+}
 
 const SKY = '#bfe4f6';
 
@@ -113,10 +120,27 @@ export function buildGreybox() {
       uv.needsUpdate=true;
     }
   });
+  const tile=canvasTex(256,256,(g,w,h)=>{
+    g.fillStyle='#f4eee0';g.fillRect(0,0,w,h);g.strokeStyle='#a6aaa4';g.lineWidth=2;
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++){if((i+j)%2===0){g.fillStyle='#e2ddd2';g.fillRect(i*64,j*64,64,64);}g.strokeRect(i*64,j*64,64,64);}
+  });
+  group.traverse(o=>{
+    if(o.isMesh&&o.name.includes('方磚地板')) {
+      o.material=toon('#ffffff',{map:tile});
+      const p=o.geometry.attributes.position,uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
+      for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/2,p.getY(i)/2);o.geometry.setAttribute('uv',uv);
+    }
+    if(o.userData.signAtlas) {
+      const tex=canvasTex(1024,256,(g)=>o.userData.signAtlas.forEach(({text},i)=>{
+        const t=hText(text,'#385846','700 40px "Noto Sans TC",sans-serif',512,64,28);
+        g.drawImage(t.image,(i%2)*512,Math.floor(i/2)*64);t.dispose();
+      }));o.material=basic({map:tex,transparent:true});
+    }
+  });
   for(const [name,text,vertical] of [['九舍大廳橫幅','政大學生宿舍歡迎您',false],['九舍大廳直式牌','自強第九宿舍',true]]) {
     const sign=group.getObjectByName(name);
     const tex=vertical?vText(text,'#385846','700 54px "Noto Sans TC",sans-serif',96,64)
-      :hText(text,'#385846','700 48px "Noto Sans TC",sans-serif',1024,80,44);
+      :hText(text,'#385846','700 52px "Noto Sans TC",sans-serif',1024,80,64);
     sign.material=basic({map:tex,transparent:true});
   }
   scene.add(group);
@@ -160,6 +184,7 @@ export function buildMap() {
 
 /** 燈光與天空：跟山下差不多的明亮白天，加一點霧讓遠山變淡 */
 export function mapLight(s) {
+  installLobbyRoof(s);
   s.background = new THREE.Color(SKY);
   s.fog = new THREE.Fog(SKY, 90, 320);
   s.add(new THREE.HemisphereLight('#eaf6ff', '#7aa060', 0.95));

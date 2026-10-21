@@ -6,6 +6,7 @@ import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampL
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 import { addLobbyExterior } from './lobby-exterior.js';
 import { addCourtyard, courtyardColliders } from './courtyard.js';
+import {createLobby,lobbyColliders} from './lobby.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -163,6 +164,7 @@ function addBuildingsAndWalls(group) {
   const shapes = [], edges = [];
   group.userData.buildings = buildings().map(b => ({ osm: b.osm, base: b.base, height: b.height }));
   for (const b of buildings()) {
+    if(b.osm===LOBBY.osm)continue;
     const bridge = BRIDGES.find(v => v.building === b.osm);
     const parts = bridge ? [
       { pts: clipBuilding(b.pts, bridge.cutZ, true), base: b.base, height: b.height },
@@ -298,9 +300,12 @@ export function createGreybox() {
   const rects = surfaceRects();
   const tops = [], sides = [];
   for (const r of rects.filter(r => r.kind === 'platform')) {
-    const geometry = TOP.clone().scale(r.x1 - r.x0, 1, r.z1 - r.z0)
-      .translate((r.x0 + r.x1) / 2, r.h, (r.z0 + r.z1) / 2);
-    tops.push(geometry);
+    let pieces=[r];
+    if(r.h===15&&r.x1>25.2&&r.x0<37.1&&r.z1>-35.6&&r.z0<-23.7) {
+      const x0=Math.max(r.x0,25.2),x1=Math.min(r.x1,37.1),z0=Math.max(r.z0,-35.6),z1=Math.min(r.z1,-23.7);
+      pieces=[{...r,x1:x0},{...r,x0:x1},{...r,x0,x1,z1:z0},{...r,x0,x1,z0:z1}].filter(p=>p.x1>p.x0&&p.z1>p.z0);
+    }
+    for(const p of pieces)tops.push(TOP.clone().scale(p.x1-p.x0,1,p.z1-p.z0).translate((p.x0+p.x1)/2,p.h,(p.z0+p.z1)/2));
     if (r.h > 0) sides.push(SIDES.clone().scale(r.x1 - r.x0, r.h, r.z1 - r.z0)
       .translate((r.x0 + r.x1) / 2, r.h / 2, (r.z0 + r.z1) / 2));
   }
@@ -338,6 +343,7 @@ export function createGreybox() {
   addBuildingsAndWalls(group);
   addRoads(group);
   addLobbyExterior(group, { addMerged, BOX, buildingMaterial, edgeMaterial });
+  group.add(createLobby());
   addCourtyard(group, { addMerged, TOP, BOX, wallMaterial, edgeMaterial });
   addRampDetails(group, rects, { addMerged, TOP, BOX, grass, concrete, edgeMaterial });
   return group;
@@ -362,7 +368,8 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...buildings().flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...buildings().flatMap(b => {
+    if(b.osm===LOBBY.osm)return buildingBoxes({...b,pts:clipBuilding(b.pts,-23.7,false)});
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
     return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),

@@ -6,6 +6,7 @@ import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
 import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY } from '../layout.js';
 import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath } from '../terrain.js';
+import {isInsideLobby} from '../lobby.js';
 
 function distance(p, c) {
   const dx = p.x - c.cx, dz = p.z - c.cz;
@@ -50,7 +51,7 @@ test('擋土牆雙向擋住玩家，停下時不留在碰撞體裡', async () =>
 
 function counts(group) {
   let meshes = 0, triangles = 0;
-  group.traverse(o => {
+  group.traverseVisible(o => {
     if (!o.isMesh) return;
     meshes++;
     triangles += (o.geometry.index?.count ?? o.geometry.attributes.position.count) / 3 * (o.count ?? 1);
@@ -88,6 +89,8 @@ test('平台挖槽後，射線地表高度符合平台、階梯與坡道查詢',
   const ray = new THREE.Raycaster(), walls = wallSegments();
   let samples = 0;
   for (let x = R.x0; x <= R.x1; x += 2) for (let z = R.z0; z <= R.z1; z += 2) {
+    // 8c 大廳地板與安全開口由 lobby.test 的正式射線及穿越測試覆蓋。
+    if(isInsideLobby(x,z))continue;
     if (walls.some(w => project(x, z, [w.a, w.b]) < 1)) continue;
     ray.set(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0));
     const hits = ray.intersectObjects(surfaces, false);
@@ -296,7 +299,8 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
   assert.equal(project(1, -1, [[0, 0], [2, 0], [2, 2], [0, 2], [0, 0], [0, 0]]), 1);
   const { greyboxColliders } = await import('../greybox.js');
   const boxes = greyboxColliders().filter(c => c.kind === 'building');
-  const buildings = LAYOUT.buildings.filter(b => b.pts.every(([x, z]) => x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1));
+  const buildings = LAYOUT.buildings.filter(b => b.pts.every(([x, z]) => x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1))
+    .map(b=>b.osm===LOBBY.osm?{...b,pts:b.pts.filter(p=>p[1]>=-23.7)}:b);
   for (const b of buildings) {
     const own = boxes.filter(c => c.building === b.osm);
     assert(own.length >= 1 && own.length <= 4);
@@ -530,8 +534,8 @@ test('大廳有鏤空屋頂欄杆與西面淺綠玻璃入口，招牌可供場�
   assert.ok(model.getObjectByName('九舍大廳直式牌'));
   // 西面欄杆的空隙應能被水平射線穿過，橫桿高度應有命中。
   const cast=y=>new THREE.Raycaster(new THREE.Vector3(24,y,-28.5),new THREE.Vector3(1,0,0),0,2).intersectObject(rails);
-  assert.equal(cast(17.8).length,0);
-  assert.ok(cast(18.25).length>0);
+  assert.equal(cast(LOBBY.base+LOBBY.ceiling+0.4).length,0);
+  assert.ok(cast(LOBBY.base+LOBBY.ceiling+0.85).length>0);
 });
 
 test('大廳底部頂點低於十五公尺，填充體補到南端十二公尺平台', async () => {

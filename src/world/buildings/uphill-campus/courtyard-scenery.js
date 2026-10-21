@@ -40,15 +40,22 @@ export function buildCourtyardScenery() {
 
 /** 共用材質的靜態網格合併，保留原具名物件供後續階段查找。 */
 export function batchCourtyardScene(group, scenery) {
-  const batches=new Map(), sources=[];
+  const batches=new Map(), sources=[],palettes=new Map();
   for(const root of [group,scenery]) {
     root.updateMatrixWorld(true);
-    root.traverse(o=>{
-      if(!o.isMesh || o.isInstancedMesh || Array.isArray(o.material))return;
+    root.traverseVisible(o=>{
+      if(!o.isMesh || o.isInstancedMesh || o.userData.noOcc || Array.isArray(o.material))return;
       const geometry=o.geometry.clone().applyMatrix4(o.matrixWorld);
+      let material=o.material;
+      if(!material.map&&!material.transparent&&(material.isMeshToonMaterial||material.isMeshBasicMaterial)) {
+        const key=material.type+'/'+material.side;
+        if(!palettes.has(key)){const p=material.clone();p.color.set('#ffffff');p.vertexColors=true;palettes.set(key,p);}
+        if(!geometry.attributes.color){const a=new Float32Array(geometry.attributes.position.count*3);for(let i=0;i<a.length;i+=3)material.color.toArray(a,i);geometry.setAttribute('color',new THREE.Float32BufferAttribute(a,3));}
+        material=palettes.get(key);
+      }
       // 純模型可能沒有 UV；合併時補齊，不改動有貼圖的正式座標。
       if(!geometry.attributes.uv)geometry.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(geometry.attributes.position.count*2),2));
-      const parts=batches.get(o.material)??[];parts.push(geometry);batches.set(o.material,parts);sources.push(o);
+      const parts=batches.get(material)??[];parts.push(geometry);batches.set(material,parts);sources.push(o);
     });
   }
   sources.forEach(o=>{o.visible=false;});
