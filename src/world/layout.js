@@ -17,6 +17,8 @@ const swZ=x=>-60.2+0.18*x;
 const IX=300;
 const LOTS=[];
 export const MAP_BOUNDS = { x0: -275, x1: 195, z0: 40, z1: -230 };
+/** 已經蓋好建築的舊預定地：不放看板、不顯示「預定地」，但照舊不長草、不種樹（建築底下才不會冒出草和樹） */
+function clearArea(name,x,z,w,d){ LOTS.push({name,x,z,w,d,built:true}); }
 function inLot(x,z){ for(const l of LOTS){ const dx=x-l.x, dz=z-l.z; if(Math.abs(dx)<l.w/2&&Math.abs(dz)<l.d/2) return l; } return null; }
 
 // 四維道紅磚段的東西端點（行政大樓西側到環山一道）；超出的部分是一般灰色步道
@@ -28,4 +30,4 @@ function creekRoadDist(x,z){ let best=1e9; for(let i=0;i<CREEK_ROAD.length-1;i++
 /** 沿溪道路在某個 x 的 z（給南北向道路接上用） */
 function creekRoadZ(x){ for(let i=0;i<CREEK_ROAD.length-1;i++){ const [x0,z0]=CREEK_ROAD[i],[x1,z1]=CREEK_ROAD[i+1]; if(x>=x0&&x<=x1) return z0+(z1-z0)*(x-x0)/(x1-x0); } return null; }
 
-export { BD_TH, CREEK_ROAD, IX, LOTS, SIWEI, alongBd, bdLocal, bdZ, creekRoadDist, creekRoadZ, inLot, swZ };
+export { BD_TH, CREEK_ROAD, IX, LOTS, SIWEI, alongBd, bdLocal, bdZ, clearArea, creekRoadDist, creekRoadZ, inLot, swZ };
