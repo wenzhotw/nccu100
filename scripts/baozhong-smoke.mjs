@@ -32,6 +32,7 @@ try {
   const initial = await page.evaluate(() => window.__bz26.counts());
   assert.equal(initial.active, false);
   assert.equal(initial.passportButtons, 0);
+  assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible || window.__game.spots.includes(window.__bz26.activitySign.spot)), false);
   async function finishDialog() {
     for (let i = 0; i < 60 && await page.locator('#dlg').isVisible(); i++) await page.locator('#dlg').click();
     assert.equal(await page.locator('#dlg').isVisible(), false, '對話必須能結束');
@@ -52,10 +53,12 @@ try {
   await approach('host');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26.counts().active && window.__bz26.counts().decorRoots === 40);
+  await page.waitForFunction(() => window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const active = await page.evaluate(() => window.__bz26.counts());
   assert.equal(active.passportButtons, 1);
-  assert.equal(active.colliders - initial.colliders, 320);
+  const hiddenTreeColliders = await page.evaluate(() => window.__bz26.venueFocus.counts().treeColliders);
+  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders, 323, '原帳篷320＋鳥居2＋活動看板1，扣除活動暫收植栽');
+  assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible && window.__game.spots.includes(window.__bz26.activitySign.spot)), true);
   await approach('bz26-D26');
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-D26-counter.png') });
@@ -83,10 +86,11 @@ try {
   const left = await page.evaluate(() => window.__bz26.counts());
   assert.equal(left.colliders, initial.colliders);
   assert.equal(left.passportButtons, 0);
+  assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible || window.__game.spots.includes(window.__bz26.activitySign.spot)), false);
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 40);
+  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const reentered = await page.evaluate(() => window.__bz26.counts());
   assert.deepEqual(reentered, active, '重入不能重複建立 NPC、帳篷、碰撞與護照');
   await page.waitForFunction(() => {
@@ -96,7 +100,7 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__bz26?.counts().active && window.__bz26.flags().has('bz26_st_D26'));
   await page.click('#go');
-  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 40);
+  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   assert.equal(await page.locator('#bz-passport-button').count(), 1);
   assert.deepEqual(errors, []);
   console.log('包種茶節瀏覽器主要流程通過', JSON.stringify({ initial, active, left, reentered, saveReload: true, pageErrors: errors }));
