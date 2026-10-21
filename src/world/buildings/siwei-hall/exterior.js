@@ -2,6 +2,7 @@
  * 四維堂外觀。
  */
 import * as THREE from 'three';
+import { CAMPUS_GUIDE } from '../../campus-guide-layout.js';
 import { basic, block, canvasTex, flat, hText, mk, plane, toon } from '../../../render/kit.js';
 import { boxC } from '../../../core/collision.js';
 import { hipRoof, winMat } from '../../building-kit.js';
@@ -12,7 +13,7 @@ export function buildExterior() {
   flat(28,10,'#dcd0ba',0,0.018,-71);
   [-14,14].forEach(x=>flat(0.6,10,'#b8634e',x,0.02,-71));
   flat(28.6,0.6,'#b8634e',0,0.02,-66);
-  block(0,6,-77.5,14,12,3,SW,0.07);
+  block(CAMPUS_GUIDE.hallFront.x,6,CAMPUS_GUIDE.hallFront.z,CAMPUS_GUIDE.hallFront.width,12,CAMPUS_GUIDE.hallFront.depth,SW,0.07);
   block(0,4.75,-92.5,14,9.5,28,SW,0.07);
   [-10.5,10.5].forEach(x=>{ block(x,4.5,-90.5,7.2,9,25,SW2,0.06); for(let r=0;r<2;r++) for(let k=-1;k<=1;k++) plane(1.4,1.5,winMat,x+k*2.2,2.6+r*3.4,-77.97); });
   const swWin=canvasTex(256,192,(g,w,h)=>{ g.fillStyle='#93adbd'; g.fillRect(0,0,w,h); const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,'rgba(255,255,255,.35)'); gr.addColorStop(.5,'rgba(255,255,255,0)'); g.fillStyle=gr; g.fillRect(0,0,w,h);

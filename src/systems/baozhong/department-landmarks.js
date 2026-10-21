@@ -1,11 +1,13 @@
-// 六院大型代表物預覽。只取既有 Dxx 佈景的物件意象，不新增活動機制或文字。
-// 預覽通過前不擴至其他學系。所有尺寸為帳篷本地公尺，前方為 +z。
+// 三十七系大型代表物預覽。六院首批加鳥居為基準，其餘抽取既有Dxx實物。
+// 只改佈景，不新增活動機制或文字。所有尺寸為帳篷本地公尺，前方為 +z。
 import * as THREE from 'three';
 import { createDecorCtx } from './decor-ctx.js';
+import { SOURCE_LANDMARKS } from './landmark-source-registry.js';
+import { buildSourceLandmark } from './landmark-source-builder.js';
 import { openCanopyColliders } from './open-canopy-d26.js';
 
 export const LANDMARK_SAMPLE_IDS = Object.freeze(['D01', 'D11', 'D21', 'D31', 'D32', 'D37']);
-export const LANDMARK_PREVIEW_IDS = Object.freeze([...LANDMARK_SAMPLE_IDS, 'D26']);
+export const LANDMARK_PREVIEW_IDS = Object.freeze([...LANDMARK_SAMPLE_IDS, 'D26', ...Object.keys(SOURCE_LANDMARKS)]);
 export const LANDMARK_MOUNT = Object.freeze({ x: -1.14, z: 1.82, footWidth: 0.46, footDepth: 0.38, armY: 2.62 });
 export const LANDMARK_SOURCES = Object.freeze({
   D01: 'D01.js：硯台與同軸毛筆', D11: 'D11.js：地球儀與航線環',
@@ -16,7 +18,7 @@ const M = LANDMARK_MOUNT;
 
 /** 使用正式 decor ctx 的共用幾何與呼叫端材質，碰撞取實際低處零件。 */
 export function buildDepartmentLandmark(group, id, { toon, OUT }) {
-  if (!LANDMARK_SAMPLE_IDS.includes(id)) return null;
+  if (!LANDMARK_SAMPLE_IDS.includes(id)) return buildSourceLandmark(group, id, { toon, OUT });
   const root = new THREE.Group(); root.name = `bz26-landmark-${id}`;
   root.userData.noOcc = true; group.add(root);
   const ctx = createDecorCtx({ THREE, toon, outlineMat: OUT }, root, '#1f3c8f');

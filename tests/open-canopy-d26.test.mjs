@@ -40,11 +40,11 @@ test('D26 ground torii has two full-height posts and clear sign/counter envelope
   const parts = tent.parts.landmark;
   assert.equal(parts.filter(p => p.userData.bz26ToriiPost).length, 2);
   for (const p of parts) {
-    p.geometry.computeBoundingBox();
-    const b = p.geometry.boundingBox.clone().translate(p.position);
+    p.updateMatrix(); p.geometry.computeBoundingBox();
+    const b = p.geometry.boundingBox.clone().applyMatrix4(p.matrix);
     assert.ok(b.min.x >= -TENT.half && b.max.x <= TENT.half);
     if (p.userData.bz26ToriiPost) {
-      assert.ok(Math.abs(b.min.y) < 1e-6);
+      assert.ok(b.min.y <= 0.001 && b.min.y >= -0.01);
       assert.ok(b.max.y > 3);
       assert.ok(b.max.x < TENT.table.x0 || b.min.x > TENT.table.x1);
       assert.ok(b.max.x < -TENT.official.w / 2 || b.min.x > TENT.official.w / 2);

@@ -2,13 +2,14 @@
  * 噴水池廣場。
  */
 import * as THREE from 'three';
+import { CAMPUS_GUIDE } from '../campus-guide-layout.js';
 import { scene } from '../../core/engine.js';
 import { GRAD, canvasTex, mk, toon } from '../../render/kit.js';
 import { circC } from '../../core/collision.js';
 import { WV, waterU } from '../../render/water.js';
 
 /* 噴水池廣場 */
-const FZ=-32;
+const FZ=CAMPUS_GUIDE.fountain.z;
 const plazaTex=canvasTex(512,512,(g,w,h)=>{ g.fillStyle='#b9b8b2'; g.fillRect(0,0,w,h);
   for(let i=0;i<2400;i++){ g.fillStyle=['#a9a8a2','#c6c5bf','#b1b0aa'][i%3]; g.fillRect(Math.random()*w,Math.random()*h,3,3); }
   g.strokeStyle='#9d9c96'; g.lineWidth=3; for(let r=24;r<250;r+=14){ g.beginPath(); g.arc(256,256,r,0,7); g.stroke(); } });

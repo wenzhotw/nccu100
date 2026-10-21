@@ -13,7 +13,7 @@ const world = (t, x, z) => ({ x: t.x + x * Math.cos(t.rotY) + z * Math.sin(t.rot
 const build = landmarkPreview => buildTents(layout, content.colleges, { content, colliders: [], landmarkPreview });
 const samples = LANDMARK_SAMPLE_IDS.map(id => ({ id, t: layout.tents.find(t => t.id === id), model: buildDepartmentLandmark(new THREE.Group(), id, deps) }));
 
-test('Preview is opt-in and changes only seven samples, preserving names, roof, counter and four poles', () => {
+test('Preview is opt-in and changes only registered departments, preserving names, roof, counter and four poles', () => {
   const before = build(false), after = build(true);
   assert.equal(new Set(samples.map(({ id }) => content.booths.find(d => d.id === id).college)).size, 6);
   for (const [id, t] of after.tents) {
