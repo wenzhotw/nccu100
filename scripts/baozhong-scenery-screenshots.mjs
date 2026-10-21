@@ -34,7 +34,7 @@ const manifest = {
   commit: git('rev-parse', 'HEAD'), workingTree: git('status', '--porcelain'),
   packageVersion: JSON.parse(fs.readFileSync(path.join(root, 'package.json'))).version,
   sourceFiles: beforeBuild, sourceDigest: sha(JSON.stringify(beforeBuild)), distFiles: inventory('dist'),
-  query: '?bz26slice=1&debug', captureMethod: 'Playwright screenshots of freshly built application; no fixture injection or AI images',
+  query: '?debug', captureMethod: 'Playwright screenshots of freshly built application; no fixture injection or AI images',
   limitations: ['Debug teleport and fixed camera are staging only, not evidence of a walkable route.', 'Mobile means Chromium touch/viewport emulation, not a physical device.', 'Screenshots require visual review; structural assertions do not establish visual quality.'],
   captures: [], errors: [], profiles: [],
 };
@@ -96,7 +96,7 @@ try {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => window.__game && window.__bz26);
-      assert.equal(await page.evaluate(() => window.__bz26.slice), true);
+      assert.equal(await page.evaluate(() => window.__bz26.slice), false, 'Normal URL must not enable experimental content or matching');
       await page.locator('#go').click();
       await page.waitForFunction(() => window.__game.state.started);
       await approach('host');
