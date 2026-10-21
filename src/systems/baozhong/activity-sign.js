@@ -5,6 +5,7 @@ import { spots } from '../../core/gameplay.js';
 import { colliders } from '../../core/collision.js';
 import { FZ } from '../../world/terrain/fountain.js';
 import { basic, block, canvasTex, hText, toon, outline } from '../../render/kit.js';
+import { activitySignPresence } from './activity-sign-presence.js';
 import { signPlacement } from './activity-sign-logic.js';
 import { signMapModel, drawSignMap } from './activity-sign-map.js';
 
@@ -30,16 +31,16 @@ export function createActivitySign({ onOpen, layout, content } = {}) {
   const mapMaterial = basic({map:mapTexture});
   const mapFace = new THREE.Mesh(MAP_FACE,mapMaterial); mapFace.name='bz26-printed-layout-map'; mapFace.position.set(0,2.45,.13); group.add(mapFace);
   const marker = new THREE.Mesh(MARK,toon('#f0c94a')); outline(marker,.02); marker.name = 'bz26-activity-target-marker'; marker.userData.noOcc = true; marker.visible = false;
-  scene.add(group,marker); colliders.push(box);
-  let active = true, disposed = false;
-  const spot = {id:'bz26-activity-map',x,z:z+1.25,r:2.3,label:'查看包種茶節地圖',ok:()=>active && !state.busy && !state.driving && !state.room,fn:()=>onOpen?.()};
-  spots.push(spot);
+  scene.add(group,marker);
+  let disposed = false;
+  const spot = {id:'bz26-activity-map',x,z:z+1.25,r:2.3,label:'查看包種茶節地圖',ok:()=>presence.active && !state.busy && !state.driving && !state.room,fn:()=>onOpen?.()};
+  const presence = activitySignPresence({group,marker,spot,box,colliders,spots,state});
   function update(target = null) {
     if (disposed) return;
-    marker.visible = active && !!target && !state.room;
+    marker.visible = presence.active && !!target && !state.room;
     if (target) marker.position.set(target.anchor[0],3.8,target.anchor[1]);
   }
-  function setActive(on) { if (disposed) return; active = !!on; group.visible = active; if (!active) marker.visible = false; const i=colliders.indexOf(box); if(active && i<0) colliders.push(box); else if(!active && i>=0) colliders.splice(i,1); }
+  function setActive(on) { if (!disposed) presence.setActive(on); }
   return {group,marker,spot,placement,mapModel,fountain:{x:0,z:FZ},update,setActive,dispose() {
     if (disposed) return; setActive(false); disposed = true;
     const i = spots.indexOf(spot); if(i>=0) spots.splice(i,1); group.removeFromParent(); marker.removeFromParent();

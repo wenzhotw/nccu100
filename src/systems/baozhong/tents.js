@@ -3,6 +3,7 @@
 // (c) 系上主招牌自動移位（在 decor-ctx.js）、(d) 桌板加學院色桌巾、正面 3 張手繪海報。座標沿用 A25（layout.json）。
 // 遊戲相依（toon、OUT、canvasTex、碰撞清單、地面高度）由 tents-adapter.js 注入，所以 node 也能建模測試。
 import * as THREE from 'three';
+import { buildSmallProp } from './small-props.js';
 import { LANDMARK_PREVIEW_IDS, buildDepartmentLandmark, departmentLandmarkColliders } from './department-landmarks.js';
 import { buildOpenCanopyTorii, openCanopyColliders } from './open-canopy-d26.js';
 import { TENT, boothInfo, clothColor, collidersOf, drawOfficialSign, drawPoster, faceColors, signVisibility, recoverTentOverlap } from './tents-logic.js';
@@ -53,8 +54,10 @@ export function buildTents(layout, colleges, opts = {}) {
   const mesh = (g, mat, x, y, z, parent) => { const m = new THREE.Mesh(g, mat); m.position.set(x, y, z); m.castShadow = false; m.receiveShadow = true; parent.add(m); return m; };
 
   layout.tents.forEach((t, i) => {
-    const landmarkPreview = opts.landmarkPreview === true && LANDMARK_PREVIEW_IDS.includes(t.id);
-    const openCanopy = landmarkPreview || (opts.openCanopyD26 === true && t.id === 'D26');
+    const restoreSmallProps = opts.restoreSmallProps === true;
+    const landmarkPreview = !restoreSmallProps && opts.landmarkPreview === true && LANDMARK_PREVIEW_IDS.includes(t.id);
+    const openCanopy = !restoreSmallProps && (landmarkPreview || (opts.openCanopyD26 === true && t.id === 'D26'));
+    const keepTorii = restoreSmallProps && t.id === 'D26';
     const dept = depts.get(t.id), info = boothInfo(t.id, booths.get(t.id), dept, fns.get(t.id));
     const collegeColor = dept ? colColor.get(dept.college) : null;
     const g = new THREE.Group(); g.name = `bz26-tent-${t.id}`;
@@ -104,12 +107,17 @@ export function buildTents(layout, colleges, opts = {}) {
       parts.landmark = landmark.parts;
       g.userData.bz26OpenCanopy = true;
       g.userData.bz26LandmarkBounds = landmark.bounds;
-    } else if (openCanopy) {
+    } else if (openCanopy || keepTorii) {
       const torii = buildOpenCanopyTorii(g, { mesh, toon, outline });
       parts.landmark = torii.parts;
-      g.userData.bz26OpenCanopy = true;
+      g.userData.bz26OpenCanopy = openCanopy;
+    }
+    if (restoreSmallProps && dept) {
+      const small = buildSmallProp(g, t.id, { toon, OUT, canvasTex }, dept.prop);
+      parts.smallProp = small.parts; g.userData.bz26SmallProp = { id: t.id, scale: small.scale, bounds: { min: small.bounds.min.toArray(), max: small.bounds.max.toArray() } };
     }
     if (colliders) mine.push(...(landmark ? departmentLandmarkColliders(t, landmark, g.position.y) : (openCanopy ? openCanopyColliders : collidersOf)(t, g.position.y)));
+    if (colliders && keepTorii) mine.push(...openCanopyColliders(t, g.position.y).slice(4, 6));
     tents.set(t.id, { id: t.id, group: g, parts, info, collegeColor: collegeColor || clothColor(t.id, null), colors, ensureTex, layout: t });
   });
 

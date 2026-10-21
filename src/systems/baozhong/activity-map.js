@@ -42,7 +42,7 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   const list = make('div'); list.className = 'bz-map-list'; const status = make('p'); status.setAttribute('role', 'status');
   const clear = make('button', '清除目標'); grid.append(svg, list); panel.append(header, filters, note, grid, status, clear); overlay.append(panel);
   const targetHUD = make('div'); targetHUD.id = 'bz-activity-target'; targetHUD.hidden = true; doc.body.append(overlay, targetHUD);
-  let selected = null, opened = false, disposed = false, priorFocus, priorBusy, hadBusy, elapsed = 0;
+  let active = true, selected = null, opened = false, disposed = false, priorFocus, priorBusy, hadBusy, elapsed = 0;
   const svgNode = (tag, attrs, text) => { const e = doc.createElementNS('http://www.w3.org/2000/svg', tag); for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,String(v)); if (text) e.textContent = text; svg.append(e); return e; };
   function drawMap() {
     const p = state.room ? null : getPosition();
@@ -60,9 +60,9 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
     }
     status.textContent = `${matches.length}／${entries.length} 個攤位${selected ? `，目標：${selected.id} ${selected.name}` : ''}`; drawMap();
   }
-  function select(id) { if (disposed) return false; const e = id === null ? null : entries.find(e => e.id === id); if (id !== null && !e) return false; selected = e; renderList(); update(); return true; }
+  function select(id) { if (disposed || (!active && id !== null)) return false; const e = id === null ? null : entries.find(e => e.id === id); if (id !== null && !e) return false; selected = e; renderList(); update(); return true; }
   function open() {
-    if (disposed || opened || state.busy) return false;
+    if (disposed || !active || opened || state.busy) return false;
     priorFocus = doc.activeElement; hadBusy = Object.hasOwn(state,'busy'); priorBusy = state.busy; state.busy = true;
     opened = true; overlay.hidden = false; button.setAttribute('aria-expanded','true'); renderList(); closeButton.focus(); return true;
   }
@@ -73,12 +73,13 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   }
   function update(dt = 1) {
     if (disposed) return;
-    targetHUD.hidden = !selected || !!state.room || !!state.busy;
+    targetHUD.hidden = !active || !selected || !!state.room || !!state.busy;
     if (selected && !state.room) { const d = activityDirection(getPosition(), selected); targetHUD.textContent = d ? `${selected.id} ${selected.name}｜${d.label} · ${Math.round(d.distance)} 公尺（直線）` : ''; }
     elapsed += dt; if (opened && elapsed >= .15) { elapsed = 0; drawMap(); }
   }
+  function setActive(on) { if(disposed)return;active=!!on;button.hidden=!active;if(!active){close();selected=null;targetHUD.hidden=true;} }
   function key(e) {
-    if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!active || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
     if (opened && e.code === 'Escape') { close(); e.preventDefault(); e.stopPropagation(); return; }
     if (opened && e.code === 'Tab') {
       const buttons = [...panel.querySelectorAll('button,input,select')], first = buttons[0], last = buttons.at(-1);
@@ -96,7 +97,7 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   button.setAttribute('aria-controls', overlay.id); button.setAttribute('aria-expanded','false');
   button.addEventListener('click', toggle); closeButton.addEventListener('click',close); search.addEventListener('input',renderList); college.addEventListener('change',renderList);
   list.addEventListener('click',choose); svg.addEventListener('click',choose); overlay.addEventListener('click',backdrop); clear.addEventListener('click',clearTarget); doc.addEventListener('keydown',key,true);
-  return { open, close, select, update, get target() { return selected; }, dispose() {
+  return { open, close, select, update, setActive, get target() { return selected; }, dispose() {
     if (disposed) return; close(); disposed = true; selected = null;
     button.removeEventListener('click',toggle); closeButton.removeEventListener('click',close); search.removeEventListener('input',renderList); college.removeEventListener('change',renderList);
     list.removeEventListener('click',choose); svg.removeEventListener('click',choose); overlay.removeEventListener('click',backdrop); clear.removeEventListener('click',clearTarget); doc.removeEventListener('keydown',key,true);

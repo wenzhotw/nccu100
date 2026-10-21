@@ -99,6 +99,8 @@ try {
       assert.equal(await page.evaluate(() => window.__bz26.slice), false, 'Normal URL must not enable experimental content or matching');
       await page.locator('#go').click();
       await page.waitForFunction(() => window.__game.state.started);
+      assert.equal(await page.evaluate(() => window.__bz26.activitySign?.group.visible), false, '入場前看板隱藏');
+      assert.equal(await page.locator('#bz-activity-button').isVisible(), false, '入場前地圖按鈕隱藏');
       await approach('host');
       await page.locator('#dlg').waitFor({ state: 'visible' });
       for (let i = 0; i < 60 && await page.locator('#dlg').isVisible(); i++) await page.locator('#dlg').click();
@@ -110,7 +112,7 @@ try {
           tentPoles: T.parts.frame.filter(m => m.geometry.type === 'CylinderGeometry').length,
           toriiPosts: T.parts.landmark?.filter(m => m.userData.bz26ToriiPost).length, layout: T.layout };
       });
-      assert.equal(model.open, true); assert.equal(model.walls, 0); assert.equal(model.tentPoles, 4); assert.equal(model.toriiPosts, 2); assert.ok(model.roofParts > 0);
+      assert.equal(model.open, false); assert.equal(model.walls, 3); assert.equal(model.tentPoles, 4); assert.equal(model.toriiPosts, 2); assert.ok(model.roofParts > 0);
       for (const [angle, local] of [['front', [0, 4.2, 9]], ['three-quarter', [6, 4.2, 7]]]) {
         await page.evaluate(local => {
           const T = window.__bz26.tents.tents.get('D26'), g = T.group;
@@ -124,8 +126,8 @@ try {
       }
       const ids=name==='desktop'?['D01','D07','D11','D16','D21','D22','D27','D30','D31','D32','D37']:['D22','D37'];
       for(const id of ids){
-        const evidence=await page.evaluate(id=>{const t=window.__bz26.tents.tents.get(id),g=t.group;g.updateWorldMatrix(true,false);const at=g.localToWorld(g.position.clone().set(0,1.7,0)),eye=g.localToWorld(g.position.clone().set(-4,4.2,8)),p=g.localToWorld(g.position.clone().set(0,0,3.5));window.__game.teleport(p.x,p.z);window.__game.view(...eye.toArray(),...at.toArray());return {id,walls:t.parts.walls.length,parts:t.parts.landmark.length};},id);
-        assert.equal(evidence.walls,0);assert.ok(evidence.parts>0);await capture(`${id}-landmark`,{evidence});
+        const evidence=await page.evaluate(id=>{const t=window.__bz26.tents.tents.get(id),g=t.group;g.updateWorldMatrix(true,false);const at=g.localToWorld(g.position.clone().set(0,1.7,0)),eye=g.localToWorld(g.position.clone().set(-4,4.2,8)),p=g.localToWorld(g.position.clone().set(0,0,3.5));window.__game.teleport(p.x,p.z);window.__game.view(...eye.toArray(),...at.toArray());return {id,walls:t.parts.walls.length,parts:t.parts.smallProp.length};},id);
+        assert.equal(evidence.walls,3);assert.ok(evidence.parts>0);await capture(`${id}-landmark`,{evidence});
       }
       const sign=await page.evaluate(()=>{const s=window.__bz26.activitySign;if(!s||!s.group.parent||!s.group.visible||!window.__game.spots.includes(s.spot))return null;const p=s.group.position;window.__game.teleport(s.spot.x,s.spot.z+.6);window.__game.view(p.x+5,p.y+4.5,p.z+11,p.x,p.y+2,p.z);return {placement:s.placement,fountain:s.fountain};});
       if(!sign){manifest.signFailure=await page.evaluate(()=>({error:window.__bz26.activitySignError,colliders:window.__game.colliders}));save();}
@@ -139,8 +141,8 @@ try {
       await page.locator('button[data-booth-id="D26"]').click();assert.equal(await page.evaluate(()=>window.__bz26.activityMap.target?.id),'D26');
       await page.getByRole('button',{name:'活動地圖 G',exact:true}).click();await capture('guide-D26-selected');
       await page.getByRole('button',{name:'關閉',exact:true}).click();
-      const lifecycle=await page.evaluate(()=>{const b=window.__bz26;const active=b.venueFocus.counts();b.leave();const off=b.venueFocus.counts();b.accept();return {active,off,again:b.venueFocus.counts()};});
-      assert.ok(lifecycle.active.trees>0);assert.ok(lifecycle.active.npcs>0);assert.equal(lifecycle.off.trees,0);assert.deepEqual(lifecycle.active,lifecycle.again);
+      const lifecycle=await page.evaluate(()=>{const b=window.__bz26;const active=b.venueFocus.counts();b.leave();const off=b.venueFocus.counts();const signOff={visible:b.activitySign.group.visible,spot:window.__game.spots.includes(b.activitySign.spot),button:document.querySelector('#bz-activity-button').hidden};b.accept();return {active,off,signOff,again:b.venueFocus.counts()};});
+      assert.deepEqual(lifecycle.signOff,{visible:false,spot:false,button:true});assert.ok(lifecycle.active.trees>0);assert.ok(lifecycle.active.npcs>0);assert.equal(lifecycle.off.trees,0);assert.deepEqual(lifecycle.active,lifecycle.again);
       await capture('venue-reentry',{lifecycle});
       assert.deepEqual(runtimeErrors, [], '瀏覽器出現錯誤，截圖不得標為通過');
     } catch (error) { manifest.errors.push({ profile: name, message: String(error), stack: error.stack }); try { await capture('failure-context',{error:String(error)}); } catch {} }

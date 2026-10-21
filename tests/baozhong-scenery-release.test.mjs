@@ -4,9 +4,9 @@ import fs from 'node:fs';
 const s=fs.readFileSync(new URL('../src/systems/baozhong/index.js',import.meta.url),'utf8');
 test('released scenery is independent from experimental department content and matching',()=>{
  assert.match(s,/const SCENERY = true/);
- assert.match(s,/openCanopyD26: SCENERY, landmarkPreview: SCENERY/);
+ assert.match(s,/restoreSmallProps: true/);
  assert.match(s,/state, enabled: SCENERY/);
- assert.match(s,/if \(SCENERY && LANDMARK_PREVIEW_IDS/);
+ assert.match(s,/if \(SMALL_PROP_IDS/);
  assert.match(s,/if \(SCENERY\) \{\s*try \{ activitySign/);
  assert.match(s,/const SLICE = new URLSearchParams\(location.search\).get\('bz26slice'\) === '1'/);
  assert.match(s,/if \(SLICE && id === 'D26'\)/);

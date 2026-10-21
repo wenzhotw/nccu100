@@ -46,3 +46,9 @@ test('沒有 busy 自有欄位時關閉後復原，室內不顯示室外目標',
   api.select('D26');api.update();assert.equal(find(doc.body,n=>n.id==='bz-activity-target').hidden,true);
   api.select(null);assert.equal(api.target,null);api.dispose();
 });
+test('非活動時按鈕隱藏且G無效，離場關閉地圖並清目標，重入可再開',()=>{
+ const doc=fakeDocument(),state={busy:false};const api=mountActivityMap({layout,content,state,getPosition:()=>({x:0,z:-32}),document:doc});const button=find(doc.hud,n=>n.id==='bz-activity-button');
+ api.setActive(false);assert.equal(button.hidden,true);assert.equal(api.open(),false);assert.equal(api.select('D26'),false);doc.emit('keydown',{code:'KeyG'});assert.equal(state.busy,false);
+ api.setActive(true);assert.equal(button.hidden,false);assert.equal(api.open(),true);api.select('D26');api.setActive(false);assert.equal(state.busy,false);assert.equal(api.target,null);assert.equal(find(doc.body,n=>n.id==='bz-activity-map').hidden,true);assert.equal(find(doc.body,n=>n.id==='bz-activity-target').hidden,true);
+ api.setActive(true);assert.equal(api.open(),true);api.close();api.dispose();
+});

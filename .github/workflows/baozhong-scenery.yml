@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - run: node --test tests/*landmarks*.test.mjs tests/*torii*.test.mjs tests/open-canopy-d26.test.mjs tests/venue-focus.test.mjs tests/prefab-venue-visibility.test.mjs tests/baozhong-activity-map*.test.mjs tests/baozhong-sign-map.test.mjs tests/baozhong-guide-design.test.mjs tests/baozhong-scenery-release.test.mjs
+      - run: node --test tests/*landmarks*.test.mjs tests/*torii*.test.mjs tests/open-canopy-d26.test.mjs tests/venue-focus.test.mjs tests/prefab-venue-visibility.test.mjs tests/baozhong-activity-map*.test.mjs tests/baozhong-sign-map.test.mjs tests/baozhong-guide-design.test.mjs tests/baozhong-scenery-release.test.mjs tests/small-props-restoration.test.mjs tests/activity-sign-presence.test.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: node scripts/baozhong-scenery-screenshots.mjs
