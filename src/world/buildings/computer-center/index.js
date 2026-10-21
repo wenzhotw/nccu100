@@ -21,17 +21,18 @@ import { defineBuilding } from '../../registry.js';
 import { BD_TH, alongBd, bdLocal } from '../../layout.js';
 
 // 三個部位的中心（世界座標）與尺寸
-const TOWER = { x: 70, z: -30, w: 18, d: 16 };
-const WING = { x: 54, z: -25, w: 14, d: 9, h: 13 };
-const INFO = { x: 40, z: -22, w: 14, d: 12, h: 15.5 };   // 往南退，讓出八德道邊的後棟和人行道
+// 八德道依模型拉直後（原本往指南路斜），後棟跟著往北，塔樓、連接翼、資訊大樓一起往北收，正面廣場位置不變
+const TOWER = { x: 70, z: -30.8, w: 18, d: 14 };
+const WING = { x: 54, z: -28.3, w: 14, d: 9, h: 13 };
+const INFO = { x: 40, z: -26.8, w: 14, d: 12, h: 15.5 };   // 往南退，讓出八德道邊的後棟和人行道
 const STEPS = { w: 12, depth: 3.6 };   // 塔樓正面台階
 // 背面（西側，面向電算中心後面的校內道路）：沿人行道的一長條後棟，前面一排白磁磚方柱撐著深色石材橫樑
-const BACK = { x0: 80, x1: 87.4, z0: -39.5, z1: -12, h: 11.4 };
+const BACK = { x0: 80, x1: 87.4, z0: -39.5, z1: -19, h: 11.4 };
 const PILLAR_X = 88.0;                        // 方柱中心線（在人行道邊上）
-const DOOR = { z0: -26.3, z1: -22.7, x0: 85.6 };   // 後門：往裡退，前面五階台階
+const DOOR = { z0: -31.3, z1: -27.7, x0: 85.6 };   // 後門：往裡退，前面五階台階
 const BACK_STEP = 0.48, BACK_RISE = 0.16;
-// 北面（面向八德道）：跟背面一樣的方柱框架後棟，沿著斜的八德道排。x 是八德道中心線上的位置，v 是往南的偏移
-const NORTH = { x0: 33, x1: 85.8, pillarV: 6.0, wallV: 7.0, backV: 13.0, bays: 13 };
+// 北面（面向八德道）：跟背面一樣的方柱框架後棟，沿著八德道排。x 是八德道中心線上的位置，v 是往南的偏移
+const NORTH = { x0: 33, x1: 85.8, pillarV: 6.0, wallV: 7.0, backV: 11.0, bays: 13 };
 const NDOOR = { bay: 7, doorV: 9.4, landV: 7.9 };   // 後門那一格
 const nStep = (NORTH.x1 - NORTH.x0 - 0.6) / NORTH.bays;
 const nPillarX = i => NORTH.x0 + 0.3 + i * nStep;
@@ -340,7 +341,7 @@ export default defineBuilding({
     { x: WING.x, z: WING.z, w: WING.w, d: WING.d, color: '#ecebe6' },
     { x: (BACK.x0 + BACK.x1) / 2, z: (BACK.z0 + BACK.z1) / 2, w: BACK.x1 - BACK.x0, d: BACK.z1 - BACK.z0, color: '#ecebe6' },
     { x: INFO.x, z: INFO.z, w: INFO.w, d: INFO.d, color: '#ecebe6', label: '資訊大樓' },
-    // 沿八德道的北面後棟是斜的，自己畫
+    // 沿八德道的北面後棟（八德道若再改斜也跟著走），自己畫
     { draw(g, mx, my) {
       const pts = [[NORTH.x0, NORTH.pillarV - 0.5], [NORTH.x1, NORTH.pillarV - 0.5], [NORTH.x1, NORTH.backV], [NORTH.x0, NORTH.backV]].map(([x, v]) => alongBd(x, v));
       g.fillStyle = '#ecebe6'; g.strokeStyle = '#6b4a2a'; g.lineWidth = 3; g.beginPath();

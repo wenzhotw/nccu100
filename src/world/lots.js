@@ -7,7 +7,7 @@ import { clearArea } from './layout.js';
 
 // 玫苑、大智樓往北挪、新聞館往西挪，讓出集英樓前面那條路和人行道（back-road.js）
 clearArea('玫苑',112,7,12,7);
-clearArea('新聞館',114,-26,20,8);
+clearArea('集英樓（原新聞館預定地）',114,-26,20,8);
 clearArea('大智樓',150,7,26,7);
 clearArea('大勇樓',148,-48,32,8);
 clearArea('學思樓',-62,-2,14,12);
