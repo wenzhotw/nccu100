@@ -86,7 +86,11 @@ AI 分別從首次探索玩家（能否走完戶外）、熟悉達賢的訪客�
 
 ## 仍需完成的發布關卡
 
-固定版本最新達賢流程與全場smoke執行中；main合併後全測及正式網址驗收仍待完成。兩輪畫面與估算照片比較已如上記錄，未取得的結果不宣稱通過。
+最終打包`index-D2S8Arep.js`的達賢專項瀏覽器流程通過：鍵盤、門廊、橋上下層、牆／池岸、重入、進度保留、正常網址與手機觸控。`/tmp/nccu100-dah-rebuild-flow.log`。
+
+本機原全場smoke有一次在達賢尚未建立前，校園地圖關閉`#mapw hidden`逾時；保留原失敗log，未放寬斷言、未改共用地圖。`.references/dah-smoke-diagnostic.mjs`僅對原腳本增加鍵盤狀態與失敗截圖記錄，完整重跑相同檢查通過，`/tmp/nccu100-dah-rebuild-smoke-diagnostic.log`。同版原腳本GitHub CI亦通過：https://github.com/wenzhotw/nccu100/actions/runs/39582493824 。目前無法重現該次逾時，原因未確認，保留為執行穩定性風險。
+
+main合併後全測與原網址部署流程結果，於 [PR #63](https://github.com/wenzhotw/nccu100/pull/63) 的驗證欄追蹤。本段是合併前快照，未把尚未取得的發布結果寫成通過。
 
 ## 限制與待驗證風險
 

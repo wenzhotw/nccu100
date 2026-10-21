@@ -1,4 +1,4 @@
-# 本輪狀態：達賢 v1.53 最終瀏覽器驗收中
+# 本輪狀態：達賢 v1.53 本機驗收完成，發布追蹤 PR #63
 
 - 使用者核可依角色站位照片重建戶外並要求繼續；工作區 `/Users/cengweiting/Developer/創業計畫/NCCU100`，分支 `fix/dah-hsian-detail-and-collision`，來源51a8cb18；沒有他人未提交修改。
 - 已重建各側立面、深門廊、二樓露台、館名牆、小屋不對稱入口、空橋／外梯、半圓老樹廣場、坡面石板。戶外外梯／空橋可走，室內與交通不變。
@@ -9,13 +9,14 @@
 - 獨立程式審查連續875次更新完成一樓→外梯→二樓→橋→小屋，腳底與樓板射線吻合、橋底鏡頭射線通過；`.references/dah-hsian/round2/review-route.mjs`及log。
 - 最終程式審查補出擋土牆／小屋端框柱缺碰撞，已按實體尺寸修正並留通路；窄縫殘留重疊改選所有碰撞物件都安全的最近候選，兩行為各先紅後綠，原審查者複核27/27通過。
 - 兩輪桌機1280×800／手機375×812自評已做，依審查清單修低欄杆碰撞／補池對岸圖，原審查者兩項resolved、清單範圍ship。文件交接確認沿用既有系統，DESIGN.md不改，既有缺少design.json揭露不擅補。
-- 最終固定dist驗收：`node scripts/dah-hsian-smoke.mjs`後接`npm run smoke`執行中（exec28344）；日誌 `/tmp/nccu100-dah-rebuild-flow.log`／`...-smoke.log`。固定preview5187（exec6811）保留，CLI瀏覽器已關。
-- 尚待全場smoke結束、最終差異審查、授權的合併／main全測／push／原網址部署驗收。未完成前不宣稱上線。
+- 最終`index-D2S8Arep.js`達賢瀏覽器專項通過，`/tmp/nccu100-dah-rebuild-flow.log`。原全場smoke曾在尚未建立達賢前地圖關閉逾時，原因未確認；保留原失敗log，僅加診斷的同斷言完整重跑通過，`/tmp/nccu100-dah-rebuild-smoke-diagnostic.log`。同版原腳本GitHub CI 39582493824成功，未改共用地圖或放寬測試。
+- 程式審查及視覺清單均已複核；來源提交0f2004b，草稿 [PR #63](https://github.com/wenzhotw/nccu100/pull/63) 已附本聊天。發布階段以PR驗證欄／main Actions結果追蹤，這裡保留合併前快照。
+- 固定preview5187供本機驗收，無新常駐服務；研究圖／截圖／診斷腳本留ignored本機目錄，原始研究來源不清理。
 - QA、兩輪八項自評、照片對照／效能量測限制及九項產品理解檢查點依據：`docs/reference/dah-hsian/rebuild-qa.md`。僅一般地圖改動，局部QA，未對第三方做資安模擬。
 
 ## 下一步
 
-確認exec28344通過與差異審查，按既有授權整合main、重跑全套／check／build／smoke，push後追蹤Pages，驗收原 `https://wenzhotw.github.io/nccu100/?area=dah-hsian`。若測試或權限失敗保留工作回報證據，不硬推。
+按既有授權整合main、重跑全套／check／build，原全場smoke已由同版CI與本機完整診斷重跑覆蓋；push後追蹤main CI及Pages，驗收原 `https://wenzhotw.github.io/nccu100/?area=dah-hsian`。若測試或權限失敗保留工作回報證據，不硬推。
 
 ## 前階段紀錄
 
