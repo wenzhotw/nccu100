@@ -7,7 +7,7 @@ function cached(key, build) {
   if (!geometries.has(key)) geometries.set(key, build());
   return geometries.get(key);
 }
-export function createCostumeKit(n, { toon, OUT }) {
+export function createCostumeKit(n, { toon, OUT, canvasTex }) {
   function group(parent, name, pos = [0, 0, 0]) {
     const g = new THREE.Group(); g.name = `bz26-costume-${name}`;
     g.position.set(...pos); g.userData.noOcc = true; parent.add(g); return g;
@@ -27,7 +27,20 @@ export function createCostumeKit(n, { toon, OUT }) {
   const left = group(n.P.shL, `${n.id}-left`), right = group(n.P.shR, `${n.id}-right`);
   const hipLeft = group(n.P.hipL, `${n.id}-hip-left`), hipRight = group(n.P.hipR, `${n.id}-hip-right`);
   return {
-    rig, head, left, right, hipLeft, hipRight, group,
+    rig, head, left, right, hipLeft, hipRight, group, root: n.g,
+    label(parent, name, text, pos, width, height, bg = '#224477', fg = '#ffffff') {
+      const lines = text.split('\n');
+      const texture = canvasTex?.(768, 384, g => {
+        g.fillStyle = bg; g.fillRect(0, 0, 768, 384);
+        g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.font = 'bold 72px "Noto Sans TC", sans-serif';
+        lines.forEach((line, i) => g.fillText(line, 384, 192 + (i - (lines.length - 1) / 2) * 110, 718));
+      });
+      const plane = new THREE.Mesh(new THREE.PlaneGeometry(width, height),
+        new THREE.MeshBasicMaterial({ map: texture || null, color: texture ? '#ffffff' : bg, side: THREE.DoubleSide }));
+      plane.name = `bz26-costume-${name}`; plane.position.set(...pos); plane.userData.text = text;
+      parent.add(plane); return plane;
+    },
     box: (p, name, c, pos, size, rot) => mesh(p, name, c, pos, BOX, size, rot),
     sphere: (p, name, c, pos, scale) => mesh(p, name, c, pos, SPHERE, scale),
     cylinder: (p, name, c, pos, top, bottom, height, rot) => mesh(p, name, c, pos,

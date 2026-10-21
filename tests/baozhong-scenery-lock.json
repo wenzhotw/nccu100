@@ -9,7 +9,7 @@
   },
   "expected": {
     "src/systems/baozhong/deps.js": "a81fde11bbabf4a6da6c828b0ff59fe8d5d9327f63a80b4f54e5aeb872e82062",
-    "src/systems/baozhong/index.js": "0a468fc9092239bd4b6db88f89552c85573efa3ff8a9c684c5cd47a69db6e034",
+    "src/systems/baozhong/index.js": "9c837a63372343af9ee1be263dd868148cb658eef19146ca4f8d1c0c91e7983c",
     "src/systems/baozhong/tents-logic.js": "d5801820324f80b5466f12a10558f2e158e6c50a1ca1502d2efd596ec705bc1c",
     "src/systems/baozhong/tents.js": "f73a7c367e28155b157d5658ce9af8ec312a7ab929305f910e464189534ccdcc"
   },

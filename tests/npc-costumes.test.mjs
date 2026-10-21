@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { COSTUME_NPC_IDS, costumeLook, costumeProfile } from '../src/systems/baozhong/npc-costume-profiles.js';
 import { mountNpcCostume } from '../src/systems/baozhong/npc-costumes.js';
 const materials = new Map();
-const deps = { toon: color => {
+const deps = { canvasTex: (w,h,draw) => { draw({fillRect(){},fillText(){}}); return new THREE.Texture(); }, toon: color => {
   if (!materials.has(color)) materials.set(color, new THREE.MeshToonMaterial({ color }));
   return materials.get(color);
 }, OUT: new THREE.MeshBasicMaterial({ color: '#2a2c4a', side: THREE.BackSide }) };
@@ -17,8 +17,8 @@ function rig(id) {
   }
   return { id, g, rig: body, P, fear: 0, state: 'idle', home: {x:0,z:0}, spot: { fn() {}, ok() {return true;} } };
 }
-test('exact 23 activity NPCs, including business and law masters but not language master', () => {
-  const wanted = ['D01','D11','D12','D13','D14','D15','D16','D17','D18','D19','D21','D23','D24','D25','D26','D27','D28','D29','D30','D31','D37','C03','C06'].map(id => `bz26-${id}`).sort();
+test('all 37 departments plus two activity masters, including business and law masters but not language master', () => {
+  const wanted = [...Array.from({length:37},(_,i)=>`D${String(i+1).padStart(2,'0')}`),'C03','C06'].map(id => `bz26-${id}`).sort();
   assert.deepEqual(COSTUME_NPC_IDS, wanted);
   assert.equal(costumeProfile('bz26-C05'), null);
   assert.equal(costumeProfile('cop'), null);
@@ -70,6 +70,45 @@ test('held items leave right shoulder alone and preserve panic, movement and exi
 test('only activity construction is wired and shared NPC core remains independent',()=>{
   const activity=fs.readFileSync(new URL('../src/systems/baozhong/index.js',import.meta.url),'utf8');
   const core=fs.readFileSync(new URL('../src/actors/npc.js',import.meta.url),'utf8');
-  assert.match(activity,/look: costumeLook\(o.id, o.look\)/);assert.match(activity,/mountNpcCostume\(n, \{ toon, OUT \}\)/);
+  assert.match(activity,/look: costumeLook\(o.id, o.look\)/);assert.match(activity,/mountNpcCostume\(n, \{ toon, OUT, canvasTex, groundH \}\)/);
   assert.doesNotMatch(core,/costume|baozhong/);
+});
+
+test('new department identities and all business accessories exist as real geometry',()=>{
+  const required={D02:'history-yellowed-folder',D03:'philosophy-beret',D04:'soapbox',D05:'sociology-interview-board',D06:'budget',D07:'administration',D08:'survey',D09:'economics',D10:'field',D11:'trade-rolling-case',D12:'finance-market-tablet',D13:'thick-ledger',D14:'statistics-bow',D15:'management-earpiece',D16:'mis-workflow-tablet',D17:'wealth-double-breasted',D18:'insurance-shield',D20:'advertising-storyboard',D22:'communication-neck-camera',D32:'math-geometric-model',D33:'cognition-card',D34:'diplomacy-silk',D35:'education-rollbook',D36:'innovation-travel-backpack'};
+  for(const [id,fragment] of Object.entries(required)){
+    const n=rig(`bz26-${id}`);mountNpcCostume(n,deps);const names=[];n.g.traverse(o=>names.push(o.name));
+    assert.ok(names.some(name=>name.includes(fragment)),`${id}: ${fragment}`);
+    if(id==='D20'||id==='D35') n.g.traverse(o=>{
+      if(o.isMesh && /(?:glasses|thin-frame).*(?:rim|side|bridge)/.test(o.name) && !o.name.endsWith('-outline')) assert.ok(o.position.z>=.29,`${id} frame ahead of head sphere`);
+    });
+  }
+});
+test('political stage stays at home during turns/movement, preserves planar interaction and exact flag text',()=>{
+  const n=rig('bz26-D04');n.g.position.set(12,0,8);n.g.rotation.y=.7;n.g.scale.setScalar(1.2);
+  const originalSpot=n.spot, originalHome=n.home;let prior=0;n.after=()=>prior++;
+  mountNpcCostume(n,{...deps,groundH:()=>.06});
+  const stage=n.g.getObjectByName('bz26-costume-campaign-stage');
+  const flag=n.g.getObjectByName('bz26-costume-campaign-flag-text');
+  assert.equal(flag.userData.exactText,'你們的總統 唐納川普');
+  assert.equal(flag.userData.text.replace(/\n/g,' '),flag.userData.exactText);
+  const back=n.g.getObjectByName('bz26-costume-campaign-flag-text-back');
+  assert.equal(back.userData.exactText,flag.userData.exactText);
+  assert.equal(back.rotation.y,Math.PI);assert.ok(back.position.z<flag.position.z);
+  assert.equal(n.spot,originalSpot);assert.equal(n.home,originalHome);
+  assert.equal(n.rig.position.y,.18);
+  n.g.position.y=.06;n.rig.position.y=0;n.g.rotation.y=1.6;n.after(n,.016);n.g.updateMatrixWorld(true);
+  let world=stage.getWorldPosition(new THREE.Vector3());assert.ok(world.distanceTo(new THREE.Vector3(12,.06,8))<1e-8);
+  assert.equal(n.rig.position.y,.18);assert.equal(prior,1);
+  n.g.position.x=13;n.rig.position.y=.03;n.fear=1;n.after(n,.016);n.g.updateMatrixWorld(true);
+  world=stage.getWorldPosition(new THREE.Vector3());assert.ok(world.distanceTo(new THREE.Vector3(12,.06,8))<1e-8);
+  assert.equal(n.rig.position.y,.03);assert.equal(n.g.userData.bz26PlatformLift,0);
+  n.g.visible=false;assert.equal(stage.parent,n.g); // Stage shares event visibility; no scene orphan.
+});
+test('all document poses preserve right-hand umbrella and underlying movement',()=>{
+  for(const id of COSTUME_NPC_IDS.filter(id=>costumeProfile(id).pose==='document')){
+    const n=rig(id);mountNpcCostume(n,deps);n.P.shR.rotation.z=2.55;n.after(n,.016);
+    assert.equal(n.P.shL.rotation.x,-1.05,id);assert.equal(n.P.shR.rotation.z,2.55,id);
+    n.fear=1;n.P.shL.rotation.z=-2.4;n.after(n,.016);assert.equal(n.P.shL.rotation.z,-2.4,id);
+  }
 });

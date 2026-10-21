@@ -20,6 +20,32 @@ Object.assign(profiles, {
   C06: { kind: 'profession', culture: '英式法官造型', look: { top: '#30344e', pants: '#30344e', hair: '#ddd5c4', hairStyle: 'short' } },
   D37: { kind: 'profession', culture: '筆電使用者', pose: 'laptop', look: { top: '#4083a1', pants: '#30485d' } },
 });
+
+// 第二批：全37系補齊；只覆寫活動造型，不更改內容資料。
+Object.assign(profiles, {
+  D02: {kind:'social',culture:'復古史學家',pose:'document',look:{top:'#795b43',pants:'#45404a'}},
+  D03: {kind:'social',culture:'法式知識分子戲劇造型',pose:'document',look:{top:'#f3eee2',pants:'#242735'}},
+  D04: {kind:'political',culture:'使用者指定競選戲仿角色',look:{suit:true,top:'#24518b',pants:'#24518b',tie:'#d32f38',hair:'#e5c15a',hairStyle:'side'}},
+  D05: {kind:'social',culture:'街頭訪談研究者',pose:'document',look:{top:'#d6e3e4',pants:'#496074'}},
+  D06: {kind:'social',culture:'預算審查員',pose:'document',look:{top:'#f2eee4',pants:'#454957'}},
+  D07: {kind:'social',culture:'公共服務人員',pose:'document',look:{top:'#dce8ed',pants:'#45546b'}},
+  D08: {kind:'social',culture:'測量工作者',pose:'document',look:{top:'#e5bb4b',pants:'#465c61'}},
+  D09: {kind:'social',culture:'經濟分析師',pose:'document',look:{top:'#41495d',pants:'#353a49'}},
+  D10: {kind:'social',culture:'田野研究者',pose:'document',look:{top:'#bcaa82',pants:'#73684e'}},
+  D20: {kind:'extended',culture:'廣告創意工作者',pose:'document',look:{top:'#df7859',pants:'#39465a'}},
+  D22: {kind:'extended',culture:'跨媒體創作者',look:{top:'#459a98',pants:'#43435a'}},
+  D32: {kind:'extended',culture:'數學研究者',pose:'document',look:{top:'#f0e6d3',pants:'#394452'}},
+  D33: {kind:'extended',culture:'心理學研究者',pose:'document',look:{top:'#a3c6bc',pants:'#4c5a64'}},
+  D34: {kind:'extended',culture:'外交談判代表',pose:'document',look:{suit:true,top:'#32445f',pants:'#32445f',tie:'#f1e8dc'}},
+  D35: {kind:'extended',culture:'學校老師',pose:'document',look:{top:'#e3e9dc',pants:'#4a5260'}},
+  D36: {kind:'extended',culture:'創業提案者',pose:'document',look:{suit:true,top:'#7493aa',pants:'#4e6577',tie:'#edf2ee',shoe:'#f2f0e8'}},
+});
+const businessColors=['#243d60','#26364f','#626976','#3b4c68','#29394c','#405b76','#34425c','#303e54'];
+for (let i=0;i<8;i++) {
+  const id=`D${11+i}`, old=profiles[id];
+  profiles[id]={...old,pose:'document',look:{...old.look,top:businessColors[i],pants:businessColors[i],tie:i===5?'#ffffff':old.look.tie}};
+}
+
 for (const p of Object.values(profiles)) { Object.freeze(p.look); Object.freeze(p); }
 export const NPC_COSTUME_PROFILES = Object.freeze(profiles);
 export const COSTUME_NPC_IDS = Object.freeze(Object.keys(profiles).map(id => `bz26-${id}`).sort());
