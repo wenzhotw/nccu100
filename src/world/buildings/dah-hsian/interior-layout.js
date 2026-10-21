@@ -7,6 +7,7 @@ export const INTERIOR_EXIT={x:-22,z:-12,r:1.6,label:'回達賢戶外'};
 export const OUTDOOR_RETURN={x:14.2,y:4,z:18.6,yaw:Math.PI/2,pitch:.12,face:-Math.PI/2};
 export const FURNITURE=[
   {name:'櫃台木柱',x:-5.8,z:-7.4,w:1.1,d:1.8,h:4,kind:'core'},
+  {name:'西南D梯封閉入口',x:-19,z:20.5,w:3.6,d:6,h:4.2,kind:'stairs'},
   {name:'館內樓梯封閉入口',x:18,z:20.5,w:3.6,d:6,h:4.2,kind:'stairs'},
   {name:'弧形服務櫃台',x:-7,z:-6,w:4,d:7,h:1.05,kind:'counter'},
   {name:'預約智慧書架',x:-2,z:-17,w:1,d:8,h:2.1,kind:'lockers'},
@@ -15,9 +16,9 @@ export const FURNITURE=[
   {name:'自助還書機',x:-21.5,z:-7,w:.9,d:1.8,h:1.5,kind:'return'},
   ...[-18,-16.5,-15,-10.5].map(x=>({name:'入館閘門機柱',x,z:-2,w:.35,d:2,h:1.05,kind:'gate'})),
   {name:'入館閘門機柱',x:-13.5,z:-2,w:.35,d:2,h:1.05,kind:'gate'},
-  ...[-17,-11,-5,1,7,13].map(x=>({name:'窗邊閱讀椅',x,z:20.8,w:.65,d:.65,h:.9,kind:'chair'})),
-  ...[-17,-11,-5,1,7,13].map(x=>({name:'窗邊閱讀桌',x,z:22,w:2.4,d:1.2,h:.76,kind:'table'})),
-  ...[-19,-13].map(x=>({name:'體驗桌',x,z:9,w:2,d:2,h:.72,kind:'table'})),
+  ...[-11,-5,1,7,13].map(x=>({name:'窗邊閱讀椅',x,z:20.8,w:.65,d:.65,h:.9,kind:'chair'})),
+  ...[-11,-5,1,7,13].map(x=>({name:'窗邊閱讀桌',x,z:22,w:2.4,d:1.2,h:.76,kind:'table'})),
+  ...[6,11].map(z=>({name:'體驗桌',x:-20,z,w:2,d:2,h:.72,kind:'table'})),
   ...[-17,-13,-5,1,7].map(x=>({name:'期刊展示架',x,z:17,w:2.2,d:.55,h:1.4,kind:'books'})),
   {name:'閱覽沙發',x:-18.5,z:14,w:3.6,d:1.3,h:.85,kind:'sofa'},
   {name:'閱覽單椅',x:11,z:18,w:1.1,d:1.2,h:.95,kind:'chair'},

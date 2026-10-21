@@ -1,7 +1,7 @@
 import fs from 'node:fs';import * as THREE from 'three';
 import {buildTents} from '../src/systems/baozhong/tents.js';
 import {resolve,setActiveColliders,setRoomClamp} from '../src/core/collision.js';
-const ROOT=new URL('../src/',import.meta.url).pathname,read=p=>fs.readFileSync(ROOT+p,'utf8');
+const ROOT=new URL('../src/',import.meta.url),read=p=>fs.readFileSync(new URL(p,ROOT),'utf8');
 const layout=JSON.parse(fs.readFileSync(new URL('../src/systems/baozhong/layout.json',import.meta.url)));
 const colliders=[],api=buildTents(layout,[],{colliders});api.setActive(true);api.group.updateMatrixWorld(true);setActiveColliders(colliders);setRoomClamp(null);const t=api.tents.get('D26');
 const loop=read('core/loop.js'),start=loop.indexOf('  if(!(state.isEagle&&!state.grounded)) resolve(pos);'),end=loop.indexOf('  player.position.copy(pos);',start);const vertical=new Function('state','pos','dt','keys','dlg','groundH','AU','resolve',loop.slice(start,end));

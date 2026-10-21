@@ -30,6 +30,10 @@ try{
   assert.ok(await page.evaluate(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<1.3&&Math.abs(__game.pos.y)<.02,{x,z}),'真鍵盤沿公開動線走到 '+x+','+z);
  }
  console.log('PASS 實際鍵盤：入口→大廳→閘門→挑空→窗邊閱覽');
+ await page.evaluate(()=>{__game.pos.set(-14,0,8);__game.state.yaw=-Math.PI/2;__game.state.pitch=.12;});
+ await page.mouse.move(800,420);await page.mouse.down();await page.mouse.move(800,300,{steps:8});await page.mouse.up();
+ assert.ok(await page.evaluate(()=>__game.state.pitch<=-.049&&__game.rooms['dah-hsian-2f'].def.camera.lookUpHeight>0),'原滑鼠拖曳可在2F啟用仰視');
+ console.log('PASS 原滑鼠拖曳仰視中庭（正常遊戲鏡頭）');
  await page.evaluate(()=>{__game.pos.set(-16,0,-12);__game.state.yaw=0;__game.state.pitch=1.15;});await waitTime(.2);
  assert.ok(await page.evaluate(()=>__game.state.camD<3.7),'正常仰視鏡頭留在天花下方');
  await page.evaluate(()=>{__game.pos.set(-20.5,0,-12);__game.state.vy=0;});
@@ -54,6 +58,10 @@ try{
  await mobile.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});await mobile.tap('#act');
  await mobile.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
  assert.ok(await mobile.locator('#stick').isVisible());
+ await mobile.locator('#stage canvas').dispatchEvent('pointerdown',{pointerId:9,pointerType:'touch',clientX:280,clientY:400});
+ await mobile.locator('#stage canvas').dispatchEvent('pointermove',{pointerId:9,pointerType:'touch',clientX:280,clientY:300});
+ await mobile.locator('#stage canvas').dispatchEvent('pointerup',{pointerId:9,pointerType:'touch'});
+ assert.ok(await mobile.evaluate(()=>__game.state.pitch<=-.049),'手機原拖曳亦可仰視');
  const before=await mobile.evaluate(()=>({x:__game.pos.x,time:__game.state.time})),stick=await mobile.locator('#stick').boundingBox();
  await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:7,pointerType:'touch',clientX:stick.x+stick.width/2,clientY:stick.y+10});
  await mobile.waitForFunction(t=>__game.state.time>t+.5,before.time,{timeout:60000});
