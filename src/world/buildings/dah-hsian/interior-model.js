@@ -92,7 +92,7 @@ export function createInteriorModel(materialFor){
    s.moveTo(w,-d);s.lineTo(-w+r,-d);s.quadraticCurveTo(-w,-d,-w,-d+r);s.lineTo(-w,d-r);s.quadraticCurveTo(-w,d,-w+r,d);s.lineTo(w,d);s.closePath();
    const geo=new THREE.ExtrudeGeometry(s,{depth:o.h,bevelEnabled:false,curveSegments:10});geo.rotateX(-Math.PI/2);
    const m=new THREE.Mesh(geo,mat('white'));m.name='服務櫃台弧形本體';g.add(m);
-   
+
    box(g,'ink',.61,2.1,-1.4,.09,1,1.1,'櫃台資訊螢幕');
    for(const z of [-2,0,2]){box(g,'metal',-.65,1.12,z,.7,.08,.8,'桌面');box(g,'ink',-.55,1.42,z,.1,.5,.65,'工作螢幕');}
   }else if(o.kind==='core'){

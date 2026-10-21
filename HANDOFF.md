@@ -6,7 +6,7 @@
 - core/gameplay最小加entrance.room／returnRoom、明確spawn.y、正確onExit/onEnter；其他建築預設null維持。相機collector抽純Three模組，2F天花／細柱opt-in，舊規則經原審查者案例比較一致。
 - 官方平面＋6站24方向環景實際看圖，2020-02©NinaKu，索引docs/reference/dah-hsian/interior-stations.json。官方近照與研究原圖僅ignored本機.references/dah-hsian/interior，不發布照片素材。
 - navigation2／interior8針對測試與全套129/129通過，/tmp/nccu100-2f-tests.log；check/build通過，最終產物index-C2_IDBXU.js。Node24.15／Three0.149／無新增相依。其後只更新文件、CI新瀏覽器步驟與測試mobile console監聽，不改產品程式。
-- 真E往返已通過，後續完整鍵盤入口→大廳→閘門→挑空→窗邊閱覽、鏡頭／重入／舊房間檢查已走通。完整手機搖桿回出口等仍執行exec70561，/tmp/nccu100-2f-full-flow.log。第一版手機測試傳送受殘餘慣性滑出提示，改實際搖桿走回出口，不改遊戲手感掩蓋。
+- 真E往返已通過，後續完整鍵盤入口→大廳→閘門→挑空→窗邊閱覽、鏡頭／重入／舊房間檢查已走通。完整手機搖桿回出口已通過（exec70561 exit 0），/tmp/nccu100-2f-full-flow.log。第一版手機測試傳送受殘餘慣性滑出提示，改實際搖桿走回出口，不改遊戲手感掩蓋。
 - 兩輪CLI 1280x800／375x812及3站照片對照完成。獨立視覺fix兩項（透明殼遮住玻璃、共面地毯條紋）各先紅後綠，覆寫同r2／photo檔再複核，兩項resolved、限清單ship。原程式鏡頭P2也複核通過。
 - 最終圖 `.screenshots/dah-2f-r2-desktop.png`／`dah-2f-r2-mobile.png`；照片比較 `dah-2f-photo-lobby.png`／counter／atrium。最後CLI已關。preview5187 exec33195仍供固定dist流程。
 - Impeccable documenter確認普通延伸保留DESIGN；既有缺design.json不擅補。detect僅一次，暖白世界招牌#eee9df單檔單值例外，舊例外不動。詳QA docs/reference/dah-hsian/interior-qa.md（含兩輪八項與九項理解檢查點、美術十項）。
@@ -14,7 +14,7 @@
 
 ## 下一步
 
-取得exec70561最終結果，建立PR並附本聊天，確認分支完整CI（含全場smoke與新2F步驟）成功，再依既有授權合併main、main重跑全測/check/build、push沿Pages原網址、驗收正式SHA/v1.54／真進出。若失敗修復，不帶失敗發布。發布結果以PR驗證欄追蹤，這裡保留提交前快照。
+本機完整鍵盤／手機流程已通過。建立PR並附本聊天，確認分支完整CI（含全場smoke與新2F步驟）成功，再依既有授權合併main、main重跑全測/check/build、push沿Pages原網址、驗收正式SHA/v1.54／真進出。若失敗修復，不帶失敗發布。發布結果以PR驗證欄追蹤，這裡保留提交前快照。
 
 ## 前輪發布與驗收快照
 
