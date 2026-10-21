@@ -14,7 +14,7 @@ import { openMatching, cancelMatching } from './matching.js';
 import { mountActivityMap } from './activity-map.js';
 import { createActivitySign } from './activity-sign.js';
 import { createVenueFocus } from './venue-focus.js';
-import { LANDMARK_PREVIEW_IDS } from './department-landmarks.js';
+import { SMALL_PROP_IDS } from './small-props.js';
 import { AU, NPCS, FOLIAGE, spots, addNPC, colliders, createTents, mountDecor, mountPassport, openChoice, openDialog, openQuiz, pos, groundH, player, shadowBlob, setFlag, showAchievement, state, toast, unmountAllDecor, updateDecor } from './deps.js';
 
 // Gemini 的 baozhong-booths.json 還沒交時 glob 是空的，帳篷照 tents-logic 的預設（英文名留空、海報摘自凍結內容）。
@@ -46,7 +46,7 @@ const afterResult = done => grant(F.newAchievements(flags()), done);
 const say = (title, lines, then) => openDialog(title, lines, then);
 
 /* ---------- 會場（只建一次） ---------- */
-const tents = createTents(LAYOUT, CONTENT, BOOTHS, { openCanopyD26: SCENERY, landmarkPreview: SCENERY });
+const tents = createTents(LAYOUT, CONTENT, BOOTHS, { restoreSmallProps: true });
 const byId = new Map(LAYOUT.tents.map(t => [t.id, t]));
 const venueNPCs = [];
 function venueNPC(o, fn) {
@@ -85,7 +85,7 @@ const venue = {
     venueFocus.setActive(on);
     tents.setActive(on);
     if (on) {
-      for (const T of tents.tents.values()) { if (SCENERY && LANDMARK_PREVIEW_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
+      for (const T of tents.tents.values()) { if (SMALL_PROP_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
       try { passport = mountPassport({ getView: () => L.passportView(flags(), CONTENT) }); } catch (err) { console.warn('[bz26] 護照掛載失敗', err); passport = null; }
     } else {
       cancelMatching();

@@ -110,7 +110,7 @@ try {
           tentPoles: T.parts.frame.filter(m => m.geometry.type === 'CylinderGeometry').length,
           toriiPosts: T.parts.landmark?.filter(m => m.userData.bz26ToriiPost).length, layout: T.layout };
       });
-      assert.equal(model.open, true); assert.equal(model.walls, 0); assert.equal(model.tentPoles, 4); assert.equal(model.toriiPosts, 2); assert.ok(model.roofParts > 0);
+      assert.equal(model.open, false); assert.equal(model.walls, 3); assert.equal(model.tentPoles, 4); assert.equal(model.toriiPosts, 2); assert.ok(model.roofParts > 0);
       for (const [angle, local] of [['front', [0, 4.2, 9]], ['three-quarter', [6, 4.2, 7]]]) {
         await page.evaluate(local => {
           const T = window.__bz26.tents.tents.get('D26'), g = T.group;
@@ -124,8 +124,8 @@ try {
       }
       const ids=name==='desktop'?['D01','D07','D11','D16','D21','D22','D27','D30','D31','D32','D37']:['D22','D37'];
       for(const id of ids){
-        const evidence=await page.evaluate(id=>{const t=window.__bz26.tents.tents.get(id),g=t.group;g.updateWorldMatrix(true,false);const at=g.localToWorld(g.position.clone().set(0,1.7,0)),eye=g.localToWorld(g.position.clone().set(-4,4.2,8)),p=g.localToWorld(g.position.clone().set(0,0,3.5));window.__game.teleport(p.x,p.z);window.__game.view(...eye.toArray(),...at.toArray());return {id,walls:t.parts.walls.length,parts:t.parts.landmark.length};},id);
-        assert.equal(evidence.walls,0);assert.ok(evidence.parts>0);await capture(`${id}-landmark`,{evidence});
+        const evidence=await page.evaluate(id=>{const t=window.__bz26.tents.tents.get(id),g=t.group;g.updateWorldMatrix(true,false);const at=g.localToWorld(g.position.clone().set(0,1.7,0)),eye=g.localToWorld(g.position.clone().set(-4,4.2,8)),p=g.localToWorld(g.position.clone().set(0,0,3.5));window.__game.teleport(p.x,p.z);window.__game.view(...eye.toArray(),...at.toArray());return {id,walls:t.parts.walls.length,parts:t.parts.smallProp.length};},id);
+        assert.equal(evidence.walls,3);assert.ok(evidence.parts>0);await capture(`${id}-landmark`,{evidence});
       }
       const sign=await page.evaluate(()=>{const s=window.__bz26.activitySign;if(!s||!s.group.parent||!s.group.visible||!window.__game.spots.includes(s.spot))return null;const p=s.group.position;window.__game.teleport(s.spot.x,s.spot.z+.6);window.__game.view(p.x+5,p.y+4.5,p.z+11,p.x,p.y+2,p.z);return {placement:s.placement,fountain:s.fountain};});
       if(!sign){manifest.signFailure=await page.evaluate(()=>({error:window.__bz26.activitySignError,colliders:window.__game.colliders}));save();}
