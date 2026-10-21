@@ -3,6 +3,7 @@
 - 分工：本輪由奧樂遊戲使用者接手，GitHub 帳號 Hunter20041004。主維護者仍依既有 CODEOWNERS，不自行改共同分工。
 - 範圍：本館外觀、前草坡與石板路、入口門廊、湖濱步道、景觀池、小屋外觀及空橋。
 - 獨立場景，第一次進入才建立。沒有正式交通入口；本館及小屋室內未開放。
+- v1.53依地面環景重建門廊、二樓露台、小屋入口與立面，戶外外梯及空橋可行走；橋下仍是一樓，玻璃門後不開放。
 - 本機預覽：http://127.0.0.1:5187/?area=dah-hsian
 - 正式站預覽（需本輪部署後）：https://wenzhotw.github.io/nccu100/?area=dah-hsian
 
@@ -23,6 +24,7 @@ site-data.js 保存三個 OSM 地標輪廓，© OpenStreetMap contributors，ODb
 
 ```sh
 node --test scripts/dah-hsian.test.mjs
+node --test scripts/dah-hsian-rebuild.test.mjs
 node scripts/dah-hsian-smoke.mjs
 npm test
 npm run check
@@ -31,3 +33,5 @@ npm run smoke
 ```
 
 地面高度／碰撞有實際行為測試；視覺還原仍需依多方向遊戲畫面與實景對照。不能以 Node 測試或單一截圖代替手機實機效能測量。
+
+`groundHeight`查自然地面；`walkHeight(x,z,footY)`按目前腳高選可支撐的樓板或階梯。`index.js`限本區以`late.pos.y`接回既有高度查詢，不改共用角色／場景引擎。橋、欄杆、階梯與長椅配置共用，外觀／碰撞不可另填一組尺寸。

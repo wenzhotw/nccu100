@@ -1,7 +1,7 @@
 /** 達賢真實瀏覽器驗收；NCCU_BASE_URL 可指向本機、preview 或既有正式網址。 */
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { insidePolygon, POND } from '../src/world/buildings/dah-hsian/layout.js';
+import { insidePolygon, POND, BRIDGE } from '../src/world/buildings/dah-hsian/layout.js';
 const base = process.env.NCCU_BASE_URL || 'http://127.0.0.1:5187/';
 const browser = await chromium.launch({ args: ['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
 try {
@@ -36,6 +36,19 @@ try {
   await page.evaluate(()=>{__game.teleport(0,29);__game.state.yaw=0;});
   time=await frameTime();await page.keyboard.down('w');await waitTime(time,0.8);await page.keyboard.up('w');
   assert.ok(await page.evaluate(()=>__game.pos.z>=27.89),'主樓前牆擋住角色');
+  // 同一座標上下層分開；實際鍵盤從門廊走向池側露台。
+  await page.evaluate(()=>{__game.pos.set(14.5,4,18);__game.state.yaw=0;__game.state.vy=0;});
+  time=await frameTime();await page.keyboard.down('w');await waitTime(time,2);await page.keyboard.up('w');
+  const portico=await page.evaluate(()=>({x:__game.pos.x,y:__game.pos.y,z:__game.pos.z}));
+  assert.ok(portico.z<11&&Math.abs(portico.y-4)<.02,'門廊可實際前進並維持平台高度');
+  // 二樓空橋從主樓側走向小屋，橋面高度不得中途掉落。
+  await page.evaluate(yaw=>{__game.pos.set(-21.2,4,-27.2);__game.state.yaw=yaw;__game.state.vy=0;},-Math.atan2(BRIDGE.end.x-BRIDGE.start.x,BRIDGE.start.z-BRIDGE.end.z));
+  time=await frameTime();await page.keyboard.down('w');await waitTime(time,2.4);await page.keyboard.up('w');
+  const bridge=await page.evaluate(()=>({x:__game.pos.x,y:__game.pos.y,z:__game.pos.z}));
+  assert.ok(bridge.z<-36&&Math.abs(bridge.y-4)<.02,'實際鍵盤可走空橋且不掉進橋下');
+  await page.evaluate(()=>{__game.pos.set(-21.2,0,-34);__game.state.vy=0;});
+  time=await frameTime();await waitTime(time,.15);
+  assert.ok(await page.evaluate(()=>Math.abs(__game.pos.y)<.02),'橋下不會被吸上二樓');
   await page.evaluate(()=>{__game.teleport(15,-50);__game.state.yaw=0;});
   time=await frameTime();await page.keyboard.down('a');await waitTime(time,1.3);await page.keyboard.up('a');
   const shore=await page.evaluate(()=>({x:__game.pos.x,z:__game.pos.z}));
@@ -75,5 +88,5 @@ try {
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'手機沒有橫向捲動');
   await mobile.close();
   assert.deepEqual(errors,[]);
-  console.log('達賢驗收通過：預覽、延後建立、鍵盤、牆面、池岸、重入、進度保留、正常網址、手機觸控與畫面寬度');
+  console.log('達賢驗收通過：預覽、延後建立、鍵盤、門廊、空橋上下層、牆面、池岸、重入、進度保留、正常網址、手機觸控與畫面寬度');
 } finally {await browser.close();}

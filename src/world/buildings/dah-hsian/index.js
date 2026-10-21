@@ -1,6 +1,7 @@
 /** 達賢戶外獨立區域。暫無正式交通入口，指定 area=dah-hsian 可直接預覽。 */
 import { defineBuilding } from '../../registry.js';
-import { BOUNDS, SPAWN, groundHeight, keepOnLand, zoneName } from './layout.js';
+import { BOUNDS, SPAWN, walkHeight, keepOnLand, zoneName } from './layout.js';
+import { late } from '../../../core/late.js';
 import { buildMap, mapLight } from './map.js';
 import './preview.css';
 
@@ -9,7 +10,7 @@ export default defineBuilding({
   name: '達賢圖書館',
   build() {},
   interior: {
-    build:buildMap,light:mapLight,heightAt:groundHeight,zone:zoneName,clamp:keepOnLand,
+    build:buildMap,light:mapLight,heightAt:(x,z)=>walkHeight(x,z,late.pos?.y??0),zone:zoneName,clamp:keepOnLand,
     bounds:BOUNDS,spawn:{...SPAWN,pitch:0.06},miniSub:'草坡・湖濱步道',
     onEnter(){document.body.classList.add('dah-hsian-mode');},
     onExit(){document.body.classList.remove('dah-hsian-mode');},
