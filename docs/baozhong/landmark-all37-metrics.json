@@ -1,0 +1,1010 @@
+[
+  {
+    "id": "D01",
+    "source": "D01.js：硯台與同軸毛筆",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      0.46,
+      3.36,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.61
+    ],
+    "max": [
+      -0.91,
+      3.36,
+      2.03
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 10,
+    "triangles": 408,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D02",
+    "source": "decor/D02.js：雙耳四足青銅方鼎",
+    "sourceCount": 8,
+    "widthHeightDepth": [
+      1.9236,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.5536,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.1071,
+      1.25,
+      0.42
+    ],
+    "meshes": 24,
+    "triangles": 1168,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D03",
+    "source": "decor/D03.js：立體金色問號與底座",
+    "sourceCount": 5,
+    "widthHeightDepth": [
+      1.7216,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.3516,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.7031,
+      1.25,
+      0.42
+    ],
+    "meshes": 18,
+    "triangles": 752,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D04",
+    "source": "decor/D04.js：投票箱與選票",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      1.8814,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.5114,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.0227,
+      1.25,
+      0.42
+    ],
+    "meshes": 14,
+    "triangles": 168,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D05",
+    "source": "decor/D05.js：四節點社會網絡",
+    "sourceCount": 8,
+    "widthHeightDepth": [
+      2.22,
+      3.7149,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.85,
+      3.7149,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.7,
+      0.9649,
+      0.42
+    ],
+    "meshes": 24,
+    "triangles": 992,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D06",
+    "source": "decor/D06.js：雙枚方孔古錢",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      2.22,
+      3.6568,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.85,
+      3.6568,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.7,
+      0.9068,
+      0.3627
+    ],
+    "meshes": 16,
+    "triangles": 272,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D07",
+    "source": "decor/D07.js：三分政策圓盤",
+    "sourceCount": 5,
+    "widthHeightDepth": [
+      1.995,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.625,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.25,
+      1.25,
+      0.1089
+    ],
+    "meshes": 18,
+    "triangles": 256,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D08",
+    "source": "decor/D08.js：全測站主機與望遠鏡頭",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      1.895,
+      3.8,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.525,
+      3.8,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.05,
+      1.05,
+      0.42
+    ],
+    "meshes": 14,
+    "triangles": 208,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D09",
+    "source": "decor/D09.js：供需交叉與均衡點",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      1.9889,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.6189,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.2378,
+      1.25,
+      0.1977
+    ],
+    "meshes": 14,
+    "triangles": 304,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D10",
+    "source": "decor/D10.js：幾何色帶織架",
+    "sourceCount": 5,
+    "widthHeightDepth": [
+      2.0003,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.6303,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.2605,
+      1.25,
+      0.1261
+    ],
+    "meshes": 18,
+    "triangles": 216,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D11",
+    "source": "D11.js：地球儀與航線環",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      2.125,
+      4.075,
+      0.504
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.568
+    ],
+    "max": [
+      0.755,
+      4.075,
+      2.072
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 15,
+    "triangles": 496,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D12",
+    "source": "decor/D12.js：三組帶影線K線",
+    "sourceCount": 7,
+    "widthHeightDepth": [
+      1.8908,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.5208,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.0417,
+      1.25,
+      0.3472
+    ],
+    "meshes": 22,
+    "triangles": 264,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D13",
+    "source": "decor/D13.js：五檔木框算盤",
+    "sourceCount": 12,
+    "widthHeightDepth": [
+      2.27,
+      3.7786,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.9,
+      3.7786,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.8,
+      1.0286,
+      0.2957
+    ],
+    "meshes": 32,
+    "triangles": 784,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D14",
+    "source": "decor/D14.js：九柱常態鐘形",
+    "sourceCount": 9,
+    "widthHeightDepth": [
+      1.8412,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.4712,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.9423,
+      1.25,
+      0.1154
+    ],
+    "meshes": 26,
+    "triangles": 312,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D15",
+    "source": "decor/D15.js：三層組織金字塔",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      1.6724,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.3024,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.6048,
+      1.25,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 328,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D16",
+    "source": "decor/D16.js：三層資料庫圓筒",
+    "sourceCount": 6,
+    "widthHeightDepth": [
+      1.6689,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.2989,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.5978,
+      1.25,
+      0.42
+    ],
+    "meshes": 20,
+    "triangles": 480,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D17",
+    "source": "decor/D17.js：現金流收腰漏斗",
+    "sourceCount": 1,
+    "widthHeightDepth": [
+      2.02,
+      3.92,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.65,
+      3.92,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.3,
+      1.17,
+      0.42
+    ],
+    "meshes": 10,
+    "triangles": 160,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D18",
+    "source": "decor/D18.js：紫色保險大傘",
+    "sourceCount": 2,
+    "widthHeightDepth": [
+      2.27,
+      3.416,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.9,
+      3.416,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.8,
+      0.666,
+      0.42
+    ],
+    "meshes": 12,
+    "triangles": 304,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D19",
+    "source": "decor/D19.js：報紙欄線與頭條",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      2.195,
+      3.8628,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.825,
+      3.8628,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.65,
+      1.1128,
+      0.2417
+    ],
+    "meshes": 14,
+    "triangles": 168,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D20",
+    "source": "decor/D20.js：幾何創意獎座",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      1.8696,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.4996,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.9992,
+      1.25,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 224,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D21",
+    "source": "D21.js：雙膠捲盤與四瓣輪槽",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      1.99,
+      3.93,
+      0.38
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.62,
+      3.93,
+      2.01
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 22,
+    "triangles": 832,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D22",
+    "source": "decor/D22.js：三向傳播羅盤",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      1.8328,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.4628,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.9256,
+      1.25,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 232,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D23",
+    "source": "decor/D23.js：鵝毛筆與墨水瓶",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      1.5486,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.1786,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.3571,
+      1.25,
+      0.3571
+    ],
+    "meshes": 14,
+    "triangles": 244,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D24",
+    "source": "decor/D24.js：Dallah長嘴咖啡壺",
+    "sourceCount": 6,
+    "widthHeightDepth": [
+      2.0305,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.6605,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.3211,
+      1.25,
+      0.42
+    ],
+    "meshes": 20,
+    "triangles": 880,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D25",
+    "source": "decor/D25.js：三層彩繪套娃",
+    "sourceCount": 6,
+    "widthHeightDepth": [
+      1.6131,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.2431,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.4861,
+      1.25,
+      0.42
+    ],
+    "meshes": 20,
+    "triangles": 480,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D26",
+    "source": "decor/D26.js；彎笠木與島木重新建模",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      2.84,
+      3.2843,
+      0.22
+    ],
+    "min": [
+      -1.42,
+      -0.0043,
+      1.54
+    ],
+    "max": [
+      1.42,
+      3.28,
+      1.76
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 6,
+    "triangles": 384,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D27",
+    "source": "decor/D27.js：青瓦上翹屋簷",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      2.52,
+      3.2556,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      1.15,
+      3.2556,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      2.3,
+      0.5056,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 192,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D28",
+    "source": "decor/D28.js：卡帕多奇亞熱氣球與籃筐",
+    "sourceCount": 7,
+    "widthHeightDepth": [
+      1.8028,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.4328,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.8655,
+      1.25,
+      0.42
+    ],
+    "meshes": 22,
+    "triangles": 696,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D29",
+    "source": "decor/D29.js：文化沙龍雙杯",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      2.27,
+      3.1591,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.9,
+      3.1591,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.8,
+      0.4091,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 992,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D30",
+    "source": "decor/D30.js：竹木高腳屋",
+    "sourceCount": 7,
+    "widthHeightDepth": [
+      1.6865,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.3165,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.6329,
+      1.25,
+      0.42
+    ],
+    "meshes": 22,
+    "triangles": 424,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D31",
+    "source": "D31.js：正義天平，無法槌",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      2.39,
+      3.675,
+      0.58
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.53
+    ],
+    "max": [
+      1.02,
+      3.675,
+      2.11
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 18,
+    "triangles": 360,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D32",
+    "source": "D32.js：兩腳一橫的 π",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      2.74,
+      3.17,
+      0.38
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      1.37,
+      3.17,
+      2.01
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 10,
+    "triangles": 120,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D33",
+    "source": "decor/D33.js：雙半球大腦",
+    "sourceCount": 2,
+    "widthHeightDepth": [
+      2.1075,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.7375,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.475,
+      1.25,
+      0.42
+    ],
+    "meshes": 12,
+    "triangles": 416,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D34",
+    "source": "decor/D34.js：展翼和平鴿",
+    "sourceCount": 3,
+    "widthHeightDepth": [
+      2.0455,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.6755,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.351,
+      1.25,
+      0.42
+    ],
+    "meshes": 14,
+    "triangles": 304,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D35",
+    "source": "decor/D35.js：啟蒙火炬",
+    "sourceCount": 4,
+    "widthHeightDepth": [
+      1.6165,
+      4,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.2465,
+      4,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      0.493,
+      1.25,
+      0.42
+    ],
+    "meshes": 16,
+    "triangles": 336,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D36",
+    "source": "decor/D36.js：六面永續色塊魔方",
+    "sourceCount": 7,
+    "widthHeightDepth": [
+      1.895,
+      3.8,
+      0.42
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.525,
+      3.8,
+      2.05
+    ],
+    "symbolWidthHeightDepth": [
+      1.05,
+      1.05,
+      0.42
+    ],
+    "meshes": 22,
+    "triangles": 264,
+    "visualStatus": "pending-game-screenshot-review"
+  },
+  {
+    "id": "D37",
+    "source": "D37.js：七節點二元樹",
+    "sourceCount": null,
+    "widthHeightDepth": [
+      2.27,
+      3.99,
+      0.38
+    ],
+    "min": [
+      -1.37,
+      0,
+      1.63
+    ],
+    "max": [
+      0.9,
+      3.99,
+      2.01
+    ],
+    "symbolWidthHeightDepth": null,
+    "meshes": 34,
+    "triangles": 1792,
+    "visualStatus": "pending-game-screenshot-review"
+  }
+]

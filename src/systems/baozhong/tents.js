@@ -31,7 +31,7 @@ const asList = (b) => Array.isArray(b) ? b : (b && Array.isArray(b.booths) ? b.b
 /**
  * buildTents(layout, colleges, opts) → { group, tents, setActive(on), update(playerPos), refreshSigns(id), isActive() }
  * layout：layout.json；colleges：baozhong.json 的 colleges（取學院色）；
- * opts.landmarkPreview：六院大型代表物加 D26，預設關閉；呼叫端須略過 LANDMARK_PREVIEW_IDS 舊佈景。
+ * opts.landmarkPreview：三十七系大型代表物，預設關閉；呼叫端須略過 LANDMARK_PREVIEW_IDS 舊佈景。
  * opts.openCanopyD26：僅 D26 的開放帳篷原型，預設關閉；啟用時呼叫端須略過舊 D26 佈景。
  * opts：{ content（baozhong.json）, booths（baozhong-booths.json，可缺）, deps:{ toon, OUT, canvasTex }, colliders（遊戲碰撞清單）, heightAt(x,z) }
  */

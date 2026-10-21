@@ -19,7 +19,8 @@ import { AU, NPCS, FOLIAGE, spots, addNPC, colliders, createTents, mountDecor, m
 
 // Gemini 的 baozhong-booths.json 還沒交時 glob 是空的，帳篷照 tents-logic 的預設（英文名留空、海報摘自凍結內容）。
 const BOOTHS = (Object.values(import.meta.glob('../../content/baozhong-booths.json', { eager: true }))[0] || {}).default || null;
-// 使用者確認前僅本地候選啟用，不改現有預設活動。
+// Scenery is released independently; experimental content/gameplay stays query-gated.
+const SCENERY = true;
 const SLICE = new URLSearchParams(location.search).get('bz26slice') === '1';
 const MATCHING = (Object.values(import.meta.glob('../../content/baozhong-d26-matching.json', { eager: true }))[0] || {}).default || null;
 let activityEpoch = 0;
@@ -45,7 +46,7 @@ const afterResult = done => grant(F.newAchievements(flags()), done);
 const say = (title, lines, then) => openDialog(title, lines, then);
 
 /* ---------- 會場（只建一次） ---------- */
-const tents = createTents(LAYOUT, CONTENT, BOOTHS, { openCanopyD26: SLICE, landmarkPreview: SLICE });
+const tents = createTents(LAYOUT, CONTENT, BOOTHS, { openCanopyD26: SCENERY, landmarkPreview: SCENERY });
 const byId = new Map(LAYOUT.tents.map(t => [t.id, t]));
 const venueNPCs = [];
 function venueNPC(o, fn) {
@@ -75,7 +76,7 @@ for (const m of LAYOUT.hall.masters) {
 
 let passport = null;
 let activityMap = null, activitySign = null, activitySignError = null;
-const venueFocus = createVenueFocus({ foliage: FOLIAGE, colliders, npcs: NPCS, spots, state, enabled: SLICE });
+const venueFocus = createVenueFocus({ foliage: FOLIAGE, colliders, npcs: NPCS, spots, state, enabled: SCENERY });
 const venue = {
   on: false,
   set(on) {
@@ -84,7 +85,7 @@ const venue = {
     venueFocus.setActive(on);
     tents.setActive(on);
     if (on) {
-      for (const T of tents.tents.values()) { if (SLICE && LANDMARK_PREVIEW_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
+      for (const T of tents.tents.values()) { if (SCENERY && LANDMARK_PREVIEW_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
       try { passport = mountPassport({ getView: () => L.passportView(flags(), CONTENT) }); } catch (err) { console.warn('[bz26] 護照掛載失敗', err); passport = null; }
     } else {
       cancelMatching();
@@ -105,7 +106,7 @@ function openActivityGuide() {
     if (i < 2) activityMap.open();
   });
 }
-if (SLICE) {
+if (SCENERY) {
   try { activitySign = createActivitySign({ onOpen: openActivityGuide, layout: LAYOUT, content: CONTENT }); }
   catch (error) { activitySignError = { message: error.message, placements: error.placements || [] }; console.error('[bz26 slice] 看板缺少安全站位，地圖按鈕仍可用', error); }
   try { activityMap = mountActivityMap({ layout: LAYOUT, content: CONTENT, state, getPosition: () => pos, fountain: activitySign?.fountain }); }

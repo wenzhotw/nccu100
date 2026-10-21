@@ -2,6 +2,7 @@
  * 正門：校名碑、紅磚門房、警衛亭，以及校門內側廣場。
  */
 import * as THREE from 'three';
+import { CAMPUS_GUIDE } from '../../campus-guide-layout.js';
 import { scene } from '../../../core/engine.js';
 import { BOX, GRAD, SPH, basic, block, canvasTex, flat, hText, mk, outline, plane, toon, vText } from '../../../render/kit.js';
 import { boxC, circC } from '../../../core/collision.js';
@@ -19,7 +20,7 @@ function build() {
   graniteTex2.repeat.set(3,1);
   graniteTex2.needsUpdate=true;
   const GRANITE2=new THREE.MeshToonMaterial({map:graniteTex2,gradientMap:GRAD});
-  const OBX=-19, OBZ=13.4;
+  const OBX=CAMPUS_GUIDE.gate.x, OBZ=CAMPUS_GUIDE.gate.z;
   const _obStart=scene.children.length;
   const tower=mk(new THREE.CylinderGeometry(0.85*Math.SQRT2,1.25*Math.SQRT2,15,4,1),GRANITE,OBX+0.4,10.4,OBZ,{out:0.06});
   tower.rotation.y=Math.PI/4;

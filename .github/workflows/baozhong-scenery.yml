@@ -1,0 +1,31 @@
+name: 包種佈景與門口導覽圖驗證
+on:
+  push:
+    branches: [scenery/baozhong-guide-20261021]
+  pull_request:
+    paths: ['src/systems/baozhong/**', 'src/world/campus-guide-layout.js', 'src/world/prefabs/**', 'src/world/vegetation.js', 'scripts/baozhong-scenery-screenshots.mjs', '.github/workflows/baozhong-scenery.yml']
+permissions:
+  contents: read
+jobs:
+  scenery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: node --test tests/*landmarks*.test.mjs tests/*torii*.test.mjs tests/open-canopy-d26.test.mjs tests/venue-focus.test.mjs tests/prefab-venue-visibility.test.mjs tests/baozhong-activity-map*.test.mjs tests/baozhong-sign-map.test.mjs tests/baozhong-guide-design.test.mjs tests/baozhong-scenery-release.test.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/baozhong-scenery-screenshots.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: baozhong-scenery-guide
+          path: test-results/baozhong-scenery/
+          retention-days: 7

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { SIWEI, swZ } from '../src/world/layout.js';
 import { createVenueFocus, isSiweiFoliage } from '../src/systems/baozhong/venue-focus.js';
 function fixture(enabled = true) {
   const tree = (x, z, visible = true) => ({ x, z, visible, collider: { c: true, x, z, r: .3 }, setVisible(on) { this.visible = on; }, isVisible() { return this.visible; } });
@@ -47,4 +48,12 @@ test('Objects added during activity survive restoration and unrelated near remai
   const f = fixture(); f.state.near = f.npcs[4].spot; const near = f.state.near;
   f.api.setActive(true); const newcomer = { id: 'new', g: { visible: true } }; f.npcs.push(newcomer);
   f.api.setActive(false); assert.equal(f.npcs.at(-1), newcomer); assert.equal(f.state.near, near);
+});
+
+test('Siwei coverage follows canonical world road endpoints, including western trees outside booth envelope', () => {
+  for (const x of [SIWEI.x0, -90, SIWEI.x1]) {
+    for (const dz of [-7.5, 0, 7.5]) assert.equal(isSiweiFoliage({ x, z: swZ(x) + dz }), true);
+    for (const dz of [-7.51, 7.51]) assert.equal(isSiweiFoliage({ x, z: swZ(x) + dz }), false);
+  }
+  for (const x of [SIWEI.x0 - 0.01, SIWEI.x1 + 0.01]) assert.equal(isSiweiFoliage({ x, z: swZ(x) }), false);
 });

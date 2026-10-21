@@ -53,11 +53,20 @@ test('lifted six label planes physically clear all authored solids and retain pl
 test('frozen content, API/state dependencies and all 40 decor source bytes preserved',()=>{
  // 保留原候選的不可變檔案契約，但不複製整份舊基線到新 main。
  const baseline=read('./baozhong-baseline-sha256.json');
- for(const [rel,hash] of Object.entries(read('./baozhong-v2-lock.json'))) {
+ const historicalLock=read('./baozhong-v2-lock.json');
+ const previewLock=read('./baozhong-scenery-lock.json');
+ assert.deepEqual(previewLock.baseline,historicalLock,'Historical v2 reference cannot be rewritten');
+ assert.deepEqual(Object.keys(previewLock.expected).sort(),Object.keys(historicalLock).sort(),'No frozen contract may be omitted');
+ assert.equal(previewLock.expected['src/systems/baozhong/tents-logic.js'],historicalLock['src/systems/baozhong/tents-logic.js'],'Recovery logic remains unchanged');
+ for(const [rel,hash] of Object.entries(previewLock.expected)) {
    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../'+rel,import.meta.url))).digest('hex'),hash,rel);
  }
  const mutable=['systems/baozhong/tents-logic.js','systems/baozhong/tents.js','systems/baozhong/index.js','systems/baozhong/deps.js'];
- for(const [rel,hash] of Object.entries(baseline)) if(!mutable.includes(rel)) {
+ assert.deepEqual(Object.keys(previewLock.baselineOverrides),['systems/baozhong/tents-adapter.js']);
+ for(const [rel,oldHash] of Object.entries(baseline)) if(!mutable.includes(rel)) {
+   const override=previewLock.baselineOverrides[rel];
+   if(override)assert.equal(override.before,oldHash,'Explicit adapter baseline must remain intact');
+   const hash=override?override.after:oldHash;
    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/'+rel,import.meta.url))).digest('hex'),hash,rel);
  }
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/content/baozhong.json',import.meta.url))).digest('hex'),'a686d5565cd8d36319d58e20579a4b5b713c4bfbd5c8f67541345a1d9fc9ca72');

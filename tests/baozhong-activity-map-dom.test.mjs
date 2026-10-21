@@ -31,7 +31,7 @@ test('地圖開關、既有忙碌狀態、鍵盤、搜尋、蓋章與離場完�
   const doc=fakeDocument(),state={busy:false,flags:new Set(['bz26_st_D26'])};const p=Object.freeze({x:0,z:-32});
   const api=mountActivityMap({layout,content,state,getPosition:()=>p,document:doc,fountain:{x:0,z:-32}});
   state.busy=true;assert.equal(api.open(),false);state.busy=false;
-  assert.equal(api.open(),true);assert.equal(state.busy,true);
+  assert.equal(api.open(),true);assert.equal(state.busy,true);assert.equal(doc.activeElement.tagName,'BUTTON');assert.equal(doc.activeElement.textContent,'關閉');
   const search=find(doc.body,n=>n.tagName==='INPUT');search.value='D26';search.emit('input');
   const row=find(doc.body,n=>n.dataset.boothId==='D26');assert.match(row.textContent,/已蓋章/);
   assert.equal(api.select('unknown'),false);assert.equal(api.select('D26'),true);assert.equal(api.target.id,'D26');assert.deepEqual(p,{x:0,z:-32});

@@ -1,7 +1,8 @@
 // 活動期間暫收四維道植栽與原戶外 NPC，離場恢復原物件。只供明確啟用的預覽。
-// 四維道中心線與世界 layout.js 一致，不按模糊 mesh 顏色或任意實例鄰近值猜樹。
+// 直接沿用正式四維道端點與中心線，不按模糊 mesh 顏色或任意實例鄰近值猜樹。
+import { SIWEI, swZ } from '../../world/layout.js';
 export function isSiweiFoliage(f) {
-  return Number.isFinite(f.x) && Number.isFinite(f.z) && f.x >= -86 && f.x <= 72 && Math.abs(f.z - (-60.2 + 0.18 * f.x)) <= 7.5;
+  return Number.isFinite(f.x) && Number.isFinite(f.z) && f.x >= SIWEI.x0 && f.x <= SIWEI.x1 && Math.abs(f.z - swZ(f.x)) <= 7.5;
 }
 const isCampusNPC = n => n && !n.room && !n.indoorNPC && !String(n.id || '').startsWith('bz26-');
 const extract = (list, predicate) => {

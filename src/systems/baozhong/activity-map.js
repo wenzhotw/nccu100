@@ -1,3 +1,5 @@
+import { activityGuideModel } from './activity-guide-model.js';
+import { guideScene } from './activity-guide-scene.js';
 import { stFlag } from './passport-logic.js';
 import { activityEntries, filterActivity, activityDirection, activityBounds } from './activity-map-logic.js';
 
@@ -33,7 +35,7 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   const college = make('select'); college.setAttribute('aria-label', '篩選學院');
   for (const name of ['', ...new Set(entries.map(e => e.college))]) { const o = make('option', name || '全部學院及功能攤位'); o.value = name; college.append(o); }
   filters.append(search, college);
-  const note = make('p', '依遊戲實際攤位配置。上方為校園內側，下方為校門方向。點選攤位會標記方向，不會傳送。');
+  const note = make('p', '依遊戲實際攤位配置。沿用遊戲北向：校門在上、四維堂在下。點選攤位會標記方向，不會傳送。');
   const grid = make('div'); grid.className = 'bz-map-content';
   const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 640 360'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', '攤位與玩家位置圖');
   const list = make('div'); list.className = 'bz-map-list'; const status = make('p'); status.setAttribute('role', 'status');
@@ -42,19 +44,13 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   let selected = null, opened = false, disposed = false, priorFocus, priorBusy, hadBusy, elapsed = 0;
   const svgNode = (tag, attrs, text) => { const e = doc.createElementNS('http://www.w3.org/2000/svg', tag); for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,String(v)); if (text) e.textContent = text; svg.append(e); return e; };
   function drawMap() {
-    const p = state.room ? null : getPosition(), bounds = activityBounds(fountain ? [...entries, fountain] : entries, p);
-    const scale = Math.min(600 / (bounds.maxX - bounds.minX), 320 / (bounds.maxZ - bounds.minZ));
-    const xy = (x,z) => [20 + (x-bounds.minX)*scale, 20 + (z-bounds.minZ)*scale];
-    svg.replaceChildren();
-    if (fountain) { const [x,y] = xy(fountain.x,fountain.z); svgNode('circle',{cx:x,cy:y,r:8,fill:'#9fb3bd',stroke:'#5c7686','stroke-width':2}); svgNode('text',{x:x+11,y:y+4,fill:'#2a2c4a','font-size':13},'噴水池'); }
-    for (const e of entries) {
-      const [x,y] = xy(e.x,e.z), match = filterActivity([e], search.value, college.value).length;
-      const dot = svgNode('circle', { 'data-booth-id':e.id, cx:x, cy:y, r:e.id === selected?.id ? 7 : 4, fill:e.color, stroke:e.id === selected?.id ? '#f4f4ee' : '#2a2c4a', 'stroke-width':2, opacity:match ? 1 : .25 });
-      const label = doc.createElementNS('http://www.w3.org/2000/svg','title'); label.textContent = `${e.id} ${e.name}`; dot.append(label);
-      if (e.id === selected?.id) svgNode('text', { x:x+9, y:y-8, fill:'#2a2c4a', 'font-size':13, 'font-weight':700 }, e.id);
-    }
-    if (p) { const [x,y] = xy(p.x,p.z); svgNode('circle', {cx:x,cy:y,r:6,fill:'#e8463c',stroke:'#f4f4ee','stroke-width':2}); svgNode('text',{x:x+9,y:y+4,fill:'#2a2c4a','font-size':13},'你'); }
+    const p = state.room ? null : getPosition();
+    const model=activityGuideModel(layout,content,p);
+    svg.setAttribute('viewBox','0 0 1000 700');svg.replaceChildren();
+    const matches=new Set(filterActivity(entries,search.value,college.value).map(e=>e.id));
+    for(const command of guideScene(model,1000,700,{selected,matchIds:matches,position:p})) svgNode(command.type,command.attrs,command.text);
   }
+
   function renderList() {
     const matches = filterActivity(entries, search.value, college.value); list.replaceChildren();
     for (const e of matches) {
@@ -67,7 +63,7 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   function open() {
     if (disposed || opened || state.busy) return false;
     priorFocus = doc.activeElement; hadBusy = Object.hasOwn(state,'busy'); priorBusy = state.busy; state.busy = true;
-    opened = true; overlay.hidden = false; button.setAttribute('aria-expanded','true'); renderList(); search.focus(); return true;
+    opened = true; overlay.hidden = false; button.setAttribute('aria-expanded','true'); renderList(); closeButton.focus(); return true;
   }
   function close() {
     if (!opened) return false; opened = false; overlay.hidden = true; button.setAttribute('aria-expanded','false');
