@@ -1,6 +1,7 @@
 // 真實切片截圖證據。僅在獲准且支援瀏覽器的環境執行，不繞過環境限制。
 // --static-only 不建立伺服器、不啟動瀏覽器；一般執行先重新打包。
 import assert from 'node:assert/strict';
+import { chooseNpcCaptureStance } from './npc-capture-stance.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -15,7 +16,7 @@ function inventory(relative) {
   if (fs.statSync(start).isDirectory()) return fs.readdirSync(start).sort().flatMap(n => inventory(`${relative}/${n}`));
   return [{ path: relative, sha256: sha(fs.readFileSync(start)) }];
 }
-const sources = () => ['src', 'index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'scripts/baozhong-scenery-screenshots.mjs'].flatMap(inventory);
+const sources = () => ['src', 'scripts/npc-capture-stance.mjs', 'index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'scripts/baozhong-scenery-screenshots.mjs'].flatMap(inventory);
 for (const f of ['src/core/debug.js', 'src/systems/baozhong/index.js', 'src/systems/baozhong/open-canopy-d26.js']) assert.ok(fs.existsSync(path.join(root, f)), f);
 if (process.argv.includes('--static-only')) {
   console.log(JSON.stringify({ status: 'static-only', browserLaunched: false, screenshotsCreated: false, sourceDigest: sha(JSON.stringify(sources())) }, null, 2));
@@ -99,12 +100,12 @@ try {
         const n = window.__bz26.venueNPCs.find(n => n.id === `bz26-${id}`);
         if (!n?.g.userData.bz26Costume) throw new Error(`${id} 缺少正式 NPC 服裝`);
         const p = n.g.getWorldPosition(n.g.position.clone());
-        const forward = p.clone().set(Math.sin(n.face || 0), 0, Math.cos(n.face || 0));
-        // 3 公尺仍會自然轉身，也不進入 2.4 公尺交談範圍。
-        const player = p.clone().addScaledVector(forward, 3);
-        window.__game.teleport(player.x, player.z);
-        return { id, player: player.toArray(), npcPosition: p.toArray() };
+        return { id, npcPosition: p.toArray(), face: n.face || 0 };
       }, id);
+      // D37 的原直前方3m點落在噴水池內。以正式碰撞器挑安全候選，不挪NPC或關閉碰撞。
+      const stance = await page.evaluate(chooseNpcCaptureStance, { position: staging.npcPosition, face: staging.face });
+      staging.player = stance.player;
+      await page.evaluate(([x, , z]) => window.__game.teleport(x, z), stance.player);
       await page.waitForFunction(({ id, player, npcPosition }) => {
         const n = window.__bz26.venueNPCs.find(n => n.id === `bz26-${id}`);
         if (!n?.g.visible || !document.querySelector('#dlg').hidden) return false;
@@ -147,7 +148,7 @@ try {
         assert.ok(npc.facingCamera > .99995, `${id} 正面樣本必須面向鏡頭`);
         assert.ok(npc.playerDistance - npc.cameraDistance > .3, `${id} 玩家必須留在正面鏡頭後方`);
       } else assert.ok(npc.facingCamera < -.3, `${id} 側背樣本必須看到背面`);
-      await capture(`${id}-npc-costume-${angle}`, { costumeCount, npc });
+      await capture(`${id}-npc-costume-${angle}`, { costumeCount, npc, stance });
     }
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -194,8 +195,8 @@ try {
       for (const n of costumeInventory) assert.equal(n.id, `bz26-${n.costume.id}`);
       manifest.profiles.find(profile => profile.name === name).costumeNPCs = costumeInventory;
       const costumeIds = name === 'desktop'
-        ? ['D26', 'D27', 'D31', 'D01', 'D19', 'D21', 'D37', 'D02', 'D03', 'D04', 'D10', 'D20', 'D35', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18']
-        : ['D26', 'D27', 'D31', 'D37', 'D03', 'D04', 'D10', 'D35', 'D11', 'D13'];
+        ? ['D02', 'D03', 'D04', 'D10', 'D20', 'D35', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18', 'D26', 'D27', 'D31', 'D01', 'D19', 'D21', 'D37']
+        : ['D03', 'D04', 'D10', 'D35', 'D11', 'D13', 'D26', 'D27', 'D31', 'D37'];
       for (const id of costumeIds) await captureCostume(id, costumeInventory.length);
       if (name === 'desktop') {
         for (const id of ['D26', 'D21', 'D04']) await captureCostume(id, costumeInventory.length, 'back-three-quarter');

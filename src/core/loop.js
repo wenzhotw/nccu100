@@ -42,7 +42,8 @@ const act=$('act'), actText=$('actText'), act2=$('act2'), act2Text=$('act2Text')
 function update(dt){
   state.time+=dt; grassU.value=state.time; waterU.t.value=state.time;
   const mapOpen=!$('mapw').hidden; if(mapOpen){ keys.KeyW=keys.KeyA=keys.KeyS=keys.KeyD=false; }
-  if(state.driving){ updateDrive(dt); } else {
+  // A booth poster is a reading modal: no drift, falling, or held-stick movement.
+  if(state.bzBoothBrowsing){ vel.set(0,0,0); } else if(state.driving){ updateDrive(dt); } else {
   let ix=0, iy=0, run=false;
   if(state.started&&dlg.hidden&&!state.busy){
     ix=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+state.stickV.x;

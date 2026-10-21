@@ -17,6 +17,10 @@ import { createVenueFocus } from './venue-focus.js';
 import { SMALL_PROP_IDS } from './small-props.js';
 import { costumeLook } from './npc-costume-profiles.js';
 import { mountNpcCostume } from './npc-costumes.js';
+import { createBoothBrowsing } from './booth-browser.js';
+import { resetHeldInput } from '../../core/input.js';
+import { vel } from '../../core/gameplay.js';
+import { dlg } from '../../ui/dialog.js';
 import { departmentNpcHome } from './department-npc-placement.js';
 import { toon, OUT, canvasTex } from '../../render/kit.js';
 import { AU, NPCS, FOLIAGE, spots, addNPC, colliders, createTents, mountDecor, mountPassport, openChoice, openDialog, openQuiz, pos, groundH, player, shadowBlob, setFlag, showAchievement, state, toast, unmountAllDecor, updateDecor } from './deps.js';
@@ -81,6 +85,7 @@ for (const m of LAYOUT.hall.masters) {
 
 let passport = null;
 let activityMap = null, activitySign = null, activitySignError = null;
+let boothBrowsing = null;
 const venueFocus = createVenueFocus({ foliage: FOLIAGE, colliders, npcs: NPCS, spots, state, enabled: SCENERY });
 const venue = {
   on: false,
@@ -89,7 +94,7 @@ const venue = {
     venue.on = on; activityEpoch++;
     venueFocus.setActive(on);
     tents.setActive(on);
-    activitySign?.setActive(on); activityMap?.setActive(on);
+    activitySign?.setActive(on); activityMap?.setActive(on); boothBrowsing?.setActive(on);
     if (on) {
       for (const T of tents.tents.values()) { if (SMALL_PROP_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
       try { passport = mountPassport({ getView: () => L.passportView(flags(), CONTENT) }); } catch (err) { console.warn('[bz26] 護照掛載失敗', err); passport = null; }
@@ -114,6 +119,16 @@ if (SCENERY) {
   catch (error) { console.error('[bz26 slice] 地圖未能建立', error); activitySign?.dispose(); activitySign = null; }
   activitySign?.setActive(venue.on); activityMap?.setActive(venue.on);
 }
+
+boothBrowsing = createBoothBrowsing({ layout: LAYOUT, content: CONTENT, tents, state, spots,
+  getPosition: () => pos, canInteract: () => dlg.hidden && document.getElementById('mapw').hidden,
+  onTalk: id => {
+    const npc = venueNPCs.find(n => n.id === `bz26-${id}`);
+    if (npc) state.talkFocus = { x: npc.spot.x, z: npc.spot.z };
+    onBooth(id);
+  }, resetInput: resetHeldInput, stopVelocity: () => vel.set(0, 0, 0),
+});
+boothBrowsing.setActive(venue.on);
 
 /* ---------- 邀請人 ---------- */
 const host = addNPC({ id: 'bz26-host', title: CONTENT.host.title, tag: CONTENT.host.title, home: { x: LAYOUT.host.x, z: LAYOUT.host.z }, face: LAYOUT.host.face, look: CONTENT.host.look, tagCol: '#81c784', dialog: [{ lines: CONTENT.host.invite }] });
@@ -198,10 +213,10 @@ function onExam() {
 }
 
 /* ---------- 每幀（掛在邀請人身上：只在戶外跑，帳篷也只在戶外） ---------- */
-function sync() { venue.set(flags().has('bz26_active')); }
+function sync() { venue.set(flags().has('bz26_active')); boothBrowsing?.update(); }
 host.after = (n, dt) => {
   sync();
-  activityMap?.update(dt); activitySign?.update(activityMap?.target);
+  activityMap?.update(dt); activitySign?.update(activityMap?.target); boothBrowsing?.update();
   if (!venue.on) return;
   const recovery = tents.update(pos, state, groundH);
   if (recovery && recovery.status === 'recovered') {
@@ -215,7 +230,7 @@ setInterval(sync, 500);
 
 if (import.meta.env.DEV || new URLSearchParams(location.search).has('debug')) {
   window.__bz26 = {
-    venue, venueFocus, tents, venueNPCs, host, F, flags, slice: SLICE, activityMap, activitySign, activitySignError,
+    venue, venueFocus, tents, venueNPCs, host, F, flags, slice: SLICE, activityMap, activitySign, activitySignError, boothBrowsing,
     accept: () => { apply(F.accept(flags())); sync(); }, leave: () => { apply(F.leave()); sync(); },
     counts: () => ({ npcs: NPCS.length, colliders: colliders.length, tentGroups: tents.group.children.length, decorRoots: tents.group.children.reduce((s, g) => s + g.children.filter(c => c.name.startsWith('bz26-decor-')).length, 0), active: venue.on, passportButtons: document.querySelectorAll('#bz-passport-button').length }),
   };

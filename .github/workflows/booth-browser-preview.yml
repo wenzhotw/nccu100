@@ -1,0 +1,27 @@
+name: 科系攤位資訊卡驗證
+on:
+  pull_request:
+    paths: ['src/systems/baozhong/booth-browser*', 'src/systems/baozhong/index.js', 'src/core/input.js', 'src/core/loop.js', 'scripts/booth-browser*', '.github/workflows/booth-browser-preview.yml']
+permissions:
+  contents: read
+jobs:
+  browser-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check && npm test && npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: NCCU_BROWSER_TESTS=1 node --test scripts/booth-browser-ui.test.mjs
+      - run: node scripts/booth-browser-preview.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: booth-browser-preview
+          path: test-results/booth-browser/
+          retention-days: 7
