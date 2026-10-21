@@ -5,7 +5,8 @@ import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
 import { GRAD, basic, block, canvasTex, flat, hText, plane, toon } from '../../../render/kit.js';
 import { boxC, circC, colliders } from '../../../core/collision.js';
-import { lot, stoneMat } from '../../props.js';
+import { stoneMat } from '../../props.js';
+import { clearArea } from '../../layout.js';
 import { tree } from '../../vegetation.js';
 import { defineBuilding } from '../../registry.js';
 import { DOOR, HALL, R, buildInterior, interiorHeight, interiorLight, interiorZone } from './interior.js';
@@ -108,9 +109,10 @@ function build() {
   { const k=BZK, ax=BZA.x, az=BZA.z, g=new THREE.Group(); g.position.set(ax,0,az); g.scale.setScalar(k);
     scene.children.slice(_bzS).forEach(c=>{ c.position.x-=ax; c.position.z-=az; g.add(c); }); scene.add(g);
     colliders.slice(_bzC).forEach(c=>{ if(c.c){ c.x=ax+(c.x-ax)*k; c.z=az+(c.z-az)*k; c.r*=k; } else if(!c.obb){ c.x0=ax+(c.x0-ax)*k; c.x1=ax+(c.x1-ax)*k; c.z0=az+(c.z0-az)*k; c.z1=az+(c.z1-az)*k; } }); }
-  lot('風雩樓（福利社）',0,-117,26,18);
-  lot('四維網球場',1,-141,24,24);
-  lot('八角亭',44,-150,8,8);
+  // 風雩樓、四維網球場、八角亭已有自己的建築資料夾，這裡只保留範圍讓草地避開
+  clearArea('風雩樓（福利社）',0,-117,26,18);
+  clearArea('四維網球場',1,-141,24,24);
+  clearArea('八角亭',44,-150,8,8);
 }
 
 export default defineBuilding({

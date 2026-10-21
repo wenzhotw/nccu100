@@ -65,3 +65,68 @@ export function greenRoofUHall(side) {
   boxC(s>0?21.8:-25,s>0?25:-21.8,-35,-29);
   [-25.5,-38.5].forEach(z=>{ block(s*13.4,0.45,z,1,0.9,6,'#4f9a48',0.04); boxC(s*13.4-0.5,s*13.4+0.5,z-3,z+3); });
 }
+
+/* ---------- 一般教學大樓用的立面工具（學思樓、新聞館、大智樓等共用） ---------- */
+
+/**
+ * 以邊界指定的方塊，六個面可分別指定材質：faces = { px, nx, py, ny, pz, nz }（沒寫的面用 base）。
+ * out：描邊粗細（公尺），建築量體用 0.04 到 0.06。
+ */
+export function faceBox(x0, x1, y0, y1, z0, z1, base, faces, out) {
+  if (typeof base === 'string') base = toon(base);
+  const f = faces || {};
+  const m = new THREE.Mesh(BOX, ['px', 'nx', 'py', 'ny', 'pz', 'nz'].map(k => f[k] || base));
+  m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+  m.scale.set(x1 - x0, y1 - y0, z1 - z0);
+  m.castShadow = m.receiveShadow = true; scene.add(m);
+  if (out) { const o = outline(m, 0); o.scale.set(1 + 2 * out / (x1 - x0), 1 + 2 * out / (y1 - y0), 1 + 2 * out / (z1 - z0)); }
+  return m;
+}
+
+const _wallTex = {}, _wallMat = {};
+/**
+ * 窗牆材質：一格貼圖 = 一個開間 × 一層樓，用 rx（開間數）、ry（樓層數）重複。
+ * style：'grid' 方窗、'band' 水平帶窗、'strip' 細長直窗。
+ * 顏色：wall 牆、glass 玻璃、frame 窗框、sill 窗台或飾帶。同樣的參數會共用材質。
+ */
+export function windowWall({ style = 'grid', wall = '#ecebe6', glass = '#9fb3bd', frame = '#f4f4ee', sill = '#d6d2c8' } = {}, rx = 1, ry = 1) {
+  const key = [style, wall, glass, frame, sill].join('|');
+  const matKey = key + '|' + rx + 'x' + ry;
+  if (_wallMat[matKey]) return _wallMat[matKey];
+  if (!_wallTex[key]) _wallTex[key] = canvasTex(128, 128, (g, w, h) => {
+    g.fillStyle = wall; g.fillRect(0, 0, w, h);
+    g.fillStyle = sill; g.fillRect(0, h - 10, w, 6);
+    const win = (x, y, ww, hh, mull) => {
+      g.fillStyle = frame; g.fillRect(x - 4, y - 4, ww + 8, hh + 8);
+      g.fillStyle = glass; g.fillRect(x, y, ww, hh);
+      g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(x, y, ww, Math.max(6, hh * 0.22));
+      g.fillStyle = frame; for (let k = 1; k < mull; k++) g.fillRect(x + ww * k / mull - 2, y, 4, hh);
+    };
+    if (style === 'band') win(0, 34, w, 54, 4);
+    else if (style === 'strip') { win(22, 20, 24, 86, 1); win(82, 20, 24, 86, 1); }
+    else win(20, 30, 88, 64, 2);
+  }, [1, 1]);   // 傳 repeat 才會設定 RepeatWrapping，複製後改 repeat 才會重複
+  const t = _wallTex[key].clone(); t.repeat.set(rx, ry); t.needsUpdate = true;
+  return (_wallMat[matKey] = new THREE.MeshToonMaterial({ map: t, gradientMap: GRAD }));
+}
+
+/**
+ * 一段樓層量體：四面都是窗牆，頂面屋頂色。bay 為開間寬（公尺），floors 為這段的樓層數。
+ * 回傳網格；碰撞請自己用 boxC() 登記。
+ */
+export function windowBlock(x0, x1, y0, y1, z0, z1, wallOpt, bay = 3.6, floors = 1, out = 0.05) {
+  const rxX = Math.max(1, Math.round((x1 - x0) / bay)), rxZ = Math.max(1, Math.round((z1 - z0) / bay));
+  const fx = windowWall(wallOpt, rxX, floors), fz = windowWall(wallOpt, rxZ, floors);
+  return faceBox(x0, x1, y0, y1, z0, z1, ROOFTOP, { px: fz, nx: fz, pz: fx, nz: fx }, out);
+}
+
+/** 建築名稱招牌：牆面上的橫書字（不受光）。facing：'+z'、'-z'、'+x'、'-x'。 */
+export function nameSign(text, x, y, z, facing, { w = text.length * 0.9, h = 0.9, color = '#3b3328', font = '"Noto Serif TC","Songti TC",serif', plate = null } = {}) {
+  const cw = 128 * text.length, tex = canvasTex(cw + 64, 160, (g, W, H) => {
+    if (plate) { g.fillStyle = plate; g.fillRect(0, 0, W, H); }
+    g.font = `900 104px ${font}`; g.textBaseline = 'middle'; g.fillStyle = color; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowOffsetY = 3;
+    const step = cw / text.length; [...text].forEach((c, i) => { const m = g.measureText(c).width; g.fillText(c, 32 + step * (i + 0.5) - m / 2, H / 2 + 6); });
+  });
+  const ry = { '+z': 0, '-z': Math.PI, '+x': Math.PI / 2, '-x': -Math.PI / 2 }[facing];
+  const m = plane(w, h, basic({ map: tex, transparent: !plate }), x, y, z, 0, ry); m.renderOrder = 1; return m;
+}
