@@ -84,6 +84,7 @@ const venue = {
     venue.on = on; activityEpoch++;
     venueFocus.setActive(on);
     tents.setActive(on);
+    activitySign?.setActive(on); activityMap?.setActive(on);
     if (on) {
       for (const T of tents.tents.values()) { if (SMALL_PROP_IDS.includes(T.id)) continue; mountDecor(T.id, T.group, T.collegeColor, T.parts).then(e => { if (e) tents.refreshSigns(T.id); }); }
       try { passport = mountPassport({ getView: () => L.passportView(flags(), CONTENT) }); } catch (err) { console.warn('[bz26] 護照掛載失敗', err); passport = null; }
@@ -97,20 +98,16 @@ const venue = {
   },
 };
 
-// 新切片的看板可先查看，再由玩家明確選擇參加，不自動傳送。
+// 看板只在包種活動中可用；進場仍由原邀請人觸發。
 function openActivityGuide() {
-  if (!activityMap || state.busy) return;
-  if (venue.on) { activityMap.open(); return; }
-  openChoice(['參加活動並開地圖', '先看地圖', '離開'], i => {
-    if (i === 0) { apply(F.accept(flags())); sync(); }
-    if (i < 2) activityMap.open();
-  });
+  if (venue.on && activityMap && !state.busy) activityMap.open();
 }
 if (SCENERY) {
   try { activitySign = createActivitySign({ onOpen: openActivityGuide, layout: LAYOUT, content: CONTENT }); }
   catch (error) { activitySignError = { message: error.message, placements: error.placements || [] }; console.error('[bz26 slice] 看板缺少安全站位，地圖按鈕仍可用', error); }
   try { activityMap = mountActivityMap({ layout: LAYOUT, content: CONTENT, state, getPosition: () => pos, fountain: activitySign?.fountain }); }
   catch (error) { console.error('[bz26 slice] 地圖未能建立', error); activitySign?.dispose(); activitySign = null; }
+  activitySign?.setActive(venue.on); activityMap?.setActive(venue.on);
 }
 
 /* ---------- 邀請人 ---------- */

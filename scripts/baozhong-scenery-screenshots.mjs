@@ -99,6 +99,8 @@ try {
       assert.equal(await page.evaluate(() => window.__bz26.slice), false, 'Normal URL must not enable experimental content or matching');
       await page.locator('#go').click();
       await page.waitForFunction(() => window.__game.state.started);
+      assert.equal(await page.evaluate(() => window.__bz26.activitySign?.group.visible), false, '入場前看板隱藏');
+      assert.equal(await page.locator('#bz-activity-button').isVisible(), false, '入場前地圖按鈕隱藏');
       await approach('host');
       await page.locator('#dlg').waitFor({ state: 'visible' });
       for (let i = 0; i < 60 && await page.locator('#dlg').isVisible(); i++) await page.locator('#dlg').click();
@@ -139,8 +141,8 @@ try {
       await page.locator('button[data-booth-id="D26"]').click();assert.equal(await page.evaluate(()=>window.__bz26.activityMap.target?.id),'D26');
       await page.getByRole('button',{name:'活動地圖 G',exact:true}).click();await capture('guide-D26-selected');
       await page.getByRole('button',{name:'關閉',exact:true}).click();
-      const lifecycle=await page.evaluate(()=>{const b=window.__bz26;const active=b.venueFocus.counts();b.leave();const off=b.venueFocus.counts();b.accept();return {active,off,again:b.venueFocus.counts()};});
-      assert.ok(lifecycle.active.trees>0);assert.ok(lifecycle.active.npcs>0);assert.equal(lifecycle.off.trees,0);assert.deepEqual(lifecycle.active,lifecycle.again);
+      const lifecycle=await page.evaluate(()=>{const b=window.__bz26;const active=b.venueFocus.counts();b.leave();const off=b.venueFocus.counts();const signOff={visible:b.activitySign.group.visible,spot:window.__game.spots.includes(b.activitySign.spot),button:document.querySelector('#bz-activity-button').hidden};b.accept();return {active,off,signOff,again:b.venueFocus.counts()};});
+      assert.deepEqual(lifecycle.signOff,{visible:false,spot:false,button:true});assert.ok(lifecycle.active.trees>0);assert.ok(lifecycle.active.npcs>0);assert.equal(lifecycle.off.trees,0);assert.deepEqual(lifecycle.active,lifecycle.again);
       await capture('venue-reentry',{lifecycle});
       assert.deepEqual(runtimeErrors, [], '瀏覽器出現錯誤，截圖不得標為通過');
     } catch (error) { manifest.errors.push({ profile: name, message: String(error), stack: error.stack }); try { await capture('failure-context',{error:String(error)}); } catch {} }
