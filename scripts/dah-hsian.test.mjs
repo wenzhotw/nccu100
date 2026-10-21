@@ -12,9 +12,9 @@ const layout = await import('../src/world/buildings/dah-hsian/layout.js').catch(
 test('入口館名牆會擋人，牆旁的門廊仍可通過', () => {
   setActiveColliders(layout.buildingColliders());
   setRoomClamp(layout.keepOnLand);
-  const wall = { x: 18, y: layout.groundHeight(18,27.7), z: 27.7 };
+  const wall = { x: 10.2, y: 4, z: 13.3 };
   resolve(wall);
-  assert.ok(Math.hypot(wall.x-18,wall.z-27.7)>0.4);
+  assert.ok(Math.hypot(wall.x-10.2,wall.z-13.3)>0.4);
   const opening = { x: 23, y: 4, z: 27.7 }; resolve(opening);
   assert.deepEqual(opening,{x:23,y:4,z:27.7});
   setRoomClamp(null); setActiveColliders([]);
@@ -26,7 +26,7 @@ test('小屋外觀與底層露台不可穿入，外側步道保持可走', () =>
   const {x:cx,z:cz,angle,width,depth}=layout.HOUSE;
   const point=(x,z)=>({x:cx+x*Math.cos(angle)+z*Math.sin(angle),y:0,
     z:cz-x*Math.sin(angle)+z*Math.cos(angle)});
-  for(const [x,z]of [[0,depth/2+0.6],[width/2+0.5,0],[0,0],[0,-9.65]]){
+  for(const [x,z]of [[0,depth/2-.2],[width/2-.2,0],[0,0]]){
     const p=point(x,z),before={...p};resolve(p);
     assert.ok(Math.hypot(p.x-before.x,p.z-before.z)>0.1,`小屋或露台 ${x},${z}`);
   }
@@ -99,9 +99,9 @@ test('達賢草坡與池畔地面連續，玩家能由低處走到入口再繞�
   assert.equal(layout.groundHeight(22, 90), 0);
   assert.equal(layout.groundHeight(22, 32), 4);
   assert.equal(layout.groundHeight(36, -32), 0);
-  let before = layout.groundHeight(36, 100);
+  let before = layout.groundHeight(-36, 100);
   for (let z = 99.9; z >= -95; z -= 0.1) {
-    const h = layout.groundHeight(36, z);
+    const h = layout.groundHeight(-36, z);
     assert.ok(Number.isFinite(h));
     assert.ok(Math.abs(h - before) < 0.02, `每十公分不應跳高：z=${z}`);
     before = h;

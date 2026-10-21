@@ -31,10 +31,14 @@ function textSign(parent,text,x,y,z,w,h,color,background,angle=0) {
 
 export function buildMap() {
   const texture=concreteTexture();const materials=new Map();
+  const paving=canvasTex(256,256,(g,w,h)=>{
+    g.fillStyle='#bcc0b6';g.fillRect(0,0,w,h);g.strokeStyle='#929e96';g.lineWidth=1;
+    for(let i=0;i<=256;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
+  },[.4,.4]);
   const materialFor=kind=>{
     if(kind==='outline')return OUT;
     if(!materials.has(kind))materials.set(kind,toon(COLORS[kind]||COLORS.concrete,
-      kind==='concrete'?{map:texture}:undefined));
+      kind==='concrete'?{map:texture}:kind==='paving'?{map:paving}:undefined));
     return materials.get(kind);
   };
   const model=createOutdoorModel(materialFor);scene.add(model);
@@ -51,7 +55,8 @@ export function buildMap() {
   }
   colliders.push(...buildingColliders());
   // 入口清水模牆上的館名，位置對照照片；未宣稱複製原書法字形。
-  textSign(model,'達賢圖書館',18.1,5.15,27.96,5.7,1.25,'#4a5556');
+  textSign(model,'達賢圖書館',10.42,5.65,13.3,5.6,.84,'#615044',null,Math.PI/2);
+  textSign(model,'Dah Hsian Seetoo Library',10.43,5.11,13.3,5.4,.29,'#615044',null,Math.PI/2);
   // 草坡下方既有指南校區石碑，只重繪文字，不使用他人照片作貼圖。
   const marker=new THREE.Mesh(new THREE.BoxGeometry(8.2,2.3,0.55),toon('#ad9b85'));
   outline(marker,0.04);

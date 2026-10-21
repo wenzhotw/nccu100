@@ -1,0 +1,281 @@
+{
+  "researchedOn": "2026-10-21",
+  "note": "Selected ground-level source photos. Publication/update dates are not asserted capture dates. No third-party photo binaries included.",
+  "references": [
+    {
+      "id": "aj-02",
+      "source": "https://ajtravel.tw/nccu-library/",
+      "imageUrl": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161452_0_90a4d5.jpg",
+      "localFile": ".references/dah-hsian/round2/aj-02.jpg",
+      "sha256": "2705705ddc98ffa5b9afbd146ebd2b9afecba86e695cf4df2a9694e0425945bf",
+      "use": "前草坡看入口與遮陽板",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "aj-03",
+      "source": "https://ajtravel.tw/nccu-library/",
+      "imageUrl": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161454_0_185c5d.jpg",
+      "localFile": ".references/dah-hsian/round2/aj-03.jpg",
+      "sha256": "d98f568e856a6d30de1b03cd6c128885e34e8e4277566d98c60c3127b59888fd",
+      "use": "館名牆與入口近身",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "aj-15",
+      "source": "https://ajtravel.tw/nccu-library/",
+      "imageUrl": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161520_0_90181e.jpg",
+      "localFile": ".references/dah-hsian/round2/aj-15.jpg",
+      "sha256": "fdef991ebb632f9d4f57860285ee2aababe23c1f6818a57ab417a37f1c363d30",
+      "use": "池岸看小屋",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "aj-16",
+      "source": "https://ajtravel.tw/nccu-library/",
+      "imageUrl": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161522_0_917291.jpg",
+      "localFile": ".references/dah-hsian/round2/aj-16.jpg",
+      "sha256": "d49d7b029ceb55a6fc8f9ff03524213dfe3927c436a8a37cc515a7781373c079",
+      "use": "一樓池側簷下曲折步道",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-06",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8820.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-06.jpg",
+      "sha256": "92fdeceb4fd479ad89cb929f3103bd075227c71b4e129bc573a7dd3c411428f5",
+      "use": "老樹廣場側向入口",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-07",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8821.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-07.jpg",
+      "sha256": "c366f36cb025bebc5a353c952bbecdfa0040ca100e6dfa9ca7673dc50ac21abc",
+      "use": "半圓階梯近身",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-10",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8829.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-10.jpg",
+      "sha256": "b095b543ac9a7eb9c15aab35c29890bab8849f5ccaa57236a0bfea7786da64dd",
+      "use": "門廊往露台",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-13",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8839.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-13.jpg",
+      "sha256": "e250c6c45bb191604fa36707f9e7d849dedd94ae853f61d5d2437fe42927ac54",
+      "use": "橋上看小屋入口",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-16",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8843.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-16.jpg",
+      "sha256": "15021d12aa44317aa4b21e27a743a9c092baeebe7f38befe89bc216449a2fc0f",
+      "use": "橋旁看主樓與外階梯",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-17",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8844.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-17.jpg",
+      "sha256": "95faeb7483fd25f24541a2baa416ace10bf31f326f9ba9bc92fd1caf84e4b3bc",
+      "use": "地面仰看主樓池側立面",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-20",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8861.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-20.jpg",
+      "sha256": "6ad54673a5ea8a03fc25aafd7533a86ad84facfb434c09ad0ed83f95f149e96c",
+      "use": "空橋斜看小屋端框",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-21",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8863.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-21.jpg",
+      "sha256": "b945fb6236efdf6d3ca1ca07b3c73b9b4c28edcd21e68df8cff865d489e54044",
+      "use": "小屋下層近身與支撐",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-22",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8870.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-22.jpg",
+      "sha256": "e4a859da9f43b03edef35053cfd1fecc52a5ec5754f3c2b0ee252830c2adb2f5",
+      "use": "池對岸看小屋長向立面",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "ha-23",
+      "source": "https://ha-blog.tw/54-135960-20210308/",
+      "imageUrl": "https://upssmile.com/wp-content/uploads/2021/02/20210126-IMG_8878.jpg",
+      "localFile": ".references/dah-hsian/round2/ha-23.jpg",
+      "sha256": "1007bde519c36d2ee951518fb2b45d83b8f949e42186768e3ea13037241b0862",
+      "use": "池對岸看主樓及小屋",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-02",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/61ae5af5f9fff44e68cd1f67c9f8c2a24a0b30b7-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-02.jpg",
+      "sha256": "399af0bb51cf6ab67742202cbeddb38d29bb26a0c042c5906800b22e0909833b",
+      "use": "下方看主樓露台與柱",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-03",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/4ca144dbbb94608f09613f868bb22deae4774131-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-03.jpg",
+      "sha256": "dc8298acfe143a6ec3dba0767fd48e6ccdda5fccbb315f9eadb2d08efe7a3772",
+      "use": "前側不透明混凝土牆與窗",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-04",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/6caa38940c777908b84d87271148c39ad9665158-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-04.jpg",
+      "sha256": "05b61e800dc7e2dc5a2b3e72a2565f005ef1826071746fed8fac5e6408a924bf",
+      "use": "前草坡寬景",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-06",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/683e8f6af1d2215f391cdd3fe0ae0b5ef44c3820-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-06.jpg",
+      "sha256": "f0db558792906b4ebb0bd7ff5a81bd46bfad365058d6ccab0073af9eaaade47c",
+      "use": "老樹廣場階梯",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-07",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/e47bd9a1dcfc495e67c256852307098903b9d87f-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-07.jpg",
+      "sha256": "37d9b791e98c79768143edaa74481e03df1c3703e2f75338b0352670223de892",
+      "use": "老樹廣場不同方向",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-09",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/91fc296d780f7540316e89ebc0be8e7fce0c8a10-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-09.jpg",
+      "sha256": "ff8b1de4addfa5ce6aca4041f979f6bdd1572a686d3ae6f859eb84aecaede7df",
+      "use": "門廊回看前草坡",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-12",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/d28f56219bf6808f2d01920daf79990665d1d895-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-12.jpg",
+      "sha256": "11941a39857265b42f13b29c9a49f2e95750ab4ce1a9b1d2acddac16ef8cb5cc",
+      "use": "地面看露台下方",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-14",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/0f1d5bf3bd040695b94db0ad4fc260b7f2b92aeb-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-14.jpg",
+      "sha256": "2034f0996cd517023f886c811dfe130971edcd4a5bd9f789d64f74f8eba2b720",
+      "use": "上層露台看池面",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-16",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/6c7d31ef63740b696fc6482509bfa3c45d769b87-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-16.jpg",
+      "sha256": "179a91e6b80690b48c4ba25fd6deb41c1f9b63fdc645bbe137906ba5a5de6aa1",
+      "use": "空橋看小屋入口",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-18",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/0e915c0b32dd77207d963496f10bed86b1872a6e-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-18.jpg",
+      "sha256": "10d19ccc209b07f7146b47a042d9f9a570ac1407947133e3e04008761a93ab04",
+      "use": "小屋側露台回看主樓",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    },
+    {
+      "id": "walker-19",
+      "source": "https://www.walkerland.com.tw/article/view/417870",
+      "imageUrl": "https://media.walkerland.com.tw/wlk_media/thumbnail/images/upload/article/a9accbb285396e508cf550a3b85cc13386ccb6b8-600x338.webp",
+      "localFile": ".references/dah-hsian/round2/walker-19.jpg",
+      "sha256": "a291545baf51cd1cdb9ce10286a15463e68ba063fa82ff32db71ee6bf5b035d8",
+      "use": "空橋與主樓立面",
+      "inspection": "Contact sheet visually reviewed; image-level matching pending except noted in handoff.",
+      "captureDate": "not independently verified",
+      "gamePoseMatched": false
+    }
+  ]
+}

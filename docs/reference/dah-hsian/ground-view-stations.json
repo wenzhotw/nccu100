@@ -1,0 +1,665 @@
+{
+  "researchedOn": "2026-10-21",
+  "officialSource": "https://www.lib.nccu.edu.tw/p/404-1000-567.php?Lang=zh-tw",
+  "method": "Public attributed viewer screenshots only. Four headings are four views of ONE camera station. Public panorama coordinates approximate; camera height and projection not surveyed. No game match or repair claimed.",
+  "stations": [
+    {
+      "id": "entry",
+      "label": "館名牆前",
+      "panoid": "CAoSLEFGMVFpcE82MEdFd1B5RXRxTWtrWWJaS2EzYUdRZWJkN2Fyc2FvVXBiRVNJ",
+      "sourcePositionApproximate": {
+        "lat": 24.98824096990344,
+        "lng": 121.57863101645441
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98824096990344|121.57863101645441|0|0|0.6|CAoSLEFGMVFpcE82MEdFd1B5RXRxTWtrWWJaS2EzYUdRZWJkN2Fyc2FvVXBiRVNJ|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-entry-000.png",
+          "sha256": "29d85690f4a9353e4e4404500dc7d4d327fdf15eff68815e16525af5af758b69"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98824096990344|121.57863101645441|90|0|0.6|CAoSLEFGMVFpcE82MEdFd1B5RXRxTWtrWWJaS2EzYUdRZWJkN2Fyc2FvVXBiRVNJ|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-entry-090.png",
+          "sha256": "1beb6c5d90c1fa2f608f2e0648a9df1734d06d40f06ab973ef1deeab1d4eaf3d"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98824096990344|121.57863101645441|180|0|0.6|CAoSLEFGMVFpcE82MEdFd1B5RXRxTWtrWWJaS2EzYUdRZWJkN2Fyc2FvVXBiRVNJ|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-entry-180.png",
+          "sha256": "07e7d67015bf3a6b32c6d93fc9bc6768d7aa879086b3470a63decbacfb458289"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98824096990344|121.57863101645441|270|0|0.6|CAoSLEFGMVFpcE82MEdFd1B5RXRxTWtrWWJaS2EzYUdRZWJkN2Fyc2FvVXBiRVNJ|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-entry-270.png",
+          "sha256": "7e7e3a1fe42b9bd64cd2f5ef80e73bd996e78e101b955b58e8b08c4bb6bc76c3"
+        }
+      ]
+    },
+    {
+      "id": "grass",
+      "label": "館名牆外石板與平台交界",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlzV3c.",
+      "sourcePositionApproximate": {
+        "lat": 24.98825371097179,
+        "lng": 121.57856587861345
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98825371097179|121.57856587861345|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlzV3c.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-grass-000.png",
+          "sha256": "fdb66b163e1a7ac81b3056d06f139452a49e0a7b84113c7a173403974116fdce"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98825371097179|121.57856587861345|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlzV3c.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-grass-090.png",
+          "sha256": "7dc2234428eeb16a98cac7d126b2244887fafacf6cdba16dae853e3b1d1af256"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98825371097179|121.57856587861345|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlzV3c.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-grass-180.png",
+          "sha256": "c2128e1b3af1e6939c6a694e9c3b9e44c7960b7f3af1129f136bfe4936b681be"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98825371097179|121.57856587861345|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlzV3c.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-grass-270.png",
+          "sha256": "44688f59c5d785eedbb678bbe102d6eb3ce9e55ced0d79b37ed458086ec32143"
+        }
+      ]
+    },
+    {
+      "id": "portico-mid",
+      "label": "入口門前門廊",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E.",
+      "sourcePositionApproximate": {
+        "lat": 24.98823894606889,
+        "lng": 121.57868465935434
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98823894606889|121.57868465935434|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-mid-000.png",
+          "sha256": "651f5632b5552b2a6503e4125a93f7623ef18e4188b64ae5e4350ea8c7bc2d84"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98823894606889|121.57868465935434|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-mid-090.png",
+          "sha256": "71938ba704e56f9c2704e285ba5a89f685b4c1c21bc74665c181d0180689e773"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98823894606889|121.57868465935434|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-mid-180.png",
+          "sha256": "b8e834ae258985f48846bf9398fed0dc45a7c4228f42a8e53184f7158890874e"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98823894606889|121.57868465935434|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3OXlVQ0E.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-mid-270.png",
+          "sha256": "c468d077c8b9a175dcc16083419b1e0413834fa2eeeb72b0a2c188e15fd94f03"
+        }
+      ]
+    },
+    {
+      "id": "portico-end",
+      "label": "門廊中後段",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZGFXMVFF",
+      "sourcePositionApproximate": {
+        "lat": 24.988237114771728,
+        "lng": 121.57876155327236
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988237114771728|121.57876155327236|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZGFXMVFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-end-000.png",
+          "sha256": "0d457fa8e2dafaddff7af86dbdd92c92d7058f0144ea2cc3e124f7fddf2c758f"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988237114771728|121.57876155327236|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZGFXMVFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-end-090.png",
+          "sha256": "2cb562759b4847f4eba8aad699b051ea56cc91a6e3754300a8eb8160e4df2196"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988237114771728|121.57876155327236|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZGFXMVFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-end-180.png",
+          "sha256": "36b80fb466904de932665fa70ac7a17d8f9ef8130889fd62bd70a9eafed5dd24"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988237114771728|121.57876155327236|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZGFXMVFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-portico-end-270.png",
+          "sha256": "0c3c223e288b06bdeef59772cbe5c388af176f5c90f7a407171e30b031360581"
+        }
+      ]
+    },
+    {
+      "id": "terrace-south",
+      "label": "門廊與露台過渡",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFMa0FF",
+      "sourcePositionApproximate": {
+        "lat": 24.988233440040176,
+        "lng": 121.57883252552891
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988233440040176|121.57883252552891|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFMa0FF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-south-000.png",
+          "sha256": "3d900b0b215913aadd172bfbc5c3151b8410d9a9338899d692b7592a81580463"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988233440040176|121.57883252552891|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFMa0FF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-south-090.png",
+          "sha256": "5f743f30296354ac404a35f879382a693d7ce51c272f50a16e54aaa43d7e7ae2"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988233440040176|121.57883252552891|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFMa0FF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-south-180.png",
+          "sha256": "b08d6ad824ba6ceb975b4487ebd3a29c08094cda36f52dc864537cb07c7a70d0"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988233440040176|121.57883252552891|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFMa0FF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-south-270.png",
+          "sha256": "f2d9eeea01ea1385b430ea21d2a6bb8ced2e8df96530653dbc155ca88cf8b059"
+        }
+      ]
+    },
+    {
+      "id": "terrace-east",
+      "label": "池側露台南端",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmF3RHc.",
+      "sourcePositionApproximate": {
+        "lat": 24.988229253414286,
+        "lng": 121.57901226365946
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988229253414286|121.57901226365946|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmF3RHc.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-east-000.png",
+          "sha256": "6d9fc60001dbd87f79db6c98694fe05395142df4fa8e772dbf87a431153b2c01"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988229253414286|121.57901226365946|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmF3RHc.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-east-090.png",
+          "sha256": "d9c2df82ea7cc26eec05d05f363e410458af4397498ca0f2494119221353eff8"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988229253414286|121.57901226365946|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmF3RHc.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-east-180.png",
+          "sha256": "67806c5cadf976419da6a040e41931a46402b712e45d480ce71b6d0093e6fdeb"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988229253414286|121.57901226365946|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmF3RHc.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-east-270.png",
+          "sha256": "583d7d2b1709077bbb8b7edcf06f38b09a8e305f1dad78d119f173243b4e3796"
+        }
+      ]
+    },
+    {
+      "id": "terrace-corner",
+      "label": "露台轉角",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWJFSUE.",
+      "sourcePositionApproximate": {
+        "lat": 24.988236006529245,
+        "lng": 121.57912041989795
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988236006529245|121.57912041989795|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWJFSUE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-corner-000.png",
+          "sha256": "5a3cd360dcc8fe2bd8b5ca58dcde3d1a266a6e96ac1e4e68f841a9296a8f070e"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988236006529245|121.57912041989795|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWJFSUE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-corner-090.png",
+          "sha256": "fb9cdfa645dacb18fdb81d56206cb0a92c99cc408ec81df7f21022011e29055a"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988236006529245|121.57912041989795|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWJFSUE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-corner-180.png",
+          "sha256": "2ba9791480fc4fa4563f5265471be2013bec17552e31c878a18b0cc89cf04eec"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988236006529245|121.57912041989795|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWJFSUE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-corner-270.png",
+          "sha256": "00adb7e43e716685078f21f4e7c7b41ecdb79e193d87c776b941018192d8bbdb"
+        }
+      ]
+    },
+    {
+      "id": "terrace-rear",
+      "label": "沿池側玻璃外露台",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWJJcndF",
+      "sourcePositionApproximate": {
+        "lat": 24.988350844856416,
+        "lng": 121.5791262544103
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988350844856416|121.5791262544103|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWJJcndF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-rear-000.png",
+          "sha256": "b63153a12a8a26e98994e492e853b57c5ee1e5de4e617c7ea8acacd3055e40f4"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988350844856416|121.5791262544103|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWJJcndF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-rear-090.png",
+          "sha256": "5484be09c0f9f7d2cb90a7c80e78aa5bf67a126a12cab5b06a25bf5f7a58e819"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988350844856416|121.5791262544103|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWJJcndF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-rear-180.png",
+          "sha256": "98dc398c1a2c1dc03efd5b0dab2c31dcb5253e3bf95bcce8c6cde5c204120fdf"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988350844856416|121.5791262544103|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWJJcndF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-rear-270.png",
+          "sha256": "74ec1f53c90400f8582740c4adbca6c5f58f17a526da3c362edae5de7dc0d1eb"
+        }
+      ]
+    },
+    {
+      "id": "terrace-bridge-approach",
+      "label": "主樓空橋接點",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFjeGdF",
+      "sourcePositionApproximate": {
+        "lat": 24.988623745497062,
+        "lng": 121.5791083154609
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988623745497062|121.5791083154609|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFjeGdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-bridge-approach-000.png",
+          "sha256": "1a3ac1494cd40ce4a5c48cd1db9ca37203af87b20c2ee1a693fa8b4977a2d35e"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988623745497062|121.5791083154609|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFjeGdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-bridge-approach-090.png",
+          "sha256": "a7887eb1765912900797e41ed6b1fd8abca5cbf475550a9070805e92953abd2c"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988623745497062|121.5791083154609|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFjeGdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-bridge-approach-180.png",
+          "sha256": "1ace7cd1b1f238315b7096365bb62f6c52f542c5e7ca4ade76283de981467138"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988623745497062|121.5791083154609|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3WmFjeGdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-terrace-bridge-approach-270.png",
+          "sha256": "f6d03440b5d742604ece7a9809d52c73b3624f91c6a3fce5aa75468f00fbc494"
+        }
+      ]
+    },
+    {
+      "id": "bridge-house-end",
+      "label": "空橋橋面中段",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWFiUVE.",
+      "sourcePositionApproximate": {
+        "lat": 24.988627769414457,
+        "lng": 121.57918233537958
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988627769414457|121.57918233537958|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWFiUVE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-bridge-house-end-000.png",
+          "sha256": "d16cab75876fed2225554bf9cf37862b486ed31aa783c6f17f6b7bc27e1e35e3"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988627769414457|121.57918233537958|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWFiUVE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-bridge-house-end-090.png",
+          "sha256": "e7cad1c8963f8d1f773657ab400c76b76ba328f4d24fe39d9365c2c24fe32606"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988627769414457|121.57918233537958|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWFiUVE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-bridge-house-end-180.png",
+          "sha256": "f58ff957051a33d3ce8d7329f07a412015ead0316b9a81dfb6b81b8f0e931710"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.988627769414457|121.57918233537958|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHE3YWFiUVE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-bridge-house-end-270.png",
+          "sha256": "4fc3d04785dc6125e1120000d2788414f162cc3fefd6ef0578e18c793f8b775c"
+        }
+      ]
+    },
+    {
+      "id": "house-upper-door",
+      "label": "小屋二樓入口附近",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFqckFF",
+      "sourcePositionApproximate": {
+        "lat": 24.98862781064771,
+        "lng": 121.5792753391622
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98862781064771|121.5792753391622|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFqckFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-upper-door-000.png",
+          "sha256": "9cc18faca5097a62f8fecc18b256b66a758695b3ac18029d7185e70507d0be5d"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98862781064771|121.5792753391622|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFqckFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-upper-door-090.png",
+          "sha256": "1ffd75fee82c00d9d12f4c7c0e88471550b7f56e84105bdd8dcb4607677d1a2d"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98862781064771|121.5792753391622|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFqckFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-upper-door-180.png",
+          "sha256": "f46445ff934ac90c7223bff7386ea805a84b64860e30d07a388fd4199309cb97"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98862781064771|121.5792753391622|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWFqckFF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-upper-door-270.png",
+          "sha256": "9c1cd46d6dc55a2769cb1076cfe882052ea60e9427082d6edf8be4bc2e0bfc59"
+        }
+      ]
+    },
+    {
+      "id": "house-ground",
+      "label": "小屋一樓外側",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXlmZ3dF",
+      "sourcePositionApproximate": {
+        "lat": 24.98839436535352,
+        "lng": 121.57929893842456
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98839436535352|121.57929893842456|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXlmZ3dF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-ground-000.png",
+          "sha256": "cf6fb61af23f2ed577fd4cfb0a37ec2e6f39cdf3f26e87d6551a0725ce0d7a8f"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98839436535352|121.57929893842456|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXlmZ3dF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-ground-090.png",
+          "sha256": "1954b18535db828a2980ac7955241bc183f9ed8ca9ec010ea3b5592ef5427d27"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98839436535352|121.57929893842456|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXlmZ3dF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-ground-180.png",
+          "sha256": "f86279ae1d1a0d12ded723458a71f3959560d90c1d39cee7bcaf123cc736b311"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98839436535352|121.57929893842456|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXlmZ3dF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-house-ground-270.png",
+          "sha256": "6a6e82f8830c130d6350837ad8217d5ee33333c10baa47193e9767aa6274a5a8"
+        }
+      ]
+    },
+    {
+      "id": "lakewalk",
+      "label": "池畔南側步道",
+      "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXlmYlE.",
+      "sourcePositionApproximate": {
+        "lat": 24.98803451809955,
+        "lng": 121.57932044771108
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98803451809955|121.57932044771108|0|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXlmYlE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lakewalk-000.png",
+          "sha256": "4dd0a6a6d683ae2f7a4fd07026d4943e42627e34bcd0d829bd7c1260e1ccea59"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98803451809955|121.57932044771108|90|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXlmYlE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lakewalk-090.png",
+          "sha256": "d8a250e7d9c5537cb40072d6115c4aacf8342a6dace5230114434dcaa9731536"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98803451809955|121.57932044771108|180|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXlmYlE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lakewalk-180.png",
+          "sha256": "f9979bdf7460936371b5fba73c6de9da21419dbd803248b8a6d94aa3f1784a93"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.98803451809955|121.57932044771108|270|0|0.6|CAoSFkNJSE0wb2dLRUlDQWdJRHl3NXlmYlE.|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lakewalk-270.png",
+          "sha256": "269e85c8512ce3463cb0786e0b04bd2a4c3f5aea3aa658abad68686470946bd3"
+        }
+      ]
+    },
+    {
+      "id": "lower-entry",
+      "label": "主樓一樓電梯與接駁處外",
+      "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFrNXdF",
+      "sourcePositionApproximate": {
+        "lat": 24.987998059551064,
+        "lng": 121.57881345446064
+      },
+      "imageDate": "2020-08",
+      "copyright": "© Nina Ku",
+      "photoEyeHeightMeasured": false,
+      "gamePoseMatched": false,
+      "views": [
+        {
+          "heading": 0,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.987998059551064|121.57881345446064|0|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFrNXdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lower-entry-000.png",
+          "sha256": "03fa4a111b900a38c9d0f5116f78e5a787c1c80c4014734b5fa2e9d3ab1120b2"
+        },
+        {
+          "heading": 90,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.987998059551064|121.57881345446064|90|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFrNXdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lower-entry-090.png",
+          "sha256": "6ad07eeeee1fa3a38b9f7052d0da94cc261f83d49b32f3024c6622067a907fef"
+        },
+        {
+          "heading": 180,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.987998059551064|121.57881345446064|180|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFrNXdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lower-entry-180.png",
+          "sha256": "8471eb2d85adb6e984712979dbf66c319f5077ecc2c9ebba2bea018aa2017836"
+        },
+        {
+          "heading": 270,
+          "pitch": 0,
+          "viewerZoom": 0.6,
+          "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z?scene=24.987998059551064|121.57881345446064|270|0|0.6|CAoSF0NJSE0wb2dLRUlDQWdJRHE3ZWFrNXdF|false|GOOGLE",
+          "localFile": ".references/dah-hsian/round2/vr-lower-entry-270.png",
+          "sha256": "a4f1837f4c0b1f810afa194548275fa5832e85fdda505d523c61b2cc9e178b81"
+        }
+      ]
+    }
+  ]
+}
