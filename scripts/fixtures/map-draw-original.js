@@ -20,7 +20,7 @@ function drawMap(cv,showPlayer){ if(!cv) cv=$('mapc'); if(showPlayer===undefined
   world.mapShapes.forEach(m=>{ if(m.draw) m.draw(g,mx,my); else bld(m.x,m.z,m.w,m.d,m.color,m.label||'',m.dy); });
   g.beginPath(); g.arc(mx(0),my(FZ),9,0,7); g.fillStyle='#9cc7c9'; g.fill(); g.stroke();
   g.fillStyle='#4a3520'; g.font='700 20px "Noto Sans TC",sans-serif'; g.fillText('校門',mx(0),my(14)); g.fillText('指南路二段',mx(-100),my(30)); g.fillText('醉夢溪',mx(-175),my(-145));
-  g.fillText('四維道',mx(-120),my(swZ(-120))-12);
+  g.fillText('四維道',mx(-120),my(swZ(-120))-12); g.fillText('八德道',mx(-14),my(bdZ(-14))+24);
   const spots=crystals.map(c=>[c,c.mapAt.x,c.mapAt.z]);
   if(state.haveMap) spots.forEach(([c,x,z])=>{ const X=mx(x), Y=my(z);
     if(c.got){ g.fillStyle='#3f8a4f'; g.beginPath(); g.arc(X,Y,16,0,7); g.fill(); g.strokeStyle='#fff'; g.lineWidth=5; g.beginPath(); g.moveTo(X-8,Y); g.lineTo(X-2,Y+7); g.lineTo(X+9,Y-7); g.stroke(); }

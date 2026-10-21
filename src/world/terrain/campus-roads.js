@@ -32,9 +32,10 @@ function roadSeg(x0,x1,zf,w,plain){ const z0=zf(x0), z1=zf(x1), len=Math.hypot(x
   if(plain) return;   // 標線另外畫（bade-road.js）
   for(let k=-len/2+1;k<len/2;k+=4){ const d=new THREE.Mesh(new THREE.PlaneGeometry(2,0.12),toon('#f4f4ee')); d.rotation.x=-Math.PI/2; d.position.set(k+1,0.024,0); g.add(d); }
   [-w/2,w/2].forEach(dz=>{ const e=new THREE.Mesh(new THREE.PlaneGeometry(len,0.12),toon('#f4f4ee')); e.rotation.x=-Math.PI/2; e.position.set(0,0.024,dz*0.92); g.add(e); }); }
-roadSeg(-86,0,bdZ,4.4);
-roadSeg(0,12,bdZ,4.4);
-roadSeg(12,92.5,bdZ,4.4,true);   // 樂活館到電算中心這段：雙黃線、紅線、人行道在 bade-road.js；西端接電算中心後面的校內道路
+// 整條八德道的雙黃線、紅線、人行道都在 bade-road.js；這裡只鋪柏油。東端接電算中心後面的校內道路
+roadSeg(-86,0,bdZ,4.4,true);
+roadSeg(0,12,bdZ,4.4,true);
+roadSeg(12,92.5,bdZ,4.4,true);
 for(let x=-4.5;x<=4.6;x+=1) flat(0.5,3.6,'#f4f4ee',x,0.026,bdZ(x));
 { const t=diaTex.clone(); t.repeat.set(4,1); t.needsUpdate=true; flat(34,8,new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}),45,0.017,-62); }
 function umbrella(x,z,col){
