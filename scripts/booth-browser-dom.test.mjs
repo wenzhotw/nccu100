@@ -1,3 +1,4 @@
+import { createExplorationStore } from '../src/systems/baozhong/exploration-store.js';
 /** Deterministic lifecycle tests, not a substitute for browser layout/a11y QA. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,7 +20,8 @@ class Element extends Events {
   append(...nodes) { for (const child of nodes) { child.parentElement = this; this.children.push(child); } }
   replaceChildren(...nodes) { for (const child of this.children) child.parentElement = null; this.children = []; this._text = ''; this.append(...nodes); }
   remove() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(child => child !== this); this.parentElement = null; }
-  setAttribute(name, value) { this.attributes.set(name, String(value)); if (name === 'tabindex') this.tabIndex = Number(value); }
+  setAttribute(name, value) { this.attributes.set(name, String(value)); if (name.startsWith('data-')) this.dataset[name.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = String(value); if (name === 'tabindex') this.tabIndex = Number(value); }
+  removeAttribute(name) { this.attributes.delete(name); }
   getAttribute(name) { return this.attributes.get(name) ?? null; }
   hasAttribute(name) { return this.attributes.has(name); }
   contains(target) { return this === target || this.children.some(child => child.contains(target)); }
@@ -43,14 +45,14 @@ class Document extends Events {
   createElement(tag) { return new Element(tag, this); }
   querySelector(selector) { return this.body.querySelector(selector); }
 }
-function setup() {
+function setup(options = {}) {
   const document = new Document(), state = { busy: false }, calls = [];
   const trigger = document.createElement('button'); trigger.id = 'trigger'; trigger.dataset.boothOpen = '';
   const background = document.createElement('main'); background.inert = false;
   const alreadyInert = document.createElement('aside'); alreadyInert.inert = true;
   document.body.append(trigger, background, alreadyInert); document.body.style.overflow = 'auto'; trigger.focus();
   let panel;
-  panel = mountBoothBrowser({ data: structuredClone(fixture), document, state,
+  panel = mountBoothBrowser({ data: structuredClone(fixture), document, state, ...options,
     onOpen: id => calls.push({ action: 'open', id, busy: state.busy, focus: document.activeElement.id }),
     onClose: id => calls.push({ action: 'close', id, busy: state.busy }),
     onTalk: id => calls.push({ action: 'talk', id, busy: state.busy, open: panel.isOpen }) });
@@ -113,4 +115,39 @@ test('derived careers and missing alumni are honestly labelled, no synthetic ima
 test('every actual source passes HTTPS host allowlist; attacker URLs fail', () => {
   const visit = value => { if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') { if (value.publicURL) assert.equal(safeSourceURL(value.publicURL), new URL(value.publicURL).href); Object.values(value).forEach(visit); } }; visit(fixture);
   for (const url of ['http://nccu.edu.tw', 'javascript:alert(1)', 'https://nccu.edu.tw.evil.test/', 'https://evil.test/', 'https://user:secret@nccu.edu.tw/']) assert.equal(safeSourceURL(url), null);
+});
+
+
+test('exploration favorites, cap, collection, comparison and cleanup use the same modal lock', () => {
+  const store = createExplorationStore({ storage: null });
+  const located = [], x = setup({ exploration: store, onLocate: id => located.push(id) });
+  x.panel.open('D01'); x.click('[data-favorite-reason="courses"]');
+  assert.deepEqual(store.getSnapshot().favorites, [{id:'D01',reasons:['courses']}]);
+  x.click('[data-compare-toggle="D01"]'); store.toggleCompare('D02'); store.toggleCompare('D03');
+  assert.equal(store.toggleCompare('D04'), false);
+  x.click('[data-exploration-compare]'); assert.equal(x.find('.bz-browser__tabs').hidden, true);
+  assert.equal(x.document.body.querySelectorAll('[data-compare-department]').length, 3);
+  assert.match(x.find('[data-booth-panel]').textContent, /官方參採重點/);
+  assert.match(x.find('.bz-browser__dialog').className, /wide/);
+  x.click('[data-exploration-list]'); assert.match(x.find('[data-booth-panel]').textContent, /本次遊戲/);
+  const locate = x.find('[data-booth-panel]').querySelectorAll('button').find(b => b.textContent === '在活動地圖找它'); locate.emit('click');
+  assert.deepEqual(located, ['D01']); assert.equal(x.state.busy, false); assert.equal(x.panel.isOpen, false);
+  assert.equal(x.panel.openCollection(), true); assert.equal(x.state.busy, true);
+  x.panel.dispose(); store.setFavorite('D02',['curious']); assert.equal(x.state.busy,false); assert.equal(x.find('[data-booth-browser]'),null);
+});
+
+test('all departments have clearly labeled authored scenarios and collection does not overwrite tab memory', () => {
+ const store=createExplorationStore({storage:null}),x=setup({exploration:store});
+ for(const dept of fixture.departments){x.panel.open(dept.id);assert.equal(x.find('[data-learning-scenario]').dataset.learningScenario,dept.id);assert.match(x.find('[data-learning-scenario]').textContent,/不是官方必修/);x.panel.close();}
+ x.panel.open('D01');x.click('[data-booth-tab="1"]');x.find('[data-booth-panel]').scrollTop=230;x.click('[data-exploration-list]');x.find('[data-booth-panel]').querySelectorAll('button').find(b=>b.textContent==='回到科系介紹').emit('click');assert.equal(x.find('[data-booth-panel]').scrollTop,230);x.panel.close();x.panel.open('D01');assert.equal(x.find('[data-booth-panel]').scrollTop,230);x.panel.dispose();
+});
+
+test('quota and deletion failures are visible, comparison cap never silently replaces another department', () => {
+ const storage={getItem:()=>null,setItem(){throw new Error('quota');},removeItem(){throw new Error('blocked');}};
+ const store=createExplorationStore({storage}),x=setup({exploration:store});
+ x.panel.open('D04');x.click('[data-favorite-reason="curious"]');assert.match(x.find('.bz-browser__live').textContent,/無法保存/);
+ store.toggleCompare('D01');store.toggleCompare('D02');store.toggleCompare('D03');x.click('[data-compare-toggle="D04"]');
+ assert.deepEqual(store.getSnapshot().compareIds,['D01','D02','D03']);assert.match(x.find('.bz-browser__live').textContent,/最多比較 3/);
+ x.click('[data-exploration-list]');x.find('[data-booth-panel]').querySelectorAll('button').find(b=>b.textContent==='確認清空收藏與比較').emit('click');
+ assert.match(x.find('.bz-browser__live').textContent,/無法確認|舊紀錄/);assert.deepEqual(store.getSnapshot().favorites,[]);x.panel.dispose();
 });

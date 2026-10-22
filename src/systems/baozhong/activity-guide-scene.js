@@ -1,6 +1,6 @@
 import { guideProjection } from './activity-guide-model.js';
 /** Drawing commands shared by the physical sign and the interactive map. */
-export function guideScene(model,w=1200,h=760,{selected=null,matchIds=null,position=model.position}={}) {
+export function guideScene(model,w=1200,h=760,{selected=null,matchIds=null,position=model.position,favoriteIds=new Set()}={}) {
  const out=[],add=(type,attrs,text)=>out.push({type,attrs,text});
  const legendH=116,top=56,mapH=h-legendH-top;
  const p=guideProjection(model.bounds,w,mapH,38),xy=(x,z)=>{const q=p.xy(x,z);return [q[0],q[1]+top];};
@@ -15,7 +15,7 @@ export function guideScene(model,w=1200,h=760,{selected=null,matchIds=null,posit
  const [bx,by]=xy(45,model.roads.find(r=>r.id==='bade').points.at(-1)[1]);text(bx,by-9,'八德道',17,'#666755');
  const [ax,ay]=xy(0,-47);text(ax+95,ay-12,'中央大道',16,'#5e665c',{'text-anchor':'start'});
  for(const l of model.landmarks){const [x,y]=xy(l.x,l.z);if(l.id==='fountain'){add('circle',{cx:x,cy:y,r:Math.max(12,l.radius*p.scale),fill:'#83c7cc',stroke:'#3b7d86','stroke-width':3});add('circle',{cx:x,cy:y,r:Math.max(6,l.radius*p.scale*.55),fill:'#c1e7df'});text(x,y+6,l.name,18,'#1d4d57');}else{const ww=l.id==='hall'?86:70;rect(x-ww/2,y-17,ww,34,l.id==='hall'?'#d3b984':'#ede0bd',{rx:6,stroke:'#7d7053','stroke-width':2});text(x,y+6,l.name,20);}}
- for(const e of model.entries){const [x,y]=xy(e.x,e.z),isSelected=e.id===selected?.id,muted=matchIds&&!matchIds.has(e.id);rect(x-10,y-10,20,20,e.color,{rx:4,stroke:isSelected?'#f4bd2c':'#ffffff','stroke-width':isSelected?5:1.4,opacity:muted?.2:1,'data-booth-id':e.id});text(x,y+5,e.id.replace(/^D/,''),12,'#ffffff',{'pointer-events':'none',opacity:muted?.2:1});if(isSelected){rect(x-68,y-47,136,27,'#f5c34e',{rx:7,stroke:'#3b422d'});text(x,y-28,`${e.id} ${e.name}`,14,'#253728');}}
+ for(const e of model.entries){const [x,y]=xy(e.x,e.z),isSelected=e.id===selected?.id,muted=matchIds&&!matchIds.has(e.id);rect(x-10,y-10,20,20,e.color,{rx:4,stroke:isSelected?'#f4bd2c':'#ffffff','stroke-width':isSelected?5:1.4,opacity:muted?.2:1,'data-booth-id':e.id});text(x,y+5,e.id.replace(/^D/,''),12,'#ffffff',{'pointer-events':'none',opacity:muted?.2:1});if(favoriteIds.has(e.id))text(x+13,y-12,'★',17,'#8a5a0a',{'pointer-events':'none','data-favorite-id':e.id});if(isSelected){rect(x-68,y-47,136,27,'#f5c34e',{rx:7,stroke:'#3b422d'});text(x,y-28,`${e.id} ${e.name}`,14,'#253728');}}
  if(position){const [x,y]=xy(position.x,position.z);add('circle',{cx:x,cy:y,r:11,fill:'#d84c39',stroke:'#fff','stroke-width':3});rect(x+12,y-35,95,28,'#d84c39',{rx:7});text(x+60,y-15,'你在這裡',17,'white');}
  // North is the existing game map convention (+z), not a geographic survey claim.
  add('line',{x1:w-38,y1:110,x2:w-38,y2:72,stroke:'#244d3c','stroke-width':3});add('polyline',{points:`${w-46},83 ${w-38},72 ${w-30},83`,fill:'none',stroke:'#244d3c','stroke-width':3});text(w-38,132,'N 北',16);

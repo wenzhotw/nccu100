@@ -1,3 +1,4 @@
+import { createExplorationStore } from '../src/systems/baozhong/exploration-store.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -51,4 +52,16 @@ test('非活動時按鈕隱藏且G無效，離場關閉地圖並清目標，重�
  api.setActive(false);assert.equal(button.hidden,true);assert.equal(api.open(),false);assert.equal(api.select('D26'),false);doc.emit('keydown',{code:'KeyG'});assert.equal(state.busy,false);
  api.setActive(true);assert.equal(button.hidden,false);assert.equal(api.open(),true);api.select('D26');api.setActive(false);assert.equal(state.busy,false);assert.equal(api.target,null);assert.equal(find(doc.body,n=>n.id==='bz-activity-map').hidden,true);assert.equal(find(doc.body,n=>n.id==='bz-activity-target').hidden,true);
  api.setActive(true);assert.equal(api.open(),true);api.close();api.dispose();
+});
+
+
+test('收藏星號只存在活動地圖，更新與離場保持安全',()=>{
+ const doc=fakeDocument(),state={busy:false,flags:new Set()},exploration=createExplorationStore({storage:null});
+ const api=mountActivityMap({layout,content,state,getPosition:()=>({x:0,z:-32}),document:doc,exploration});
+ api.setActive(false);assert.equal(api.open(),false);
+ exploration.setFavorite('D01',['courses']);api.setActive(true);assert.equal(api.open(),true);
+ assert.match(find(doc.body,n=>n.dataset.boothId==='D01').textContent,/★/);
+ assert.equal(find(doc.body,n=>n.attrs['data-favorite-id']==='D01').textContent,'★');
+ exploration.setFavorite('D01',[]);assert.equal(find(doc.body,n=>n.attrs['data-favorite-id']==='D01'),undefined);
+ api.setActive(false);assert.equal(state.busy,false);assert.equal(api.target,null);api.dispose();exploration.setFavorite('D01',['curious']);assert.equal(doc.hud.children.length,0);
 });

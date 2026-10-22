@@ -20,9 +20,9 @@ test('booth browser keyboard, history, group separation, safety and mobile layou
   let browser;
   try { browser = await chromium.launch({ headless: true, ...(existsSync('/usr/bin/chromium') ? { executablePath: '/usr/bin/chromium' } : {}) }); } catch (error) { throw new Error(`Required browser QA could not launch Chromium: ${error.message.split('\n')[0]}`); }
   const server = createServer(async (req, res) => {
-    const files = { '/ui.js': ['src/systems/baozhong/booth-browser-ui.js', 'text/javascript'], '/ui.css': ['src/systems/baozhong/booth-browser.css', 'text/css'], '/data.json': ['src/systems/baozhong/booth-browser-data.json', 'application/json'] };
+    const files = { '/exploration-store.js': ['src/systems/baozhong/exploration-store.js', 'text/javascript'], '/learning-scenarios.js': ['src/systems/baozhong/learning-scenarios.js', 'text/javascript'], '/ui.js': ['src/systems/baozhong/booth-browser-ui.js', 'text/javascript'], '/ui.css': ['src/systems/baozhong/booth-browser.css', 'text/css'], '/data.json': ['src/systems/baozhong/booth-browser-data.json', 'application/json'] };
     if (files[req.url]) { const [file, type] = files[req.url]; res.setHeader('Content-Type', type); res.end(await readFile(new URL(`../${file}`, import.meta.url))); return; }
-    res.setHeader('Content-Type', 'text/html'); res.end('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/ui.css"><button id="trigger" data-booth-open>Browse</button><main>Game</main><script type="module">import {mountBoothBrowser} from "/ui.js"; const data=await fetch("/data.json").then(r=>r.json()); window.data=data;window.state={busy:false};window.talk=[];window.gameKeys=[];window.panel=mountBoothBrowser({data,state:window.state,onTalk:id=>window.talk.push({id,busy:state.busy,open:panel.isOpen})});window.addEventListener("keydown",e=>gameKeys.push(e.key));window.ready=true;</script>');
+    res.setHeader('Content-Type', 'text/html'); res.end('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/ui.css"><button id="trigger" data-booth-open>Browse</button><main>Game</main><script type="module">import {mountBoothBrowser} from "/ui.js";import {createExplorationStore} from "/exploration-store.js";window.exploration=createExplorationStore({storage:localStorage}); const data=await fetch("/data.json").then(r=>r.json()); window.data=data;window.state={busy:false};window.talk=[];window.gameKeys=[];window.panel=mountBoothBrowser({data,state:window.state,exploration:window.exploration,onTalk:id=>window.talk.push({id,busy:state.busy,open:panel.isOpen})});window.addEventListener("keydown",e=>gameKeys.push(e.key));window.ready=true;</script>');
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
@@ -48,6 +48,22 @@ test('booth browser keyboard, history, group separation, safety and mobile layou
     assert.equal(await page.locator('.bz-browser').evaluate(el => el.scrollWidth > el.clientWidth), false);
     await page.locator('[data-booth-close]').focus(); await page.keyboard.press('Shift+Tab'); assert.equal(await page.locator('[data-booth-talk]').evaluate(el => document.activeElement === el), true); await page.keyboard.press('Tab'); assert.equal(await page.locator('[data-booth-close]').evaluate(el => document.activeElement === el), true);
     const invalid = await page.locator('.bz-browser a').evaluateAll(links => links.filter(a => !a.href.startsWith('https://') || !a.rel.includes('noopener')).length); assert.equal(invalid, 0);
+    await page.evaluate(() => { panel.close(); panel.open('D01'); });
+    await page.locator('[data-favorite-reason="courses"]').click();
+    assert.equal(await page.locator('[data-favorite-reason="courses"]').getAttribute('aria-pressed'), 'true');
+    await page.locator('[data-compare-toggle="D01"]').click();
+    await page.evaluate(() => { exploration.toggleCompare('D02'); exploration.toggleCompare('D03'); });
+    assert.equal(await page.evaluate(() => exploration.toggleCompare('D04')), false);
+    await page.locator('[data-exploration-compare]').click();
+    assert.equal(await page.locator('[data-compare-department]').count(), 3);
+    assert.equal(await page.locator('.bz-browser__comparison-item[data-selected="false"]').first().isVisible(), false);
+    assert.equal(await page.locator('.bz-browser').evaluate(el => el.scrollWidth > el.clientWidth), false);
+    await page.locator('.bz-browser__comparison-tabs button').last().click();
+    assert.equal(await page.locator('[data-comparison-category]').getAttribute('data-comparison-category'), 'preparation');
+    await page.locator('[data-exploration-list]').click();
+    assert.match(await page.locator('[data-booth-panel]').innerText(), /喜歡課程/);
+    await page.keyboard.press('Escape'); assert.equal(await page.evaluate(() => state.busy), false);
+    await page.evaluate(() => panel.openCollection());
     await page.evaluate(() => panel.dispose()); assert.equal(await page.locator('[data-booth-browser]').count(), 0); assert.equal(await page.evaluate(() => state.busy), false); assert.equal(await page.locator('main').evaluate(el => el.inert), false);
   } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }
 });

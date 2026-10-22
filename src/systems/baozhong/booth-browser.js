@@ -5,7 +5,7 @@ import './booth-browser.css';
 
 /** One activity-owned controller. Registry entries are added/removed with the venue. */
 export function createBoothBrowsing({ layout, content, tents, state, spots, getPosition, canInteract,
-  onTalk, resetInput, stopVelocity, document: doc = globalThis.document }) {
+  onTalk, resetInput, stopVelocity, exploration, onLocate, document: doc = globalThis.document }) {
   const departments = layout.tents.filter(t => /^D\d{2}$/.test(t.id));
   const byId = new Map(DATA.departments.map(d => [d.id, d]));
   const collegeById = new Map(content.colleges.map(c => [c.id, c]));
@@ -14,11 +14,12 @@ export function createBoothBrowsing({ layout, content, tents, state, spots, getP
     collegeColor: collegeById.get(d.college)?.color || '#356852' })) };
   const button = doc.createElement('button'); button.id = 'bz-booth-browse-button'; button.type = 'button';
   button.hidden = true; button.setAttribute('aria-haspopup', 'dialog'); doc.body.append(button);
+  const savedButton = doc.createElement('button'); savedButton.id = 'bz-exploration-button'; savedButton.type = 'button'; savedButton.textContent = '我的探索清單'; savedButton.hidden = true; (doc.querySelector('#hud .col.r') || doc.body).append(savedButton);
   let active = false, disposed = false, nearby = null;
   const posters = new Map(departments.map(t => [t.id, (tents.tents.get(t.id)?.parts.signs || [])
     .filter(p => p.userData.bz26Poster !== undefined)
     .map(p => ({ mesh: p, color: p.material.color.clone() }))]));
-  const panel = mountBoothBrowser({ data, state, document: doc,
+  const panel = mountBoothBrowser({ data, state, document: doc, exploration, onLocate,
     onOpen() { state.bzBoothBrowsing = true; resetInput(); stopVelocity(); button.hidden = true; },
     onClose() { state.bzBoothBrowsing = false; resetInput(); stopVelocity(); update(); },
     onTalk(id) { if (active && canInteract() && !state.busy) onTalk(id); },
@@ -49,6 +50,7 @@ export function createBoothBrowsing({ layout, content, tents, state, spots, getP
     const target = eligible() && !state.busy ? nearestBrowseBooth(departments, getPosition()) : null;
     if (nearby?.id !== target?.id) { nearby = target; highlight(target?.id); }
     button.hidden = !target || panel.isOpen;
+    savedButton.hidden = !active || !exploration; savedButton.disabled = !!state.busy;
     if (target) {
       button.textContent = `查看科系 · ${byId.get(target.id)?.name || target.id}  B`;
       button.dataset.boothId = target.id;
@@ -73,10 +75,12 @@ export function createBoothBrowsing({ layout, content, tents, state, spots, getP
     update();
     if (nearby && open(nearby.id)) { e.preventDefault(); e.stopImmediatePropagation(); }
   }
+  const openCollection = () => { if (eligible() && !state.busy) panel.openCollection({ trigger: savedButton }); };
+  savedButton.addEventListener('click', openCollection);
   button.addEventListener('click', click); doc.addEventListener('keydown', key, true);
   return { panel, entries, open, update, setActive,
     get nearbyId() { return nearby?.id || null; },
     dispose() { if (disposed) return; setActive(false); disposed = true; panel.dispose();
-      button.removeEventListener('click', click); doc.removeEventListener('keydown', key, true); button.remove(); },
+      button.removeEventListener('click', click); doc.removeEventListener('keydown', key, true); button.remove(); savedButton.removeEventListener('click', openCollection); savedButton.remove(); },
   };
 }

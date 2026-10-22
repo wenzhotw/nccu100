@@ -59,10 +59,13 @@ try {
   browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   manifest.browserVersion = browser.version();
   const url = `http://127.0.0.1:${server.address().port}/${manifest.query}`;
+  const requestedProfile = process.env.SCENERY_PREVIEW_PROFILE;
+  assert.ok(!requestedProfile || ['desktop','mobile-emulation'].includes(requestedProfile), 'Unknown scenery profile');
   for (const profile of [
     { name: 'desktop', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
     { name: 'mobile-emulation', viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true },
-  ]) {
+  ].filter(p => !requestedProfile || p.name === requestedProfile)) {
+    console.log(`[scenery] ${profile.name} start ${new Date().toISOString()}`);
     const { name, ...options } = profile;
     const context = await browser.newContext(options);
     const page = await context.newPage(); page.setDefaultTimeout(60000);
@@ -78,6 +81,7 @@ try {
         active: window.__bz26.venue.on, slice: window.__bz26.slice,
         titleVersion: document.querySelector('.ver')?.textContent,
       }));
+      console.log(`[scenery] ${name} ${subject} ${new Date().toISOString()}`);
       const file = `${name}-${subject}.png`;
       await page.screenshot({ path: path.join(output, file), fullPage: false });
       manifest.captures.push({ file, sha256: sha(fs.readFileSync(path.join(output, file))), subject, profile: name, ...evidence, ...metadata }); save();
@@ -222,6 +226,7 @@ try {
   }
   // 獨立存檔與場景驗證正常距離觸發，不呼叫 encounter、wakeLion 等劇情捷徑。
   for (const subject of ['lion-festival-pause', 'missionary-festival-pause']) {
+    console.log(`[scenery] ${subject} ${new Date().toISOString()}`);
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await context.newPage(); page.setDefaultTimeout(60000);
     const check = { subject, status: 'running', runtimeErrors: [] };
