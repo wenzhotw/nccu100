@@ -17,6 +17,7 @@ import { groundH, indoor, lerpA, pos, spots, vel, zoneOf } from '../../core/game
 import { dlg, toast } from '../../ui/dialog.js';
 import { achieve } from '../../ui/achievement.js';
 import { canvasTex } from '../../render/kit.js';
+import { invalidateMapShapes, registerMapShape } from '../../world/registry.js';
 import * as THREE from 'three';
 import N from '../../content/naiwa.json';
 import { STANDEE, createStandee } from './standee.js';
@@ -64,8 +65,20 @@ function placeAt(x, z, yaw) {
   nw.position.set(x, groundH(x, z), z); nw.rotation.y = yaw; body.position.set(0, 0, 0); body.rotation.set(0, 0, 0);
   S.home = { x, z }; S.target = null; S.hopT = 0; S.pauseT = rand(1, 3);
 }
-function goToSpot(i) { S.spot = i; const s = N.spots[i]; placeAt(s.x, s.z, s.yaw || 0); }
+function goToSpot(i) { S.spot = i; const s = N.spots[i]; placeAt(s.x, s.z, s.yaw || 0); remap(); }
 goToSpot(S.spot);
+
+/* ---------- 地圖上的奶蛙記號（秘寶地圖與小地圖）：換地方、搬起、放下時重畫 ---------- */
+registerMapShape({ draw(g, mx, my) {
+  if (S.held) return;
+  const x = mx(nw.position.x), y = my(nw.position.z);
+  g.save(); g.lineWidth = 2.5; g.strokeStyle = '#2a2c4a';
+  g.fillStyle = '#f5f4f8'; g.beginPath(); g.ellipse(x, y, 9, 11, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+  [[-4, -6], [4, -6]].forEach(([dx, dy]) => { g.fillStyle = '#ffffff'; g.beginPath(); g.arc(x + dx, y + dy, 3.6, 0, Math.PI * 2); g.fill(); g.stroke(); g.fillStyle = '#5f9e46'; g.beginPath(); g.arc(x + dx, y + dy, 1.8, 0, Math.PI * 2); g.fill(); });
+  g.fillStyle = '#2a2c4a'; g.font = '700 18px "Noto Sans TC",sans-serif'; g.textAlign = 'center'; g.fillText('奶蛙', x, y + 28);
+  g.restore();
+} });
+function remap() { invalidateMapShapes(); }
 
 /** 最近的出沒點名稱（放下時說「放在哪」）；太遠就用區域名稱 */
 function placeName(x, z) {
@@ -77,7 +90,7 @@ function placeName(x, z) {
 /* ---------- 互動：搬起、放下、打卡 ---------- */
 function pickUp() {
   S.held = true; state.holdNaiwa = true; S.pickedAt = { x: nw.position.x, z: nw.position.z };
-  say(''); AU.sfx('grab'); toast(N.toasts.pick);
+  say(''); AU.sfx('grab'); toast(N.toasts.pick); remap();
 }
 function putDown(msg) {
   if (!S.held) return;
@@ -86,6 +99,7 @@ function putDown(msg) {
   const p = { x: S.lastOutdoor.x + fx * 1.1, z: S.lastOutdoor.z + fz * 1.1, y: 0 };
   resolve(p, 0.45);
   placeAt(p.x, p.z, player.rotation.y + Math.PI);   // 放下時正面朝向玩家
+  remap();
   S.relocateT = RELOCATE_AFTER_DROP;
   AU.sfx('land');
   const place = placeName(p.x, p.z);
@@ -174,6 +188,16 @@ function tick() {
   requestAnimationFrame(tick);
   const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
   if (!state.started) return;
+  // 剛開始玩：不管是「開始冒險」還是「參加包種茶節」，都把奶蛙放到離玩家最近的出沒點，再用小道消息告訴玩家
+  if (!S.intro) {
+    S.intro = { t: 2.5 };
+    let best = S.spot, bd = 1e9;
+    N.spots.forEach((s, i) => { const d = Math.hypot(s.x - pos.x, s.z - pos.z); if (d > 8 && d < bd) { bd = d; best = i; } });
+    goToSpot(best);
+  } else if (S.intro.t > 0) {
+    S.intro.t -= dt;
+    if (S.intro.t <= 0) { if (dlg.hidden && !state.busy) toast(fill(N.toasts.today, N.spots[S.spot].name)); else S.intro.t = 1; }
+  }
   nw.visible = !indoor();
   nw.userData.shadow.visible = !S.held;
   if (S.held) updateHeld(dt); else updateFree(dt);
