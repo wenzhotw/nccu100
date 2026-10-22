@@ -1,3 +1,14 @@
+# 2026-10-23 F01 D梯結構修復（最新，尚未發布）
+
+- 使用者「好」，沿已核可查核順序修現有2F→3F D梯，不再批准同範圍。原NCCU100 checkout，branch fix/dah-d-stair-opening，base80f17b2，開工乾淨。無同檔並行修改／新相依；未碰另一專案5090。
+- 模型／通行共用梯段、洞口與三側護欄；3F樓板與2F窗邊天花分割，D梯踏面、連續踢面、扶手與立柱修正。獨立review找到上半段側穿越，先紅後修，原reviewer複查40條雙向側路＋快速上下往返通過，無剩餘阻擋項。報告.git/sdd/d-stair-f01-review.md。
+- 新entry-stair8項，navigation21合跑29PASS，真實resolve／房間邊界／重力兩步長。紅綠logs /tmp/dah-d-stair-{red,green}-*.log；最終真邊界 /tmp/dah-d-stair-real-boundary.log。
+- 兩輪各桌機1280×800、真手機375×812，鍵盤／觸控2F→3F鄰平台→2F皆PASS、errors空。普通鏡頭，r1手機遮擋多，r2改站位朝向；已實讀4圖。最終圖 .screenshots/d-stair-f01-20261023/round2-desktop.png、round2-mobile.png；/tmp/dah-d-stair-qa-round{1,2}.log；QA八項逐項記docs/reference/dah-hsian/d-stair-f01-qa-2026-10-23.md。單次detector=[]無ignore，無動效程式變更。
+- 九欄產品教學與共用幾何→模型／導航→檢查架構已交付。只修F01交疊／穿越，D梯現況轉折與尺寸仍待照片校準；F02–F06未修，整館仍不通過還原驗收。不是實景完全還原／法規認證。
+- version1.77；遠端PR97手機橫向已用1.76，未合併，不覆蓋其工作。check與標準build PASS；branch exact完整npmtest /tmp/dah-d-stair-branch-exact-tests.log exit0（Node340pass/1skip、portable80、npc9、stage2 45pass/1skip），直接讀各runner摘要；其後只有文件修改。upper Metal真鍵盤2F→8F→7F後廊→2F /tmp/dah-d-stair-upper-final.log PASS，舊直線穿側護欄的失敗原始結果保留，driver已改走上端入口，原斷言未放寬。
+- 查到來源80f遠端CI39815578473既有upper長路段30秒逾時；尚不能斷言只有速度。driver保留原到達斷言，timeout120s與.5simulation settle經獨立限項複查通過。真software完整流程 /tmp/dah-d-stair-upper-software.log 正進行，已上3F，不拿未完成結果當PASS。未merge／push／deploy，不能宣稱上線。
+- 下一步完成全套與真流程、版本標準build、main合併全測、push沿既有Pages並驗exactSHA與原網址真流程。原URL目前轉http://play.gaiacraft.tw，本輪未改網域。任何失敗先診斷不硬發布。
+
 # 2026-10-23 室內品質否決後重新查核（最新，未修復）
 
 - 使用者對整個新版室內品質不滿，核可先停止擴建／美化並重新核對。**撤回還原驗收合格／limited ship作為還原依據**；舊功能通過只保留其範圍，不能當實景正確。

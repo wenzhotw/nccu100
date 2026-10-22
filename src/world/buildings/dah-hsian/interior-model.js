@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import {FURNITURE,COLUMNS,WALLS,ENTRANCE_STRUCTURES,RESTROOM_DOORS,ENTRANCE_DOORS,UTILITY_DOOR} from './interior-layout.js';
 import {buildAtrium} from './interior-atrium.js';
+import {ATRIUM_STAIRS,outsideEntryStairOpening} from './atrium-layout.js';
 const BOX=new THREE.BoxGeometry(1,1,1);
 export const INTERIOR_COLORS={concrete:'#c7c6bd',wall:'#e4e2d8',floor:'#d7d1c2',carpet:'#51758a',white:'#ecebe6',litWood:'#b08a50',taskGlow:'#ffd28e',wood:'#bb9469',woodDark:'#8b684c',gratitude:'#827c55',glass:'#b1cfce',clear:'#bdd8da',ink:'#35495a',metal:'#b6c5c4',light:'#fff6d7',sofa:'#967b68',green:'#75a95a',bookRed:'#bc7969',bookGold:'#d6b465',bookBlue:'#7195a4',bookGreen:'#8ca68b'};
 export function createInteriorModel(materialFor){
@@ -117,7 +118,7 @@ export function createInteriorModel(materialFor){
  for(const [x,z]of COLUMNS)box(root,'concrete',x,2.1,z,.7,4.2,.7,'2樓清水模柱',true);
  // 大廳淺色裸樑、細管線及吊燈；挑空中央不鋪低天花。
  box(root,'white',-11.5,4.35,-11.5,23,.18,23,'大廳天花');
- box(root,'white',-11.5,4.35,20.5,23,.18,7,'閱覽窗邊天花');
+ for(const r of outsideEntryStairOpening({x0:-23,x1:0,z0:17,z1:24}))box(root,'white',(r.x0+r.x1)/2,4.35,(r.z0+r.z1)/2,r.x1-r.x0,.18,r.z1-r.z0,'閱覽窗邊天花');
  for(let z=-21;z<=-3;z+=3.5){
   box(root,'concrete',-11.5,4.1,z,23,.45,.3,'大廳外露樑');
   repeat('white',-11.5,3.9,z+.55,22,.08,.07);
@@ -173,12 +174,17 @@ export function createInteriorModel(materialFor){
     }
    }
   }else if(o.kind==='stairs'){
-   const rise=o.name==='西南D梯封閉入口'?4.5:4;
-   const flight=box(g,'concrete',0,rise/2,-.2,o.w,.18,Math.hypot(5.6,rise),'斜向樓梯底板');flight.rotation.x=-Math.atan2(rise,5.6);
-   for(let i=0;i<20;i++)box(g,'concrete',0,(i+.5)*rise/20-.05,-o.d/2+(i+.5)*.28,o.w,.10,.28,'可見上樓階梯');
-   for(const side of [-1,1])for(let i=0;i<20;i++)box(g,'metal',side*(o.w/2-.1),(i+.5)*rise/20+.5,-o.d/2+(i+.5)*.28,.045,1,.045,'樓梯扶手柱');
+   const entry=o.name==='西南D梯封閉入口',s=ATRIUM_STAIRS[0],rise=entry?s.b.y-s.a.y:4,run=entry?s.b.z-s.a.z:5.6,baseY=entry?s.a.y:0;
+   const startZ=entry?s.a.z-o.z:-o.d/2,centerZ=entry?(s.a.z+s.b.z)/2-o.z:-.2,count=20;
+   // 底板留在每級踏面的下方；不能把斜板疊在踏面上。
+   const flight=box(g,'concrete',0,baseY+rise/2-(entry?.25:0),centerZ,o.w,.18,Math.hypot(run,rise),'斜向樓梯底板');flight.rotation.x=-Math.atan2(rise,run);
+   const treadHeight=entry?rise/count:.10;
+   for(let i=0;i<count;i++)box(g,'concrete',0,baseY+(i+.5)*rise/count-treadHeight/2,startZ+(i+.5)*run/count,o.w,treadHeight,run/count,'可見上樓階梯');
+   const postHeight=entry?1.1:1;
+   for(const side of [-1,1])for(let i=0;i<count;i++)box(g,'metal',side*(o.w/2-.1),baseY+(i+.5)*rise/count+postHeight/2,startZ+(i+.5)*run/count,.045,postHeight,.045,'樓梯扶手柱');
    for(const side of [-1,1]){
-    const rail=box(g,'wood',side*(o.w/2-.1),2.6,0,.065,.065,Math.hypot(o.d,4),'樓梯連續扶手');rail.rotation.x=-Math.atan2(4,o.d);
+    const railRun=entry?run:o.d;
+    const rail=box(g,'wood',side*(o.w/2-.1),entry?baseY+rise/2+1.1:2.6,entry?centerZ:0,.065,.065,Math.hypot(railRun,rise),'樓梯連續扶手');rail.rotation.x=-Math.atan2(rise,railRun);
    }
    if(o.name!=='西南D梯封閉入口')box(g,'metal',0,.55,-o.d/2-.05,o.w,1.1,.08,'關閉樓梯欄門',true);
   }else if(o.kind==='gate'){

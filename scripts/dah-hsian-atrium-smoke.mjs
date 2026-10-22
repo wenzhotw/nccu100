@@ -5,11 +5,12 @@ async function verifyUpper(page,base){
  await page.locator('#dah-time').click();await page.evaluate(()=>{__game.pos.set(-19,0,17.1);__game.state.vy=0;__game.state.pitch=.2;});
  const walk=async(x,z)=>{try{
   await page.keyboard.down('w');
-  try{await page.waitForFunction(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);return Math.hypot(dx,dz)<.22;},{x,z},{timeout:30000});}
+  try{await page.waitForFunction(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);return Math.hypot(dx,dz)<.22;},{x,z},{timeout:120000});}
   finally{await page.keyboard.up('w');}
-  await page.waitForTimeout(450);
+  const start=await page.evaluate(()=>__game.state.time);
+  await page.waitForFunction(t=>__game.state.time>=t+.5,start,{timeout:120000});
  }catch(e){throw Error('goal '+x+','+z+' actual '+JSON.stringify(await page.evaluate(()=>__game.pos.toArray()))+' '+e.message);}};
- await walk(-19,23.1);console.log('3F first stair',await page.evaluate(()=>__game.pos.toArray()));
+ await walk(-19,23.5);await walk(-16,23.5);await walk(-16,22.6);console.log('3F first stair',await page.evaluate(()=>__game.pos.toArray()));
  const levels=['3F','3MF','4F','4MF','5F','6F','7F','8F'];
  for(let i=0;i<7;i++){
   const east=.15+i*1.5;
@@ -25,7 +26,8 @@ async function verifyUpper(page,base){
   if(i===6){await walk(east+3.1,-10.3);await walk(east+3.35,-10.3);await walk(east+3.35,-15.7);await walk(east+1,-15.2);await walk(east+3.35,-15.2);await walk(east+3.35,-10.3);await walk(east+3.1,8.8);console.log('PASS 7F轉角由閱讀平台穿過書牆開口進出後方公共走廊');}
   const y=await page.evaluate(()=>__game.pos.y);if(Math.abs(y-(4.5+i*3.1))>.2)throw Error('downstairs height '+y);
  }
- await walk(-19,23.1);await walk(-19,17.1);
+ // 由洞口上端繞入，不能沿舊直線穿過新側護欄。
+ await walk(-16,22.6);await walk(-16,23.5);await walk(-19,23.5);await walk(-19,17.1);
  const y=await page.evaluate(()=>__game.pos.y);if(Math.abs(y)>.02)throw Error('not returned to2F '+y);
  console.log('PASS 真鍵盤由2F連續走到8F中庭迴廊，逐層原路下降回2F');
  return await page.evaluate(()=>({position:__game.pos.toArray(),room:__game.state.room}));

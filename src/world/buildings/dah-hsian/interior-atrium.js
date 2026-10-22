@@ -1,6 +1,6 @@
 /** 從2F可見的層退藏書中庭。依館方環景、建築方與2022實拍估算；公共迴廊可沿斜梯到達。 */
 import * as THREE from 'three';
-import {ATRIUM_LEVELS,ATRIUM_STAIRS,atriumDesks,ATRIUM_COLUMNS,atriumRearExit,atriumVisiblePlatforms,atriumDoorFrames} from './atrium-layout.js';
+import {ATRIUM_LEVELS,ATRIUM_STAIRS,ENTRY_STAIR_GUARDS,atriumDesks,ATRIUM_COLUMNS,atriumRearExit,atriumVisiblePlatforms,atriumDoorFrames} from './atrium-layout.js';
 const BOX=new THREE.BoxGeometry(1,1,1);
 export function buildAtrium(parent,mat){
  const root=new THREE.Group();root.name='層退藏書中庭';parent.add(root);
@@ -72,6 +72,18 @@ export function buildAtrium(parent,mat){
   box('clear',-22.35,y+.7,(north+south)/2,.06,1.15,south-north+6.6,'西面玻璃欄杆');
   box('glass',-25.4,y+1.5,(north+south)/2,.08,2.7,south-north+7,'高側採光窗');
   for(let z=north-2;z<south+3;z+=4)batch('concrete',-24,y+1.35,z,2.8,2.9,.4);
+ }
+ // 三側沿真洞口設護欄，上端留給D梯落腳平台；不再用完整樓板遮住梯間。
+ const entryY=ATRIUM_LEVELS[0].y,posts=new Set();
+ for(const [a,b]of ENTRY_STAIR_GUARDS){
+  const dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);
+  box('clear',(a[0]+b[0])/2,entryY+.55,(a[1]+b[1])/2,Math.abs(dx)||.05,1.05,Math.abs(dz)||.05,'D梯洞口玻璃護欄');
+  box('metal',(a[0]+b[0])/2,entryY+1.1,(a[1]+b[1])/2,Math.abs(dx)||.065,.055,Math.abs(dz)||.065,'D梯洞口扶手');
+  const count=Math.ceil(length/1.4);
+  for(let i=0;i<=count;i++){
+   const x=a[0]+dx*i/count,z=a[1]+dz*i/count,key=x+','+z;
+   if(!posts.has(key)){posts.add(key);box('metal',x,entryY+.55,z,.045,1.1,.045,'D梯洞口護欄立柱');}
+  }
  }
  // 角落斜梯連接退台，從2F可見；與共用導航高度一致。
  const segment=(kind,a,b,width,depth,name)=>{
