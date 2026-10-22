@@ -143,11 +143,11 @@ try {
   const pg = await page.evaluate(() => { const r = window.__bz26programs; return { conflicts: r.placement.conflicts.length, box: r.placement.box, npcs: r.programNpcs.map(n => ({ id: n.id, x: n.spot.x, z: n.spot.z })) }; });
   assert.equal(pg.conflicts, 0, '跨域學程帳篷位置不能壓到既有物件');
   const p04 = pg.npcs.find(n => n.id === 'bz26-pg-P04');
-  await page.evaluate(([x, z]) => { window.__game.teleport(x + 0.9, z); window.__game.state.yaw = Math.PI / 2; }, [pg.box.x1, p04.z]);
+  await page.evaluate(([x, z]) => { window.__game.teleport(x + 0.6, z); window.__game.state.yaw = Math.PI / 2; }, [pg.box.x1, p04.z]);
   await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.programNpcs[3].spot);
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-programs-tent.png') });
   await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
-  assert.match(await page.locator('#dlg').innerText(), /校內雙主修，不是正式科系，不能考進來/);
+  await page.waitForFunction(() => document.getElementById('dlg').innerText.includes('校內雙主修，不是正式科系，不能考進來'));   // 對話有打字效果，等整句出來
   await finishDialog();
   await page.getByRole('button', { name: '玩小遊戲', exact: true }).click();
   await page.locator('#bz-stage').waitFor();
@@ -157,15 +157,15 @@ try {
   await page.waitForFunction(() => window.__bz26.flags().has('bz26_pg_P04') && window.__bz26.flags().has('bz26_pgpf_P04'));
   await finishDialog();
   // 友校：清華交流大使翻開學系清單；F03 引路人主持友校配對。
-  await page.evaluate(() => { window.__game.teleport(-5.9, -44.1); window.__game.state.yaw = Math.PI / 2; });
+  await page.evaluate(() => { window.__game.teleport(-4.6, -44.3); window.__game.state.yaw = Math.PI / 2; });
   await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.partnerNpcs[0].spot);
   await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
   await finishDialog();
   await page.getByRole('button', { name: '看開放的學系清單', exact: true }).click();
   await page.locator('#dlg').waitFor({ state: 'visible' });
-  assert.match(await page.locator('#dlg').innerText(), /清華大學 115 學年/);
+  await page.waitForFunction(() => document.getElementById('dlg').innerText.includes('清華大學 115 學年'));
   await finishDialog();
-  await page.evaluate(() => { window.__game.teleport(-6.5, -46.0); window.__game.state.yaw = Math.PI / 2; });
+  await page.evaluate(() => { window.__game.teleport(-4.6, -46.0); window.__game.state.yaw = Math.PI / 2; });
   await page.waitForFunction(() => window.__game.state.near?.label === '友校配對');
   await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
   await finishDialog();

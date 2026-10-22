@@ -71,13 +71,22 @@ test('placement: program NPCs stand inside their bays and are reachable from the
     const front = { x: fp.box.x1 + 0.4, z: w.z };
     assert.ok(Math.hypot(w.x - front.x, w.z - front.z) < 2.4, '互動半徑 2.4');
   }
-  // 四位交流大使：在 F03 正面、大道邊，彼此至少 0.9 公尺，也不在帳篷裡。
+  // 四位交流大使和 F03 引路人站成一排：彼此至少 0.85 公尺，不進任何帳篷。
   const f03 = LAYOUT.tents.find(t => t.id === 'F03');
-  for (const [i, a] of P.PARTNER_SPOTS.entries()) {
-    assert.ok(a.x > f03.box[1] && a.x < -6, a.id);
-    for (const b of P.PARTNER_SPOTS.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 0.9);
-    assert.ok(Math.hypot(a.x - f03.anchor[0], a.z - f03.anchor[1]) >= 0.9, '不擋 F03 引路人');
+  const row = [...P.PARTNER_SPOTS, { id: 'guide', ...P.GUIDE_SPOT }];
+  for (const [i, a] of row.entries()) {
+    assert.ok(a.x > f03.box[1] && a.z <= f03.box[3] + 0.3 && a.z >= f03.box[2] - 0.3, a.id);
+    for (const b of row.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 0.849, `${a.id}-${b.id}`);
+    assert.ok(!(a.x > fp.box.x0 && a.x < fp.box.x1 && a.z > fp.box.z0 && a.z < fp.box.z1));
   }
+  // 站在學程攤位正面（被帳篷擋在外 0.35 公尺）時，最近的互動對象一定是該學程代表。
+  for (const bx of P.BAY_X) {
+    const w = P.toWorld(fp, bx, P.NPC_Z), stand = { x: fp.box.x1 + 0.35, z: w.z };
+    const dRep = Math.hypot(w.x - stand.x, w.z - stand.z);
+    for (const a of row) assert.ok(Math.hypot(a.x - stand.x, a.z - stand.z) > Math.min(dRep, 2.4), `第 ${bx} 格前面會點到 ${a.id}`);
+  }
+  // 站在每位大使正面 1 公尺時，最近的是他本人。
+  for (const a of row) { const stand = { x: a.x + 1, z: a.z }; for (const b of row) if (b !== a) assert.ok(Math.hypot(b.x - stand.x, b.z - stand.z) > 1, `${a.id} 前面會點到 ${b.id}`); }
 });
 
 test('results: stamp on completion, perfect only when all right, advanced needs a stamp and all correct', () => {
