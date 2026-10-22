@@ -151,3 +151,11 @@ test('quota and deletion failures are visible, comparison cap never silently rep
  x.click('[data-exploration-list]');x.find('[data-booth-panel]').querySelectorAll('button').find(b=>b.textContent==='確認清空收藏與比較').emit('click');
  assert.match(x.find('.bz-browser__live').textContent,/無法確認|舊紀錄/);assert.deepEqual(store.getSnapshot().favorites,[]);x.panel.dispose();
 });
+
+
+test('HUD collection opens at top without changing department scroll memory', () => {
+ const store=createExplorationStore({storage:null}),x=setup({exploration:store});
+ x.panel.open('D01');x.find('[data-booth-panel]').scrollTop=420;x.panel.close();
+ x.panel.openCollection();assert.equal(x.find('[data-booth-panel]').scrollTop,0);x.panel.close();
+ x.panel.open('D01');assert.equal(x.find('[data-booth-panel]').scrollTop,420);x.panel.dispose();
+});
