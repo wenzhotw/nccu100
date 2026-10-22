@@ -1,3 +1,11 @@
+# 2026-10-22 達賢v1.68正式核心驗收（最新）
+
+- 原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 已v1.68；main09cbc86640d7715f1c898a1b582d6c349ae45deb已push且ls-remote確認。Pages39717983946 success，headSha完全相符。正式HTML引index-Cdlq7Eea.js，和本機最後main build逐byte相同。
+- 最終正式核心verify-release exec72955 exit0，/tmp/nccu100-dah-live-v168.log：v1.68鍵盤/手機E進出同門2F平台、1F廁所前廊、泳岸往返、鴨群、進度/寬度，console/pageerror皆PASS。正式1280x800/375x812圖.screenshots/dah-release-desktop/mobile.png已實際讀圖確認，非只檢查部署狀態。
+- 最後main全測/check/build通過（詳下節）；PR85完整CI39716370486 success。整合main968ba5d的CI39716505402與版本metadata commit09cbc86的CI39717983852仍跑；不能宣稱這兩次已通過，沒有已知失敗。最後產品程式自f4c48c0後未改，versionmetadata不改JS；獨立視覺7項resolved/limited ship，documenterNo changes。A1缺新裝修照、尺寸非測繪保留，未宣稱全區完全實景。
+- 本輪最後僅補此交接/QA紀錄（不改產品產物）。推送此文件後追蹤其既有Pages，不另建或手動重觸發；產物與已驗1.68相同，可沿用核心真流程證據，仍核對新Pages SHA與原網址版本。
+- 使用者新問場景質感：目前只研究與建議，未實作光影/日夜。已讀engine/kit/post/Dah mapLight/interiorLight與主校園environment/sky、weather。主校園已有漸層天空/移雲/跟隨角色的太陽投影；Dah固定光未castShadow，建議先午後陰影/接觸暗部/柔和色票與紋理/邊角，再午後-黃昏-夜晚三預設，後續共用世界時間。天氣視覺要與劇情雨/扣體力分層，不能擅自改遊戲規則。此建議尚未核可實作。
+
 # 2026-10-22 達賢已上線、版本標示收尾（最新）
 
 - PR85已合併968ba5d且完整CI39716370486 SUCCESS（含全場冒煙、達賢戶外泳岸、2F真鍵盤/手機）；不是只check/build。遠端main968ba5d的CI39716505402仍進行，暫勿說latest main CI已過。

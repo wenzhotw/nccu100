@@ -1,4 +1,4 @@
-# 達賢本輪 QA（2026-10-22，進行中）
+# 達賢本輪 QA與發布紀錄（2026-10-22）
 
 本輪範圍為達賢戶外與2F公開空間。AI以玩家、熟悉現場訪客、場景維護者三個角度核對；不是現場測繪或真人專家認證。使用者的實景反證高於先前測試與ship。沒有新增登入、帳戶、交易、個資或外部資料輸入，這輪採局部使用者／領域QA，不對第三方做主動資安測試。
 
@@ -106,3 +106,10 @@ Node24.15、Three0.149、工作差異含最後WC連續地板：`npm test` exec15
 - main968ba5d含PR84+PR85，本機metadata v1.68：npm test271通過/1略過、baozhong80、npc9、stage2 29通過/1略過；check/build通過。三個版本檔之外產品程式沒有後續修改。
 - 正式v1.67核心verify-release exec75377 exit0：鍵盤/觸控E入館出館平台、前廊、泳岸、鴨群、進度/寬度、console/pageerror PASS；log /tmp/nccu100-dah-live-v167.log。程式資產index-Cdlq7Eea.js與本機v1.68 build逐byte相同，SHA256 0374d03a318f705abdbc3b7faf0f978f8405f5918028c33cf7553ec0b2386668。驗收方法先以已知v1.64正例及v0.00錯版本負例校準（各exit0/1），TLS使用既有curl，未繞過憑證。
 - v1.68 metadata正式部署後仍需核對Pages exactSHA、標示與核心流程；main968ba5d CI尚在執行，不能以PR CI代稱最新main CI。
+
+
+## 正式v1.68核心驗收
+
+Pages39717983946 success且headSha=09cbc86640d7715f1c898a1b582d6c349ae45deb，遠端main含此提交，原網址HTML v1.68。`verify-release.mjs` exec72955 exit0，/tmp/nccu100-dah-live-v168.log：鍵盤/觸控E入館→出館同門4m平台、1F前廊、泳岸往返、鴨群、進度/寬度、console/pageerror皆PASS。1280×800與375×812正式截圖已讀圖確認，.screenshots/dah-release-desktop/mobile.png。程式資產逐byte比對如上；最後只文件紀錄，產品產物不變。
+
+PR85完整全場CI通過；整合main968ba5d CI39716505402及metadata09cbc86 CI39717983852於本紀錄時仍進行，並未填通過。這不擴大獨立視覺七項的判定範圍，也不消除A1／測繪限制。後續檢查狀態由原PR/GitHub run連結查詢。
