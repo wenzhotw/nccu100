@@ -64,11 +64,14 @@ export function indexGames(data, content) {
       if (cats.size < 2 || !Array.isArray(g.items) || g.items.length < 3 || g.items.some(it => !cats.has(it.category))) throw new TypeError(`${g.booth} 分類資料不完整`);
     }
     if (g.type === 'situation' && (!Array.isArray(g.steps) || !g.steps.length || g.steps.some(s => !Array.isArray(s.choices) || s.choices.length < 2 || s.choices.length > 4 || !Number.isInteger(s.answer) || s.answer < 0 || s.answer >= s.choices.length))) throw new TypeError(`${g.booth} 情境步驟不完整`);
-    const reward = g.advanced && g.advanced.reward;
-    if (!REWARD_FLAGS.includes(reward)) throw new TypeError(`${g.booth} 進階獎勵必須是既有茶罐或隱藏章旗標`);
+    // 第一批擴充（v1.66）：茶罐與隱藏章只有 8 個，用途待 Wenzel 決定，所以進階獎勵改成可選；有填才必須是既有旗標。
+    if (!g.advanced || typeof g.advanced !== 'object') g.advanced = {};
+    const reward = g.advanced.reward;
+    if (reward !== undefined && !REWARD_FLAGS.includes(reward)) throw new TypeError(`${g.booth} 進階獎勵必須是既有茶罐或隱藏章旗標`);
+    if (g.type === 'situation' && g.steps.some(s => s.feedback !== undefined && (!Array.isArray(s.feedback) || s.feedback.length !== s.choices.length))) throw new TypeError(`${g.booth} 情境選項回饋數量要和選項相同`);
     games.set(g.booth, g);
   }
-  const rewards = [...games.values()].map(g => g.advanced.reward);
+  const rewards = [...games.values()].map(g => g.advanced.reward).filter(Boolean);
   if (new Set(rewards).size !== rewards.length) throw new TypeError('兩個攤位不能共用同一個進階獎勵');
   return games;
 }
@@ -130,7 +133,7 @@ export function createStageController({ logic: L, content: C, data, shuffle }) {
     let gained = 0;
     if (!f.has(advFlag(boothId))) {
       set.push(advFlag(boothId));
-      if (!f.has(game.advanced.reward)) { set.push(game.advanced.reward); gained += 1; }
+      if (game.advanced.reward && !f.has(game.advanced.reward)) { set.push(game.advanced.reward); gained += 1; }
     }
     return { passed, score, total, gained, reward: game.advanced.reward, set, clear: [] };
   }
@@ -148,7 +151,7 @@ export function createStageController({ logic: L, content: C, data, shuffle }) {
     }
     // 驗收 CLD-001（M3）：情境題離開攤位後沒有前面的假想條件，題幹要帶上 pool.context，玩家才能獨立作答。
     const context = game.pool.context && game.pool.context.text ? `${game.pool.context.text}` : '';
-    return game.steps.map(s => tag({ q: context + game.pool.prompt.replace('{prompt}', s.prompt), options: [...s.choices], answer: s.answer }, `step:${s.id}`));
+    return game.steps.map(s => tag({ q: game.pool.prompt.replace('{prompt}', context + s.prompt), options: [...s.choices], answer: s.answer }, `step:${s.id}`));
   }
   function buildQuestionPool(collegeIds) {
     const ids = new Set(collegeIds);
