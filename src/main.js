@@ -55,6 +55,7 @@ import './systems/eagle/index.js'; // 雄鷹吉祥物：收集三個故事後校
 import './systems/gym/index.js'; // 體育館：打球的人、雄鷹隊長的投籃挑戰、送毛巾、找雄鷹吉祥物支線
 import './systems/baozhong/index.js'; // 包種茶節（T065）：邀請人、40 頂帳篷、系攤集章、學院關主、大會考
 import './systems/baozhong/festival-arch.js'; // 會場開時四維堂前的氣球拱門
+import './systems/baozhong/entry-radio.js'; // v1.69：邀請人泡泡、開始畫面「參加包種茶節」、政大之聲電台棚
 import './systems/baozhong/stage2/index.js'; // 兩階段攤位（T074）：預設開啟，?bz26stage2=0 可暫時關閉
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
 import './systems/police-drive.js';

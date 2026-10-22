@@ -54,7 +54,10 @@ try {
     await page.keyboard.press('e');
     await page.locator('#dlg').waitFor({ state: 'visible' });
   }
+  // v1.69：開始畫面多一顆「參加包種茶節」；走近邀請人時頭上有邀請泡泡。
+  assert.equal(await page.locator('#bzGo').count(), 1);
   await approach('host');
+  assert.equal(await page.evaluate(() => window.__bz26.host.bubble), '你想要來包種茶節嗎？我帶你去吧。');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
   await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
@@ -105,6 +108,29 @@ try {
     await page.waitForFunction(id => window.__bz26.flags().has('bz26_st_' + id) && window.__bz26.flags().has('bz26_pf_' + id), g.booth);
     await finishDialog();
   }
+  // v1.69 政大之聲電台棚：走到正面玻璃前和主播說話，Call in 三題全對拿隱藏章。
+  assert.equal(await page.evaluate(() => window.__bz26.host.bubble), null, '參加後邀請泡泡收掉');
+  await page.waitForFunction(() => window.__bz26radio?.active);
+  const radio = await page.evaluate(() => { const r = window.__bz26radio; return { x: r.placement.x, z: r.placement.z, conflicts: r.placement.conflicts.length, box: r.placement.box }; });
+  assert.equal(radio.conflicts, 0, '電台棚位置不能壓到既有物件');
+  await page.evaluate(([x, z]) => { window.__game.teleport(x + 0.9, z + 0.45); window.__game.state.yaw = Math.PI / 2; }, [radio.box.x1, radio.z]);
+  await page.waitForFunction(() => window.__game.state.near?.label === '和主播說話');
+  await page.screenshot({ path: path.join(root, 'test-results/baozhong-radio-booth.png') });
+  await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
+  await finishDialog();
+  await page.getByRole('button', { name: '我要 Call in', exact: true }).click();
+  await page.locator('#bz-stage').waitFor();
+  await page.getByRole('button', { name: '開始', exact: true }).click();
+  for (let i = 0; i < 3; i++) {
+    const prompt = (await page.locator('#bz-stage .st-prompt').innerText()).trim();
+    const answer = { '政大之聲的頻率是？': 'FM88.7', '政大之聲每天大約直播幾小時？': '約 16 小時', '政大之聲是哪個學院的實習電台？': '傳播學院' }[prompt];
+    assert.ok(answer, `Call in 題目：${prompt}`);
+    await page.locator('#bz-stage .st-options button', { hasText: answer }).click();
+    await page.getByRole('button', { name: i < 2 ? '下一題' : '看結果', exact: true }).click();
+  }
+  await page.getByRole('button', { name: '完成', exact: true }).click();
+  await page.waitForFunction(() => window.__bz26.flags().has('bz26_hs_RADIO'));
+  await finishDialog();
   await page.locator('#bz-passport-button').click();
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-passport.png') });
   await page.keyboard.press('p');
@@ -136,6 +162,25 @@ try {
   assert.equal(await page.locator('#bz-passport-button').count(), 1);
   assert.equal(await archColliderCount(), 2, '讀檔仍恰有兩根拱門柱碰撞');
   assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '讀檔只建立一座拱門');
+  // v1.69：新玩家從開始畫面按「參加包種茶節」，直接站在噴水池旁活動看板前、會場已開。
+  {
+    const fresh = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    fresh.setDefaultTimeout(60000);
+    fresh.on('pageerror', e => errors.push(String(e)));
+    await fresh.goto(url, { waitUntil: 'domcontentloaded' });
+    await fresh.evaluate(() => localStorage.removeItem('nccu100-save'));
+    await fresh.reload({ waitUntil: 'domcontentloaded' });
+    await fresh.waitForFunction(() => window.__game && window.__bz26 && window.__bz26radio);
+    await fresh.screenshot({ path: path.join(root, 'test-results/baozhong-title-join-button.png') });
+    await fresh.click('#bzGo');
+    await fresh.waitForFunction(() => window.__game.state.started && window.__bz26.counts().active);
+    const at = await fresh.evaluate(() => { const s = window.__game.spots.find(x => x.id === 'bz26-activity-map'); return { pos: [window.__game.pos.x, window.__game.pos.z], sign: s && [s.x, s.z] }; });
+    assert.ok(at.sign, '活動看板要出現');
+    assert.ok(Math.hypot(at.pos[0] - at.sign[0], at.pos[1] - at.sign[1]) < 2, `玩家要站在看板前：${JSON.stringify(at)}`);
+    await fresh.waitForTimeout(1500);
+    await fresh.screenshot({ path: path.join(root, 'test-results/baozhong-join-from-title.png') });
+    await fresh.close();
+  }
   assert.deepEqual(errors, []);
   console.log('包種茶節瀏覽器主要流程通過', JSON.stringify({ initial, active, left: leftCounts, reentered, saveReload: true, pageErrors: errors }));
 } finally {
