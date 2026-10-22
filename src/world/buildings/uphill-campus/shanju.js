@@ -14,6 +14,7 @@ import { scene } from '../../../core/engine.js';
 import { colliders, boxC, circC } from '../../../core/collision.js';
 import { tree, FOLIAGE } from '../../vegetation.js';
 import { BOX, GRAD, basic, block, canvasTex, mk, toon } from '../../../render/kit.js';
+import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { LAYOUT, SHANJU } from './layout.js';
 import { heightAt } from './terrain.js';
 
@@ -138,17 +139,29 @@ function tex(name) {
   textures[name] = canvasTex(...draw);
   return textures[name];
 }
-/** 同一張畫布依牆面大小重複，複製出各自的 repeat。 */
+/**
+ * 同一種貼圖整區共用一個材質；各牆面要重複幾次改寫在自己的 UV 上，
+ * 共用材質的牆面才能在最後合併成一次繪製。
+ */
+const shared = {};
 function mat(name, rx = 1, ry = 1) {
-  const t = tex(name).clone(); t.needsUpdate = true;
-  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry);
-  return new THREE.MeshToonMaterial({ map: t, gradientMap: GRAD });
+  shared[name] ??= (() => {
+    const t = tex(name); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.needsUpdate = true;
+    return new THREE.MeshToonMaterial({ map: t, gradientMap: GRAD });
+  })();
+  return { material: shared[name], rx, ry };
+}
+function tiled(geometry, m) {
+  if (!m.material) return [geometry, m];
+  const uv = geometry.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * m.rx, uv.getY(i) * m.ry);
+  return [geometry, m.material];
 }
 
 /** 沿 a→b 的牆面貼一片立面，法線朝左手外側（建築在右手邊）。 */
 function facade(a, b, y0, y1, material, out = 0.04) {
   const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz), nx = -dz / L, nz = dx / L;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(L, y1 - y0), material);
+  const m = new THREE.Mesh(...tiled(new THREE.PlaneGeometry(L, y1 - y0), material));
   m.position.set((a[0] + b[0]) / 2 + nx * out, (y0 + y1) / 2, (a[1] + b[1]) / 2 + nz * out);
   m.rotation.y = -Math.atan2(dz, dx); scene.add(m); return { m, L, nx, nz, dx: dx / L, dz: dz / L };
 }
@@ -259,7 +272,7 @@ function anjiu() {
     for (let u = 1.5; u < L - 1; u += 3) if (Math.abs(at(u, 0)[0] - 34.3) > 4.4) block(u, 4.25, 0.25, 1.3, 0.45, 0.5, '#6a6570', 0.02, g);
     const len = L - u0, mid = (u0 + L) / 2;
     // 抬高的走廊平台：表面磚面貼圖、前緣紅色踢腳。
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(len, WALK), mat('deck', len / 2, 1));
+    const floor = new THREE.Mesh(...tiled(new THREE.PlaneGeometry(len, WALK), mat('deck', len / 2, 1)));
     floor.rotation.x = -Math.PI / 2; floor.position.set(mid, 0.12, WALK / 2); g.add(floor);
     block(mid, 0.06, WALK, len, 0.12, 0.06, '#c0392b', 0.01, g);
     // 走廊外到路邊是落葉泥土帶，不是草皮。
@@ -305,7 +318,7 @@ function anjiu() {
     poster.position.set(x, Y0 + 1.5, z); poster.rotation.y = Math.atan2(0.5, 21.6); scene.add(poster);
   }
   // 東端花格矮牆。
-  const lattice = block(46.6, Y0 + 0.6, -3.47 + WALK, 2.4, 1.0, 0.25, mat('lattice'), 0.02);
+  const lattice = block(46.6, Y0 + 0.6, -3.47 + WALK, 2.4, 1.0, 0.25, mat('lattice').material, 0.02);
   lattice.rotation.y = Math.atan2(0.4, 17.5);
   boxC(45.4, 47.8, -1, -0.4);
   // 雙頭黑色路燈立在走廊外緣的植栽帶，隔一根柱子一盞。
@@ -371,7 +384,8 @@ function car(x, z, color, suv, cover) {
 }
 
 /* ---------- 植栽：朱蕉、姑婆芋、灌木、竹林、大樹、路燈 ---------- */
-const LEAF = new THREE.ConeGeometry(0.22, 1, 4), BUSH = new THREE.IcosahedronGeometry(1, 0);
+// 朱蕉葉片的錐底朝下藏在葉叢裡看不到，不封底省一半三角形。
+const LEAF = new THREE.ConeGeometry(0.22, 1, 4, 1, true), BUSH = new THREE.IcosahedronGeometry(1, 0);
 const CULM = new THREE.CylinderGeometry(0.06, 0.08, 1, 5);
 let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 function instanced(geo, list, name) {
@@ -436,12 +450,47 @@ function lamps() {
   boxC(-8.8, -8.4, 18.6, 19); boxC(22.4, 22.8, 11.8, 12.2);
 }
 
+/**
+ * 這一區全是不會動的零件：建完後依材質合併成少數幾個網格（含描邊），
+ * 單色材質再併成一個頂點色材質，繪製次數不隨零件數增加。InstancedMesh 本身已是一次繪製，保留原樣。
+ */
+function mergeStatic(objects) {
+  const groups = new Map(), palettes = new Map(), keep = [];
+  for (const root of objects) {
+    if (root.isInstancedMesh) { keep.push(root); continue; }
+    root.updateMatrixWorld(true);
+    root.traverse(o => {
+      if (!o.isMesh) return;
+      const g = o.geometry.clone().applyMatrix4(o.matrixWorld);
+      let material = o.material;
+      const plain = !material.map && !material.transparent && !(material.emissive && material.emissive.getHex());
+      if (plain) {
+        const key = material.type + '/' + material.side;
+        if (!palettes.has(key)) { const p = material.clone(); p.color.set('#ffffff'); p.vertexColors = true; palettes.set(key, p); }
+        const c = new Float32Array(g.attributes.position.count * 3);
+        for (let i = 0; i < c.length; i += 3) material.color.toArray(c, i);
+        g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+        material = palettes.get(key);
+      }
+      if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+      for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'uv', 'color'].includes(name)) g.deleteAttribute(name);
+      const list = groups.get(material) ?? []; list.push(g.index ? g.toNonIndexed() : g); groups.set(material, list);
+    });
+    scene.remove(root);
+  }
+  for (const [material, parts] of groups) {
+    const mesh = new THREE.Mesh(mergeBufferGeometries(parts), material);
+    mesh.name = '山居一帶合併'; scene.add(mesh); parts.forEach(g => g.dispose());
+  }
+  return keep.length + groups.size;
+}
+
 let added = 0;
 /** 山居一帶另外登記的碰撞數（車、竹林、樹、路燈），供入口測試核對總數。 */
 export const shanjuColliderCount = () => added;
 
 export function buildShanju() {
-  const start = colliders.length;
+  const start = colliders.length, first = scene.children.length;
   tower();
   anjiu();
   neighbours();
@@ -459,4 +508,5 @@ export function buildShanju() {
     [24.5, 10.6, 1.3], [31, 10.8, 1.4], [37.5, 10.6, 1.3], [44, 10.4, 1.4], [49.5, 10, 1.2], [20.5, 0.8, 1], [27, 0.7, 1.1], [-11.5, 12.6, 1.2]]);
   lamps();
   added = colliders.length - start;
+  mergeStatic(scene.children.slice(first));
 }
