@@ -1,12 +1,13 @@
 ﻿/** 依 IMG_9019、9021、9023 建立九舍大廳外觀；室內開口由 8c 接續。 */
 import * as THREE from 'three';
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { LAYOUT, LOBBY } from './layout.js';
+import { LOBBY } from './layout.js';
 
 const glass = new THREE.MeshToonMaterial({ color: '#b9ded0', transparent: true, opacity: 0.72 });
 
 export function addLobbyExterior(group, { addMerged, BOX, buildingMaterial, edgeMaterial }) {
-  const pts=LAYOUT.buildings.find(b=>b.osm===LOBBY.osm).pts.filter(p=>p[1]<=-23.7);
+  // 屋頂欄杆沿大廳範圍一圈（2026-10-22 大廳往南擴大後，與室內共用 LOBBY.bounds）。
+  const {x0,x1,z0,z1}=LOBBY.bounds,pts=[[x0,z0],[x1,z0],[x1,z1],[x0,z1],[x0,z0]];
   const roof=LOBBY.base+LOBBY.ceiling, rails=[], edges=[], frames=[];
   const box=(x,y,z,w,h,d,angle=0)=>BOX.clone().scale(w,h,d).rotateY(angle).translate(x,y,z);
   const part=(x,y,z,w,h,d,angle=0)=>{

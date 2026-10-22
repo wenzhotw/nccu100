@@ -154,13 +154,14 @@ test('多座階梯重疊時選最近中線，等距保留配置順序', () => {
 test('九舍直樓梯從坡道東側人行道高度起步，逐階接上廣場，兩端半公尺連續且退讓坡道與建築', () => {
   const jiu = layout.STAIRS.find(s => s.id === 'jiu-plaza');
   assert.ok(jiu);
-  assert.deepEqual(jiu.path, [[-7.6,-14],[-2.6,-22]]);
+  assert.deepEqual(jiu.path, [[-6.6,-14],[-1.6,-22]]);
   assert.equal(jiu.width, 2.4);
   assert.equal(jiu.fromRamp, 'z-p');
-  assert.deepEqual(layout.ANCHORS['九舍樓梯下'], { x: -7.6, z: -14, level: 'L2' });
+  assert.deepEqual(layout.ANCHORS['九舍樓梯下'], { x: -6.6, z: -14, level: 'L2' });
   const ramp = layout.RAMPS[0];
   // 樓梯口緊貼人行道，起步高度等於坡道在樓梯口旁的高度，玩家從人行道走上第一階不會陷進地面。
-  const from = terrain.rampHeight(ramp, terrain.projectToPath(...jiu.path[0], ramp.path).s);
+  // 2026-10-22：人行道高出路面一個路緣石，樓梯從人行道面起步。
+  const from = terrain.rampHeight(ramp, terrain.projectToPath(...jiu.path[0], ramp.path).s) + terrain.CURB;
   const length = lengthOf(jiu.path);
   close(terrain.stairHeight(jiu, 0), from);
   close(terrain.stairHeight(jiu, length), 15);

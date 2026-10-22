@@ -16,14 +16,14 @@ const landmarks = Object.entries(LAYOUT.landmarks).filter(([name]) => name !== '
 const levelNames = { L1: '環山一道', L2: '自強宿舍區', L3: '自強九舍・十舍' };
 
 export function zoneName({ x, z }) {
-  if(isInsideLobby(x,z))return Math.hypot(x-LOBBY.well.cx,z-LOBBY.well.cz)<=4+1e-9?'旋轉樓梯':LOBBY.name;
+  if(isInsideLobby(x,z))return Math.hypot(x-LOBBY.well.cx,z-LOBBY.well.cz)<=LOBBY.well.r+1.3+1e-9?'旋轉樓梯':LOBBY.name;
   let nearest = null, distance = Infinity;
   for (const [name, point] of landmarks) {
     const d = (x - point[0]) ** 2 + (z - point[1]) ** 2;
     if (d <= 8 ** 2 && d < distance) { nearest = name; distance = d; }
   }
   if (nearest) return displayNames[nearest] ?? nearest.replace(/\([^)]*\)|（[^）]*）/g, '');
-  if (x >= 8 && x < 25.2 && z >= -30.8 && z <= -24) return '自強九舍中庭';
+  if (x >= 8 && x < LOBBY.door.x && z >= -30.8 && z <= -24) return '自強九舍中庭';
   const stair = STAIRS.find(candidate => projectToPath(x, z, candidate.path).distance <= (candidate.width / 2) ** 2);
   if (stair) return stair.id === 'jiu-plaza' ? '九舍樓梯' : '好漢坡';
   if (RAMPS.some(ramp => projectToPath(x, z, ramp.path).distance <= (ramp.width / 2) ** 2)) return '外部斜坡';

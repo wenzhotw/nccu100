@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { spawnSync } from 'node:child_process';
-import { ANCHORS, LAYOUT, STAIRS, RAMPS, R, STOP, SPAWN } from '../layout.js';
+import { ANCHORS, LAYOUT, LOBBY, STAIRS, RAMPS, R, STOP, SPAWN } from '../layout.js';
 import { heightAt } from '../terrain.js';
 import { createGreybox, greyboxColliders } from '../greybox.js';
 
@@ -144,7 +144,10 @@ test('五個主要路口的指路牌在可達空地，完整牌面離建築與�
     for (const s of signs) {
       const anchor = s.anchor === '山居下車點' ? STOP : ANCHORS[s.anchor];
       const length = Math.hypot(s.x - anchor.x, s.z - anchor.z);
-      const route = [[anchor.x, anchor.z], [s.x - (s.x - anchor.x) * 0.9 / length, s.z - (s.z - anchor.z) * 0.9 / length]];
+      // 九舍樓梯指標在樓梯左側，從樓梯口沿人行道繞過樓梯側牆走過去，不穿牆直線前進。
+      const via = s.anchor === '九舍樓梯下' ? [[anchor.x - 0.32, anchor.z + 0.51], [anchor.x - 2.06, anchor.z - 0.58]] : [];
+      const last = via.at(-1) ?? [anchor.x, anchor.z], gap = Math.hypot(s.x - last[0], s.z - last[1]);
+      const route = [[anchor.x, anchor.z], ...via, [s.x - (s.x - last[0]) * 0.9 / gap, s.z - (s.z - last[1]) * 0.9 / gap]];
       for (let i = 1; i < route.length; i++) {
         const a = route[i - 1], b = route[i], steps = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.1);
         for (let j = 0; j <= steps; j++) {
@@ -170,7 +173,8 @@ test('指路牌兩面箭頭依讀者面向換算，還原世界方向後指向�
     '好漢坡下': [ANCHORS['好漢坡下'].x, ANCHORS['好漢坡下'].z],
     '好漢坡上': [ANCHORS['五舍入口'].x, ANCHORS['五舍入口'].z],
     '九舍樓梯下': STAIRS.find(s=>s.id==='jiu-plaza').path.at(-1),
-    '外部斜坡上': RAMPS[0].path.at(-1),
+    // 2026-10-22 審查：坡頂牌移到廣場西南角路邊，改指中庭的九舍大廳入口。
+    '外部斜坡上': [LOBBY.door.x, LOBBY.door.z],
     // 沿山居南側道路往東走向安九。
     '山居下車點': [14.9, 4.6],
   };
@@ -283,7 +287,8 @@ test('九舍藍色指標立在樓梯口西側並指向樓梯頂', async () => {
   assert.ok(sign);
   assert.equal(sign.height,2.4);
   const a=ANCHORS['九舍樓梯下'];
-  assert.ok(sign.x<a.x && Math.hypot(sign.x-a.x,sign.z-a.z)<=2.5);
+  // 2026-10-22：改立在樓梯左手邊下段（照片 9034），牌面需離樓梯與道路各半公尺，所以離樓梯口稍遠。
+  assert.ok(sign.x<a.x && Math.hypot(sign.x-a.x,sign.z-a.z)<=3.5);
   const top=STAIRS.find(s=>s.id==='jiu-plaza').path.at(-1);
   assert.deepEqual(sign.toward,{x:top[0],z:top[1]});
   assert.equal(createLandmarks().getObjectByName('指路牌：九舍樓梯下').getObjectByName('指路牌板').material.color.getHexString(),'216aaf');

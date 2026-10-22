@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
 import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY } from '../layout.js';
-import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath } from '../terrain.js';
+import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath, landscapeAt } from '../terrain.js';
 import {isInsideLobby} from '../lobby.js';
 
 function distance(p, c) {
@@ -97,8 +97,12 @@ test('平台挖槽後，射線地表高度符合平台、階梯與坡道查詢',
     assert(hits.length, `地表缺口：${x},${z}`);
     // 地表以 0.25 公尺小格取中心高度，階梯邊緣的小格最多外凸半條對角線（約 0.18 公尺），落在側牆底下。
     const stair = STAIRS.some(s => project(x, z, s.path) <= s.width / 2 + 0.25 * Math.SQRT1_2);
-    const ramp = RAMPS.some(s => project(x, z, s.path) <= s.width / 2);
-    const tolerance = stair ? 0.31 : ramp ? 0.06 : 0.01;
+    // 坡道東側人行道與草坡是每 0.5 公尺一格的帶狀面，轉角附近線性內插與投影高度最多差幾公分，比照坡道容差。
+    const ramp = RAMPS.some(s => project(x, z, s.path) <= s.width / 2 + 4.2);
+    // 樓梯旁草坡是平滑曲面，以 0.5 公尺格線性內插，最多差約 0.1 公尺。
+    // 草坡格與平台交界的那一格會略為跨出地景範圍，半公尺內也比照曲面容差。
+    const bank = [[0,0],[0.5,0],[-0.5,0],[0,0.5],[0,-0.5]].some(([dx,dz]) => ['bank', 'grass-slope'].includes(landscapeAt(x + dx, z + dz)?.kind));
+    const tolerance = stair ? 0.31 : bank ? 0.1 : ramp ? 0.06 : 0.01;
     assert(Math.abs((hits[0].point.y - (hits[0].object.userData.surfaceOffset ?? 0)) - heightAt(x, z)) <= tolerance,
       `地表不合：${x},${z}，模型 ${hits[0].point.y}，高度 ${heightAt(x, z)}`);
     samples++;
@@ -300,7 +304,8 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
   const { greyboxColliders } = await import('../greybox.js');
   const boxes = greyboxColliders().filter(c => c.kind === 'building');
   const buildings = LAYOUT.buildings.filter(b => b.pts.every(([x, z]) => x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1))
-    .map(b=>b.osm===LOBBY.osm?{...b,pts:b.pts.filter(p=>p[1]>=-23.7)}:b);
+    // 大廳建物只剩大廳以南（z ≥ LOBBY.bounds.z1）是實心，取該段輪廓驗收碰撞覆蓋。
+    .map(b=>b.osm===LOBBY.osm?{...b,pts:[[25.58,LOBBY.bounds.z1],[36.78,LOBBY.bounds.z1],[37,-10.4],[25.8,-10.1]]}:b);
   for (const b of buildings) {
     const own = boxes.filter(c => c.building === b.osm);
     assert(own.length >= 1 && own.length <= 4);
@@ -528,12 +533,14 @@ test('大廳有鏤空屋頂欄杆與西面淺綠玻璃入口，招牌可供場�
   assert.ok(Math.abs(rb.max.y-rb.min.y-0.9)<0.001);
   const door=model.getObjectByName('九舍大廳入口'); assert.ok(door);
   const db=new THREE.Box3().setFromObject(door), center=db.getCenter(new THREE.Vector3());
-  assert.ok(Math.hypot(center.x-25.2,center.z+27.8)<=0.5);
+  assert.ok(Math.hypot(center.x-LOBBY.door.x,center.z-LOBBY.door.z)<=0.5);
   assert.equal(door.material.transparent,true);
   assert.ok(model.getObjectByName('九舍大廳橫幅'));
   assert.ok(model.getObjectByName('九舍大廳直式牌'));
   // 西面欄杆的空隙應能被水平射線穿過，橫桿高度應有命中。
-  const cast=y=>new THREE.Raycaster(new THREE.Vector3(24,y,-28.5),new THREE.Vector3(1,0,0),0,2).intersectObject(rails);
+  // 西面欄杆柱沿邊每約 0.65 公尺一根，射線取兩根柱子中間（2026-10-22 大廳範圍改由 LOBBY.bounds 決定）。
+  const {z0:wz0,z1:wz1}=LOBBY.bounds,posts=Math.ceil((wz1-wz0)/0.65),gapZ=wz1-(wz1-wz0)/posts*(Math.floor(posts/2)+0.5);
+  const cast=y=>new THREE.Raycaster(new THREE.Vector3(LOBBY.bounds.x0-1.5,y,gapZ),new THREE.Vector3(1,0,0),0,2).intersectObject(rails);
   assert.equal(cast(LOBBY.base+LOBBY.ceiling+0.4).length,0);
   assert.ok(cast(LOBBY.base+LOBBY.ceiling+0.85).length>0);
 });
@@ -556,15 +563,17 @@ test('中庭紅磚車道連到西側廣場，新增設施逐個能繞行且擋�
   const model=createGreybox();model.updateMatrixWorld(true);
   const lane=model.getObjectByName('九舍中庭車道');assert.ok(lane);
   const bounds=new THREE.Box3().setFromObject(lane);
-  assert.ok(Math.abs(bounds.min.x-8)<0.001 && Math.abs(bounds.max.x-25.2)<0.001);
+  assert.ok(Math.abs(bounds.min.x-8)<0.001 && Math.abs(bounds.max.x-LOBBY.door.x)<0.001);
   assert.ok(Math.abs(bounds.max.z-bounds.min.z-3.6)<0.001);
   const plaza=model.getObjectByName('九舍北側廣場');assert.ok(plaza);
   const pb=new THREE.Box3().setFromObject(plaza);
-  assert.ok(Math.abs(pb.min.x)<0.001 && Math.abs(pb.max.x-15)<0.001);
-  assert.ok(Math.abs(pb.min.z+35)<0.001 && Math.abs(pb.max.z+24)<0.001);
+  // 2026-10-22：廣場網格另含往西接到樓梯頂的磚道，西界因此延伸到樓梯頂。
+  assert.ok(pb.min.x<=0.001 && Math.abs(pb.max.x-15)<0.001);
+  assert.ok(Math.abs(pb.min.z+35)<0.001 && pb.max.z>=-24-0.001);
   const boxes=greyboxColliders().filter(c=>c.courtyard);
   assert.ok(boxes.some(c=>c.kind==='bike-rack'));
-  assert.ok(boxes.some(c=>c.kind==='plaza-jersey'));
+  // 2026-10-22 審查：草地上零散的廣場護欄已移除（照片 9026 只有機車架與路緣護欄）。
+  assert.ok(!boxes.some(c=>c.kind==='plaza-jersey'));
   for(const c of boxes) {
     const nx=c.sn,nz=c.cs,clear=c.hz+0.6;
     const crossed=path([[c.cx+nx*(c.hz+1),c.cz+nz*(c.hz+1)],[c.cx-nx*(c.hz+1),c.cz-nz*(c.hz+1)]],[c]);

@@ -4,8 +4,17 @@ import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUt
 import { scene } from '../../../core/engine.js';
 import { colliders } from '../../../core/collision.js';
 import { tree, FOLIAGE } from '../../vegetation.js';
-import { lamp } from '../../terrain/back-road.js';
-import { COURTYARD_TREES, COURTYARD_LAMPS } from './courtyard.js';
+import { toon } from '../../../render/kit.js';
+import { COURTYARD_TREES, COURTYARD_LAMPS, LAMP_ARM } from './courtyard.js';
+
+const POLE = new THREE.CylinderGeometry(0.06, 0.08, 3.6, 8), HEAD = new THREE.BoxGeometry(0.5, 0.12, 0.3), BULB = new THREE.BoxGeometry(0.36, 0.04, 0.2);
+/** 短燈桿：桿高 3.6 公尺，燈頭朝車道伸出 LAMP_ARM。 */
+function courtyardLamp(dir) {
+  const g = new THREE.Group(); g.position.set(1000, 0, 1000); scene.add(g);
+  const pole = new THREE.Mesh(POLE, toon('#9aa3a6')); pole.position.set(0, 1.8, 0); g.add(pole);
+  const head = new THREE.Mesh(HEAD, toon('#c9cfd1')); head.position.set(0, 3.62, dir * LAMP_ARM); g.add(head);
+  const bulb = new THREE.Mesh(BULB, toon('#fff6dc', { emissive: '#ffe6a8', emissiveIntensity: 0.6 })); bulb.position.set(0, 3.54, dir * LAMP_ARM); g.add(bulb);
+}
 import { heightAt } from './terrain.js';
 
 export function buildCourtyardScenery() {
@@ -29,7 +38,8 @@ export function buildCourtyardScenery() {
     colliders.splice(c);FOLIAGE.splice(f);
   };
   COURTYARD_TREES.forEach(p=>collect(p,()=>tree(1000,1000,p.scale)));
-  COURTYARD_LAMPS.forEach(p=>collect(p,()=>lamp(1000,1000,p.z<-28?1:-1)));
+  // 燈頭朝中央車道：北排往南、南排往北。
+  COURTYARD_LAMPS.forEach(p=>collect(p,()=>courtyardLamp(p.z<-28?1:-1)));
   for(const [material,parts] of batches) {
     const geometry=mergeBufferGeometries(parts.map(g=>g.index?g.toNonIndexed():g));
     const mesh=new THREE.Mesh(geometry,material);root.add(mesh);parts.forEach(g=>g.dispose());
