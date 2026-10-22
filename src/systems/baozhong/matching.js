@@ -70,9 +70,13 @@ export function openMatching(config, { state, document: doc = globalThis.documen
       card.replaceChildren();
       element('h2', config.title);
       config.intro.forEach(line => element('p', line));
-      element('p', '先認識這三組搭配，等等把左右兩張卡配成一組：');
-      const guide = element('ul', '', card, 'match-guide');
-      round.pairs.forEach(pair => element('li', `${pair.left}：${pair.right}`, guide));
+      // revealPairs:false（T074 兩階段初訪）只給短文，不先列出答案，改成讀完再回想。
+      if (config.revealPairs === false) element('p', '讀完上面的短文，等等把左右兩張卡配成一組。');
+      else {
+        element('p', '先認識這三組搭配，等等把左右兩張卡配成一組：');
+        const guide = element('ul', '', card, 'match-guide');
+        round.pairs.forEach(pair => element('li', `${pair.left}：${pair.right}`, guide));
+      }
       element('p', '點選即可，不用拖曳。鍵盤可用 Tab 選卡，Enter 或空白鍵確認。每張左卡第一次配對答對得一分，配錯可以繼續練習。');
       const actions = element('div', '', card, 'match-actions');
       button(started ? '回到配對' : '開始配對', () => { started = true; showBoard(); }, actions, 'match-primary');
@@ -96,9 +100,11 @@ export function openMatching(config, { state, document: doc = globalThis.documen
             message = '請先點選一張左卡。'; showBoard(`right:${pair.id}`);
           } else {
             const result = round.match(selected, pair.id);
+            // 有 explain 的資料（T074）每一步都附一句說明；沒有的維持原本訊息。
+            const chosen = round.pairs.find(p => p.id === selected);
             if (result.kind === 'correct') {
-              message = result.firstAttempt ? '配對成功！這組首次答對。' : '配對成功！你已經學會這組搭配。'; selected = null;
-            } else if (result.kind === 'incorrect') message = '還不是這組，再找找看。也可以重看介紹，這張左卡本次不再計分。';
+              message = (result.firstAttempt ? '配對成功！這組首次答對。' : '配對成功！你已經學會這組搭配。') + (chosen && chosen.explain ? ` ${chosen.explain}` : ''); selected = null;
+            } else if (result.kind === 'incorrect') message = chosen && chosen.explain ? `還不是這組。提示：${chosen.explain} 這張左卡本次不再計分。` : '還不是這組，再找找看。也可以重看介紹，這張左卡本次不再計分。';
             showBoard(result.complete ? 'finish' : undefined);
           }
         }, parent);
