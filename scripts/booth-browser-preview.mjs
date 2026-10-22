@@ -56,7 +56,7 @@ try {
     }
     stage(`${name}:four-department-panels`);save();
     // Every registered counter opens its own data, including NPC-adjacent entries.
-    for(let i=1;i<=37;i++){const id=`D${String(i).padStart(2,'0')}`;await approach(id);await page.locator('#bz-booth-browse-button').click();assert.equal(await page.locator('[data-booth-panel]').getAttribute('data-booth-id'),id);await page.keyboard.press('Escape');}
+    for(let i=1;i<=37;i++){const id=`D${String(i).padStart(2,'0')}`;await approach(id);await page.locator('#bz-booth-browse-button').click();assert.equal(await page.locator('[data-booth-panel]').getAttribute('data-booth-id'),id);await page.keyboard.press('Escape');stage(`${name}:entry-verified:${id}`);save();}
     stage(`${name}:all37-entries`);save();
     for(const id of ['D01','D26','D37']){await approach(id);await page.locator('#bz-booth-browse-button').click();await page.locator('[data-favorite-reason="courses"]').click();await page.locator(`[data-compare-toggle="${id}"]`).click();await page.keyboard.press('Escape');}
     await page.locator('#bz-exploration-button').click(); await shot('exploration-list');
