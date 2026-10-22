@@ -11,7 +11,7 @@ import { setPassportViewDecorator, refreshPassport } from '../passport-ui.js';
 import { AU, NPCS, openChoice, openDialog, openQuiz, setFlag, showAchievement, state, toast } from '../deps.js';
 import { createStageController } from './stage-core.js';
 import { stepsFromGame } from './rounds.js';
-import { openFeedbackRound, cancelStage } from './stage-ui.js';
+import { openFeedbackRound, openSortRound, openBuildRound, cancelStage } from './stage-ui.js';
 
 const params = new URLSearchParams(globalThis.location ? location.search : '');
 export const STAGE2 = params.get(DATA.flag) !== '0';
@@ -46,7 +46,15 @@ if (STAGE2) {
     if (game.type === 'matching') {
       return openMatching({ title: game.title, intro: game.intro.map(l => l.text), revealPairs: false, pairs: game.pairs.map(({ id, left, right, explain }) => ({ id, left, right, explain })) }, { state });
     }
-    return openFeedbackRound({ title: game.title, intro: game.intro.map(l => l.text), mode: game.type === 'classify' ? 'classify' : 'choice', steps: stepsFromGame(game) }, { state });
+    const intro = game.intro.map(l => l.text);
+    if (game.type === 'sort') {
+      // 卡片顯示順序隨機打亂，但不能剛好等於正確順序。
+      let order;
+      do { order = game.cards.map((_, i) => i).sort(() => Math.random() - 0.5); } while (order.every((v, i) => v === i));
+      return openSortRound({ title: game.title, intro, cards: game.cards.map(({ id, text, explain }) => ({ id, text, explain })), order }, { state });
+    }
+    if (game.type === 'build') return openBuildRound({ title: game.title, intro, steps: game.steps.map(({ prompt, parts, target, explain }) => ({ prompt, parts, target, explain })) }, { state });
+    return openFeedbackRound({ title: game.title, intro, mode: game.type === 'classify' ? 'classify' : game.type === 'spot' ? 'spot' : 'choice', steps: stepsFromGame(game) }, { state });
   }
   async function playFirst(id, title) {
     const token = epoch, game = SC.games.get(id);

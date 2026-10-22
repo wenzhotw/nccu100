@@ -277,3 +277,83 @@ test('batch 1: master and exam still use at most one minigame question per colle
     prepareQuiz(ex.questions, { rng: makeRng(s), hints: 3 });
   }
 });
+
+// v1.67 第二批：排序、找錯、組合三種新模板
+import { createSortRound, createBuildRound } from '../src/systems/baozhong/stage2/rounds.js';
+const FIXTURE = {
+  games: [
+    { booth: 'D22', type: 'sort', title: '排序測試', intro: [{ text: C.booths.find(b => b.id === 'D22').npc.lines[0], trace: { path: 'D22.npc.lines.0', quote: C.booths.find(b => b.id === 'D22').npc.lines[0] } }],
+      cards: [{ id: 'a', text: '第一步', explain: 'e1', invented: '測試' }, { id: 'b', text: '第二步', explain: 'e2', invented: '測試' }, { id: 'c', text: '第三步', explain: 'e3', invented: '測試' }],
+      pool: { prompt: '流程：「{prev}」之後是哪一步？' } },
+    { booth: 'D14', type: 'spot', title: '找錯測試（假想）', intro: [{ text: C.booths.find(b => b.id === 'D14').npc.lines[0], trace: { path: 'D14.npc.lines.0', quote: C.booths.find(b => b.id === 'D14').npc.lines[0] } }],
+      steps: [{ id: 's1', prompt: '哪一段有問題？', segments: ['想知道全校最愛哪種茶', '只問了排隊買茶的人', '共問了 50 人'], answer: 1, explain: '樣本只來自排隊的人。', feedback: ['目標沒問題', '對！樣本偏了', '人數不是主因'], invented: '假想調查' }],
+      pool: { prompt: '{prompt}' } },
+    { booth: 'D27', type: 'build', title: '組合測試', intro: [{ text: C.booths.find(b => b.id === 'D27').npc.lines[0], trace: { path: 'D27.npc.lines.0', quote: C.booths.find(b => b.id === 'D27').npc.lines[0] } }],
+      steps: [{ id: 'ga', prompt: '拼出「가」', parts: ['ㄱ', 'ㄴ', 'ㅏ', 'ㅗ'], target: [0, 2], answerText: 'ㄱ＋ㅏ', distractors: ['ㄴ＋ㅏ', 'ㄱ＋ㅗ'], explain: 'ㄱ加ㅏ。', general: '韓文拼法' },
+              { id: 'bin', prompt: '拼出 11 的二進位', parts: ['1', '0'], target: [0, 1, 0, 0], answerText: '1011', distractors: ['1101', '0111'], explain: '8+2+1', general: '二進位' }],
+      pool: { prompt: '{prompt}' } },
+  ],
+};
+
+test('v1.67 new templates: validation accepts well-formed sort, spot and build data and builds pool questions', () => {
+  const games = indexGames(structuredClone(FIXTURE), C);
+  assert.deepEqual([...games.keys()], ['D22', 'D14', 'D27']);
+  assert.deepEqual(traceErrors(C, FIXTURE), []);
+  const sc = createStageController({ logic: L, content: C, data: structuredClone(FIXTURE), shuffle: shuffleQuestion });
+  const sortQs = sc.questionsFromGame(sc.games.get('D22'));
+  assert.deepEqual(sortQs.map(q => [q.q, q.options[q.answer]]), [['流程：「第一步」之後是哪一步？', '第二步'], ['流程：「第二步」之後是哪一步？', '第三步']]);
+  for (const q of sortQs) assert.ok(!q.options.includes(q.q.match(/「(.+)」/)[1]), '選項不能包含題幹裡的前一步');
+  const spotQs = sc.questionsFromGame(sc.games.get('D14'));
+  assert.equal(spotQs[0].options[spotQs[0].answer], '只問了排隊買茶的人');
+  const buildQs = sc.questionsFromGame(sc.games.get('D27'));
+  assert.deepEqual(buildQs.map(q => q.options[q.answer]), ['ㄱ＋ㅏ', '1011']);
+  prepareQuiz([...sortQs, ...spotQs, ...buildQs], { rng: makeRng(1), hints: 5 });
+  assert.equal(gameSteps(sc.games.get('D22')), 3); assert.equal(gameSteps(sc.games.get('D27')), 2);
+  // 初訪結算沿用同一套：完成即蓋章。
+  assert.deepEqual(sc.firstResult(new Set(), 'D27', done(2, 2)).set, ['bz26_st_D27', 'bz26_pf_D27']);
+});
+
+test('v1.67 new templates: validation rejects malformed data and missing basis', () => {
+  const bad = (fn, msg) => { const d = structuredClone(FIXTURE); fn(d); assert.throws(() => indexGames(d, C), TypeError, msg); };
+  bad(d => { d.games[0].cards = d.games[0].cards.slice(0, 2); }, '排序少於 3 張');
+  bad(d => { d.games[0].cards[1].text = '第一步'; }, '排序卡片文字重複');
+  bad(d => { d.games[1].steps[0].segments.push('a', 'b'); }, '找錯超過 4 段');
+  bad(d => { d.games[1].steps[0].feedback.pop(); }, '找錯回饋數量不符');
+  bad(d => { d.games[2].steps[0].target = [9]; }, '組合目標索引越界');
+  bad(d => { d.games[2].steps[0].distractors = ['ㄱ＋ㅏ', 'x']; }, '干擾答案和正解相同');
+  const noBasis = structuredClone(FIXTURE); delete noBasis.games[1].steps[0].invented;
+  assert.ok(traceErrors(C, noBasis).some(e => e.includes('沒有依據')));
+  const fakeTrace = structuredClone(FIXTURE); fakeTrace.games[0].cards[0].trace = { path: 'D22.features.0', quote: '這句話不存在於內容裡' };
+  assert.ok(traceErrors(C, fakeTrace).length > 0);
+});
+
+test('v1.67 sort round: first-try placement scores, wrong pick does not advance, cancel gives nothing', () => {
+  const r = createSortRound([{ id: 'a' }, { id: 'b' }, { id: 'c' }]);
+  assert.equal(r.place('c').kind, 'incorrect');
+  assert.equal(r.snapshot().placed, 0);
+  assert.equal(r.place('a').kind, 'correct');
+  assert.equal(r.place('a').kind, 'ignored', '已放好的卡不能再放');
+  assert.equal(r.place('b').firstTry, true);
+  assert.equal(r.finish(), null, '沒排完不能結算');
+  r.place('c');
+  assert.deepEqual(r.finish(), { status: 'completed', total: 3, score: 2 });
+  const c = createSortRound([{ id: 'a' }, { id: 'b' }]); c.place('a');
+  assert.deepEqual(c.cancel(), { status: 'cancelled', total: 2, score: 0 });
+});
+
+test('v1.67 build round: compare built text, undo/clear, first submit scores only', () => {
+  const r = createBuildRound([{ parts: ['ㄱ', 'ㄴ', 'ㅏ'], target: [0, 2] }, { parts: ['1', '0', '1'], target: [0, 1] }]);
+  assert.equal(r.submit().kind, 'ignored', '沒選零件不能送出');
+  r.pick(1); r.pick(2);
+  assert.equal(r.submit().kind, 'incorrect');
+  r.undo(); r.undo(); r.pick(0); r.pick(2);
+  assert.equal(r.submit().firstTry, false);
+  assert.equal(r.pick(0).kind, 'ignored', '答對後不能再加零件');
+  assert.equal(r.next().kind, 'step');
+  r.pick(2); r.pick(1);   // 兩個 '1' 零件都算同一個字
+  assert.equal(r.submit().firstTry, true);
+  assert.equal(r.next().kind, 'end');
+  assert.deepEqual(r.finish(), { status: 'completed', total: 2, score: 1 });
+  const c = createBuildRound([{ parts: ['a'], target: [0] }]);
+  assert.deepEqual(c.cancel(), { status: 'cancelled', total: 1, score: 0 });
+});

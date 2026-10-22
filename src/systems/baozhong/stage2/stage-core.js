@@ -10,7 +10,7 @@ export const CAN_FLAGS = REWARD_FLAGS.slice(0, 5);
 // 驗收 CLD-001（M1、M2）：小遊戲題只能是點綴，不能蓋過同院其他攤位，所以關主與大會考每院最多 1 題，並和原題目一起打亂順序。
 export const MASTER_PER_COLLEGE = 1;
 export const EXAM_PER_COLLEGE = 1;
-export const TYPES = ['matching', 'classify', 'situation'];
+export const TYPES = ['matching', 'classify', 'situation', 'sort', 'spot', 'build'];
 
 const toSet = flags => (flags instanceof Set ? flags : new Set(flags || []));
 const st = id => `bz26_st_${id}`;
@@ -39,9 +39,15 @@ export function traceErrors(content, data) {
   };
   for (const g of (data && data.games) || []) {
     (g.intro || []).forEach((line, i) => { check(line.trace, `${g.booth}.intro.${i}`); if (!line.trace || line.text !== line.trace.quote) out.push(`${g.booth}.intro.${i}: 介紹文字必須是逐字引文`); });
-    (g.pairs || []).forEach(p => check(p.trace, `${g.booth}.pair.${p.id}`));
-    (g.items || []).forEach(it => check(it.trace, `${g.booth}.item.${it.id}`));
-    (g.steps || []).forEach(s => check(s.trace, `${g.booth}.step.${s.id}`));
+    // 第二批（v1.67）：每個答案要有依據。系所事實用 trace（逐字核對）；假想教學例子寫 invented，一般知識寫 general（說明誰要複核）。
+    const basis = (x, where) => {
+      if (x && x.trace !== undefined) check(x.trace, where);
+      else if (!x || !((typeof x.invented === 'string' && x.invented.trim()) || (typeof x.general === 'string' && x.general.trim()))) out.push(`${where}: 沒有依據（trace、invented 或 general）`);
+    };
+    (g.pairs || []).forEach(p => basis(p, `${g.booth}.pair.${p.id}`));
+    (g.items || []).forEach(it => basis(it, `${g.booth}.item.${it.id}`));
+    (g.steps || []).forEach(s => basis(s, `${g.booth}.step.${s.id}`));
+    (g.cards || []).forEach(c => basis(c, `${g.booth}.card.${c.id}`));
     ((g.advanced && g.advanced.explain) || []).forEach(e => check(e.trace, `${g.booth}.advanced.${e.question}`));
     const ctx = g.pool && g.pool.context;
     if (ctx) { check(ctx.trace, `${g.booth}.pool.context`); if (!ctx.trace || ctx.text !== ctx.trace.quote) out.push(`${g.booth}.pool.context: 題幹前提必須是逐字引文`); }
@@ -68,6 +74,19 @@ export function indexGames(data, content) {
     if (!g.advanced || typeof g.advanced !== 'object') g.advanced = {};
     const reward = g.advanced.reward;
     if (reward !== undefined && !REWARD_FLAGS.includes(reward)) throw new TypeError(`${g.booth} 進階獎勵必須是既有茶罐或隱藏章旗標`);
+    if (g.type === 'sort') {
+      const ids = (g.cards || []).map(c => c && c.id);
+      if (!Array.isArray(g.cards) || g.cards.length < 3 || g.cards.length > 5 || new Set(ids).size !== ids.length || g.cards.some(c => typeof c.text !== 'string' || !c.text.trim())
+        || new Set(g.cards.map(c => c.text.trim())).size !== g.cards.length) throw new TypeError(`${g.booth} 排序需要 3 到 5 張不重複的卡`);
+    }
+    if (g.type === 'spot' && (!Array.isArray(g.steps) || !g.steps.length || g.steps.some(s => !Array.isArray(s.segments) || s.segments.length < 3 || s.segments.length > 4
+      || new Set(s.segments.map(x => String(x).trim())).size !== s.segments.length
+      || !Number.isInteger(s.answer) || s.answer < 0 || s.answer >= s.segments.length
+      || (s.feedback !== undefined && (!Array.isArray(s.feedback) || s.feedback.length !== s.segments.length))))) throw new TypeError(`${g.booth} 找錯每步要 3 到 4 段、答案與回饋數量正確`);
+    if (g.type === 'build' && (!Array.isArray(g.steps) || !g.steps.length || g.steps.some(s => !Array.isArray(s.parts) || s.parts.length < 2 || s.parts.length > 8
+      || !Array.isArray(s.target) || !s.target.length || s.target.some(i => !Number.isInteger(i) || i < 0 || i >= s.parts.length)
+      || typeof s.answerText !== 'string' || !Array.isArray(s.distractors) || s.distractors.length !== 2
+      || new Set([s.answerText, ...s.distractors].map(x => String(x).trim())).size !== 3))) throw new TypeError(`${g.booth} 組合每步要有零件、正確順序與 2 個不同的干擾答案`);
     if (g.type === 'situation' && g.steps.some(s => s.feedback !== undefined && (!Array.isArray(s.feedback) || s.feedback.length !== s.choices.length))) throw new TypeError(`${g.booth} 情境選項回饋數量要和選項相同`);
     games.set(g.booth, g);
   }
@@ -80,6 +99,7 @@ export function indexGames(data, content) {
 export function gameSteps(game) {
   if (game.type === 'matching') return game.pairs.length;
   if (game.type === 'classify') return game.items.length;
+  if (game.type === 'sort') return game.cards.length;
   return game.steps.length;
 }
 
@@ -149,6 +169,15 @@ export function createStageController({ logic: L, content: C, data, shuffle }) {
       const labels = game.categories.map(c => c.label), ids = game.categories.map(c => c.id);
       return game.items.map(it => tag({ q: game.pool.prompt.replace('{text}', it.text), options: [...labels], answer: ids.indexOf(it.category) }, `item:${it.id}`));
     }
+    if (game.type === 'sort') {
+      // 每一對相鄰卡片出一題：「X 之後是哪一步？」選項是正解加上兩張其他卡（不含 X 本身）。
+      return game.cards.slice(1).map((c, i) => {
+        const prev = game.cards[i], others = game.cards.filter(x => x !== c && x !== prev).slice(0, 2).map(x => x.text);
+        return tag({ q: game.pool.prompt.replace('{prev}', prev.text), options: [c.text, ...others], answer: 0 }, `card:${c.id}`);
+      });
+    }
+    if (game.type === 'spot') return game.steps.map(s => tag({ q: game.pool.prompt.replace('{prompt}', s.prompt), options: [...s.segments], answer: s.answer }, `step:${s.id}`));
+    if (game.type === 'build') return game.steps.map(s => tag({ q: game.pool.prompt.replace('{prompt}', s.prompt), options: [s.answerText, ...s.distractors], answer: 0 }, `step:${s.id}`));
     // 驗收 CLD-001（M3）：情境題離開攤位後沒有前面的假想條件，題幹要帶上 pool.context，玩家才能獨立作答。
     const context = game.pool.context && game.pool.context.text ? `${game.pool.context.text}` : '';
     return game.steps.map(s => tag({ q: game.pool.prompt.replace('{prompt}', context + s.prompt), options: [...s.choices], answer: s.answer }, `step:${s.id}`));
