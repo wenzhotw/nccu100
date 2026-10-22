@@ -1,0 +1,1926 @@
+{
+  "auditDate": "2026-10-22",
+  "limits": [
+    "Geometry is an estimate from plans/photos, not on-site measurement.",
+    "A1 October2026 fitout photograph not found. Do not copy another PUFFIN branch.",
+    "1F toilet position/room boundaries use official shell plan; finishes and door hardware not photograph-verified.",
+    "Google tour new station name shops-edge is a research filename, not proof of floor or current tenancy.",
+    "WC exterior finishes use 2020 outdoor photograph; its 1F identification is an inference from the outdoor-only visit and plan, not geotag proof."
+  ],
+  "primaryDocuments": [
+    {
+      "id": "lease-a1-notice.pdf",
+      "url": "https://aff.nccu.edu.tw/upload/63/doc/5231/1_投標須知(公告版).pdf",
+      "sha256": "f20e5181201d8dac0fd13e174063bf079d6825f1864ea54ff2bd0cdbe431a292",
+      "use": "page7: 1F shell plan; 2026-06-29 notice, present-condition caveat",
+      "inspected": true
+    },
+    {
+      "id": "library-ar2024.pdf",
+      "url": "https://www.lib.nccu.edu.tw/var/file/0/1000/img/37/206275198.pdf",
+      "sha256": "181135264470ab06448c4c74fe7f4806ee55b7c32e162c826dc57da96291b73a",
+      "use": "page13: 小尚品 interior photograph, June2024 opening",
+      "inspected": true
+    }
+  ],
+  "photos": [
+    {
+      "id": "tina-01",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters.jpg",
+      "sha256": "2420aff7096134ae6385d164c8484897aadb53baa3aa802e7f8c5a7a7a12ade3",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-01.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-02",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters1.jpg",
+      "sha256": "f347a8abdba22be30595753329445e6ac5e5f30f458499b48ff82ca140f06b36",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-02.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-03",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters2.jpg",
+      "sha256": "7938d73320d94e3a0e84f14ede817251e32363a3a3f19cb3205ce40f7cb7e159",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-03.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-04",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters3.jpg",
+      "sha256": "e516d32315e293425865630f60385aa8650c1f7e4066ab38a1a30888b4bf8bfe",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-04.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-05",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters5.jpg",
+      "sha256": "369b149c5995739fdbef6c0baeab7357d7dacd98a358235af156faf016f356c2",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-05.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-06",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters4.jpg",
+      "sha256": "b74eadff2edcddf5ee6f257e03c56191c29189e9df22e61fbbb11ea06da8b9ca",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-06.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-07",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters7.jpg",
+      "sha256": "581535fe3a2f90be84ab59f6b921cbe4c09e279295e153e5fc9df3df0fcba6bc",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-07.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-08",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters8.jpg",
+      "sha256": "6a16fb43e8da05696e92bd8de62665d1d8016281808c772b3d4dfc9f932056e8",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-08.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-09",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters9.jpg",
+      "sha256": "a979aef04d48b63b2a72f975b39199a8980ca70fc3f89ff95694ec56952de66e",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-09.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-10",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters10.jpg",
+      "sha256": "7a3b8b3fad09cd81ce3b59cebbc5884d8465a7c4abab8de94598cccc1eefcf1b",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-10.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-11",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters11.jpg",
+      "sha256": "99eeb527a6ff620797d00443041d32f777d6065b55a9e97c473a81aae4e62d67",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-11.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-12",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters12.jpg",
+      "sha256": "323d2e62f19d2ab3b02cca7996e2d4f43c1a5961a53c4b9892058395c6ba59c9",
+      "size": [
+        1300,
+        852
+      ],
+      "local": "survey-20261022/tina-12.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-13",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters13.jpg",
+      "sha256": "400f30f72547065ae836637814610f02311d9c306ec9c462324d8429a35f4d83",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-13.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-14",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters15.jpg",
+      "sha256": "be49fb8a804338797ef35162d4992c1e7734aa86ccb54dfc3b5db3c0805b2245",
+      "size": [
+        1300,
+        826
+      ],
+      "local": "survey-20261022/tina-14.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-15",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters16.jpg",
+      "sha256": "e3c9c6a31895f982f5799d05e7cd00512cc7be893510284b5046e123556913b3",
+      "size": [
+        1300,
+        900
+      ],
+      "local": "survey-20261022/tina-15.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-16",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters14.jpg",
+      "sha256": "03e66c858feb73fe0213c5c86365df2c9920c2ff813e03285bed29d022011012",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-16.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-17",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters17.jpg",
+      "sha256": "3abd2359d54789ecebef876719fabbeef6dcf003836c21274444a056d4a5adce",
+      "size": [
+        1300,
+        1287
+      ],
+      "local": "survey-20261022/tina-17.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-18",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters18.jpg",
+      "sha256": "b4849b1d80748524ad54be52202451ed4297497cefa440d65f662a39b2f3e4b5",
+      "size": [
+        1300,
+        900
+      ],
+      "local": "survey-20261022/tina-18.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-19",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters19.jpg",
+      "sha256": "cfea28dea296a8da5446032165d1650f177c5c2987e07f28ce1d7b7662977445",
+      "size": [
+        1300,
+        1044
+      ],
+      "local": "survey-20261022/tina-19.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-20",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters20.jpg",
+      "sha256": "0b5a9090547b856da755dcebd1d686ce75fda804ebcc84fc4ca575f1bb79d966",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-20.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-21",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters21.jpg",
+      "sha256": "7425770b72df39a53ecad3fb91fbdc4816fd179b368ed1814cd3938affd17d0d",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-21.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "tina-22",
+      "page": "https://tinalife.tw/blog/post/ruinscoffeeroasters",
+      "image": "https://tinalife.tw/wp-content/uploads/ruinscoffeeroasters6.jpg",
+      "sha256": "dfe691bed4943dcd3f99dc06971e19858c46c9b767a77d3d11770095a101659b",
+      "size": [
+        1300,
+        867
+      ],
+      "local": "survey-20261022/tina-22.jpg",
+      "inspected": true,
+      "use": "1F咖啡門窗、平台上下層、湖岸座位與鴨",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-01",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200804_0_49394c.jpg",
+      "sha256": "2a5385715375ca7dad840c9b71f38a1946b36387a1b1ae58cd6875d85ef1d423",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-01.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-02",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200750_0_dd2549.jpg",
+      "sha256": "6831ba12777b97420d0089ce02e4eb451ee64d3fc0433741b42fd3922774a16b",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-02.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-03",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200752_0_cf0ad0.jpg",
+      "sha256": "d91255b100a6b56857c66a6c61ed0824ffcb8b7ba4c0ecece1e2d661405d5fb0",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-03.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-04",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200807_0_bb1b7b.jpg",
+      "sha256": "e27379d3fe639b49d0579e172c85ee8303e3ca9f4fa352bf9dc56ac9d3152640",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-04.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "historical-only",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-05",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200805_0_21f19d.jpg",
+      "sha256": "d0cd95ff905fd61dc0ab812aafdffe2e717231bf8535a6d90c7a403aa4e6b42e",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-05.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-06",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200810_0_135fed.jpg",
+      "sha256": "6e068a51065dc939740c41c9840f7fb728bfe8db415f9f99d2fda22513b70557",
+      "size": [
+        980,
+        735
+      ],
+      "local": "survey-20261022/angela-06.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-07",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200759_0_48f217.jpg",
+      "sha256": "ba283133b1bb912767890c2014eea1cace700fdf8fa0ddd24525a9c65015473e",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-07.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-08",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200803_0_4ef7fb.jpg",
+      "sha256": "413a30d6821f8c303950336727b1fc8ee707287c7195b8389b53ecadfa5036df",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-08.jpg",
+      "inspected": true,
+      "use": "湖岸、小屋、鴨；04為舊RUKO歷史外觀",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-09",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200754_0_c812e1.jpg",
+      "sha256": "b5dfb1fad27bbb32b3d409cd56e059c64bc7bdefd149edcc8a3968e2ecf97216",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-09.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-10",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200842_0_6e0c4d.jpg",
+      "sha256": "36a92c03ef8620e79300b600bc14c2c2739bbfc65f6d3c68cff65e4e1839ee07",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-10.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "angela-11",
+      "page": "https://angela51.com/ruins-coffee-2/",
+      "image": "https://angela51.com/wp-content/uploads/2024/12/20241105200902_0_24cf91.jpg",
+      "sha256": "4b4e576f2d889ccedaea9d873876b96b315bfa7a334a0279a5cd17b2e2e7da57",
+      "size": [
+        980,
+        653
+      ],
+      "local": "survey-20261022/angela-11.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-01",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe01.JPG",
+      "sha256": "4ea652584b7d4223bd857cb27b6879935af15c54c303b9667ff7653b7701ca5a",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-01.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-02",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe02.JPG",
+      "sha256": "b3df9723329c916d7458d3ff89f4cea3d7ec0300d34a77c28d4a598a788febc6",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-02.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-03",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe03.JPG",
+      "sha256": "56ed54ee9180a717b9a826c0bbf0b14e41414e76fe8f5128c705c0403839caa8",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-03.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-04",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe04.JPG",
+      "sha256": "1dfc8e099495d4a0112f07930d1862240758faa783d913fe3d97fe270f404787",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-04.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-05",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe05.JPG",
+      "sha256": "958f602a0c2018507a688bcf49d83c728786c03c7251d2ffba7058923b6594e8",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-05.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-06",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe06.JPG",
+      "sha256": "9a494bc5b5a68abcde4cc7eaaed946f2ff60fce2a42d94d32d5eeec583cdbe95",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-06.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-07",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe07.JPG",
+      "sha256": "3fcbf4cb6108674967a048dee8c06b32d78c911e5b03443a609d84716b5bcbc9",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-07.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-08",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe08.JPG",
+      "sha256": "6ab4de9e12e2163f683614f7448ee442598d47fa1195452c1a0ffa89deb9c9f2",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-08.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-09",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe09.JPG",
+      "sha256": "6e91f90a0e1e51de141af77356633b36b316dcc537b79a25b52301d422e3304f",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-09.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-10",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe10.JPG",
+      "sha256": "72908bc34b0908fdb87846bfa4d0a7c4072a2320be10646afe6877c7601422c1",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-10.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-11",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe11.JPG",
+      "sha256": "750fc48d2bc266dd2fd6f76cbc0171e60f1645ada8057d962ab3c19e42c7aa0b",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-11.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-12",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe12.JPG",
+      "sha256": "6366c3feb998aced12c93a5cdbd3fb5a1e507aa098e97ab863e55824ceafb7b0",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-12.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-13",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe13.JPG",
+      "sha256": "229454985a12eb85a8a47220a917563083ed5c628bc15cc19aeaf9108cbfdd5f",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-13.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-14",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe14.JPG",
+      "sha256": "00b21e724c277f6045cc072f7840956ed0658123114ef08cc542954e58fa1ba3",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-14.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-15",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe15.JPG",
+      "sha256": "84411852b1fdaa1c69a2a379133739861340d4f4f6f27f9b261b612ee043dd63",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-15.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-16",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe18.JPG",
+      "sha256": "382a38b6d56875bd85c061e928494d9bb36a574d5a3b04875a8f546046e55527",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-16.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-17",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe19.JPG",
+      "sha256": "289f348d90cabc716e81fb61da389f5af88b8a87e23a5dd74c1358c4f4614de3",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-17.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-18",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe16.JPG",
+      "sha256": "4c18701e28e5ac5f8a2e9ffc6c0a9c9f5c836b72ad04d559cf93ed5431c23cc4",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-18.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-19",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe17.JPG",
+      "sha256": "fadd6f99ae9ffb647f81fd2a75a247ec5384f8a3093c7afee5ee894f4c659c31",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-19.jpg",
+      "inspected": true,
+      "use": "咖啡外觀與窗後家具",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-20",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe20.JPG",
+      "sha256": "699c0129a3e4a2fc4914a5239866942afab4b6d19c3d8f4cfda62b161717210c",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-20.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-21",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe21.JPG",
+      "sha256": "6d92edeeee8925c8271572c756ac4a91e22ff2018029eff4883aecaf193d6935",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-21.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-22",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe22.JPG",
+      "sha256": "cac63ae9187763e33e6f3219f2385d004e3122c07adfe57d27f6da5c2f52692c",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-22.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-23",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe23.JPG",
+      "sha256": "6435c21fdf423907eea2b2a383059826d29a4d30500faee64b033373db1d6415",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-23.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-24",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe24.JPG",
+      "sha256": "e4ee08ff2e334b545670fc803eaaf5e5bc2f95931a0acefcf7b7b8af2da0c114",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-24.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "morris-25",
+      "page": "https://morrisyu.com/ruins-coffee-nccu/",
+      "image": "https://morrisyu.com/taipei/ruinscafe/ruinscafe25.JPG",
+      "sha256": "6668c49ac30b6782094755aa361802fff73222579aa7b30e4c9922876f42847a",
+      "size": [
+        800,
+        533
+      ],
+      "local": "survey-20261022/morris-25.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-01",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09789.jpg",
+      "sha256": "21f625a9c14e816c2f2e2ba722a71db60891cc0790638ec89e480fa2b3d57b6b",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-01.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-02",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09793.jpg",
+      "sha256": "08f7d5c304c7505cf96ce3c87d66c89c1625aabae01d78bb935e5acd3f003295",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-02.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-03",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09792.jpg",
+      "sha256": "d57f9ba6589e0aa971e713d2233703651765a4541b2aff9d6836d98be0d13aae",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-03.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-04",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09750.jpg",
+      "sha256": "688f6c155928ac5735f320e3107ee3b52bb0c57e5025fb8919e1a6dbaca7aedc",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-04.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-05",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09753.jpg",
+      "sha256": "d6157a3fbeb90927eb807168e5c5c2540af45e364e60eb971e4890b82f8ee553",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-05.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-06",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09787.jpg",
+      "sha256": "8c216f79c2b906788bca9f0886c0b1c15a29f86a2a55c0004c4fa25a4dd850d2",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-06.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-07",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09786.jpg",
+      "sha256": "4d83958192b8a6f50321e299427483e681a395df192f41e4cff8305afc0063a4",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-07.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-08",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09777.jpg",
+      "sha256": "64bb05ac9806d85d32136207521085e777f6a19a513f82c2ec6cf647acc0f7a2",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-08.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-09",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09774.jpg",
+      "sha256": "f95131d21f317eabd7952f832d598fcd07b2d0b08739cdb1f740bfa67a074bfb",
+      "size": [
+        1065,
+        1600
+      ],
+      "local": "survey-20261022/simple-09.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-10",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09772.jpg",
+      "sha256": "cb1a5d32594fb93d232caee9de4309852fa8a8fc49f01d0aae0043f2dfae8a21",
+      "size": [
+        1065,
+        1600
+      ],
+      "local": "survey-20261022/simple-10.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-11",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09807.jpg",
+      "sha256": "7dc3d0760e53d29c9d69654f81f07074808ae5e12bba60db3244433e8c1c72de",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-11.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-12",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09809.jpg",
+      "sha256": "d6d961f4efadb1a9a49ffcafc5a043a1eb9af027480ec917f3ca937ba724a57c",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-12.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-13",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09779-1.jpg",
+      "sha256": "3c189e03cf816412c8c6c744cec8300006e1563edbeced1cd4c598c959d64c15",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-13.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-14",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09760.jpg",
+      "sha256": "1a4299334775909d4ee8c3cb8fc9f30f214c3fdbef63e2836dfe5625f23bbebd",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-14.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "simple-15",
+      "page": "https://www.jsimplelife.com/taipei-cafe-13/",
+      "image": "https://www.jsimplelife.com/wp-content/uploads/2024/04/DSC09812.jpg",
+      "sha256": "954766b8d02d6ae80c865cbf763527ea9cb87ae0d58229c4b0be245484c9093a",
+      "size": [
+        1600,
+        1065
+      ],
+      "local": "survey-20261022/simple-15.jpg",
+      "inspected": true,
+      "use": "咖啡轉角、木柱與湖邊窗景",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-01",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161449_0_313baa.jpg",
+      "sha256": "83679f6431025b60dca9fda5d80602e133d920cf8b65482cfe2fb199db192be7",
+      "size": [
+        1200,
+        900
+      ],
+      "local": "survey-20261022/aj-01.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-02",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161452_0_90a4d5.jpg",
+      "sha256": "2705705ddc98ffa5b9afbd146ebd2b9afecba86e695cf4df2a9694e0425945bf",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-02.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-03",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161454_0_185c5d.jpg",
+      "sha256": "d98f568e856a6d30de1b03cd6c128885e34e8e4277566d98c60c3127b59888fd",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-03.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-04",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161456_0_6af685.jpg",
+      "sha256": "5dd2ef775949d66c6248027f0b8d0f2d1989c0637ac965dc84ae45f51a1560d4",
+      "size": [
+        1000,
+        662
+      ],
+      "local": "survey-20261022/aj-04.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-05",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161458_0_4b006c.jpg",
+      "sha256": "37d2e8495f771b5ec35ec53ccf766e3ed6a16ea4efec6991878ec6eb0f5e1c5c",
+      "size": [
+        1000,
+        776
+      ],
+      "local": "survey-20261022/aj-05.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-06",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161500_0_179690.jpg",
+      "sha256": "342a098c1124439dfef8f5bea45fc9b13a44af8580d7e07cbaf7e7108424bdbf",
+      "size": [
+        1000,
+        740
+      ],
+      "local": "survey-20261022/aj-06.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-07",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161502_0_393a8c.jpg",
+      "sha256": "836418185634a79a66beffb1e9622adee7d1388c40571ebb639278b40eb9ffcb",
+      "size": [
+        1000,
+        787
+      ],
+      "local": "survey-20261022/aj-07.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-08",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161504_0_5a9113.jpg",
+      "sha256": "1d6bc7e77aac7c2d42f64f15012e03110951a76d4d0eb2f80499f4edf86aeea1",
+      "size": [
+        1000,
+        759
+      ],
+      "local": "survey-20261022/aj-08.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-09",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161506_0_f1fef8.jpg",
+      "sha256": "20a188d23c15dd794e7a690263a7899eb17dca9441fbee9d15b6078f0099efd7",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-09.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-10",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161509_0_1de829.jpg",
+      "sha256": "9896126a689d4a497b2720c15a4896577ad563a6e575eac37402703234bd1336",
+      "size": [
+        488,
+        650
+      ],
+      "local": "survey-20261022/aj-10.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-11",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161512_0_576ff1.jpg",
+      "sha256": "2b480b17bb6df5f1711e09703bf8a0bfbb0226580c5b06eda2f80667aaf82fd7",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-11.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-12",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161514_0_2038ed.jpg",
+      "sha256": "41761397cb803c150be6e696a22b0fd7dd77e7f74a76d909335b7de0305ff1bb",
+      "size": [
+        487,
+        650
+      ],
+      "local": "survey-20261022/aj-12.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-13",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161516_0_772e10.jpg",
+      "sha256": "49d855d0b747b007af4cc111f1cc7a49e738a9bff9f961d05db6c79b6e2282dc",
+      "size": [
+        512,
+        650
+      ],
+      "local": "survey-20261022/aj-13.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-14",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161518_0_4e8ae9.jpg",
+      "sha256": "48dbd144f5325f851015fbe83a430285115d83ea4da307bf167b2beb2ad7058f",
+      "size": [
+        1000,
+        764
+      ],
+      "local": "survey-20261022/aj-14.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-15",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161520_0_90181e.jpg",
+      "sha256": "fdef991ebb632f9d4f57860285ee2aababe23c1f6818a57ab417a37f1c363d30",
+      "size": [
+        1000,
+        777
+      ],
+      "local": "survey-20261022/aj-15.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-16",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161522_0_917291.jpg",
+      "sha256": "d49d7b029ceb55a6fc8f9ff03524213dfe3927c436a8a37cc515a7781373c079",
+      "size": [
+        1000,
+        732
+      ],
+      "local": "survey-20261022/aj-16.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-17",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161524_0_526edb.jpg",
+      "sha256": "6ee107ef386a3dbb6920c9c5f3bf891ea23b16397fabafb80cb0c857984978e1",
+      "size": [
+        1000,
+        759
+      ],
+      "local": "survey-20261022/aj-17.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-18",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161526_0_7c8458.jpg",
+      "sha256": "bedc550d7b41e0d44739b96fc38952a3bee62ec3ce16deff02c3dc12820c6653",
+      "size": [
+        499,
+        650
+      ],
+      "local": "survey-20261022/aj-18.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-19",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161528_0_64ce4f.jpg",
+      "sha256": "bf86810ce19cc25dce270f27f6f4031221547bce861dd686640f1fe4f7030291",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-19.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-20",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161530_0_1d2b11.jpg",
+      "sha256": "de03d69e00ebbdfeab7f5aa09cdb083288cd809698f819b9e73f3b76dfbfef56",
+      "size": [
+        1000,
+        763
+      ],
+      "local": "survey-20261022/aj-20.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-21",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161532_0_5eae48.jpg",
+      "sha256": "f9048ac9acc264446d185d516245ec7ed59beb8045fd7dcca09947607bcbe735",
+      "size": [
+        1000,
+        762
+      ],
+      "local": "survey-20261022/aj-21.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-22",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161534_0_27108b.jpg",
+      "sha256": "8ab7aa359b27b82988c9ed156ccaafaae689780c1812e21c9bcb2780342fde20",
+      "size": [
+        1000,
+        739
+      ],
+      "local": "survey-20261022/aj-22.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-23",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161537_0_291ed6.jpg",
+      "sha256": "d4c470b771dbfe1bfc09a3e0a77a84a347edb42a6bf2e70abb1c8c36af248d06",
+      "size": [
+        1000,
+        1000
+      ],
+      "local": "survey-20261022/aj-23.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-24",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250311161538_0_e15c5a.jpg",
+      "sha256": "059bcf1d9521d7d6aea30fae6acb55dd21bc75ca2804d3aad25c179890ef90de",
+      "size": [
+        517,
+        650
+      ],
+      "local": "survey-20261022/aj-24.jpg",
+      "inspected": true,
+      "use": "入口、可見上層結構、咖啡與湖岸；非全部為2F",
+      "role": "reference",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-25",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2024/10/20241026200849_0_85fbb2.jpg",
+      "sha256": "6c36ffeb8265c6c60fd25e21cad57e218ffaf80853abcf793ae830511b421d70",
+      "size": [
+        299,
+        300
+      ],
+      "local": "survey-20261022/aj-25.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-26",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2024/12/封面-1.jpg",
+      "sha256": "b58a2a0dd4e51d431584cc30454efde1697e2d0477b8a9e34f9aa1f59a54e1e3",
+      "size": [
+        1000,
+        725
+      ],
+      "local": "survey-20261022/aj-26.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-27",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/封面-23.jpg",
+      "sha256": "26fecdcfdc582f035bbc5252a7ce408021f13691f8941d3e5ceccd272b720203",
+      "size": [
+        1000,
+        742
+      ],
+      "local": "survey-20261022/aj-27.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-28",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2022/08/20220823152807_55.jpg",
+      "sha256": "54ae99e5a55abbc3babd55e8074400cdf53a59e89899504ce966d01a652c5ad0",
+      "size": [
+        1200,
+        900
+      ],
+      "local": "survey-20261022/aj-28.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-29",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/05/封面22-6.jpg",
+      "sha256": "44c61ed5a274501277020864085458c31c8ea7761c12a463ee02137a6afa64f6",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-29.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-30",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/05/1155-14.jpg",
+      "sha256": "51ddeed6a10d3a5c71fc60e6da27a890f363e845877bc0c66ee7b811f340f72d",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-30.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-31",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2023/02/20230214003802_66.jpg",
+      "sha256": "9ee211d706a250c8be9582141755983a63e821e6dc690ad5cb5f20f9028189fd",
+      "size": [
+        1200,
+        923
+      ],
+      "local": "survey-20261022/aj-31.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-32",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面90-2.jpg",
+      "sha256": "a1703081d05655c7c8845fb141aff5ee79d1992b514088e16e289dd7967b79f3",
+      "size": [
+        1000,
+        780
+      ],
+      "local": "survey-20261022/aj-32.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-33",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面05-1.jpg",
+      "sha256": "f31516272a9688615c3472768dd7a7354e294432b8077080df3e7a07ddee5ac8",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-33.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-34",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面93.jpg",
+      "sha256": "03937b31ec08e2af7bdad8c3aa5724f3d56c8e4aac0f451319ee97b6baa7a202",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-34.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-35",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面92.jpg",
+      "sha256": "5fae150ed5329fc459c3062c9051cfc006829ad328e30902264ecc20e8b18fbd",
+      "size": [
+        1000,
+        767
+      ],
+      "local": "survey-20261022/aj-35.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-36",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面55-2.jpg",
+      "sha256": "e0183003458c8559b2428123f285102a5804bc30bf8a14a0cd71acd4cd3b18e2",
+      "size": [
+        1000,
+        667
+      ],
+      "local": "survey-20261022/aj-36.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-37",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2026/01/封面88.jpg",
+      "sha256": "721f03257e7921cbc82a2e8ed7473aec45923274b4bfc54bb7431f7d29d7663c",
+      "size": [
+        1000,
+        667
+      ],
+      "local": "survey-20261022/aj-37.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-38",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/05/1315-6.jpg",
+      "sha256": "9e73d12b9db614ab7a368d872366a678fc1cca15fdccc39d306e795646c68294",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-38.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-39",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/pixnet/02378a1a97d41ba57d1b7f1fe4040e46.jpg",
+      "sha256": "f396d7a12149f5878c142cc0b67f55f9cca7f7477c24ab126db0bfd80b03f1ed",
+      "size": [
+        1024,
+        683
+      ],
+      "local": "survey-20261022/aj-39.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-40",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/2025/03/20250414_190020.jpg",
+      "sha256": "f5f8c03a17e61fb31d1e5101e9f6174b41b0aeb5a3c8df197da4af4269b3b237",
+      "size": [
+        1000,
+        750
+      ],
+      "local": "survey-20261022/aj-40.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-41",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/pixnet/fae8a2e7d358c7c7a6801aeac2892f8e.jpg",
+      "sha256": "40e6fb715583039d1c168cbbb15d096c49281ae3cd985b7e35e250530af83fbb",
+      "size": [
+        1024,
+        768
+      ],
+      "local": "survey-20261022/aj-41.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-42",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/uploads/pixnet/bfe6f7675427f3150684a4ba05e03ed9.jpg",
+      "sha256": "872b556e93b029eef57f7411f335d611621e1beaab2725c1f4f75957d18bc438",
+      "size": [
+        1024,
+        768
+      ],
+      "local": "survey-20261022/aj-42.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-43",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/plugins/blogimove/class/../image/icon_email.png",
+      "sha256": "bddaa9f235b2ebd6d3317a53616754d6ff2f7dbef7e87cc561428a0a2fd718c6",
+      "size": [
+        136,
+        137
+      ],
+      "local": "survey-20261022/aj-43.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "aj-44",
+      "page": "https://ajtravel.tw/nccu-library/",
+      "image": "https://ajtravel.tw/wp-content/plugins/blogimove/class/../image/icon_gotop.png",
+      "sha256": "ff5a1d8530c76f21efe1622b436623e8492d6926c7f6c8b1ebd186fec11c3cd2",
+      "size": [
+        136,
+        137
+      ],
+      "local": "survey-20261022/aj-44.jpg",
+      "inspected": true,
+      "use": "exclude: food/menu/unrelated place/repeated hero",
+      "role": "excluded",
+      "dateNote": "Page publication is not confirmed image capture date. AJ Christmas decorations do not establish an October arrangement."
+    },
+    {
+      "id": "fooday-01",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/RXbNCZW5sfrjXqCaHhbW7v",
+      "sha256": "4036e4e0d0aa654931bc640c8d97c8609d577e1eb2e4df1acb8ae69cf06a8eda",
+      "local": "survey-20261022/fooday-01.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-02",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/bfgw336u5up3nizgFTvALg",
+      "sha256": "02f8ddd1feff1832c61900a225e599d6d728c604940254326d1d9ecdefb5bb73",
+      "local": "survey-20261022/fooday-02.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-03",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/eKAm7Eww7TJ843rGT7uUuW",
+      "sha256": "07a90f83cae31abd7d86589a256cefd2d8aa86db9e2d153057a5974336ebdef2",
+      "local": "survey-20261022/fooday-03.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-04",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/TsKwsZ3dhJzH3uoAKnzAKo",
+      "sha256": "b287426c352c5f602ac4d29ad849ed02aeb9da61c9ba2816d91e051bbecda5e2",
+      "local": "survey-20261022/fooday-04.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-05",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/oLv3wX8SHwiEazNyemDGRX",
+      "sha256": "930c9f206a3e0302a51028c4360f5d8d794a7001b530a5ea316471a092c0b356",
+      "local": "survey-20261022/fooday-05.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-06",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/mxj98mWWhQ9s7gNbg3WnKA",
+      "sha256": "98749836b8f2d531d293ffc6a3b86a63dbe6f97b58052ba4747117a0ee3b9557",
+      "local": "survey-20261022/fooday-06.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-07",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/3hGCRK7MFJVtC8eHZfvvEC",
+      "sha256": "023f6d44d1cb88360e6958773ac3c7ef7971d20a6dceb932de1531ceb3f88c63",
+      "local": "survey-20261022/fooday-07.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-08",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/6s7rirVsojgxKNkJv8nkAZ",
+      "sha256": "66ad04521b99cf44cfb6524e39ebd2ba62ac658dcc1e5e68678c97475113a0d8",
+      "local": "survey-20261022/fooday-08.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-09",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/VXnZZUAi5mYgZ6v7MRKkai",
+      "sha256": "c564443b4ea182931c601398a777b9c4e0bbea6331c0ece0196907cb5a4458c6",
+      "local": "survey-20261022/fooday-09.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-10",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/kz32cywQn8YhUj8NAXcTWA",
+      "sha256": "4dae9f720fbf7754f6b596f9e83532453db2b206df6bb966a3ce469e253eee46",
+      "local": "survey-20261022/fooday-10.jpg",
+      "inspected": true,
+      "role": "reference",
+      "use": "A2店前玻璃門、通風小窗、候位摺椅、菜單架",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-11",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/YhadYZ9z4tBMM5rB7zYiZ4",
+      "sha256": "f17452891b3a20634d4ee7960b6fe5a247448af758cfcb88cd79d74a3f7c399d",
+      "local": "survey-20261022/fooday-11.jpg",
+      "inspected": true,
+      "role": "reference",
+      "use": "A2店前玻璃門、通風小窗、候位摺椅、菜單架",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "fooday-12",
+      "page": "https://fooday.app/zh-TW/spots/nQGcxbHBy46DdqbQwy9SG2",
+      "image": "https://shaper.fooday.app/width=1200,quality=85,format=jpeg/n5QeQgrXbqmrsLTb4hMHbN",
+      "sha256": "cedd7b57083ef5df034f1ad62de74b146a0d0aeed3a9529aa62a86f9a44a09ec",
+      "local": "survey-20261022/fooday-12.jpg",
+      "inspected": true,
+      "role": "excluded",
+      "use": "食品／自助區近照，非外觀站位",
+      "dateNote": "Review page not a verified photo capture date"
+    },
+    {
+      "id": "wawa-wc",
+      "page": "https://1wa1bai.com/dah-hsian-seetoo-library/",
+      "image": "https://1wa1bai.com/wp-content/uploads/20200316230402_23.jpg",
+      "sha256": "79ab76e012e33e80e2095e9d7333f58913c148c900add5754c4b1ab439e07ece",
+      "local": "survey-20261022/wawa-wc.jpg",
+      "inspected": true,
+      "role": "reference",
+      "use": "戶外廁所白色無障礙滑門、轉入口、標示、末端設備雙門",
+      "dateNote": "2020-03-17戶外遊記；作者明說未進館，與1F平面核對推定湖邊公共廁所，並非有GPS的精確配準"
+    }
+  ]
+}

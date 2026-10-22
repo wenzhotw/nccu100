@@ -1,3 +1,74 @@
+# 2026-10-22 已整合分支、準備遠端CI（最新）
+
+- 達賢實作commit f4c48c0，已無衝突merge origin/main dccf640（保留四維牌樓與包種新內容），目前版本暫沿1.66，不占別人open PR84的1.67；最終main發布前才升未用版本，避免3個版本檔衝突。
+- 整合後 `npm test` exec60899 exit0，/tmp/nccu100-reality-integrated-tests.log：node271pass/1skip、baozhong80、npc9、stage2 24pass/1skip。`npm run check` pass，build exec30222 exit0，以--outDir /tmp/nccu100-reality-integrated-dist避免取代正跑真流程的5187舊dist。最後模型未變，達賢源碼等同全套最終版；之後只文件改動。
+- 最終戶外真鍵盤/手機PASS；2F最終真鍵盤公開動線和原拖曳仰視也PASS，手機後段exec19514仍進行，/tmp/nccu100-reality-interior-final.log。
+- fresh視覺七項全部resolved，limited ship；fresh doc No changes，code最後43/43無新P2；詳見reality-qa/audit。尚未正式發布。準備push本分支/PR附聊天，待既有CI全場與最終2Fflow，之後最新main整合、main全測、既有Pages exactSHA/正式核心流程。
+
+# 2026-10-22 發布前驗收（最新）
+
+- fresh視覺review七項fix已全部resolved，disposition ship，僅指定七項而非全實景認證。最後WC地板缺口補齊並同檔r2取圖，草地消失。fresh documenter最後No changes，DESIGN水亮紋/PRODUCT核可範圍已同步；不修既有missing sidecar。
+- 最後模型版本全套npm test exec15114 exit0，/tmp/nccu100-reality-tests-final-exact.log：node262通過+1 opt-in略過、baozhong80、npc9。site22/rebuild21/interior29都含在全套。Node24.15，Three0.149，無新套件。check pass；build /tmp/nccu100-reality-build.log成功。之後僅文件/版本metadata處理，合併遠端後仍需全測。
+- 最終戶外真鍵盤+觸控包括泳岸往返/WC正確前廊/上下橋/重入/進度/正常網址 PASS /tmp/nccu100-reality-outdoor-final.log。2F最終smoke exec19514後段正在進行 /tmp/nccu100-reality-interior-final.log。
+- 遠端main dccf640 v1.66，open PR84已使用v1.67。為避免版本3檔merge衝突，本輪本機暫存1.64先精確還原base1.63，只提交達賢內容後整合main；最終升下一未用號（預期1.68，發布前再查）。不要覆蓋別人的包種內容。尚未commit/push/PR。
+- 下一步2Fflow結果→提交達賢、整合origin/main→分支全測/check/build、push/PR attach+既有CI全場；最新main整合避免version衝突→main全測→push existingPages exactSHA與正式真核心流程。使用者已授權無需再問。
+
+# 2026-10-22 續作差異快照（本節最新，尚未發布）
+
+- 最新使用者「繼續」；沿原已授權實景重建，不重問批准。仍branch fix/dah-hsian-entrance-layout、base f232d8f，未commit/push；遠端main最後dccf640 v1.66，需保留他人內容整合再升版。
+- fresh impeccable_finish_reality已成功回覆disposition fix，限7項：①室內望門外應2F鋪磚門廊/柱列/欄杆非草坪②咖啡大圓角窗與細腳凳③曲線抬高廊坪/踏階且高度一致④野餐桌細黑開架⑤停車通風直柵⑥中庭灰色折板主屋面/狹長採光⑦WC端牆/轉折牆修後同檔重取。以上均已實作，正取同檔r2後交原reviewer限7項複核，不能自行再開第三輪瑕疵狩獵。
+- 各行為逐一紅綠：interior29/29，site-fidelity21/21。LAKESIDE_Y=.3，共用曲線deck及.15外踏階；店/WC/凳/候位椅/菜單/招牌/碰撞同步高度；walkHeight只對有效廊坪max，避免Math.max(pond,0)讓湖水變平地（被既有泳測試抓到並修）。A2低窗斷言改量距地坪高度，不放寬窗下不透明牆契約。
+- 原程式reviewer限定新batch複核49/49（其時site20+interior29）無新P2，前4P2resolved。指出ramp法線朝下依共用DoubleSide才可見，已另加回歸先紅、翻頂點後綠（site21）。末端1cm級舊地坪偏差非P2；仍需真流程/畫面。
+- 最新build成功index-BCn3weoH.js（其後僅ramp頂點再次build，同hash是否變需讀buildlog）。check pass /tmp/nccu100-reality-check-final.log；全測exec39987進行中 /tmp/nccu100-reality-tests-final.log（uphill測試耗時），之後ramp變更需最終重跑相關，不能當已全部完成。
+- own CLI dah-reality曾goto卡30s，close/reopen後正常；目前http://localhost:5187/?debug&area=dah-hsian，exec55138正在同檔23站r2捕捉。capture-reality-r2.js已改正atrium(-10,1.6,12)->(-2,8,-1)與swim-.47；完成後需從新頁起跑capture-final-motion.js補移動游泳/室內桌機手機。preview5187維持，其他cli sessions是別人的不可關。
+- 補全測前九欄教學差異已對話交付；無新增套件費用，來源非測繪/A1新裝修缺照仍限制。QA draft reality-qa.md需記7fix和最終證據；audit仍待更新最終逐區狀態，不可把獨立review當全現實認證。
+- 下一步：55138結果→同檔final-motion捕捉→確認新圖有效→原finish reviewer限7項verdict；fresh documenter（按impeccable技能要求可spawn）唯讀；真outdoor/interior smoke最終版、全測/check/build；分支整合origin/main版本避衝、verified收尾到原Pages+exactSHA真流程。
+
+# 2026-10-22 目前續作快照（以本節為準，尚未發布）
+
+- 使用者最後明確擴大：廁所位置／架構不對，出館必為2F平台，1F湖邊店家／細節，角色下水游泳、鴨群，地毯式角色站位實景核對；不能以測試綠／大致相似當完成。
+- repo /Users/cengweiting/Developer/創業計畫/NCCU100，branch fix/dah-hsian-entrance-layout，HEAD/base f232d8f。所有未提交皆本輪自身修改，不能reset覆蓋。遠端剛fetch已main dccf640（v1.66），本機暫存v1.64已衝號，發布前整合新main並改下一未用版本。尚無commit／PR／push。準備整合要保留其他作者新包種小遊戲、四維牌樓。
+- 新執行計畫docs/superpowers/plans/2026-10-22-dah-hsian-reality-audit.md；逐區查核docs/reference/dah-hsian/reality-audit.md；來源reality-sources.json（117張舊批原下載，78有場景用途/39排除，另Fooday12張選10/11，wawa廁所1；不是有效站數）。原像素ignored研究不發布。
+- 重大新查證：官方A1招租2026-06-29投標須知p7有1F完整圖；2026-09-02校方A1改PUFFIN籌備中，不再RUKO，缺新裝修照故模型不虛構PUFFIN招牌。A2小尚品，A3廢墟。
+- 2F入口戶外門與return改共享MAIN_ENTRANCE.z7.6（原18.6在館名牆錯側）；實際出館4m平台。2F06放大確認工具間非無障礙，已改突出的小間與側門，男女廁在後。其餘感恩牆／櫃台／預約／兩道風除門差異保留先前本輪修正，interior27項通過，真鍵盤/原拖曳仰視/手機往返皆PASS。
+- 新lakeside-model.js：1F三店共享配置；咖啡湖側近轉角雙門、兩大圓角窗／小格窗、L細框側窗、拼木柱、木紋、窗下凳、窗後吧台桌椅木梁吊燈；小尚品依Fooday10/11低窗/通風小窗/門/黑摺椅/菜單架，校方年報p13白卡座。1F側廊鋪面、停車通風帶、湖邊野餐桌與低植栽。
+- 1F WC初版曾鏡射！再放大native圖＋2020戶外-only遊記wawa-wc白色無障礙滑門實拍反證：WC本體x-24，通道在店面(+X)側x-21.3，湖邊先無障礙z-23.3，再男-20.6女-16.5。開口+X，前廊末端設備雙門；1F照片樓層由戶外-only+plan推定非GPS證實。不可引用初版x-24.5行走PASS當最新位置通過。
+- 游泳：keepOnLand不再拒水；walkHeight在POND低處採SWIM_FOOT_Y=WATER_Y-.25=-.47，和既有泳池基準同距，先前-.86前趴沉頭已修且回歸紅綠。state.swimming僅達賢room.update設定，onEnter/onExit清理；橋面/平台不游泳，水中可游回岸。ducks.js純Three4褐1綠頭是遊戲取樣，絕對時間慢橢圓路徑、有減少動態固定姿態。尾流色改共用COLORS.waterHighlight。
+- 真戶外桌機/手機岸→水→岸完整PASS /tmp/nccu100-reality-outdoor-flow.log，但WC仍初版位置+泳高-.86，最終版本需重跑。2F全部真流程PASS /tmp/nccu100-reality-interior-flow.log（本輪室內最終幾何一致）。60Dah針對曾PASS，後增加site-fidelity目前16/16，仍未全套npm test/check。九欄教學已在對話交付（能力/體驗/結構/資料流/理由/備案/安全成本/證據/限制），全測前若再改需補差異。
+- review_dah_reality_code唯讀full +delta指出4P2：core不認bottom→map改coreColliders過濾離地箱由局部clamp處理；凳/側牆碰撞共用，前兩resolved。最新WC凹間缺端牆斜看穿室外、轉折牆缺碰撞，兩者各紅綠修成LOWER_WC_END_WALLS/TURN_WALLS，16/16，已請原reviewer限兩項複核。
+- 兩輪外觀 .screenshots/dah-reality-r1-* 與r2-*，1280x800/375x812。r1發現/修一批；r2已讀完外部/室內大部，新增interior-desktop/mobile與moving swim。r2圖唯一WC1仍最新端牆修前，必fix batch後同檔recapture。moving swim在-.47版本已重取、已讀，頭露出水面。r2-atrium初次柱擋，正在31488重取清晰站位(-10,1.6,12)look(-2,8,-1)；完成需讀一次有效性。
+- 下一個立即動作：取31488結果+讀新atrium，然後依impeccable/new-work §7 spawn fresh NO HISTORY finish reviewer。完整packet .references/dah-hsian/survey-20261022/reality-review-packet.md（含23個required圖、原話、source paths、限制與已知觀察）。不得自己第三輪瑕疵狩獵；只做reviewer material fix batch。已知未修視覺：野餐桌鋼架看成灰色大片而非Tina20薄黑架；室內望入口外仍是平地草坪而非2F平台。獨立審查需照實確認，不用舊ship背書。
+- Manualdetect本次新戶外6檔僅1 advisory尾流色#b6c6af，已機械改用共用COLORS.waterHighlight；不重跑。此前室內3檔detect[]。未新增ignore例外。PRODUCT/DESIGN沿用，既有missing.impeccable/design.json勿擅修。
+- Preview5187 exec25085仍開，dist最近build在WC端牆/轉折牆修正前（/tmp/nccu100-reality-build.log），其他A2/WC新朝向/-.47泳高/尾流已包括。CLI dah-reality目前2F，123? activecapture31488；dah-survey-reference仍公開tour不3D遊戲。不要同時兩個3D軟體GPU browser。dev5193已停。
+- 技能已讀/套用：product-owner-teaching/systematic-debugging/TDD/impeccable/emil-design-eng/playwright-cli/requesting-code-review/verification-before-completion/finishing-a-development-branch/writing-plans/pdf/review-animations。政策frontend/testing/product-security已讀。review-animations因鴨JS動畫須最終表格/approve，未交付完整審查。Skill freshness可沿用勿全重讀。
+- 真正收尾仍欠：fresh視覺review/fix/recapture/原reviewer限項複核 +documenter；source逐區表最終狀態/八項自評/QA；最終真泳/WC與全測/check/build；保留新remote main版本整合，分支與main必要全測，existingPages exactSHA/版本/assets/真E平台/1F游泳手機驗收。不可現在宣稱全區符合現實或上線。動作已授權不用再問。
+
+# 最新目標（使用者2026-10-22擴大與否定近似還原）
+
+- 使用者再次指出廁所位置／架構不符實際；要求門口出來必為2F平台、補1F湖邊店家／細節、角色可下水游泳、水中有鴨；要求大量角色站立視角參考與逐區地毯式現實核對。
+- **停止目前v1.64發布**；以下入口配置修正仍未提交／未上線，僅幾何檢查通過，不代表實景正確。既有production仍其他作者main版本，不要說使用者已看本機新廁所。
+- 工作區／branch保持fix/dah-hsian-entrance-layout，base f232d8f，無他人未提交修改。暫定版本1.64（最後發布前須fetch檢查遠端版本衝突）。現有所有未提交需保留，不能reset。
+- 新執行計畫：docs/superpowers/plans/2026-10-22-dah-hsian-reality-audit.md。**已找一樓完整圖**：2026-06-29 A1招租公告5231投標須知PDF第7頁，原始embedded image 1349×1873，已轉向對齊2F，見survey-20261022/plan-1f-aligned-view.jpg。1F廁所與店面可由此定位。**2026-09-02最新校方商家5272**：A1已換PUFFIN烘焙蔬食早午餐（籌備中），不能用2024 RUKO當現況；A2小尚品／A3廢墟仍列營業。
+- 當前新增參考研究 .references/dah-hsian/survey-20261022/collect-pages.py（正在下載Tina2026-10-01、Angela、校方RUKO2024、Morris、Jamie實拍，照片≠有效站數）；來源必逐張看圖與分類。已查校方1F A1入口漢堡／A2小尚品／A3廢墟咖啡，不能只做兩店。官方1F平面仍待找。
+- 現有room update/heightAt與state.swimming有游泳館範例，可沿用本區水面浮高／動作；達賢keepOnLand現強制拒水，需TDD改岸水切換並防空橋／2F平台誤判下水及跨房間殘留。
+- CLI dah-survey-reference正在開公開360，1280×800；上一CLI dah-layout-final已關。preview5187 exec25085仍開，dev5193已停。下載exec81730未完成。最後build exec49921需取狀態。舊r2圖固定dist在廁所西端窄窗修正前，不作最終驗收。
+- 獨立code reviewer /root/review_dah_layout_20261022發現廁所前廊西端漏玻璃→新增回歸先紅後綠，27/27通過；原審查者限此問題resolved。仍未做新範圍視覺獨立審查／全測／提交／部署。
+- 下一步：完整站位／來源／缺陷清單及執行計畫；補查廁所真實前廊開口、2F平台與1F商家排列／外梯、岸線鴨子。按一個行為紅綠進行，完成後全區同角度比較、兩輪桌機手機、獨立視覺與程式複核、教學／全測，才既定main Pages發布。
+
+## 先前執行快照（非新範圍完成）
+
+# 本輪狀態：達賢入口層配置／廁所／玻璃門校正（進行中）
+
+- 使用者指出2F配置、感恩牆、入口層廁所與玻璃門細節錯誤；沿已核可2F公開空間修正，正式1F停車／餐飲與其他樓層未納入。
+- 原工作區乾淨；fetch後保留origin/main新內容並ff至f232d8fe75e67bcd231a9b6944fb5609ebe73aab（v1.63），分支fix/dah-hsian-entrance-layout。本輪未提交均自身修改，無新增相依。
+- 官方2F平面重新下載，補沿公開環景走到大廳北側、廁所前、回望閘門／雙門；索引docs/reference/dah-hsian/interior-layout-sources.json。原像素仍ignored，不發布。
+- 校正感恩牆為東側沿南北的木牆、取書區移到櫃台旁；補廁所隱私牆／前廊／關閉男女及無障礙門、B梯還書室及電梯核心；兩道退開玻璃門含上亮窗、框、把手／防撞標記。北側採光及窗邊凳恢復；櫃台螢幕移出木柱。模型與碰撞共用新增配置。
+- 原18項針對基線通過；新8項逐一先紅後綠，現26項通過。原主路線因B梯量體補全改繞東側，真鍵盤腳本也改走廁所前廊／感恩牆前。完整瀏覽器驗收未完成，不能說已上線。
+- r1檢出館名過小／螢幕埋柱、已修；r2固定dist截圖進行中，preview5187本輪啟動，dev5193已停。版本暫定v1.64，build index-H7rwwIlj.js。獨立程式審查進行中。下一步讀r2桌機／觸控及照片站位圖、獨立視覺審查、局部QA／九項教學／全測、既定main與Pages驗收。
+- 限制：圖面與照片估算而非測繪；廁所內隔間無室內照片，只還原公共前廊和關閉入口；不把2020環景或未確認年月新站說成2026全現況。
+
+## 前輪快照
+
 # 本輪狀態：達賢2F照片站位重建 v1.56（驗收中）
 
 - 使用者否定v1.54室內相似度，要求更多照片、以角色站位與朝向修正漂亮中庭；沿已核可2F公開範圍，其他樓層只可見不探索。

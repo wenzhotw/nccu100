@@ -1,6 +1,7 @@
 /** 達賢戶外模型。只依賴 Three.js 與本區配置，可在 Node 直接驗收地面幾何。 */
 import * as THREE from 'three';
-import { BOUNDS, POND, HOUSE, BRIDGE, DECK_Y, LIBRARY_OUTLINE, TERRACE_RAILS, HOUSE_RAILS, OUTDOOR_STEPS, TREE_PLAZA, PLAZA_WALL, BENCHES, LAMPS, groundHeight, insidePolygon } from './layout.js';
+import {createLakeside} from './lakeside-model.js';
+import { BOUNDS, POND, HOUSE, BRIDGE, DECK_Y, MAIN_ENTRANCE, LIBRARY_OUTLINE, TERRACE_RAILS, HOUSE_RAILS, OUTDOOR_STEPS, TREE_PLAZA, PLAZA_WALL, BENCHES, LAMPS, groundHeight, insidePolygon } from './layout.js';
 
 function shapeOf(points) {
   const s = new THREE.Shape();
@@ -50,7 +51,9 @@ const COLORS = {
   glassLight:'#9bb9ba', glassDark:'#3f5f62', frame:'#d6ded7', louver:'#956b48',
   louverEdge:'#b38c62', paving:'#aaafa6', stone:'#a6afa1', grass:'#6fae5c',
   grassDark:'#648258', trunk:'#726653', leaves:'#456c4b', leavesLight:'#69874f',
-  leavesDark:'#365e48', hedge:'#557447', rail:'#bfcac3', water:'#537d71', waterHighlight:'#bed1ba',
+  leavesDark:'#365e48', hedge:'#557447', rail:'#bfcac3', water:'#687e51', waterHighlight:'#bdc7a7',
+  timber:'#9d6335',timberLight:'#c49b65',timberDark:'#594738',shopGlass:'#a8c3bd',
+  shopFloor:'#b8afa0',shopWall:'#b4b9ad',upholstery:'#d2cbbb',pot:'#474b47',lamp:'#e5dab5',
 };
 
 /** 小物件依材質與幾何批次繪製，主牆另保留一般 Mesh 供既有鏡頭遮擋使用。 */
@@ -102,7 +105,9 @@ function ribbonWindows(b,x,y,z,w,h,face=0) {
 function library(parent,materialFor) {
   const g=new THREE.Group();g.name='達賢本館';parent.add(g);const b=batch(g,materialFor);
   // 二樓外部平台與一樓分開。主體玻璃退到 x=10，保留完整長門廊。
-  solid(g,materialFor,'glassDark',-8.25,1.8,1.75,36.5,3.6,52.5,'一樓退縮量體');
+  solid(g,materialFor,'concrete',-8.25,1.8,9.075,36.5,3.6,37.85,'一樓停車層量體');
+  solid(g,materialFor,'concrete',-13.85,1.8,-12.3,25.7,3.6,4.8,'一樓停車層側翼');
+  g.add(createLakeside(materialFor));
   solid(g,materialFor,'glassDark',-8.25,5.75,1.75,36.5,3.5,52.5,'二樓退縮量體');
   solid(g,materialFor,'glassDark',-1.1,11,-.2,50.8,6.9,56.4,'下段懸挑量體');
   solid(g,materialFor,'glassDark',-1.1,15.75,-.2,50.8,2.1,56.4,'中央窗帶');
@@ -130,6 +135,19 @@ function library(parent,materialFor) {
   // 深門廊：玻璃沿左側，右側樑柱、長椅與外欄杆。
   ribbonWindows(b,10.08,5.75,-4.5,40,3.48,Math.PI/2);
   solid(g,materialFor,'concrete',10,5.75,13.3,.8,3.5,6.8,'入口館名牆');
+  const door=new THREE.Group();door.name='2F主入口玻璃門';door.position.set(MAIN_ENTRANCE.x,DECK_Y,MAIN_ENTRANCE.z);g.add(door);
+  const panel=(kind,x,y,z,w,h,d,name)=>{const m=new THREE.Mesh(BOX,materialFor(kind));m.name=name;m.position.set(x,y,z);m.scale.set(w,h,d);door.add(m);return m;};
+  for(const z of [-2.2,-1.1,0,1.1,2.2])panel('frame',.05,1.57,z,.14,3.14,.075,'入口白色直框');
+  for(const y of [.025,2.26,3.14])panel('frame',.05,y,0,.14,.08,4.5,'入口白色橫框');
+  for(const z of [-1.65,-.55,.55,1.65]){
+   panel('glass',0,1.13,z,.06,2.18,1.03,'主入口玻璃門片');
+   panel('glassLight',0,2.7,z,.06,.8,1.03,'主入口上亮玻璃');
+   panel('frame',.085,1.0,z,.025,.045,1.03,'入口玻璃防撞帶');
+  }
+  for(const z of [-.13,.13])panel('rail',.14,1.15,z,.075,.55,.055,'入口拉把');
+  panel('seam',.14,2.37,0,.14,.12,.3,'入口自動門感應器');
+  panel('seam',1.18,.012,0,2.2,.024,3.4,'主入口外側深色地墊');
+
   for(const z of [21,9,-3]) {
     solid(g,materialFor,'concrete',23.7,5.65,z,.8,3.3,.8,'門廊外柱');
     b.add('concrete',17,7.14,z,14.2,.42,.38);
@@ -140,7 +158,7 @@ function library(parent,materialFor) {
     for(const dz of [-1.35,1.35])b.add('edge',21.1,4.2,z+dz,.62,.4,.32);
   }
   // 下層三側玻璃；背側玻璃退到 z=-24.5，讓空橋接點外面留出走道。
-  for(const y of [1.8,5.75]){
+  for(const y of [5.75]){
     ribbonWindows(b,-8.25,y,-24.57,36.5,3.45,Math.PI);
     ribbonWindows(b,-26.56,y,1.75,52.5,3.45,-Math.PI/2);
   }
@@ -310,7 +328,7 @@ function garden(parent,materialFor){
     const a=POND[i],c=POND[(i+1)%POND.length],dx=c[0]-a[0],dz=c[1]-a[1],len=Math.hypot(dx,dz);
     for(let n=0;n<len;n+=0.85){
       const t=n/len,x=a[0]+dx*t,z=a[1]+dz*t;
-      b.add('stone',x,-0.10,z,0.68+(i%3)*0.1,0.48,0.58,(i+n)*0.7,ROCK);
+      b.add('stone',x,-0.12,z,0.62+(i%3)*0.08,0.3,0.52,(i+n)*0.7,ROCK);
     }
   }
   // 平靜水面以少量不規則亮紋表現，不引入高成本的即時反射。
@@ -321,6 +339,12 @@ function garden(parent,materialFor){
   }
   const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute(rippleLines,3));
   const rl=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:COLORS.waterHighlight,transparent:true,opacity:0.28}));g.add(rl);
+  // Tina20/22與Angela06：岸邊成片低植栽，保留湖面與小屋主視線，不圍一整圈高籬。
+  const banks=new THREE.Group();banks.name='湖岸低植栽';g.add(banks);const bankBatch=batch(banks,materialFor);
+  for(const [x,z]of [[21,-82],[20,-77],[17,-71],[17,-65],[16,-57],[16,-49],[14,-38],[-26,-73],[-23,-79],[-9,-82],[2,-93]]){
+    for(let i=0;i<4;i++)bankBatch.add(i%2?'hedge':'leavesLight',x+Math.sin(i*2.4)*.9,.27,z+Math.cos(i*2.4)*.7,1.25,.55,1.1,i,LEAF);
+  }
+  bankBatch.finish();
   // 石椅、細燈柱、場邊綠化。主要觀景方向不被樹冠擋住。
   for(const [x,z,angle]of BENCHES){
     const y=groundHeight(x,z);b.add('concrete',x,y+0.43,z,2.5,0.25,0.72,angle);
@@ -348,7 +372,7 @@ export function createOutdoorModel(materialFor) {
   const cache=new Map();
   const material=materialFor||((kind)=>{
     if(kind==='outline')return new THREE.MeshBasicMaterial({color:'#2a2c4a',side:THREE.BackSide});
-    if(!cache.has(kind))cache.set(kind,new THREE.MeshToonMaterial({color:COLORS[kind]||COLORS.concrete}));
+    if(!cache.has(kind))cache.set(kind,new THREE.MeshToonMaterial({color:COLORS[kind]||COLORS.concrete,...(kind==='shopGlass'?{transparent:true,opacity:.26,depthWrite:false,side:THREE.DoubleSide}:{})}));
     return cache.get(kind);
   });
   const root=new THREE.Group();root.name='達賢戶外區域';

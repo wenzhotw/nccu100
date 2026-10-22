@@ -3,11 +3,19 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {resolve,setActiveColliders,setRoomClamp} from '../src/core/collision.js';
 const layout=await import('../src/world/buildings/dah-hsian/interior-layout.js').catch(()=>({}));
+test('從2F雙門望出去先看到同層鋪磚門廊、柱列與外欄杆，不是門檻外草坪',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const deck=m.getObjectByName('入口外2F鋪磚平台');assert.ok(deck);
+ const b=new THREE.Box3().setFromObject(deck);assert.ok(b.max.x>=-22.8&&b.min.x<-35&&Math.abs(b.max.y)<.03);
+ const ray=new THREE.Raycaster(new THREE.Vector3(-29,1.6,-12),new THREE.Vector3(0,-1,0));
+ const first=ray.intersectObject(m,true).find(h=>h.object.material.side!==THREE.BackSide);assert.equal(first.object.name,'入口外2F鋪磚平台');
+ assert.ok(m.getObjectByName('門廊外柱列'));assert.ok(m.getObjectByName('門廊外欄杆'));
+});
 test('2樓入口、大廳、閘門、挑空及窗邊閱覽有連通動線',()=>{
   assert.equal(typeof layout.interiorColliders,'function');
   setActiveColliders(layout.interiorColliders());
   try {
-    const route=[[-21,-12],[-16,-12],[-16,-5],[-12,-3],[-12,3],[-9,8],[-9,18],[4,20]];
+    const route=[[-21,-12],[-16,-12],[-14,-10],[-12.6,-9],[-12.6,-3],[-12,3],[-9,8],[-9,18],[4,20]];
     for(let i=1;i<route.length;i++)for(let t=0;t<=1;t+=.02){
       const x=route[i-1][0]+(route[i][0]-route[i-1][0])*t,z=route[i-1][1]+(route[i][1]-route[i-1][1])*t,p={x,y:0,z};resolve(p);
       assert.ok(Math.hypot(p.x-x,p.z-z)<.01,`公開通道不被封住 ${x},${z}`);
@@ -33,16 +41,16 @@ test('室內可見樓板與腳底一致，入口通道及挑空頭頂沒有低�
 test('2樓桌椅、閘門機柱、弧形櫃台與員工區實際擋人，閘門通道可走',()=>{
   setActiveColliders(layout.interiorColliders());
   try {
-    for(const [x,z]of [[-7,-5],[-13.5,-2],[-4,-17],[3,-8],[7,22]]){
+    for(const [x,z]of [[-8,-5],[-13.4,-6.3],[-3.2,-6],[3,-8],[7,22]]){
       const p={x,z,y:0};resolve(p);assert.ok(Math.hypot(p.x-x,p.z-z)>.15,`物件應阻擋 ${x},${z}`);
     }
-    const p={x:-12,z:-2,y:0};resolve(p);assert.deepEqual(p,{x:-12,z:-2,y:0},'閘門開口可穿過');
+    const p={x:-12.6,z:-6.3,y:0};resolve(p);assert.deepEqual(p,{x:-12.6,z:-6.3,y:0},'閘門開口可穿過');
   }finally{setActiveColliders([]);}
 });
 test('跳躍時仍不能穿入櫃台後方高木柱，椅子有可見阻擋',()=>{
   setActiveColliders(layout.interiorColliders());
   try {
-    for(const [x,z,y]of [[-5.8,-7.4,1.5],[7,20.8,0]]){
+    for(const [x,z,y]of [[-7.3,-6.8,1.5],[7,20.8,0]]){
       const p={x,z,y};resolve(p);assert.ok(Math.hypot(p.x-x,p.z-z)>.15);
     }
   }finally{setActiveColliders([]);}
@@ -170,4 +178,105 @@ test('上層斜梯不能穿過東側閱讀桌，實際批次幾何保留梯槽',
  m.traverse(o=>{if(!o.isInstancedMesh||!o.name.startsWith('中庭批次'))return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,matrix);matrix.decompose(p,q,s);const b=new THREE.Box3().setFromCenterAndSize(p.clone(),s.clone());if(Math.abs(s.x-1.3)<.001&&Math.abs(s.y-.13)<.001)steps.push(b);if(Math.abs(s.x-1.05)<.001&&Math.abs(s.y-.1)<.001&&Math.abs(s.z-2.2)<.001)tables.push(b);}});
  assert.ok(steps.length>0&&tables.length>0,'真模型中需同時存在階板與東側桌位');
  for(const step of steps)assert.ok(!tables.some(t=>t.intersectsBox(step)),'梯槽內不可保留穿過階板的木桌');
+});
+
+test('感恩牆在入口對側的大廳側牆，沿南北方向延伸，入口眼高可以看見',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');
+ const m=createInteriorModel();m.updateMatrixWorld(true);
+ const wall=m.getObjectByName('感恩牆基底'),b=new THREE.Box3().setFromObject(wall);
+ assert.ok(b.max.x-b.min.x<.3&&b.max.z-b.min.z>9,'不能再把木牆放在北側採光窗前');
+ const ray=new THREE.Raycaster(new THREE.Vector3(-15,1.6,-13),new THREE.Vector3(1,0,0));
+ const hit=ray.intersectObject(wall,true).find(h=>h.object.material.side!==THREE.BackSide);
+ assert.equal(hit?.object.name,'感恩牆基底','站在門廳前看向大廳，先看見側牆而非後方設備');
+});
+
+test('入口旁廁所前廊可由大廳抵達，實體隔間擋住角色，門位於隱私牆後',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ assert.ok(m.getObjectByName('廁所東側隱私牆'),'入口旁不能再是空大廳');
+ setActiveColliders(layout.interiorColliders());
+ try{
+  for(let x=-14;x>=-20.4;x-=.1){const p={x,y:0,z:-16.2};resolve(p);assert.ok(Math.abs(p.x-x)<.01&&Math.abs(p.z+16.2)<.01,'公開前廊能走到廁所門前');}
+  const p={x:-19,y:0,z:-20};resolve(p);assert.ok(Math.hypot(p.x+19,p.z+20)>.2,'廁所未開放隔間不可穿模');
+ }finally{setActiveColliders([]);}
+ for(const name of ['女廁入口門','男廁入口門'])assert.ok(m.getObjectByName(name),'需有可辨識廁所入口');
+});
+
+test('預約取書區在櫃台東側，感恩牆前方恢復大廳視線及通路',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel(k=>new THREE.MeshBasicMaterial({transparent:k==='clear',side:k==='outline'?THREE.BackSide:THREE.FrontSide}));m.updateMatrixWorld(true);
+ const ray=new THREE.Raycaster(new THREE.Vector3(-15,1.6,-13),new THREE.Vector3(1,0,0));
+ const hit=ray.intersectObject(m,true).find(h=>!h.object.material.transparent&&h.object.material.side!==THREE.BackSide);
+ assert.ok(hit&&hit.point.x>-3&&hit.object.parent===m.getObjectByName('大廳側面感恩牆'),'大廳與感恩牆中間不可誤放取書櫃及玻璃隔間');
+ setActiveColliders(layout.interiorColliders());
+ try{for(let x=-14;x<-3;x+=.2){const p={x,y:0,z:-13};resolve(p);assert.ok(Math.hypot(p.x-x,p.z+13)<.01,'感恩牆前可走近');}}
+ finally{setActiveColliders([]);}
+ const reserve=layout.FURNITURE.find(o=>o.kind==='lockers');assert.ok(reserve.z>-10&&reserve.x>-5,'取書櫃應在櫃台旁房間');
+});
+
+test('風除室兩道玻璃門都有門片、上亮窗及側框，開啟中央通道可穿過而側玻璃會擋人',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const doors=m.children.filter(o=>o.name==='風除室玻璃門');assert.equal(doors.length,2,'不能只留一組空門框');
+ for(const g of doors){
+  assert.ok(g.children.some(o=>o.name==='門上亮窗')&&g.children.some(o=>o.name==='開啟玻璃門片')&&g.children.some(o=>o.name==='門片把手'));
+ }
+ setActiveColliders(layout.interiorColliders());
+ try{
+  for(let x=-22.4;x<-18;x+=.1){const p={x,y:0,z:-12};resolve(p);assert.ok(Math.hypot(p.x-x,p.z+12)<.01,'兩道門中央通道須連通');}
+  for(const x of [-22.78,-19.2]){const p={x,y:0,z:-14};resolve(p);assert.ok(Math.hypot(p.x-x,p.z+14)>.15,'門側玻璃須與可見門片同步阻擋');}
+ }finally{setActiveColliders([]);}
+});
+
+test('入口南側保留B梯及還書室量體，閘門接櫃台前方，主動線繞過而非穿過樓梯',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ assert.ok(m.getObjectByName('入口南側B梯與還書室'),'不能把入口旁樓梯畫成開放大廳');
+ const gate=layout.FURNITURE.find(o=>o.kind==='gate');assert.ok(gate.z<-5,'閘門須在櫃台前端，而非後移到中庭入口');
+ const counter=layout.FURNITURE.find(o=>o.kind==='counter'),glass=layout.WALLS.find(o=>o.kind==='clear');
+ assert.ok(counter.x+counter.w/2<glass.x-glass.w/2,'櫃台與預約區隔玻璃不能穿模');
+ setActiveColliders(layout.interiorColliders());
+ try{const p={x:-18,y:0,z:-4};resolve(p);assert.ok(Math.hypot(p.x+18,p.z+4)>.2,'B梯量體須擋人');}
+ finally{setActiveColliders([]);}
+});
+
+test('感恩牆左端的大廳採光窗保持通透，預約室玻璃門有開口且不能繞入感恩牆後機房',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel(k=>new THREE.MeshBasicMaterial({transparent:k==='clear',side:k==='outline'?THREE.BackSide:THREE.FrontSide}));m.updateMatrixWorld(true);
+ const ray=new THREE.Raycaster(new THREE.Vector3(-10,1.6,-20),new THREE.Vector3(0,0,-1),0,4);
+ assert.ok(!ray.intersectObject(m,true).some(h=>!h.object.material.transparent&&h.object.material.side!==THREE.BackSide),'大廳北窗不可仍是感恩牆後的水泥端牆');
+ assert.ok(m.getObjectByName('預約室玻璃門'),'取書室不能只有一張透明板');
+ setActiveColliders(layout.interiorColliders());
+ try{
+  const open={x:-5.3,y:0,z:-1.6};resolve(open);assert.deepEqual(open,{x:-5.3,y:0,z:-1.6},'取書室門前可通行');
+  const rear={x:-1,y:0,z:-17};resolve(rear);assert.ok(Math.hypot(rear.x+1,rear.z+17)>.15,'機房空間不可繞入');
+ }finally{setActiveColliders([]);}
+});
+
+test('大廳採光窗邊有長凳且保留窗前通行，角色不能走穿長凳',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const benches=layout.FURNITURE.filter(o=>o.kind==='bench');assert.ok(benches.length>1,'實景窗邊不應是空白牆');
+ setActiveColliders(layout.interiorColliders());
+ try{for(const o of benches){const p={x:o.x,y:0,z:o.z};resolve(p);assert.ok(Math.hypot(p.x-o.x,p.z-o.z)>.15);assert.ok(m.getObjectByName(o.name),'長凳須可見');}}
+ finally{setActiveColliders([]);}
+});
+
+test('櫃台資訊螢幕露在木柱朝大廳的表面，不可埋入木柱',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const core=new THREE.Box3().setFromObject(m.getObjectByName('木色核心')),screen=new THREE.Box3().setFromObject(m.getObjectByName('櫃台資訊螢幕'));
+ assert.ok(screen.max.x<core.min.x,'站在大廳看得見螢幕，而不是空白木柱');
+});
+
+test('廁所前廊西端不能留下有碰撞卻無玻璃的缺口，鏡頭也須擋在外牆內',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js'),{collectCameraOccluders}=await import('../src/systems/camera-occluders.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const ray=new THREE.Raycaster(new THREE.Vector3(-20.3,1.6,-16.2),new THREE.Vector3(-1,0,0),0,4);
+ const known=new THREE.Mesh(new THREE.BoxGeometry(.2,4,3));known.position.set(-22.9,2,-16.2);known.updateMatrixWorld(true);assert.ok(ray.intersectObject(known).length,'先確認射線命中已知外牆');
+ assert.ok(ray.intersectObject(m,true).some(h=>h.object.material.side!==THREE.BackSide),'玩家被阻擋的位置須有可見玻璃或牆');
+ assert.ok(ray.intersectObjects(collectCameraOccluders(m),false).length,'鏡頭不能穿出廁所前廊外側');
+});
+
+
+test('中庭屋頂以灰色折板長帶為主，採光限在狹長線窗而非滿版藍玻璃格',async()=>{
+ const {createInteriorModel}=await import('../src/world/buildings/dah-hsian/interior-model.js');const m=createInteriorModel();m.updateMatrixWorld(true);
+ const opaque=[],slits=[];m.traverse(o=>{if(o.name==='屋頂不透明折板')opaque.push(o);if(o.name==='屋頂狹長採光')slits.push(o);});
+ assert.ok(opaque.length>=8&&slits.length>=8,'來源AJ06與建築方照片中的重複長帶');
+ const covered=opaque.reduce((sum,o)=>sum+o.scale.x*o.scale.z,0),lit=slits.reduce((sum,o)=>sum+o.scale.x*o.scale.z,0);
+ assert.ok(covered>lit*3,'主要屋面為灰色不透明帶，不是均勻玻璃網格');
+ const ray=new THREE.Raycaster(new THREE.Vector3(-10,18,-9),new THREE.Vector3(0,1,0),0,6);
+ assert.ok(ray.intersectObjects(opaque).length,'站在2F向上可見實際有面的折板');
 });

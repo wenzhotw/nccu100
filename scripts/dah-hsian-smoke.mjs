@@ -49,10 +49,17 @@ try {
   await page.evaluate(()=>{__game.pos.set(-21.2,0,-34);__game.state.vy=0;});
   time=await frameTime();await waitTime(time,.15);
   assert.ok(await page.evaluate(()=>Math.abs(__game.pos.y)<.02),'橋下不會被吸上二樓');
-  await page.evaluate(()=>{__game.teleport(15,-50);__game.state.yaw=0;});
-  time=await frameTime();await page.keyboard.down('a');await waitTime(time,1.3);await page.keyboard.up('a');
-  const shore=await page.evaluate(()=>({x:__game.pos.x,z:__game.pos.z}));
-  assert.equal(insidePolygon(shore.x,shore.z,POND),false,'實際行走不會跨入水池');
+  await page.evaluate(()=>{__game.pos.set(24,0,-83);__game.state.yaw=0;__game.state.vy=0;});
+  time=await frameTime();await page.keyboard.down('a');await waitTime(time,3.2);await page.keyboard.up('a');
+  const shore=await page.evaluate(()=>({x:__game.pos.x,y:__game.pos.y,z:__game.pos.z,swimming:__game.state.swimming}));
+  assert.equal(insidePolygon(shore.x,shore.z,POND),true,'實際鍵盤從岸上走入水域');
+  assert.equal(shore.swimming,true,'水中啟用既有泳姿');assert.ok(shore.y<-.4);
+  time=await frameTime();await page.keyboard.down('d');await waitTime(time,3.6);await page.keyboard.up('d');
+  assert.ok(await page.evaluate(()=>!__game.state.swimming&&__game.pos.y>=0),'實際游回岸上，恢復站立');
+  // 真實管線驗證一樓廁所前廊，不能只在Node略過共用碰撞。
+  await page.evaluate(()=>{__game.pos.set(-21.3,0,-26);__game.state.yaw=Math.PI;__game.state.vy=0;});
+  time=await frameTime();await page.keyboard.down('w');await waitTime(time,1);await page.keyboard.up('w');
+  assert.ok(await page.evaluate(()=>__game.pos.z>-23&&Math.abs(__game.pos.x+21.3)<.15),'1F廁所前廊沒有2F隱形牆');
   const modelId=await page.evaluate(()=>__game.rooms['dah-hsian'].scene.getObjectByName('達賢戶外區域').uuid);
   await page.setViewportSize({width:375,height:812});
   assert.ok(await page.locator('#hud').evaluate(el=>[...el.querySelectorAll('.chip')].filter(c=>c.getBoundingClientRect().width).every(c=>{
@@ -61,6 +68,7 @@ try {
   await page.evaluate(()=>__game.exitRoom());
   await page.waitForFunction(()=>__game.state.room===null&&!__game.state.busy,null,{timeout:60000});
   assert.deepEqual(await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap})),progress,'場景切換不改故事與道具');
+  assert.equal(await page.evaluate(()=>__game.state.swimming),false,'離開時清除游泳狀態');
   assert.equal(await page.evaluate(()=>document.body.classList.contains('dah-hsian-mode')),false,'離開時清除區域樣式');
   await page.evaluate(()=>__game.enterRoom('dah-hsian'));
   await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:60000});
@@ -85,6 +93,17 @@ try {
   await mobile.waitForFunction(t=>__game.state.time>t+0.5,before.time,{timeout:60000});
   await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:7,pointerType:'touch'});
   assert.ok(await mobile.evaluate(z=>__game.pos.z<z-0.2,before.z),'搖桿可移動達賢角色');
+  await mobile.evaluate(()=>{__game.pos.set(24,0,-83);__game.state.yaw=0;__game.state.vy=0;});
+  let swimTime=await mobile.evaluate(()=>__game.state.time);
+  await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:8,pointerType:'touch',clientX:stick.x+12,clientY:stick.y+stick.height/2});
+  await mobile.waitForFunction(t=>__game.state.time>t+3.2,swimTime,{timeout:90000});
+  await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:8,pointerType:'touch'});
+  assert.equal(await mobile.evaluate(()=>__game.state.swimming),true,'手機搖桿可從岸上游入池內');
+  swimTime=await mobile.evaluate(()=>__game.state.time);
+  await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:9,pointerType:'touch',clientX:stick.x+stick.width-12,clientY:stick.y+stick.height/2});
+  await mobile.waitForFunction(t=>__game.state.time>t+3.6,swimTime,{timeout:90000});
+  await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:9,pointerType:'touch'});
+  assert.equal(await mobile.evaluate(()=>__game.state.swimming),false,'手機搖桿可游回岸上');
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'手機沒有橫向捲動');
   await mobile.close();
   assert.deepEqual(errors,[]);

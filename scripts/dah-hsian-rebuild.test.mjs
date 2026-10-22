@@ -196,8 +196,10 @@ test('空橋與小屋二樓平台連續接合，橋下仍能保持一樓高度',
   for(let t=0;t<=1;t+=.02){
     const x=-21.2+(end.x+21.2)*t,z=-27.8+(end.z+27.8)*t;
     assert.equal(site.walkHeight(x,z,4),4,`橋面 ${x},${z}`);
-    // 橋下是0，小屋端低層樓板是.4；兩者都不能吸到二樓。
-    assert.ok([0,.4].includes(site.walkHeight(x,z,0)),`橋下或小屋低層 ${x},${z}`);
+    // 湖畔廊坪/踏階已依照片抬高，橋下草地0、小屋低層.4；都不能吸到二樓。
+    const deck=site.lakesideHeight(x,z),low=site.walkHeight(x,z,0);
+    if(deck>0)assert.equal(low,deck,`橋口下廊坪 ${x},${z}`);
+    else assert.ok([0,.4].includes(low),`橋下或小屋低層 ${x},${z}`);
   }
 });
 
@@ -213,9 +215,9 @@ test('沿環景站位走過門廊、轉角與池側露台，不會遇見無形�
 });
 
 test('平台下的一樓地面保持低處，經過上方露台不會被吸上二樓', () => {
-  for(const [x,z] of [[20,0],[-20,-25],[35,-2],[-21,-35]]) {
+  for(const [x,z,expected] of [[20,0,0],[-20,-25,site.LAKESIDE_Y],[35,-2,0],[-21,-35,0]]) {
     assert.equal(site.groundHeight(x,z),0,`地面 ${x},${z}`);
-    assert.equal(site.walkHeight(x,z,0),0,`低處 ${x},${z}`);
+    assert.equal(site.walkHeight(x,z,0),expected,`低處實際草地或廊坪 ${x},${z}`);
   }
   assert.equal(site.walkHeight(20,0,1.2),0,'普通跳躍不能穿過樓板上樓');
 });

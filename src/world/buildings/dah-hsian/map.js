@@ -3,9 +3,14 @@ import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
 import { colliders } from '../../../core/collision.js';
 import { toon, basic, canvasTex, OUT, outline } from '../../../render/kit.js';
-import { groundHeight, buildingColliders } from './layout.js';
+import { groundHeight, coreColliders } from './layout.js';
 import { tree, FOLIAGE } from '../../vegetation.js';
 import { COLORS, TREE_POSITIONS, createOutdoorModel } from './model.js';
+import {createDucks,updateDucks} from './ducks.js';
+import {LAKESIDE_SHOPS,LOWER_WC,HOTPOT_MENU,LAKESIDE_Y} from './layout.js';
+let ducks;
+const reducedMotion=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):null;
+export function updateMap(time){if(ducks)updateDucks(ducks,time,reducedMotion?.matches);}
 
 function concreteTexture() {
   return canvasTex(256,512,(g,w,h)=>{
@@ -31,6 +36,15 @@ function textSign(parent,text,x,y,z,w,h,color,background,angle=0) {
 
 export function buildMap() {
   const texture=concreteTexture();const materials=new Map();
+  // 程式繪製沿木紋細線，實拍只用來判讀，沒有把第三方照片貼進遊戲。
+  const timber=canvasTex(128,512,(g,w,h)=>{
+    g.fillStyle='#ead9bd';g.fillRect(0,0,w,h);
+    for(let x=0;x<w;x+=4){
+      g.strokeStyle=`rgba(75,48,25,${.08+(x%7)*.012})`;g.beginPath();
+      for(let y=0;y<=h;y+=8){const xx=x+Math.sin(y*.03+x)*.9;y?g.lineTo(xx,y):g.moveTo(xx,y);}g.stroke();
+    }
+    for(const y of [91,273,431]){g.strokeStyle='rgba(70,40,20,.12)';g.beginPath();g.ellipse(31+y%47,y,3,14,.1,0,Math.PI*2);g.stroke();}
+  });
   const paving=canvasTex(256,256,(g,w,h)=>{
     g.fillStyle='#bcc0b6';g.fillRect(0,0,w,h);g.strokeStyle='#929e96';g.lineWidth=1;
     for(let i=0;i<=256;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
@@ -38,10 +52,20 @@ export function buildMap() {
   const materialFor=kind=>{
     if(kind==='outline')return OUT;
     if(!materials.has(kind))materials.set(kind,toon(COLORS[kind]||COLORS.concrete,
-      kind==='concrete'?{map:texture}:kind==='paving'?{map:paving}:undefined));
+      kind==='concrete'?{map:texture}:kind==='paving'?{map:paving}:kind==='timber'||kind==='timberLight'?{map:timber}:kind==='lamp'?{emissive:'#bfa26c',emissiveIntensity:.5}:kind==='shopGlass'?{transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}:undefined));
     return materials.get(kind);
   };
   const model=createOutdoorModel(materialFor);scene.add(model);
+  ducks=createDucks(color=>toon(color));model.add(ducks);
+  for(const s of LAKESIDE_SHOPS){
+    // A1僅能確認新承租者，不能確認實體招牌；不虛構PUFFIN或沿用舊RUKO招牌。
+    if(s.id!=='A3')continue;
+    textSign(model,s.label,s.x,3.12+LAKESIDE_Y,s.z-s.d/2-.12,s.w*.65,.42,s.id==='A3'?'#d5bd81':'#47544d',null,Math.PI);
+  }
+  textSign(model,'小尚品',HOTPOT_MENU.x,1.28+LAKESIDE_Y,HOTPOT_MENU.z-.04,.51,.12,'#d3dbd0',null,Math.PI);
+  textSign(model,'女廁',LOWER_WC.frontX+.14,2.55+LAKESIDE_Y,-16.5,.8,.32,'#47544d',null,Math.PI/2);
+  textSign(model,'無障礙廁所',LOWER_WC.frontX+.14,2.55+LAKESIDE_Y,-23.3,1.5,.32,'#47544d',null,Math.PI/2);
+  textSign(model,'男廁',LOWER_WC.frontX+.14,2.55+LAKESIDE_Y,-20.6,.8,.32,'#47544d',null,Math.PI/2);
   // 與校園共用同一種樹，並將樹根及樹冠判定提高至當地草坡。
   for(const [x,z]of TREE_POSITIONS){
     const start=scene.children.length,count=FOLIAGE.length;
@@ -53,7 +77,7 @@ export function buildMap() {
     // 進場時全域 prefab 已完成合批；這些是一般網格，使用既有材質淡出分支。
     foliage.setFade=null;
   }
-  colliders.push(...buildingColliders());
+  colliders.push(...coreColliders());
   // 入口清水模牆上的館名，位置對照照片；未宣稱複製原書法字形。
   textSign(model,'達賢圖書館',10.42,5.65,13.3,5.6,.84,'#615044',null,Math.PI/2);
   textSign(model,'Dah Hsian Seetoo Library',10.43,5.11,13.3,5.4,.29,'#615044',null,Math.PI/2);
