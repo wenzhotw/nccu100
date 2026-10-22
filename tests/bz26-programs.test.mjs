@@ -53,6 +53,10 @@ test('placement: tent clears every venue tent, the radio booth and the activity 
   assert.ok(p.box.z1 < sign.box.z0 && p.box.z0 > LAYOUT.tents.find(t => t.id === 'F03').box[3], '在看板與友校交流帳篷之間');
   assert.equal(P.tentColliders(p).length, 1);
   assert.deepEqual(P.tentConflicts(p, { colliders: P.tentColliders(p) }), [], '自己的碰撞體不算衝突');
+  // 交談半徑 2.4 的互動點不算擋路，只看站位本身。
+  assert.deepEqual(P.tentConflicts(p, { spots: [{ x: sign.x, z: sign.z + 1.25, r: 2.4 }] }), []);
+  const under = P.foliageUnder(p, [{ x: p.x, z: p.z }, { x: p.box.x1 + 0.5, z: p.z }, { x: p.box.x1 + 3, z: p.z }]);
+  assert.equal(under.length, 2, '帳篷底下與緊貼帳篷的植栽會暫收，遠的不動');
   const wall = { x0: -20, x1: -5, z0: -46, z1: -34 };
   const q = P.tentPlacement({ colliders: [wall], tents: [] });
   assert.ok(q.conflicts.length > 0);
@@ -67,13 +71,22 @@ test('placement: program NPCs stand inside their bays and are reachable from the
     const front = { x: fp.box.x1 + 0.4, z: w.z };
     assert.ok(Math.hypot(w.x - front.x, w.z - front.z) < 2.4, '互動半徑 2.4');
   }
-  // 四位交流大使：在 F03 正面、大道邊，彼此至少 0.9 公尺，也不在帳篷裡。
+  // 四位交流大使和 F03 引路人站成一排：彼此至少 0.85 公尺，不進任何帳篷。
   const f03 = LAYOUT.tents.find(t => t.id === 'F03');
-  for (const [i, a] of P.PARTNER_SPOTS.entries()) {
-    assert.ok(a.x > f03.box[1] && a.x < -6, a.id);
-    for (const b of P.PARTNER_SPOTS.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 0.9);
-    assert.ok(Math.hypot(a.x - f03.anchor[0], a.z - f03.anchor[1]) >= 0.9, '不擋 F03 引路人');
+  const row = [...P.PARTNER_SPOTS, { id: 'guide', ...P.GUIDE_SPOT }];
+  for (const [i, a] of row.entries()) {
+    assert.ok(a.x > f03.box[1] && a.z <= f03.box[3] + 0.3 && a.z >= f03.box[2] - 0.3, a.id);
+    for (const b of row.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 0.849, `${a.id}-${b.id}`);
+    assert.ok(!(a.x > fp.box.x0 && a.x < fp.box.x1 && a.z > fp.box.z0 && a.z < fp.box.z1));
   }
+  // 站在學程攤位正面（被帳篷擋在外 0.35 公尺）時，最近的互動對象一定是該學程代表。
+  for (const bx of P.BAY_X) {
+    const w = P.toWorld(fp, bx, P.NPC_Z), stand = { x: fp.box.x1 + 0.35, z: w.z };
+    const dRep = Math.hypot(w.x - stand.x, w.z - stand.z);
+    for (const a of row) assert.ok(Math.hypot(a.x - stand.x, a.z - stand.z) > Math.min(dRep, 2.4), `第 ${bx} 格前面會點到 ${a.id}`);
+  }
+  // 站在每位大使正面 1 公尺時，最近的是他本人。
+  for (const a of row) { const stand = { x: a.x + 1, z: a.z }; for (const b of row) if (b !== a) assert.ok(Math.hypot(b.x - stand.x, b.z - stand.z) > 1, `${a.id} 前面會點到 ${b.id}`); }
 });
 
 test('results: stamp on completion, perfect only when all right, advanced needs a stamp and all correct', () => {

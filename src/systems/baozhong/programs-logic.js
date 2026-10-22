@@ -16,7 +16,7 @@ export function tentFootprint({ x, z }) {
   return {
     x, z, rotY: ROT_Y,
     box: { x0: x - hx, x1: x + hx, z0: z - hz, z1: z + hz },
-    approach: { x0: x + hx + 0.1, x1: x + hx + 1.6, z0: z - hz + 0.3, z1: z + hz - 0.3 },
+    approach: { x0: x + hx + 0.1, x1: x + hx + 1.3, z0: z - hz + 0.3, z1: z + hz - 0.3 },
   };
 }
 /** 本地座標轉世界座標（rotY = π/2，本地 +z 是正面、朝大道 +x）。 */
@@ -26,7 +26,7 @@ export function toWorld(fp, lx, lz) {
 }
 /** 4 格的中心（本地 x）與學程 NPC 站位（本地 z，站在櫃台後面）。第 1 格最靠噴水池。 */
 export const BAY_X = Object.freeze([-2.7, -0.9, 0.9, 2.7]);
-export const NPC_Z = 0.1;
+export const NPC_Z = 0.35;
 
 const MARGIN = 0.45;
 function toRect(c) {
@@ -46,7 +46,8 @@ export function tentConflicts(fp, { colliders = [], tents = [], spots = [], aven
     if (rectHits(fp.box, c, MARGIN)) out.push({ kind: 'tent', with: c });
     if (rectHits(fp.approach, c)) out.push({ kind: 'approach', with: c });
   }
-  for (const s of spots) if (rectHits(fp.box, { c: true, x: s.x, z: s.z, r: s.r || 0 })) out.push({ kind: 'spot', with: { label: s.label, x: s.x, z: s.z } });
+  // 互動點的 r 是交談半徑，不是實體；只要站位本身（約一人寬）不被帳篷蓋住即可。
+  for (const s of spots) if (rectHits(fp.box, { c: true, x: s.x, z: s.z, r: 0.3 })) out.push({ kind: 'spot', with: { label: s.label, x: s.x, z: s.z } });
   if (fp.box.x1 > -avenueHalf) out.push({ kind: 'avenue', with: { x1: fp.box.x1 } });
   return out;
 }
@@ -59,12 +60,22 @@ export function tentPlacement(ctx, candidates = CANDIDATES) {
   }
   return { ...tentFootprint(candidates[0]), conflicts: tried[0].conflicts, tried };
 }
+/** 帳篷底下（含外擴 margin）的植栽：會場開時暫收，離場恢復；位置檢查也不把它們算成障礙。 */
+export function foliageUnder(fp, foliage, margin = 0.9) {
+  const b = fp.box;
+  return foliage.filter(f => Number.isFinite(f.x) && Number.isFinite(f.z) && f.x > b.x0 - margin && f.x < b.x1 + margin && f.z > b.z0 - margin && f.z < b.z1 + margin);
+}
 export const tentColliders = fp => [{ x0: fp.box.x0, x1: fp.box.x1, z0: fp.box.z0, z1: fp.box.z1, owner: 'bz26-programs' }];
 
-/** 4 位友校交流大使：F03 前面一排，避開 F03 引路人（−7.3, −46.0），彼此間隔 1 公尺。 */
+/**
+ * 4 位友校交流大使與 F03 引路人：在 F03 正面、大道邊站成一排（間隔 0.85 公尺），引路人站中間。
+ * 排在 x −5.6（不是貼著 F03 的 −6.9），是為了讓站在學程第 4 格前的玩家（約 x −7.7, z −43）
+ * 不會因為交流大使比較近而對錯人：最近的大使離那裡超過交談半徑 2.4。
+ */
 export const PARTNER_SPOTS = Object.freeze([
-  { id: 'NTHU', x: -6.9, z: -44.1 }, { id: 'NYCU', x: -6.9, z: -45.1 }, { id: 'NCU', x: -6.9, z: -46.9 }, { id: 'TNUA', x: -6.9, z: -47.9 },
+  { id: 'NTHU', x: -5.6, z: -44.3 }, { id: 'NYCU', x: -5.6, z: -45.15 }, { id: 'NCU', x: -5.6, z: -46.85 }, { id: 'TNUA', x: -5.6, z: -47.7 },
 ]);
+export const GUIDE_SPOT = Object.freeze({ x: -5.6, z: -46.0 });
 export const PARTNER_FACE = Math.PI / 2;
 
 /* ---------- 旗標 ---------- */
