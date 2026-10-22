@@ -207,7 +207,7 @@ export function mountBoothBrowser({ data, state, document = globalThis.document,
       const dept = departments.get(id); title.textContent = dept.name; college.textContent = dept.collegeName || (typeof dept.college === 'object' ? dept.college.name : dept.college);
       const color = dept.collegeColor || dept.college?.color; college.style.setProperty('--college-color', /^#[0-9a-f]{6}$/i.test(color || '') ? color : '#6a8a72');
       isolated = [...document.body.children].filter(el => el !== root && !['SCRIPT', 'STYLE', 'LINK'].includes(el.tagName)).map(el => [el, el.inert]); for (const [element] of isolated) element.inert = true;
-      previousOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; root.hidden = false; render(); onOpen?.(id); closeButton.focus({ preventScroll: true }); return true;
+      previousOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; root.hidden = false; render(); if (view !== 'department') content.scrollTop = 0; onOpen?.(id); closeButton.focus({ preventScroll: true }); return true;
     }, close,
     dispose() { close(); disposed = true; unsubscribe?.(); document.removeEventListener('focusin', focusGuard); keyboardTarget.removeEventListener('keydown', keyboardGuard, true); keyboardTarget.removeEventListener('keyup', keyboardGuard, true); root.remove(); memory.clear(); },
     get isOpen() { return currentId != null; }, get currentId() { return currentId; }

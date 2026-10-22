@@ -63,7 +63,12 @@ test('booth browser keyboard, history, group separation, safety and mobile layou
     await page.locator('[data-exploration-list]').click();
     assert.match(await page.locator('[data-booth-panel]').innerText(), /喜歡課程/);
     await page.keyboard.press('Escape'); assert.equal(await page.evaluate(() => state.busy), false);
+    const savedScroll = await page.evaluate(() => { panel.open('D01'); const content=document.querySelector('[data-booth-panel]'); content.scrollTop=420; const saved=content.scrollTop; panel.close(); return saved; });
+    assert.ok(savedScroll > 0);
     await page.evaluate(() => panel.openCollection());
+    assert.equal(await page.locator('[data-booth-panel]').evaluate(el=>el.scrollTop), 0);
+    await page.evaluate(() => { panel.close(); panel.open('D01'); });
+    assert.equal(await page.locator('[data-booth-panel]').evaluate(el=>el.scrollTop), savedScroll);
     await page.evaluate(() => panel.dispose()); assert.equal(await page.locator('[data-booth-browser]').count(), 0); assert.equal(await page.evaluate(() => state.busy), false); assert.equal(await page.locator('main').evaluate(el => el.inert), false);
   } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }
 });
