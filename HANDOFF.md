@@ -1,3 +1,6 @@
+# 主線整合與發布準備（最新）
+- 本輪產品commit0f28d8c，已無衝突merge origin/main528f422，保留奶蛙/包種/山上校區等他人成果。最新visualclock真瀏覽器PASS /tmp/nccu100-visual-clock-runtime-final.log，含自動方向連續/固定午後穩定/live減少動態恢復、手機上下梯。
+- branch全套exact PASS，戶外泳岸/2F/upper後區PASS，所有review已closed。現在整合全套/check/build，再升既有3版本標示為v1.75（最後remotev1.74/openPR空）；metadata不改玩法。尚未push/部署，不能把本機完成當正式上線。
 # 最終發布前證據（最新）
 - 產品source exact全npmtest PASS /tmp/nccu100-visual-exact-full-tests.log：Node313+skip1/portable80/npc9/stage2 29+skip1。check/buildpass，之後只smoke驗證碼小修。戶外真鍵盤+touch泳岸/前廊/空橋PASS /tmp/nccu100-visual-outdoor-final.log；2F路線/滑鼠仰視/手機進出PASS /tmp/nccu100-visual-interior-final.log；完整upper與7FrearPASS。
 - 戶外smoke前次fail根因是設WC站位前保留上岸側移vel，兩次實際位置x偏.284但z通過；新增.7simulation idle在pos.set前，原斷言不放寬，Metal/CI預設software可選。visualsmoke增強時鐘真連續以sun-target方向校準，不看深夜平坦色；固定午後基準等下一幀。最新visualclockruntime exec20970尚待結果。
