@@ -25,11 +25,12 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: 冒煙測試
         run: npm run smoke
-      - name: 達賢2樓實際進出與手機操作
+      - name: 達賢戶外游泳、2樓進出與手機操作
         run: |
           npm run preview -- --host 127.0.0.1 --port 5187 > /tmp/dah-preview.log 2>&1 &
           dah_preview_pid=$!
           trap 'kill "$dah_preview_pid"' EXIT
+          node scripts/dah-hsian-smoke.mjs
           node scripts/dah-hsian-interior-smoke.mjs
       - name: 保留冒煙測試截圖
         if: always()

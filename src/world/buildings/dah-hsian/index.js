@@ -1,8 +1,9 @@
 /** 達賢戶外獨立區域。暫無正式交通入口，指定 area=dah-hsian 可直接預覽。 */
 import { defineBuilding } from '../../registry.js';
-import { BOUNDS, SPAWN, walkHeight, keepOnLand, zoneName } from './layout.js';
+import { BOUNDS, SPAWN, walkHeight, keepOnLand, zoneName, isSwimming } from './layout.js';
+import { state } from '../../../core/state.js';
 import { late } from '../../../core/late.js';
-import { buildMap, mapLight } from './map.js';
+import { buildMap, mapLight, updateMap } from './map.js';
 import './preview.css';
 import {buildInterior,interiorLight} from './interior-map.js';
 import {ROOM_ID,INTERIOR_BOUNDS,OUTDOOR_DOOR,INTERIOR_SPAWN,INTERIOR_EXIT,OUTDOOR_RETURN,interiorZone} from './interior-layout.js';
@@ -14,8 +15,9 @@ export default defineBuilding({
   interior: [{
     build:buildMap,light:mapLight,heightAt:(x,z)=>walkHeight(x,z,late.pos?.y??0),zone:zoneName,clamp:keepOnLand,
     bounds:BOUNDS,spawn:{...SPAWN,pitch:0.06},miniSub:'草坡・湖濱步道',
-    onEnter(){document.body.classList.add('dah-hsian-mode');},
-    onExit(){document.body.classList.remove('dah-hsian-mode');},
+    onEnter(){state.swimming=false;document.body.classList.add('dah-hsian-mode');},
+    update(){state.swimming=isSwimming(late.pos);updateMap(state.time);},
+    onExit(){state.swimming=false;document.body.classList.remove('dah-hsian-mode');},
     camera:{x0:BOUNDS.x0-25,x1:BOUNDS.x1+25,z0:BOUNDS.z0-25,z1:BOUNDS.z1+25,ceil:80,maxDist:14},
     // 僅讓既有除錯工具與自動測試能安全回到原校園；不增加正式入口或出口。
     returnTo:{x:-2,z:21,yaw:0,pitch:0.3,face:Math.PI},

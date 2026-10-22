@@ -80,12 +80,14 @@ export function buildAtrium(parent,mat){
    const beam=box('metal',x+1.1,roof-.56,z,Math.hypot(2.2,.97),.13,.13,'天窗斜撐');beam.rotation.z=((Math.round((x+24)/2.2)%2)?1:-1)*Math.atan2(.97,2.2);
   }
  }
- for(let x=-24;x<11;x+=2.2){
-  box('white',x,roof+.05,6,.09,.13,40,'天窗縱向分格');
-  for(let z=-10.5;z<25;z+=1.05){
-   batch('clear',x+.98,roof+.1,z,1.75,.04,.68);
-   batch('white',x+.98,roof+.08,z-.5,2.05,.08,.075);
-  }
+ // 實拍屋面以灰色折板為主，折板間保留狹長採光帶；下方深桁架仍完整可見。
+ for(let z=-11;z<=23;z+=4.2){
+  const panel=box('metal',-7.2,roof+.28,z+1.65,35,.1,3.3,'屋頂不透明折板');panel.rotation.x=-.07;
+  box('clear',-7.2,roof+.38,z+3.75,35,.045,.78,'屋頂狹長採光');
+  for(let x=-24.5;x<10;x+=.48)batch('white',x,roof+.19,z+1.65,.025,.035,3.3);
+  box('ink',-7.2,roof+.3,z+3.35,35,.11,.07,'採光帶長框');
+  box('ink',-7.2,roof+.3,z+4.15,35,.11,.07,'採光帶長框');
+  for(let x=-24.5;x<11;x+=2.2)box('white',x,roof+.36,z+3.75,.065,.065,.78,'採光帶短框');
  }
  for(const [key,b]of batches){const mesh=new THREE.InstancedMesh(BOX,mat(b.kind),b.items.length);mesh.name='中庭批次：'+key;mesh.userData.atriumBooks=b.books;b.items.forEach(([x,y,z,w,h,d],i)=>{pose.position.set(x,y,z);pose.scale.set(w,h,d);pose.updateMatrix();mesh.setMatrixAt(i,pose.matrix);});mesh.instanceMatrix.needsUpdate=true;root.add(mesh);}
  return root;

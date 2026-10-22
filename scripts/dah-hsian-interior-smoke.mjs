@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {OUTDOOR_RETURN} from '../src/world/buildings/dah-hsian/interior-layout.js';
 import {chromium} from 'playwright';
 const base=process.env.NCCU_BASE_URL||'http://127.0.0.1:5187/';
 const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
@@ -13,7 +14,7 @@ try{
  assert.equal(await page.evaluate(()=>__game.rooms['dah-hsian-2f'].built),false,'進館前不建立模型');
  await page.locator('#go').click();
  await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
- await page.evaluate(()=>{__game.pos.set(14.2,4,18.6);__game.state.vy=0;});
+ await page.evaluate(({x,y,z})=>{__game.pos.set(x,y,z);__game.state.vy=0;},OUTDOOR_RETURN);
  await page.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});
  await page.keyboard.press('e');
  await page.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
@@ -21,7 +22,7 @@ try{
  const progress=await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap}));
  const modelId=await page.evaluate(()=>__game.rooms['dah-hsian-2f'].scene.getObjectByName('達賢2樓公開空間').uuid);
  const waitTime=async(seconds)=>{const t=await page.evaluate(()=>__game.state.time);await page.waitForFunction(({t,seconds})=>__game.state.time>t+seconds,{t,seconds},{timeout:90000});};
- for(const [x,z]of [[-16,-12],[-16,-5],[-12,-4],[-12,3],[-9,8],[-9,18],[4,20]]){
+ for(const [x,z]of [[-16,-12],[-14,-16.1],[-20,-16.1],[-14,-16.1],[-6,-13],[-14,-10],[-12.6,-9],[-12.6,-3],[-12,3],[-9,8],[-9,18],[4,20]]){
   await page.evaluate(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);},{x,z});
   await page.keyboard.down('w');
   try{await page.waitForFunction(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<.6,{x,z},{timeout:90000});}
@@ -29,7 +30,7 @@ try{
   await waitTime(.15);
   assert.ok(await page.evaluate(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<1.3&&Math.abs(__game.pos.y)<.02,{x,z}),'真鍵盤沿公開動線走到 '+x+','+z);
  }
- console.log('PASS 實際鍵盤：入口→大廳→閘門→挑空→窗邊閱覽');
+ console.log('PASS 實際鍵盤：兩道門→廁所前廊→感恩牆前→閘門→挑空→窗邊閱覽');
  await page.evaluate(()=>{__game.pos.set(-14,0,8);__game.state.yaw=-Math.PI/2;__game.state.pitch=.12;});
  await page.mouse.move(800,420);await page.mouse.down();await page.mouse.move(800,300,{steps:8});await page.mouse.up();
  assert.ok(await page.evaluate(()=>__game.state.pitch<=-.049&&__game.rooms['dah-hsian-2f'].def.camera.lookUpHeight>0),'原滑鼠拖曳可在2F啟用仰視');
@@ -54,7 +55,7 @@ try{
  mobile.on('console',m=>{if(m.type()==='error'&&!(m.text().startsWith('Failed to load resource')&&m.location().url.endsWith('/favicon.ico')))errors.push(m.text());});
  await mobile.goto(url.href,{waitUntil:'domcontentloaded',timeout:120000});await mobile.waitForFunction(()=>window.__game,null,{timeout:90000});
  await mobile.tap('#go');await mobile.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:90000});
- await mobile.evaluate(()=>{__game.pos.set(14.2,4,18.6);__game.state.vy=0;});
+ await mobile.evaluate(({x,y,z})=>{__game.pos.set(x,y,z);__game.state.vy=0;},OUTDOOR_RETURN);
  await mobile.waitForFunction(()=>__game.state.near?.id==='dah-hsian-2f-enter',null,{timeout:60000});await mobile.tap('#act');
  await mobile.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:90000});
  assert.ok(await mobile.locator('#stick').isVisible());

@@ -70,28 +70,14 @@ test('實際碰撞擋住本館與小屋，草坡、門廊及池畔路線保持�
   setRoomClamp(null); setActiveColliders([]);
 });
 
-test('水岸限制先通過已知方形校準，再擋住池岸兩側並保留場景邊界', () => {
-  assert.equal(typeof layout.keepOnLand, 'function');
-  assert.equal(typeof layout.insidePolygon, 'function');
-  const square = [[0, 0], [10, 0], [10, 10], [0, 10]];
-  assert.equal(layout.insidePolygon(5, 5, square), true);
-  assert.equal(layout.insidePolygon(12, 5, square), false);
-  for (const [x, z] of [[5, 5], [0.1, 4], [-0.1, 4], [9.9, 4], [10.1, 4], [0, 0]]) {
-    const p = { x, y: 0, z };
-    layout.keepOnLand(p, square);
-    assert.equal(layout.insidePolygon(p.x, p.z, square), false);
-  }
-  const p = { x: 999, y: 0, z: -999 };
-  layout.keepOnLand(p);
-  assert.ok(p.x <= layout.BOUNDS.x1 && p.z >= layout.BOUNDS.z0);
-  // 來自實際池岸輪廓的中間點不能站在池內。
-  const pond = layout.POND;
-  assert.ok(pond.length > 4);
-  const center = { x: pond.reduce((s, p) => s + p[0], 0) / pond.length,
-    z: pond.reduce((s, p) => s + p[1], 0) / pond.length, y: 0 };
-  assert.equal(layout.insidePolygon(center.x, center.z, pond), true);
-  layout.keepOnLand(center);
-  assert.equal(layout.insidePolygon(center.x, center.z, pond), false);
+test('水域判斷以已知方形校準，開放池水但保留區域邊界', () => {
+  const square=[[0,0],[10,0],[10,10],[0,10]];
+  assert.equal(layout.insidePolygon(5,5,square),true);
+  assert.equal(layout.insidePolygon(12,5,square),false);
+  const p={x:999,y:0,z:-999};layout.keepOnLand(p);
+  assert.ok(p.x<=layout.BOUNDS.x1&&p.z>=layout.BOUNDS.z0);
+  const swimmer={x:5,y:-.86,z:-80};layout.keepOnLand(swimmer);
+  assert.equal(layout.insidePolygon(swimmer.x,swimmer.z,layout.POND),true);
 });
 
 test('達賢草坡與池畔地面連續，玩家能由低處走到入口再繞到池畔', () => {

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "official-plan-2f-rechecked",
+    "source": "https://sub.lib.nccu.edu.tw/map/imgs/dhl2f.jpg",
+    "localFile": ".references/dah-hsian/plan-2f-current.jpg",
+    "sha256": "0767f6837e47f06dfafc80e4e049dc0f28c909045f0928d72250050d6070a999",
+    "inspected": true,
+    "note": "2026-10-22重新取得官方連結；下載日不等於圖面更新日"
+  },
+  {
+    "name": "lobby-north-west",
+    "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF",
+    "heading": 270,
+    "pitch": 0,
+    "eyeHeight": "360拍攝站立視角，未取得精確鏡高",
+    "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+    "attribution": "© Nina Ku",
+    "imageDate": null,
+    "dateNote": "入口既有metadata；新站尚未另查拍攝年月，不當2026現況",
+    "localFile": ".references/dah-hsian/interior/vr-lobby-north-west.png",
+    "sha256": "b7a3a39f4b6e63d27df9dc3db3c1a5cf6551c489ce00c1b7adff4a4b0cc0e84e",
+    "inspected": true
+  },
+  {
+    "name": "restroom-approach",
+    "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHl3NXkzdVFF",
+    "heading": 180,
+    "pitch": 0,
+    "eyeHeight": "360拍攝站立視角，未取得精確鏡高",
+    "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+    "attribution": "© Nina Ku",
+    "imageDate": null,
+    "dateNote": "入口既有metadata；新站尚未另查拍攝年月，不當2026現況",
+    "localFile": ".references/dah-hsian/interior/vr-restroom-approach.png",
+    "sha256": "74357ca97207c4fbf1b177662cc35b60c91dcd9cf278748b3995d1cd51f68dbe",
+    "inspected": true
+  },
+  {
+    "name": "lobby-facing-gates",
+    "panoid": "CAoSF0NJSE0wb2dLRUlDQWdJRHE3YWJkNlFF",
+    "heading": 90,
+    "pitch": 0,
+    "eyeHeight": "360拍攝站立視角，未取得精確鏡高",
+    "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+    "attribution": "© Nina Ku",
+    "imageDate": null,
+    "dateNote": "入口既有metadata；新站尚未另查拍攝年月，不當2026現況",
+    "localFile": ".references/dah-hsian/interior/vr-lobby-gratitude.png",
+    "sha256": "22f43ca534eb861bf705126859db6e0dbda2fdd5cb67856e4cf2da91ef4e8151",
+    "inspected": true
+  },
+  {
+    "name": "entrance-doors",
+    "panoid": "CAoSFkNJSE0wb2dLRUlDQWdJRHE3WmJlREE.",
+    "heading": 180,
+    "pitch": 0,
+    "eyeHeight": "360拍攝站立視角，未取得精確鏡高",
+    "source": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+    "attribution": "© Nina Ku",
+    "imageDate": "2020-02",
+    "dateNote": "入口既有metadata；新站尚未另查拍攝年月，不當2026現況",
+    "localFile": ".references/dah-hsian/interior/vr-entrance-doors.png",
+    "sha256": "9379bdd31294fdd31c2abb70417dbe0c135f23ff043265239cf0dd9b92a5b106",
+    "inspected": true
+  }
+]

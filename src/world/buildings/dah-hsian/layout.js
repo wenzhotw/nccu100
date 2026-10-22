@@ -8,6 +8,43 @@ export const HOUSE = { x: -15.255, z: -53.207, width: 24.25, depth: 16, angle: 1
 export const BOUNDS = { x0: -59, x1: 62, z0: -106, z1: 104 };
 export const SPAWN = { x: 21, z: 86, yaw: 0, pitch: 0.24, face: Math.PI };
 export const DECK_Y = 4;
+export const WATER_Y=-.22;
+// 和既有泳池同樣：身體基準在水面下25cm，前趴後頭部仍露出水面。
+export const SWIM_FOOT_Y=WATER_Y-.25;
+export function isSwimming(p){return insidePolygon(p.x,p.z,POND)&&p.y<-.3;}
+// 環景portico-mid正對玻璃門；門在館名牆z9.9端的湖側，尺寸為照片估算。
+export const MAIN_ENTRANCE={x:10.16,z:7.6,width:4.4,height:3.14,approachX:11.8,returnX:14.2};
+// 2026 A1招租圖對齊核心後的餐飲帶；尺寸為照片／現有場地座標估算，非施工測量。
+export const LAKESIDE_SHOPS=[
+ {id:'A1',name:'A1店面',label:'PUFFIN',x:-15.25,z:-19.8,w:9.5,d:9.4},
+ {id:'A2',name:'A2小尚品',label:'小尚品精緻鍋物',x:-5.75,z:-19.8,w:9.5,d:9.4},
+ {id:'A3',name:'A3廢墟咖啡',label:'RUINS',x:4.55,z:-17.2,w:11.1,d:14.6},
+];
+export const LOWER_WC={x:-24,z:-19.6,w:3,d:9.8,frontX:-22.47};
+export const LOWER_WC_ENTRIES=[{name:'1F無障礙滑門',z:-23.3,w:1.4},{name:'1F男廁入口',z:-20.6,w:1.2},{name:'1F女廁入口',z:-16.5,w:1.2}];
+export const LOWER_WC_FRONT_WALLS=[[-24.5,-24.05],[-22.55,-21.25],[-19.95,-17.15],[-15.85,-14.7]];
+export const LOWER_WC_END_WALLS=[-24.5,-14.7].map(z=>({x:-22.985,z,w:1.03,d:.2,h:3.6}));
+export const LOWER_WC_TURN_WALLS=LOWER_WC_ENTRIES.slice(1).map(e=>({x:LOWER_WC.frontX-.8,z:e.z-.35,w:.12,d:1.4,h:2.4}));
+export const PICNIC_TABLES=[{x:17,z:-34,w:2.6,d:2.1}];
+export const CAFE_BENCHES=[[-3.95,2.8],[-.8,2.8],[2.15,1.7]].map(([x,w])=>({x:LAKESIDE_SHOPS[2].x+x,z:-25.05,w,d:.48}));
+export const LOWER_WC_SCREEN={x:-20.1,z:-19.6,w:.15,d:9.8,h:3.6};
+export const SHOP_WAITING_CHAIRS=[-3,-1.8,1.8,3].map(x=>({x:LAKESIDE_SHOPS[1].x+x,z:-25.15,w:.5,d:.55}));
+export const HOTPOT_MENU={x:-4.45,z:-25.5,w:.65,d:.35};
+export const LAKESIDE_Y=.3;
+// Tina05/06：店前曲線矮台。採樣曲線同時供可見混凝土邊與腳下支撐。
+const edge=[[-27,-28.7]];
+for(const [a,c,b]of [[[-27,-28.7],[-16,-28.4],[-8,-29.3]],[[-8,-29.3],[1,-30.3],[7,-29.9]],[[7,-29.9],[13.5,-30],[15,-27.2]]]){
+ for(let i=1;i<=24;i++){const t=i/24,u=1-t;edge.push([u*u*a[0]+2*u*t*c[0]+t*t*b[0],u*u*a[1]+2*u*t*c[1]+t*t*b[1]]);}
+}
+export const LAKESIDE_EDGE=edge;
+export const LAKESIDE_DECK=[[-27,-24.5],...edge,[15,-2.4],[10.1,-2.4],[10.1,-24.5]];
+export const LAKESIDE_TREAD=[[-27,-24.5],...edge.map(([x,z])=>[x,z-.45]),[15,-2.4],[10.1,-2.4],[10.1,-24.5]];
+export function lakesideHeight(x,z){
+ if(insidePolygon(x,z,LAKESIDE_DECK)||x>-25.5&&x<-20&&z>=-24.5&&z<=-14.6)return LAKESIDE_Y;
+ if(insidePolygon(x,z,LAKESIDE_TREAD))return LAKESIDE_Y/2;
+ if(x>10.1&&x<15&&z>=-2.4&&z<1)return LAKESIDE_Y*(1-z)/3.4;
+ return 0;
+}
 export const TREE_PLAZA={x:43,z:62,inner:4,radius:14,base:.4,tread:.8,rise:.2};
 export const PLAZA_WALL={x:43,z:61.88,w:28,d:.3,bottom:.4,top:2.8};
 export const BENCHES=[[33,40,0],[-34,-43,1.7],[28,-78,0],[-12,-97,1.4]];
@@ -73,8 +110,9 @@ function pushFromBox(p,c,r=.4) {
 
 /** 腳下支撐與地形分開；二樓平台下方不會把一樓行人吸上樓。 */
 export function walkHeight(x,z,footY=0) {
-  const terrain=groundHeight(x,z);
-  let height=terrain;
+  const terrain=insidePolygon(x,z,POND)?SWIM_FOOT_Y:groundHeight(x,z);
+  const deckHeight=lakesideHeight(x,z);
+  let height=deckHeight>0?Math.max(terrain,deckHeight):terrain;
   const wall=PLAZA_WALL;
   if(Math.abs(x-wall.x)<=wall.w/2&&Math.abs(z-wall.z)<=wall.d/2&&footY+.26>=wall.top)height=Math.max(height,wall.top);
   for(const step of OUTDOOR_STEPS)if(Math.abs(x-step.x)<=step.w/2&&Math.abs(z-step.z)<=step.d/2&&footY+.26>=step.y)height=Math.max(height,step.y);
@@ -108,29 +146,11 @@ export function insidePolygon(x, z, polygon) {
   return inside;
 }
 
-/** 水池兩側都有岸線；保留半公尺岸邊間隙，不讓角色踏入景觀池。 */
-export function keepOnLand(p, polygon = POND) {
-  const margin = 0.52;
-  const within = insidePolygon(p.x, p.z, polygon);
-  const area = polygon.reduce((a, v, i) => {
-    const n = polygon[(i + 1) % polygon.length]; return a + v[0] * n[1] - n[0] * v[1];
-  }, 0);
-  let closest = Infinity, candidate = null;
-  for (let i = 0; i < polygon.length; i++) {
-    const a = polygon[i], b = polygon[(i + 1) % polygon.length];
-    const dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz);
-    if (!len) continue;
-    const t = Math.max(0, Math.min(1, ((p.x - a[0]) * dx + (p.z - a[1]) * dz) / (len * len)));
-    const x = a[0] + t * dx, z = a[1] + t * dz, d = Math.hypot(p.x - x, p.z - z);
-    if (!within && d >= margin) continue;
-    const sign = area > 0 ? 1 : -1;
-    const q = { x: x + sign * dz / len * margin, z: z - sign * dx / len * margin };
-    if (d < closest && !insidePolygon(q.x, q.z, polygon)) { closest = d; candidate = q; }
-  }
-  if (candidate) { p.x = candidate.x; p.z = candidate.z; }
+/** 達賢區域邊界與實體碰撞；水面開放游泳，不再把角色推回池岸。 */
+export function keepOnLand(p) {
   p.x = Math.max(BOUNDS.x0 + 0.5, Math.min(BOUNDS.x1 - 0.5, p.x));
   p.z = Math.max(BOUNDS.z0 + 0.5, Math.min(BOUNDS.z1 - 0.5, p.z));
-  if(polygon===POND){
+  {
     const boxes=[...buildingColliders(),...raisedColliders()];
     for(let n=0;n<12;n++){
       const x=p.x,z=p.z;for(const box of boxes)pushFromBox(p,box);
@@ -148,7 +168,7 @@ export function keepOnLand(p, polygon = POND) {
         const x=(p.x-cx)*cs-(p.z-cz)*sn,z=(p.x-cx)*sn+(p.z-cz)*cs;
         for(const [xx,zz]of [[-hx-.40001,z],[hx+.40001,z],[x,-hz-.40001],[x,hz+.40001]]){
           const q={x:cx+xx*cs+zz*sn,z:cz-xx*sn+zz*cs,y:p.y},distance=Math.hypot(q.x-p.x,q.z-p.z);
-          if(distance>=bestDistance||insidePolygon(q.x,q.z,POND)||boxes.some(box=>overlaps(q,box)))continue;
+          if(distance>=bestDistance||boxes.some(box=>overlaps(q,box)))continue;
           if(q.x<BOUNDS.x0+.5||q.x>BOUNDS.x1-.5||q.z<BOUNDS.z0+.5||q.z>BOUNDS.z1-.5)continue;
           best=q;bestDistance=distance;
         }
@@ -163,7 +183,20 @@ export function buildingColliders() {
   const cs=Math.cos(HOUSE.angle),sn=Math.sin(HOUSE.angle);
   return [
     {x0:PLAZA_WALL.x-PLAZA_WALL.w/2,x1:PLAZA_WALL.x+PLAZA_WALL.w/2,z0:PLAZA_WALL.z-PLAZA_WALL.d/2,z1:PLAZA_WALL.z+PLAZA_WALL.d/2,bottom:PLAZA_WALL.bottom,top:PLAZA_WALL.top},
-    { x0:-26.7,x1:10.15,z0:-24.8,z1:28.05,top:25.4 },
+    { x0:-26.7,x1:10.15,z0:-24.8,z1:28.05,bottom:3.6,top:25.4 },
+    { x0:-26.7,x1:10.15,z0:-9.9,z1:28.05,top:3.6 },
+    { x0:-26.7,x1:-1,z0:-14.7,z1:-9.9,top:3.6 },
+    ...LAKESIDE_SHOPS.map(s=>({x0:s.x-s.w/2,x1:s.x+s.w/2,z0:s.z-s.d/2,z1:s.z+s.d/2,top:3.6+LAKESIDE_Y})),
+    ...PICNIC_TABLES.map(t=>({x0:t.x-t.w/2,x1:t.x+t.w/2,z0:t.z-t.d/2,z1:t.z+t.d/2,top:.84})),
+    ...CAFE_BENCHES.map(t=>({x0:t.x-t.w/2,x1:t.x+t.w/2,z0:t.z-t.d/2,z1:t.z+t.d/2,top:.515+LAKESIDE_Y})),
+    ...SHOP_WAITING_CHAIRS.map(t=>({x0:t.x-t.w/2,x1:t.x+t.w/2,z0:t.z-t.d/2,z1:t.z+t.d/2,top:.9+LAKESIDE_Y})),
+    {x0:HOTPOT_MENU.x-HOTPOT_MENU.w/2,x1:HOTPOT_MENU.x+HOTPOT_MENU.w/2,z0:HOTPOT_MENU.z-HOTPOT_MENU.d/2,z1:HOTPOT_MENU.z+HOTPOT_MENU.d/2,top:1.35+LAKESIDE_Y},
+    {x0:LOWER_WC_SCREEN.x-LOWER_WC_SCREEN.w/2,x1:LOWER_WC_SCREEN.x+LOWER_WC_SCREEN.w/2,z0:LOWER_WC_SCREEN.z-LOWER_WC_SCREEN.d/2,z1:LOWER_WC_SCREEN.z+LOWER_WC_SCREEN.d/2,top:LOWER_WC_SCREEN.h+LAKESIDE_Y},
+    {x0:LOWER_WC.x-LOWER_WC.w/2,x1:LOWER_WC.x+.5,z0:LOWER_WC.z-LOWER_WC.d/2,z1:LOWER_WC.z+LOWER_WC.d/2,top:3.6+LAKESIDE_Y},
+    ...LOWER_WC_FRONT_WALLS.map(([z0,z1])=>({x0:-22.6,x1:-22.4,z0,z1,top:3.6+LAKESIDE_Y})),
+    ...LOWER_WC_END_WALLS.map(t=>({x0:t.x-t.w/2,x1:t.x+t.w/2,z0:t.z-t.d/2,z1:t.z+t.d/2,top:t.h+LAKESIDE_Y})),
+    ...LOWER_WC_TURN_WALLS.map(t=>({x0:t.x-t.w/2,x1:t.x+t.w/2,z0:t.z-t.d/2,z1:t.z+t.d/2,top:t.h+LAKESIDE_Y})),
+    {x0:-22.5,x1:-22.4,z0:-24,z1:-22.6,top:2.3+LAKESIDE_Y},
     { x0:9.6,x1:10.4,z0:9.9,z1:16.7,top:7.45 },
     ...[21,9,-3].map(z=>({x0:23.3,x1:24.1,z0:z-.4,z1:z+.4,top:7.45})),
     { obb:true,cx:housePoint(1.05,0).x,cz:housePoint(1.05,0).z,hx:HOUSE.width/2-1.05,hz:HOUSE.depth/2-.15,cs,sn,top:7.5 },
@@ -172,6 +205,9 @@ export function buildingColliders() {
     ...LAMPS.map(([x,z])=>({x0:x-.06,x1:x+.06,z0:z-.06,z1:z+.06,top:groundHeight(x,z)+3.8})),
   ];
 }
+
+/** 共用resolve不支援底部標高；有離地底面的量體由本區keepOnLand處理，避免低層先被推走。 */
+export function coreColliders(){return buildingColliders().filter(c=>c.bottom===undefined);}
 
 export function zoneName(p) {
   if (p.z > 38) return '達賢圖書館・入口草坡';

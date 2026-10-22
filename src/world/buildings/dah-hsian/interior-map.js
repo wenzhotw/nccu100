@@ -4,11 +4,11 @@ import {scene} from '../../../core/engine.js';
 import {colliders} from '../../../core/collision.js';
 import {toon,basic,canvasTex,OUT} from '../../../render/kit.js';
 import {createInteriorModel,INTERIOR_COLORS} from './interior-model.js';
-import {interiorColliders} from './interior-layout.js';
+import {interiorColliders,RESTROOM_DOORS,UTILITY_DOOR} from './interior-layout.js';
 function sign(parent,text,x,y,z,w,h,angle=0,bg=null,color='#eee9df'){
- const texture=canvasTex(1024,256,(g,cw,ch)=>{if(bg){g.fillStyle=bg;g.fillRect(0,0,cw,ch);}g.fillStyle=color;g.font='700 66px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(text,cw/2,ch/2,cw-40);});
+ const texture=canvasTex(1024,256,(g,cw,ch)=>{if(bg){g.fillStyle=bg;g.fillRect(0,0,cw,ch);}g.fillStyle=color;g.font='700 180px "Noto Sans TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(text,cw/2,ch/2,cw-40);});
  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),basic({map:texture,transparent:!bg}));m.name='2樓標示：'+text;m.position.set(x,y,z);m.rotation.y=angle;parent.add(m);
- document.fonts?.load('700 66px "Noto Sans TC"',text).then(()=>texture.redraw());
+ document.fonts?.load('700 180px "Noto Sans TC"',text).then(()=>texture.redraw());
 }
 export function buildInterior(){
  const materials=new Map();
@@ -36,15 +36,21 @@ export function buildInterior(){
  };
  const model=createInteriorModel(materialFor);scene.add(model);colliders.push(...interiorColliders());
  const carpetArt=new THREE.Mesh(new THREE.PlaneGeometry(7,7),basic({map:glyph,transparent:true,depthWrite:false}));carpetArt.name='自畫藍毯金色圖樣';carpetArt.rotation.x=-Math.PI/2;carpetArt.position.set(-11.5,.026,8);model.add(carpetArt);
- sign(model,'國立政治大學　達賢圖書館',-11.5,2.25,-22.45,7.3,.55);
- sign(model,'Dah Hsian Seetoo Library',-11.5,1.7,-22.44,6.4,.28);
- sign(model,'諮詢・借閱服務',-7,2.9,-3.9,3.2,.4,Math.PI/2,'#35495a');
- sign(model,'↑ 預約取書　　挑空展示區 →',-12,3.15,-3.6,6,.5,0,'#35495a');
- sign(model,'出口・大廳 ←',-12,3.15,-3.58,5,.45,Math.PI,'#35495a');
+ const gratitude=model.getObjectByName('大廳側面感恩牆');
+ sign(gratitude,'國立政治大學',2,2.4,.2,2.8,.35);
+ sign(gratitude,'達賢圖書館',2,1.95,.2,3.1,.5);
+ sign(gratitude,'DAH HSIAN SEETOO LIBRARY',2,1.55,.2,3.1,.22);
+ sign(model,'諮詢・借閱服務',-8,2.9,-4.5,3.2,.4,Math.PI/2,'#35495a');
+ sign(model,'入館　　預約取書 →',-12.6,3.15,-7.6,6,.5,0,'#35495a');
+ sign(model,'出口・大廳 ←',-12.6,3.15,-7.58,5,.45,Math.PI,'#35495a');
+ sign(model,'還書・B梯',-20,3.2,-7.8,2.8,.35,Math.PI,'#35495a');
  sign(model,'回達賢戶外',-22.6,3.3,-12,2.5,.4,Math.PI/2,'#35495a');
+ for(const o of [...RESTROOM_DOORS,UTILITY_DOOR]){const a=o.angle||0;sign(model,o.label,o.x+Math.sin(a)*.1,2.65,o.z+Math.cos(a)*.1,1.35,.32,a,'#35495a');}
+ sign(model,'廁所 ←',-14.9,2.8,-17.8,1.5,.35,Math.PI/2,'#35495a');
+ sign(model,'預約取書',-5.5,3.1,-1.55,2,.3,-Math.PI/2,'#35495a');
  sign(model,'2F　特藏中心',-.31,2.8,7,4,.5,-Math.PI/2,'#35495a');
  sign(model,'新書・期刊閱覽',-3,3.1,23.7,5,.45,Math.PI,'#35495a');
- sign(model,'感恩牆',-18.2,1.2,-22.4,1.4,.3);
+ sign(gratitude,'感恩牆',-3.1,1.02,.36,1.8,.28);
  for(const z of [-17,-11,-6])sign(model,'作業區',-.32,2.7,z,1.3,.3,-Math.PI/2,null,'#35495a');
 }
 export function interiorLight(s){
