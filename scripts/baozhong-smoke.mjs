@@ -60,13 +60,16 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.host.bubble), '你想要來包種茶節嗎？我帶你去吧。');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const active = await page.evaluate(() => window.__bz26.counts());
   assert.equal(active.passportButtons, 1);
   const hiddenTreeColliders = await page.evaluate(() => window.__bz26.venueFocus.counts().treeColliders);
   const archColliders = await archColliderCount();
   assert.equal(archColliders, 2, '新版拱門只有兩根柱子碰撞');
-  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders - archColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱，扣除活動暫收植栽');
+  // v1.69 政大之聲電台棚：棚身一個方塊、喇叭一個圓，會場開時才加入。
+  const radioColliders = await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-radio').length);
+  assert.equal(radioColliders, 2, '電台棚只有棚身與喇叭兩個碰撞');
+  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders - archColliders - radioColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱與電台棚兩個碰撞，扣除活動暫收植栽');
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible && window.__game.spots.includes(window.__bz26.activitySign.spot)), true);
   await approach('bz26-D26');
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
@@ -146,9 +149,10 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const reentered = await page.evaluate(() => window.__bz26.counts());
   assert.equal(await archColliderCount(), 2, '重入不重複拱門碰撞');
+  assert.equal(await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-radio').length), 2, '重入不重複電台棚碰撞');
   assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '重入沿用單一拱門模型');
   assert.deepEqual(reentered, active, '重入不能重複建立 NPC、帳篷、碰撞與護照');
   await page.waitForFunction(() => {
