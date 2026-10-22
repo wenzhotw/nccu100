@@ -1,3 +1,5 @@
+# CI容量設定補充（最新）
+- boothdesktop舊run不是業務斷言失敗：log確認11:51開始browserpreview，12:12已驗完37攤，12:14被workflow總30min取消；其餘重載/篩選仍未跑完。保留全部驗收，僅既有workflow上限30→45min，不加新服務/依賴、不弱化斷言。Mobile舊run成功。此設定與手機simulation同步修復一起新CI驗證。
 # 2026-10-22 遠端CI失敗修正（最新，未發布）
 - PR95仍OPEN，正式未部署。branch/main都曾在7744037，本機main全套PASS（Node331/skip1、portable80、npc9、stage2 45/skip1）、check/buildpass。遠端check39772792191在全test/build/全站冒煙/戶外/2F均success後，visual手機7F下6F高度assertfail。沒有忽略或合併。
 - 原touchWalk釋放後等400牆鐘ms，慢速softwareGPU不能保證重力落地。改等.5simulation，同高度20±.15不變，新增實際dt1/60與.05回歸，nav21pass；獨立review用真vel/resolve/gravity校準三步長通過，無product修改。最新本機visualsmoke PASS /tmp/nccu100-visual-mobile-settle.log，preview5195已重啟exec78066（原server因會話中斷消失，第一次重跑拒連不當PASS）。
