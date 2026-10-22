@@ -211,7 +211,7 @@ try {
       await page.waitForFunction(()=>window.__game.state.near===window.__bz26.activitySign.spot);await page.keyboard.press('e');
       await page.locator('#bz-activity-map').waitFor({state:'visible'});
       assert.equal(await page.getByRole('searchbox',{name:'搜尋學系或攤號'}).inputValue(),'','E開圖不得漏進搜尋');
-      assert.equal(await page.locator('#bz-activity-map .bz-map-list button').count(),40);
+      assert.equal(await page.locator('#bz-activity-map .bz-map-list button').count(),42);
       await capture('guide-all40',{renderedText:await page.locator('#bz-activity-map').innerText()});
       await page.getByRole('searchbox',{name:'搜尋學系或攤號'}).fill('D26');
       await page.locator('button[data-booth-id="D26"]').click();assert.equal(await page.evaluate(()=>window.__bz26.activityMap.target?.id),'D26');

@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "note": "v1.70 跨域學程帳篷與友校（Claude，依 Wenzel 2026-10-22 指示）。每一句事實都在 sources 列出官方來源與學年度；baozhong.json 有鎖檔保護，所以另開本檔。查不到的不寫。",
+  "notice": "校內雙主修，不是正式科系，不能考進來；進政大以後才能申請。",
+  "programs": [
+    {
+      "id": "P01", "name": "校學士", "unit": "X 實驗學院", "color": "#7e57c2",
+      "npc": { "title": "學習地圖設計師", "look": { "top": "#7e57c2", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "side" } },
+      "prop": "map",
+      "intro": [
+        "校學士讓你自己設計一個專長名稱，通過審查後，修 4 個課程模組加 1 門畢業整合課程。",
+        "有 X、Y、Z 三種導師陪你：生活、學術和業界。",
+        "第一年有 43 件申請，26 人成為第一屆修讀生。"
+      ],
+      "game": {
+        "type": "classify",
+        "title": "校學士：哪些課放進學習地圖？",
+        "intro": ["首位校學士畢業生從經濟系出發，修了統計，走進人工智慧，專長取名「商業資料科學與人工智慧」。", "如果是你，哪些課要放進這張學習地圖？"],
+        "categories": [{ "id": "in", "label": "放進學習地圖" }, { "id": "out", "label": "這張地圖用不到" }],
+        "items": [
+          { "id": "econ", "text": "經濟學", "category": "in", "explain": "他從經濟系出發，經濟學是起點。", "source": "first-grad" },
+          { "id": "stat", "text": "統計學", "category": "in", "explain": "他修了統計系的課，才接上資料科學。", "source": "first-grad" },
+          { "id": "ai", "text": "人工智慧導論", "category": "in", "explain": "專長名稱裡就有人工智慧。", "source": "first-grad" },
+          { "id": "dance", "text": "現代舞", "category": "out", "explain": "很有趣，但和這個專長的主題無關。", "invented": "示意課程，用來練習判斷相關性" },
+          { "id": "poem", "text": "唐詩選讀", "category": "out", "explain": "很有趣，但和這個專長的主題無關。", "invented": "示意課程，用來練習判斷相關性" }
+        ]
+      },
+      "advanced": [
+        { "q": "校學士由哪個單位辦理？", "options": ["X 實驗學院", "商學院", "體育室"], "answer": 0, "explain": "校學士由 X 實驗學院辦理。", "source": "x-college" },
+        { "q": "校學士要修幾個課程模組，再加 1 門畢業整合課程？", "options": ["2 個", "4 個", "6 個"], "answer": 1, "explain": "4 個課程模組加 1 門畢業整合課程。", "source": "first-grad" },
+        { "q": "X、Y、Z 三種導師裡，Z 導師是哪一種？", "options": ["生活導師", "學術導師", "業界導師"], "answer": 2, "explain": "X 是生活導師，Y 是學術導師，Z 是業界導師。", "source": "udn-first-cohort" }
+      ],
+      "sources": ["x-college", "udn-first-cohort", "first-grad", "quota-114"]
+    },
+    {
+      "id": "P02", "name": "電子物理學士學位學程", "short": "電子物理", "unit": "理學院與資訊學院合作", "color": "#1e88e5",
+      "npc": { "title": "電路實驗助教", "look": { "top": "#1e88e5", "pants": "#263238", "hair": "#2a2220", "hairStyle": "short", "glasses": "#263238" } },
+      "prop": "breadboard",
+      "intro": [
+        "我們把物理基礎、資訊和應用數學一起學，還和中研院物理所長期合作。",
+        "必修從普通物理一路到電子學、電磁學，還有兩學期的專題研究。",
+        "114 學年雙主修名額 20 名。"
+      ],
+      "game": {
+        "type": "matching",
+        "title": "電子物理：課名對內容",
+        "intro": ["電子物理的必修，從力學、電磁學一路學到半導體。", "把課名和它教的內容配成一組。"],
+        "pairs": [
+          { "id": "gp1", "left": "普通物理（一）", "right": "力學與熱學", "explain": "普通物理（一）教力學與熱學。", "source": "ephys-courses" },
+          { "id": "modern", "left": "近代物理", "right": "相對論與量子物理入門", "explain": "近代物理教狹義相對論與量子物理入門。", "source": "ephys-courses" },
+          { "id": "elec1", "left": "電子學（一）", "right": "二極體、電晶體等半導體元件", "explain": "電子學（一）教半導體元件與電晶體電路。", "source": "ephys-courses" }
+        ]
+      },
+      "advanced": [
+        { "q": "普通物理（二）主要教什麼？", "options": ["電學、磁學與光學", "生物學", "會計學"], "answer": 0, "explain": "普通物理（二）教電學、磁學與光學。", "source": "ephys-courses" },
+        { "q": "哪一門課用 Python 來學？", "options": ["量子計算", "普通物理實驗", "電磁學（一）"], "answer": 0, "explain": "學碩合開的量子計算用 Python 授課。", "source": "ephys-courses" },
+        { "q": "專題研究要修幾個學期？", "options": ["一學期", "兩學期", "四學期"], "answer": 1, "explain": "兩學期的專題研究，題目有量子計算、機器學習、訊號處理等。", "source": "ephys-home" }
+      ],
+      "sources": ["ephys-home", "ephys-courses", "quota-114"]
+    },
+    {
+      "id": "P03", "name": "數位內容與科技學士學位學程", "short": "數位內容", "unit": "傳播學院與資訊學院", "color": "#ef6c00",
+      "npc": { "title": "互動設計師", "look": { "top": "#ef6c00", "pants": "#37474f", "hair": "#3a2622", "hairStyle": "long" } },
+      "prop": "tablet",
+      "intro": [
+        "我們是傳播學院和資訊學院一起開的學程，全校大二以上都能申請雙主修。",
+        "雙主修要修 45 學分：4 門必修，加上內容設計和數位科技兩群的進階課。",
+        "114 學年雙主修名額 60 名。"
+      ],
+      "game": {
+        "type": "classify",
+        "title": "數位內容：這門課在哪一群？",
+        "intro": ["進階課分兩群：A 群偏內容與設計，B 群偏數位科技。", "把課分到它所屬的那一群。"],
+        "categories": [{ "id": "a", "label": "A 群：內容設計" }, { "id": "b", "label": "B 群：數位科技" }],
+        "items": [
+          { "id": "story", "text": "數位敘事", "category": "a", "explain": "數位敘事屬於內容與設計類。", "source": "dct-handbook-110" },
+          { "id": "motion", "text": "動態圖像設計", "category": "a", "explain": "動態圖像設計屬於內容與設計類。", "source": "dct-handbook-110" },
+          { "id": "curate", "text": "策展概論", "category": "a", "explain": "策展概論屬於內容與設計類。", "source": "dct-handbook-110" },
+          { "id": "db", "text": "資料庫應用", "category": "b", "explain": "資料庫應用屬於科技與應用類。", "source": "dct-handbook-110" },
+          { "id": "web", "text": "Web 程式設計", "category": "b", "explain": "Web 程式設計屬於科技與應用類。", "source": "dct-handbook-110" },
+          { "id": "game3d", "text": "3D 遊戲程式設計", "category": "b", "explain": "3D 遊戲程式設計屬於科技與應用類。", "source": "dct-handbook-110" }
+        ]
+      },
+      "advanced": [
+        { "q": "數位內容學程的雙主修至少要修幾學分？", "options": ["20 學分", "45 學分", "128 學分"], "answer": 1, "explain": "雙主修要 45 學分：12 學分必修加至少 33 學分進階群修。", "source": "dct-required-115" },
+        { "q": "下面哪一門是必修？", "options": ["設計思考", "唐詩選讀", "微積分"], "answer": 0, "explain": "115 級必修有設計思考、數位內容導論、專題實作一、二。", "source": "dct-required-115" },
+        { "q": "哪個年級起可以申請這個學程的雙主修？", "options": ["高三", "大一上", "大二以上"], "answer": 2, "explain": "全校大二以上（含）的學生都能申請。", "source": "dct-handbook-110" }
+      ],
+      "sources": ["dct-about", "dct-required-115", "dct-handbook-110", "quota-114"]
+    },
+    {
+      "id": "P04", "name": "人工智慧應用學士學位學程", "short": "人工智慧應用", "unit": "資訊學院", "color": "#00897b",
+      "npc": { "title": "AI 訓練師", "look": { "top": "#00897b", "pants": "#263238", "hair": "#2a2220", "hairStyle": "short" } },
+      "prop": "robot",
+      "intro": [
+        "大二以上、各系都能申請雙主修，畢業多拿一個資訊學士。",
+        "至少 42 學分，必修是「計算思維與人工智慧應用導論」和「人工智慧實務專題」。",
+        "114 學年雙主修名額 30 名。"
+      ],
+      "game": {
+        "type": "sort",
+        "title": "人工智慧應用：申請怎麼走？",
+        "intro": ["想雙主修人工智慧應用，要照時間一步一步來。", "把申請流程排成正確順序。"],
+        "cards": [
+          { "id": "year2", "text": "升上大二，符合申請年級", "explain": "大二以上才能申請。", "source": "bpai-2025" },
+          { "id": "apply", "text": "5 月上旬送出申請", "explain": "114 學年的申請期間是 5 月 1 日到 7 日。", "source": "bpai-2025" },
+          { "id": "review", "text": "5 到 6 月書面審查", "explain": "原則上依書面資料審查。", "source": "bpai-2025" },
+          { "id": "result", "text": "6 月底前公告結果", "explain": "結果在 6 月 30 日前公告。", "source": "bpai-2025" }
+        ]
+      },
+      "advanced": [
+        { "q": "人工智慧應用學程雙主修至少要修幾學分？", "options": ["42 學分", "15 學分", "9 學分"], "answer": 0, "explain": "學位學程至少 42 學分；15 學分是學分學程，9 學分是微學程。", "source": "bpai-2025" },
+        { "q": "哪一門是必修？", "options": ["人工智慧實務專題", "游泳", "西洋美術史"], "answer": 0, "explain": "必修是計算思維與人工智慧應用導論、人工智慧實務專題。", "source": "bpai-2025" },
+        { "q": "雙主修完成後，多拿到哪一種學士學位？", "options": ["資訊學士", "文學士", "法學士"], "answer": 0, "explain": "畢業多拿一個資訊學士。", "source": "bpai-2025" }
+      ],
+      "sources": ["bpai-2025", "quota-114"]
+    }
+  ],
+  "partners": {
+    "game": {
+      "type": "matching",
+      "title": "友校交流：這件事走哪條路？",
+      "intro": ["政大和台聯大三校、北藝大都有合作。", "把想做的事和對應的管道配成一組。"],
+      "pairs": [
+        { "id": "stay", "left": "想去台聯大他校住一學期修課", "right": "全時選讀", "explain": "全時選讀可以去一學期到一年，學費照繳政大。", "source": "ust-fulltime" },
+        { "id": "minor", "left": "想多拿一個他校的輔系", "right": "跨校輔系", "explain": "台聯大和北藝大都開放政大學生申請跨校輔系。", "source": "ust-double" },
+        { "id": "course", "left": "只想修一門北藝大的課", "right": "校際選課", "explain": "到北藝大校際選課，學分費打六折。", "source": "tnua-course-115" }
+      ]
+    },
+    "schools": [
+      {
+        "id": "NTHU", "name": "清華大學", "group": "台聯大", "color": "#7b1fa2",
+        "npc": { "title": "清華大學交流大使", "look": { "top": "#7b1fa2", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "short" } },
+        "tee": {"abbr": "NTHU", "sub": "清大", "color": "#7F1084", "ink": "#ffffff", "trim": "#B5B5B6", "colorSource": "nthu-cis", "abbrSource": "nthu-trademark", "note": "清華標準色：紫（網路用 RGB 127,16,132，Pantone 259 C），輔色銀。"},
+        "lines": [
+          "我們和政大都是台灣聯合大學系統的一員。",
+          "你可以跨校選課，也可以申請跨校雙主修或輔系：大一下到大三申請，每年 7 月送件、8 月底放榜。",
+          "想來新竹住一陣子？大二上起可以申請全時選讀，一學期到一年，學費照繳政大。"
+        ],
+        "list": { "title": "清華大學 115 學年開放台聯大學生雙主修與輔系的學系", "year": "115", "source": "nthu-115",
+          "items": ["中國文學系", "外國語文學系（雙主修需前兩學期成績達標）", "工業工程與工程管理學系", "工程與系統科學系", "生醫工程與環境科學系", "化學系（需成績達標並修讀化學課程）", "物理學系", "數學系", "幼兒教育學系"] }
+      },
+      {
+        "id": "NYCU", "name": "陽明交通大學", "group": "台聯大", "color": "#1565c0",
+        "npc": { "title": "陽明交大交流大使", "look": { "top": "#1565c0", "pants": "#263238", "hair": "#3a2622", "hairStyle": "side" } },
+        "tee": {"abbr": "NYCU", "sub": "陽明交大", "color": "#0033A0", "ink": "#ffffff", "trim": "#8A8D8F", "colorSource": "nycu-brand", "abbrSource": "nycu-abbr", "note": "陽明交大品牌主色群青 #0033A0，輔色灰 #8A8D8F。"},
+        "lines": [
+          "陽明交大也在台灣聯合大學系統裡，跨校選課、跨校雙主修與輔系、全時選讀都可以申請。",
+          "跨校雙主修或輔系每年 7 月送件、8 月底放榜，只能選和本系不同領域的系。",
+          "今年開放哪些系，要看我們教務處 7 月的公告。"
+        ],
+        "list": { "title": "114 學年政大學生獲准到陽明交大跨校修讀的學系（例子）", "year": "114", "source": "nycu-114-approved",
+          "items": ["電機工程學系（雙主修）", "數位醫療學士學位學程（雙主修）", "材料科學與工程學系（輔系）", "生物醫學工程學系（輔系）"],
+          "note": "這是去年核准名單裡的例子，不是完整的開放清單。" }
+      },
+      {
+        "id": "NCU", "name": "中央大學", "group": "台聯大", "color": "#2e7d32",
+        "npc": { "title": "中央大學交流大使", "look": { "top": "#2e7d32", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "bowl" } },
+        "tee": {"abbr": "NCU", "sub": "中大", "color": "#2e7d32", "ink": "#ffffff", "trim": "#e8f5e9", "colorInvented": "查不到中央大學官方標準色，沿用遊戲裡原本的綠色，待確認", "abbrSource": "ncu-brand"},
+        "lines": [
+          "中央大學在桃園中壢，也是台灣聯合大學系統的一員。",
+          "跨校選課、跨校雙主修與輔系、全時選讀，政大學生都可以申請。",
+          "我們有太空科學、大氣科學這些比較少見的系，有興趣可以來看看。"
+        ],
+        "list": { "title": "中央大學開放台聯大學生申請輔系與雙主修的學系（112 學年公告）", "year": "112", "source": "ncu-112",
+          "items": ["中國文學系", "英美語文學系", "法國語文學系", "數學系", "物理學系", "光電科學與工程學系", "化學工程與材料工程學系", "土木工程學系", "機械工程學系", "財務金融學系", "經濟學系", "電機工程學系", "通訊工程學系", "大氣科學學系", "地球科學學系", "太空科學與工程學系", "客家語文暨社會科學學系", "生命科學系", "生醫科學與工程學系", "化學學系（輔系）", "資訊管理學系（輔系）", "地球科學學院學士班（輔系）"],
+          "note": "這是 112 學年的公告，最新清單以中央大學教務處公告為準。" }
+      },
+      {
+        "id": "TNUA", "name": "臺北藝術大學", "group": "藝術合作", "color": "#c62828",
+        "npc": { "title": "北藝大交流大使", "look": { "top": "#c62828", "pants": "#212121", "hair": "#212121", "hairStyle": "long" } },
+        "tee": {"abbr": "TNUA", "sub": "北藝大", "color": "#fff8ec", "ink": "#c62828", "trim": "#c62828", "icon": "buffalo", "iconSource": "tnua-buffalo", "colorInvented": "查不到北藝大官方標準色，用米白底配遊戲裡原本的紅色，待確認", "abbrSource": "tnua-abbr", "note": "胸前印北藝大的校牛（水牛），是學校公認的校園代表。"},
+        "lines": [
+          "北藝大在關渡，政大學生可以來校際選課，學分費打六折。",
+          "我們也開放部分學系給政大學生跨校雙主修或輔系，大二以上才能申請，名額不多。",
+          "音樂、美術、劇場設計、動畫都有開放，打開清單看看吧。"
+        ],
+        "list": { "title": "北藝大 115 學年開放政大學生跨校雙主修與輔系的學系", "year": "115", "source": "tnua-115",
+          "items": ["音樂學系（輔系 2 名）", "傳統音樂學系（雙主修 1 名、輔系 1 名）", "美術學系（雙主修 3 名、輔系 3 名）", "劇場設計學系（輔系 2 名）", "動畫學系（輔系 1 名）"],
+          "note": "都要大二以上才能申請。" }
+      }
+    ]
+  },
+  "sources": {
+    "x-college": { "title": "X 實驗學院：115 年學士班學生申請雙主修校學士學位相關辦法", "url": "https://x.nccu.edu.tw/news/c6446ed6-ec66-4355-8784-4f6c8acac237", "year": "115" },
+    "udn-first-cohort": { "title": "聯合報：政大推「校學士」自主規畫學習路徑 27人獲修讀資格", "url": "https://udn.com/news/story/6928/9402137", "year": "114" },
+    "first-grad": { "title": "政大新聞：校學士首屆畢業生 跨域整合走向人工智慧", "url": "https://www.nccu.edu.tw/p/405-1000-23249,c87.php?Lang=zh-tw", "year": "114" },
+    "quota-114": { "title": "政大教務處：114 學年度各學系雙主修名額及申請標準", "url": "https://aca.nccu.edu.tw/download/Rgr_file/114%E5%AD%B8%E5%B9%B4%E5%BA%A6%E9%9B%99%E4%B8%BB%E4%BF%AE%E7%94%B3%E8%AB%8B%E6%A8%99%E6%BA%96.pdf", "year": "114" },
+    "ephys-home": { "title": "電子物理學士學位學程網站", "url": "https://ephys.nccu.edu.tw/", "year": "115" },
+    "ephys-courses": { "title": "電物學程必群修科目簡介", "url": "https://ephys.nccu.edu.tw/docs/電物學程必群修科目簡介.pdf", "year": "110" },
+    "dct-about": { "title": "數位內容學位學程：關於學程", "url": "https://dct.nccu.edu.tw/PageDoc?fid=12446", "year": "115" },
+    "dct-required-115": { "title": "數位內容與科技學士學位學程 115 級必修科目表", "url": "https://dct.nccu.edu.tw/upload/84/doc/24670/115級新生課程必修科目表.pdf", "year": "115" },
+    "dct-handbook-110": { "title": "數位內容與科技學士學位學程 110 學年度課程手冊", "url": "https://dct.nccu.edu.tw/upload/84/doc/25116/%E6%94%BF%E6%B2%BB%E5%A4%A7%E5%AD%B8%E6%95%B8%E4%BD%8D%E5%85%A7%E5%AE%B9%E8%88%87%E7%A7%91%E6%8A%80%E5%AD%B8%E5%A3%AB%E5%AD%B8%E7%A8%8B%E8%AA%B2%E7%A8%8B%E6%89%8B%E5%86%8A_110_V1.pdf", "year": "110" },
+    "bpai-2025": { "title": "人工智慧應用學位學程 2025 招生說明會簡報", "url": "https://bpai.nccu.edu.tw/upload/80/doc/33231/20250423招說會-AI學程簡介-F.pdf", "year": "114" },
+    "ust-double": { "title": "政大教務處：跨校修讀雙主修輔系（台聯大）", "url": "https://aca.nccu.edu.tw/zh/%E5%B0%88%E5%8D%80%E6%A5%AD%E5%8B%99/newbie-2/150-%E8%B7%A8%E6%A0%A1%E4%BF%AE%E8%AE%80%E9%9B%99%E4%B8%BB%E4%BF%AE%E8%BC%94%E7%B3%BB", "year": "115" },
+    "ust-fulltime": { "title": "政治大學參與台灣聯合大學系統全時選讀生實施細則", "url": "https://rtv.nccu.edu.tw/upload/22/doc/33278/114-1%20政治大學參與台灣聯合大學系統全時選讀生實施細則.pdf", "year": "114" },
+    "ust-join": { "title": "中時：政大加入台灣聯合大學系統", "url": "https://www.chinatimes.com/campus/20211014000006-262307", "year": "110" },
+    "nthu-115": { "title": "清華大學 115 學年度開放申請學系及條件", "url": "https://registra.site.nthu.edu.tw/var/file/211/1211/img/4147/980150032.pdf", "year": "115" },
+    "nycu-114-approved": { "title": "台灣聯合大學系統 114 學年度跨校雙主修／輔系審查結果（陽明交大）", "url": "https://aa.nycu.edu.tw/userfiles/aach/files/20250821151445066.pdf", "year": "114" },
+    "ncu-112": { "title": "中央大學 112 學年度台聯大學生申請跨校修讀輔系／雙主修資格條件一覽表", "url": "https://pdc.adm.ncu.edu.tw/register/data/ust/UST1-03.pdf", "year": "112" },
+    "tnua-115": { "title": "北藝大 115 學年度跨校（政大及陽明交大）學士班雙主修及輔系申請相關事項一覽表", "url": "https://aa.nycu.edu.tw/userfiles/aach/files/20260413161543202.pdf", "year": "115" },
+    "tnua-course-115": { "title": "政大教務處：115-1 北藝大開放本校學生校際選課說明", "url": "https://aca.nccu.edu.tw/db/upload/115-1北藝大開放本校學生校際選課說明.pdf", "year": "115" },
+    "nthu-cis": {"title": "清華品牌管理：標準色（primary-color.pdf）", "url": "https://www.nthu.edu.tw/files/cis/primary-color.pdf", "year": "115（2026-10-22 查閱）"},
+    "nthu-trademark": {"title": "國立清華大學商標使用管理（NTHU、清華、清大）", "url": "https://www.nthu.edu.tw/files/cis/trademarkofnthu.pdf", "year": "115（2026-10-22 查閱）"},
+    "nycu-brand": {"title": "陽明交大品牌識別規範：Brand Colors", "url": "https://www.nycu.edu.tw/userfiles/nycuch/files/20231006224019703.pdf", "year": "112"},
+    "nycu-abbr": {"title": "中央社：陽明交大推動合校 英文校名簡稱將改為 NYCU", "url": "https://www.cna.com.tw/news/ahel/202004290400.aspx", "year": "108"},
+    "ncu-brand": {"title": "國立中央大學：中大品牌識別（官方簡稱中大）", "url": "https://www.ncu.edu.tw/p/412-1000-98.php?Lang=zh-tw", "year": "115（2026-10-22 查閱）"},
+    "tnua-abbr": {"title": "維基百科：國立臺北藝術大學（簡稱北藝大；英文 TNUA）", "url": "https://zh.wikipedia.org/wiki/%E5%9C%8B%E7%AB%8B%E8%87%BA%E5%8C%97%E8%97%9D%E8%A1%93%E5%A4%A7%E5%AD%B8", "year": "115（2026-10-22 查閱）"},
+    "tnua-buffalo": {"title": "ETtoday：北藝大新校牛取名「奧米加咆哮獸」（校牛是北藝人共同記憶）", "url": "https://www.ettoday.net/news/20170425/911832.htm", "year": "105"}
+  }
+}

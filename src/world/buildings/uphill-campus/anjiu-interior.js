@@ -1,11 +1,13 @@
 /** IMG_9010、9016、9017：安九旋轉樓梯下端與短走廊，不延伸至食堂。 */
 import * as THREE from 'three';
 import {lobbyBox,lobbyColors,lobbyOBB} from './lobby.js';
+import {LOBBY} from './layout.js';
 
 export const ANJIU={id:'anjiu',name:'安九',
-  entrance:{x:34.6,z:-28.6,r:1.6,room:'uphill-campus',label:'走下旋轉樓梯'},
+  entrance:{x:LOBBY.stairTop.x,z:LOBBY.stairTop.z,r:1.4,room:'uphill-campus',label:'走下旋轉樓梯'},
   // 返回房間沿用 main 的 core/room-navigation.js 契約（returnRoom）。
-  returnRoom:'uphill-campus',returnTo:{x:35.8,z:-30.5,face:-Math.PI/2},
+  // 回到大廳時站在樓梯口東南方，離下樓互動範圍半公尺以上，也避開圓柱。
+  returnRoom:'uphill-campus',returnTo:{x:LOBBY.stairTop.x+1.7,z:LOBBY.stairTop.z-2.0,face:-Math.PI/2},
   spawn:{x:0,z:1.8,yaw:Math.PI,face:0,pitch:0.22},
   exit:{x:0,z:0,r:1.5,label:'走上旋轉樓梯'},
   bounds:{x0:-3.5,x1:3.5,z0:-1,z1:7},

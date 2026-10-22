@@ -125,7 +125,8 @@ export function buildGreybox() {
     for(let i=0;i<4;i++)for(let j=0;j<4;j++){if((i+j)%2===0){g.fillStyle='#e2ddd2';g.fillRect(i*64,j*64,64,64);}g.strokeRect(i*64,j*64,64,64);}
   });
   group.traverse(o=>{
-    if(o.isMesh&&o.name.includes('方磚地板')) {
+    // 只有大廳主地板貼方磚紋；開口下層已用頂點色烘好天窗光斑。
+    if(o.isMesh&&o.name==='米白方磚地板') {
       o.material=toon('#ffffff',{map:tile});
       const p=o.geometry.attributes.position,uv=new THREE.Float32BufferAttribute(new Float32Array(p.count*2),2);
       for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/2,p.getY(i)/2);o.geometry.setAttribute('uv',uv);

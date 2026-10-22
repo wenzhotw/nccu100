@@ -148,7 +148,8 @@ test('東側人行道與草坡連續貼坡道，九舍樓梯保有優先高度',
     for (const d of [3.05,3.6,4.15]) {
       const px=x+nx*d,pz=z+nz*d;
       if (layout.STAIRS.some(s=>terrain.projectToPath(px,pz,s.path).distance <= (s.width/2)**2)) continue;
-      assert.ok(Math.abs(terrain.heightAt(px,pz)-terrain.rampHeight(ramp,terrain.projectToPath(px,pz,ramp.path).s)) < 0.01);
+      // 2026-10-22：人行道高出路面一個路緣石。
+      assert.ok(Math.abs(terrain.heightAt(px,pz)-terrain.rampHeight(ramp,terrain.projectToPath(px,pz,ramp.path).s)-terrain.CURB) < 0.01);
     }
   }
 });

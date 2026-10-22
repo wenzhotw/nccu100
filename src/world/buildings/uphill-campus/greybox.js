@@ -1,8 +1,8 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY } from './layout.js';
-import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, rampLandscape } from './terrain.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY, PLAZA } from './layout.js';
+import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, landscapeAt } from './terrain.js';
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 import { addLobbyExterior } from './lobby-exterior.js';
 import { addCourtyard, courtyardColliders, dTowerGeometries } from './courtyard.js';
@@ -190,9 +190,9 @@ function addBuildingsAndWalls(group) {
         .translate(x, (bridge.bottom + base) / 2, z));
     }
   }
-  // 南端外牆由十二公尺平台補至大廳地板，避免牆底浮空。
+  // 大廳以南的建物由十二公尺平台補至大廳地板，避免牆底浮空。
   const lobby = buildings().find(b => b.osm === LOBBY.osm);
-  const fillShape = new THREE.Shape(clipBuilding(lobby.pts, -23.7, false).map(([x,z]) => new THREE.Vector2(x,-z)));
+  const fillShape = new THREE.Shape(clipBuilding(lobby.pts, LOBBY.bounds.z1, false).map(([x,z]) => new THREE.Vector2(x,-z)));
   const fill = new THREE.ExtrudeGeometry(fillShape, { depth: 3, bevelEnabled: false, steps: 1 });
   fill.rotateX(-Math.PI/2).translate(0,12,0);
   fill.computeBoundingBox();
@@ -253,7 +253,7 @@ function surfaceAt(x, z) {
       }
     }
   }
-  return rampLandscape(x, z) ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
+  return landscapeAt(x, z) ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
 }
 
 /** 等高網格先合併成水平長條，再合併上下相同長條，通路自動挖槽。 */
@@ -278,6 +278,8 @@ function surfaceRects() {
       const [bx, bz] = region.poly[(i + 1) % region.poly.length];
       if ((az > cz) !== (bz > cz)) cut(ax + (bx - ax) * (cz - az) / (bz - az));
     });
+    // 紅磚廣場邊界也切段，廣場外的平台不會被整段算成廣場而漏畫。
+    if (cz >= PLAZA.z0 && cz <= PLAZA.z1) { cut(PLAZA.x0); cut(PLAZA.x1); }
     const nearby = passages.filter(p => cz >= p.z0 - 8 && cz <= p.z1 + 8);
     nearby.forEach(p => { cut(p.x0 - 8); cut(p.x1 + 8); });
     const xs = [...cuts].sort((a, b) => a - b);
@@ -303,13 +305,18 @@ export function createGreybox() {
   const tops = [], sides = [];
   for (const r of rects.filter(r => r.kind === 'platform')) {
     let pieces=[r];
-    if(r.h===15&&r.x1>25.2&&r.x0<37.1&&r.z1>-35.6&&r.z0<-23.7) {
-      const x0=Math.max(r.x0,25.2),x1=Math.min(r.x1,37.1),z0=Math.max(r.z0,-35.6),z1=Math.min(r.z1,-23.7);
+    // 大廳範圍的草地挖掉，地板與圓形開口由 lobby.js 接手。
+    const L=LOBBY.bounds;
+    if(r.h===LOBBY.base&&r.x1>L.x0&&r.x0<L.x1&&r.z1>L.z0&&r.z0<L.z1) {
+      const x0=Math.max(r.x0,L.x0),x1=Math.min(r.x1,L.x1),z0=Math.max(r.z0,L.z0),z1=Math.min(r.z1,L.z1);
       pieces=[{...r,x1:x0},{...r,x0:x1},{...r,x0,x1,z1:z0},{...r,x0,x1,z0:z1}].filter(p=>p.x1>p.x0&&p.z1>p.z0);
     }
-    for(const p of pieces)tops.push(TOP.clone().scale(p.x1-p.x0,1,p.z1-p.z0).translate((p.x0+p.x1)/2,p.h,(p.z0+p.z1)/2));
-    if (r.h > 0) sides.push(SIDES.clone().scale(r.x1 - r.x0, r.h, r.z1 - r.z0)
-      .translate((r.x0 + r.x1) / 2, r.h / 2, (r.z0 + r.z1) / 2));
+    // 側面也只留在大廳範圍外，否則地板開口底下會看到一整片平台側壁。
+    for(const p of pieces) {
+      tops.push(TOP.clone().scale(p.x1-p.x0,1,p.z1-p.z0).translate((p.x0+p.x1)/2,p.h,(p.z0+p.z1)/2));
+      if (p.h > 0) sides.push(SIDES.clone().scale(p.x1 - p.x0, p.h, p.z1 - p.z0)
+        .translate((p.x0 + p.x1) / 2, p.h / 2, (p.z0 + p.z1) / 2));
+    }
   }
   addMerged(group, '平台側面', sides, concrete);
   const platformGeometry = mergeBufferGeometries(tops);
@@ -371,7 +378,7 @@ export function greyboxColliders() {
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
   return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...buildings().flatMap(b => {
-    if(b.osm===LOBBY.osm)return buildingBoxes({...b,pts:clipBuilding(b.pts,-23.7,false)});
+    if(b.osm===LOBBY.osm)return buildingBoxes({...b,pts:clipBuilding(b.pts,LOBBY.bounds.z1,false)});
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
     return [...buildingBoxes({ ...b, pts: clipBuilding(b.pts, bridge.cutZ, true) }),

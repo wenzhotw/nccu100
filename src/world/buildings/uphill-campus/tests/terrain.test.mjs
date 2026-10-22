@@ -25,13 +25,21 @@ test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維�
   }));
   const checkSample = (x, z) => {
     const height = heightAt(x, z);
-    assert.ok(Number.isFinite(height) && height >= 0 && height <= 15, `地面（${x}，${z}）`);
+    // 坡頂人行道高出路面一個路緣石，最高 15.12 公尺。
+    assert.ok(Number.isFinite(height) && height >= 0 && height <= 15.12 + 1e-9, `地面（${x}，${z}）`);
     const inLandscape = RAMPS.some(r=>r.path.slice(1).some((b,i)=>{
       const a=r.path[i],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);
       const along=((x-a[0])*dx+(z-a[1])*dz)/l,side=((x-a[0])*-dz+(z-a[1])*dx)/l;
       return along>=0 && along<=l && side>=r.width/2 && side<=r.width/2+4.2;
     }));
-    if (!inPassage(x, z) && !inLandscape) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
+    // 2026-10-22：九舍樓梯兩側 5 公尺內是順著樓梯的草坡（照片 9034），也不是平台層高。
+    const jiu = STAIRS.find(s => s.id === 'jiu-plaza');
+    const nearJiu = jiu.path.slice(1).some(([bx, bz], i) => {
+      const [ax, az] = jiu.path[i], dx = bx - ax, dz = bz - az, l = Math.hypot(dx, dz);
+      const along = ((x - ax) * dx + (z - az) * dz) / l;
+      return along >= 0 && along <= l && Math.abs((x - ax) * dz - (z - az) * dx) / l < 5;
+    });
+    if (!inPassage(x, z) && !inLandscape && !nearJiu) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
   };
   for (let x = R.x0; x <= R.x1; x += 2) {
     for (let z = R.z0; z <= R.z1; z += 2) {

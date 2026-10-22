@@ -50,13 +50,17 @@ import './systems/old-principal/index.js'; // 老校長：騎馬、歷史問答�
 import './systems/weather/index.js'; // 天氣：石獅子、下雨、偷傘、淋雨體力、四維道噴水磁磚
 import './systems/swimming/index.js'; // 游泳館：換泳衣、救生員、下水游泳
 import './systems/fountain-swim/index.js'; // 穿泳衣出游泳館：路人議論、噴水池噴水游泳、生日快樂、噴水池曝露狂成就
+import './systems/naiwa/index.js'; // 奶蛙立牌：校園流動迷因，會自己出沒、自己跳，可以搬著走、打卡拍照
 import './systems/wenz/index.js'; // 遊戲製作人 Wenz：好玩嗎？破壞死光、Instagram
 import './systems/eagle/index.js'; // 雄鷹吉祥物：收集三個故事後校長的任務，永久變身、飛行、四維堂頂樓躲 Wenz
 import './systems/gym/index.js'; // 體育館：打球的人、雄鷹隊長的投籃挑戰、送毛巾、找雄鷹吉祥物支線
 import './systems/baozhong/index.js'; // 包種茶節（T065）：邀請人、40 頂帳篷、系攤集章、學院關主、大會考
 import './systems/baozhong/festival-arch.js'; // 會場開時四維堂前的氣球拱門
+import './systems/baozhong/entry-radio.js'; // v1.69：邀請人泡泡、開始畫面「參加包種茶節」、政大之聲電台棚
+import './systems/baozhong/programs-partners.js'; // v1.70：跨域學程帳篷（校內雙主修）與友校交流大使
 import './systems/baozhong/stage2/index.js'; // 兩階段攤位（T074）：預設開啟，?bz26stage2=0 可暫時關閉
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
+import './systems/analytics.js'; // 遊玩人數統計（GoatCounter）：瀏覽、開始冒險、進室內、成就；本機與自動測試不送
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';

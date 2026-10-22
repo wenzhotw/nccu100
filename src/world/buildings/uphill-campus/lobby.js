@@ -15,12 +15,16 @@ const palette=new THREE.MeshToonMaterial({color:'#ffffff',vertexColors:true});
 function mergeParts(root) {
   root.updateMatrixWorld(true);const batches=new Map(),sources=[];
   root.traverseVisible(o=>{
-    if(!o.isMesh||o.userData.sign||o.userData.signAtlas||o.name.includes('方磚地板')||o.name==='米白方磚地板')return;
+    if(!o.isMesh||o.userData.sign||o.userData.signAtlas||o.name==='米白方磚地板')return;
     const mat=o.material,g=o.geometry.clone().applyMatrix4(o.matrixWorld);
     let target=mat;
     if(mat.isMeshToonMaterial&&!mat.transparent) {
-      const a=new Float32Array(g.attributes.position.count*3);for(let i=0;i<a.length;i+=3)mat.color.toArray(a,i);
-      g.setAttribute('color',new THREE.Float32BufferAttribute(a,3));target=palette;
+      // 已烘好光影漸層的頂點色保留，其餘以材質色填入。
+      if(!(mat.vertexColors&&g.attributes.color)) {
+        const a=new Float32Array(g.attributes.position.count*3);for(let i=0;i<a.length;i+=3)mat.color.toArray(a,i);
+        g.setAttribute('color',new THREE.Float32BufferAttribute(a,3));
+      }
+      target=palette;
     }
     const list=batches.get(target)??[];list.push(g);batches.set(target,list);sources.push(o);
   });
@@ -40,16 +44,22 @@ function round(group,name,x,y,z,r,h,color) {
   const outline=new THREE.Mesh(CYLINDER,edge);outline.scale.set(1+0.03/r,1+0.06/h,1+0.03/r);m.add(outline);return m;
 }
 function sign(group,text,x,y,z,w=1.4,h=0.45,angle=0) {
-  h=Math.max(h,0.5);
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),material(lobbyColors.ivory));m.name='標示：'+text;
   m.position.set(x,y,z);m.rotation.y=angle;m.userData.sign={text,w,h};group.add(m);return m;
 }
-const columns=[[27.5,-31.9],[31.2,-32],[34.6,-31.8],[34.9,-30.6],[34.9,-26.4],[31.2,-25.5],[27.5,-25.8],[27.4,-28.6]];
-const furniture=[['服務台',27.4,-34.95,2.4,0.55,1.1,'wood'],['紅色圓沙發',28.1,-24.9,1.3,1.3,0.55,'red'],
-  ['白色矮櫃',30.2,-24.3,1.2,0.5,0.8,'ivory'],['木長凳',32.2,-24.3,1.6,0.5,0.45,'wood'],['木邊桌',33.7,-24.4,0.7,0.6,0.7,'wood'],
-  ['飲料機',30.3,-34.95,1.1,0.7,1.9,'red'],['咖啡機',31.7,-34.95,1.1,0.7,1.9,'coffee'],['販賣機',33.1,-34.95,1.1,0.7,1.9,'pink'],
-  ['交誼沙發',35.7,-24.5,1.2,0.65,0.7,'grey']];
-const chairs=[[27.3,-32.2],[28.7,-32.2],[28,-31.5],[28,-32.9]];
+const {cx:WX,cz:WZ,r:WR}=LOBBY.well,B=LOBBY.bounds,FLOOR=LOBBY.base,CEIL=LOBBY.base+LOBBY.ceiling;
+/** 開口東側留 1.2 公尺缺口給樓梯口，對應的半角。 */
+const GAP=0.6/WR;
+// 八根圓柱圍在開口外 1 公尺，錯開東側樓梯口與東西向通道。
+const columns=Array.from({length:8},(_,k)=>{const a=Math.PI/8+k*Math.PI/4;return [WX+(WR+1)*Math.cos(a),WZ+(WR+1)*Math.sin(a)];});
+// 北側是服務台與販賣區（照片 9014、9015），南側是沙發、矮櫃與交誼區（照片 9009、9012）。
+const furniture=[['服務台',27.3,B.z0+0.45,2.4,0.55,1.1,'wood'],
+  ['飲料機',30.8,B.z0+0.45,1.0,0.7,1.85,'red'],['咖啡機',32.0,B.z0+0.45,1.0,0.7,1.85,'coffee'],['販賣機',33.2,B.z0+0.45,1.0,0.7,1.85,'pink'],
+  ['紅色圓沙發',27.4,B.z1-1.5,1.3,1.3,0.45,'red'],['白色矮櫃',29.6,B.z1-0.4,1.2,0.45,0.8,'ivory'],['木長凳',31.6,B.z1-0.4,1.6,0.45,0.45,'wood'],
+  ['木邊桌',33.2,B.z1-0.4,0.6,0.5,0.7,'wood'],['交誼沙發',35.9,B.z1-2.2,1.2,0.65,0.7,'grey']];
+// 桌椅放在東南角空地，避開開口外的通道與北側服務台、販賣區。
+const TABLE=[33.4,B.z1-2.6];
+const chairs=[[TABLE[0]-0.7,TABLE[1]],[TABLE[0]+0.7,TABLE[1]],[TABLE[0],TABLE[1]+0.7],[TABLE[0],TABLE[1]-0.7]];
 /** 標示整串置中繪製，字級先取格子高的七成，太寬就等比縮到格子寬的九成；measure(text,size) 回傳字寬。 */
 export function signTextLayout(text,cell,measure) {
   let size=Math.min(90,cell.h*0.72);const width=measure(text,size);
@@ -78,90 +88,144 @@ function shellParts() {
     parts.push(['門側牆',side?x1:x0,(a+b)/2,0.3,b-a]);
   return parts;
 }
-export function wellPoint(t) {
-  const {cx,cz,rx,rz}=LOBBY.well;
-  // 兩個反向半圓的帶狀開口，內外弧共享圓心，端部以半圓封口。
-  const r=rx/2-0.25,half=rz/4,outer=r+half,inner=r-half;
-  const u=((t/(2*Math.PI))%1+1)%1*6,part=Math.floor(u),a=(u-part)*Math.PI;
-  const arcs=[
-    [cx+r,outer,-a],[cx-r,inner,a],[cx-2*r,half,-a],
-    [cx-r,outer,Math.PI-a],[cx+r,inner,Math.PI+a],[cx+2*r,half,Math.PI-a],
-  ];
-  const [x,radius,angle]=arcs[part];
-  return [x+radius*Math.cos(angle),cz+radius*Math.sin(angle)];
-}
+/** 圓形開口的邊線（照片 9009、9016 從大廳俯看是一圈矮牆）。 */
+export function wellPoint(t) {return [WX+WR*Math.cos(t),WZ+WR*Math.sin(t)];}
 function wellParts() {
   const parts=[];
-  for(let i=0;i<64;i++) {
-    const t=(i+0.5)*Math.PI*2/64;
-    if(t<0.30||t>Math.PI*2-0.30)continue;
-    const a=wellPoint(i*Math.PI*2/64),b=wellPoint((i+1)*Math.PI*2/64);
+  for(let i=0;i<48;i++) {
+    const t=(i+0.5)*Math.PI*2/48;
+    if(t<GAP||t>Math.PI*2-GAP)continue;
+    const a=wellPoint(i*Math.PI*2/48),b=wellPoint((i+1)*Math.PI*2/48);
     parts.push(['開口矮牆',(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])+0.03,0.16,-Math.atan2(b[1]-a[1],b[0]-a[0])]);
   }
-  parts.push(['樓梯口內護牆',33.6,-28.6,0.16,1.4,0]);
+  // 樓梯口內側一道低欄，玩家停在樓梯口互動下樓，不會走進開口上空。
+  parts.push(['樓梯口內護欄',WX+WR-0.35,WZ,0.12,1.4,0]);
   return parts;
+}
+/**
+ * 旋轉樓梯的光影：戶外地圖不能另加光源（美術規範硬規則 5），以顏色烘出天窗光。
+ * 越往下越暗，踏面受天窗直射較亮、踢面較暗。
+ */
+const LIT=new THREE.Color('#fbf7ec'),DIM=new THREE.Color('#b9b2a2'),RISER_LIT=new THREE.Color('#ddd5c4'),RISER_DIM=new THREE.Color('#8f897c');
+export function stairShade(k) {
+  const t=Math.min(1,k/19);
+  return {tread:LIT.clone().lerp(DIM,t),riser:RISER_LIT.clone().lerp(RISER_DIM,t)};
+}
+const shadedMaterial=new THREE.MeshToonMaterial({color:'#ffffff',vertexColors:true});
+/** 依頂點高度上色：top 在 y1、bottom 在 y0，中間線性過渡。 */
+function verticalShade(geometry,y0,y1,top,bottom) {
+  const p=geometry.attributes.position,a=new Float32Array(p.count*3),c=new THREE.Color();
+  for(let i=0;i<p.count;i++){c.copy(bottom).lerp(top,Math.max(0,Math.min(1,(p.getY(i)-y0)/(y1-y0))));c.toArray(a,i*3);}
+  geometry.setAttribute('color',new THREE.Float32BufferAttribute(a,3));return geometry;
+}
+
+/** 旋轉樓梯：二十階繞中柱轉一圈又四分之一，從樓梯口往下一層到 12 公尺。 */
+export function spiralSteps() {
+  return Array.from({length:20},(_,k)=>{
+    const a=-k*Math.PI/8,top=FLOOR-(k+1)*0.15,mid=(0.4+WR-0.15)/2;
+    return {k,a,top,x:WX+mid*Math.cos(a),z:WZ+mid*Math.sin(a),length:WR-0.15-0.4,width:0.62};
+  });
 }
 export function lobbyColliders() {
   return [...shellParts(),...wellParts(),...columns.map(([x,z])=>['圓柱',x,z,0.46,0.46]),
-    ...furniture.map(([n,x,z,w,d])=>[n,x,z,w,d]),['桌子',28,-32.2,0.9,0.9],...chairs.map(([x,z])=>['椅子',x,z,0.4,0.4])]
+    ...furniture.map(([n,x,z,w,d])=>[n,x,z,w,d]),['桌子',...TABLE,0.9,0.9],...chairs.map(([x,z])=>['椅子',x,z,0.4,0.4])]
     .map(([n,x,z,w,d,th])=>lobbyOBB(n,x,z,w,d,th));
 }
 export function createLobby() {
   const g=new THREE.Group();g.name='九舍大廳室內';
   const {x0,x1,z0,z1}=LOBBY.bounds;
-  for(const [n,x,z,w,d] of shellParts())lobbyBox(g,n,x,LOBBY.base+LOBBY.ceiling/2,z,w,LOBBY.ceiling,d,lobbyColors.mint,0.04);
+  for(const [n,x,z,w,d] of shellParts())lobbyBox(g,n,x,FLOOR+LOBBY.ceiling/2,z,w,LOBBY.ceiling,d,lobbyColors.mint,0.04);
   for(const [side,{z,width}] of LOBBY.doors.entries()) {
-    const x=side?x1:x0;
-    lobbyBox(g,'門楣',x,19,z,0.3,3,width,lobbyColors.mint,0.04);
-    for(const dz of [-width/2,width/2])lobbyBox(g,'玻璃門框',x,16.25,z+dz,0.12,2.5,0.12,lobbyColors.ivory,0);
+    const x=side?x1:x0,top=FLOOR+2.5;
+    lobbyBox(g,'門楣',x,(top+CEIL)/2,z,0.3,CEIL-top,width,lobbyColors.mint,0.04);
+    for(const dz of [-width/2,width/2])lobbyBox(g,'玻璃門框',x,FLOOR+1.25,z+dz,0.12,2.5,0.12,lobbyColors.ivory,0);
   }
   const floor=new THREE.Shape([[x0,-z1],[x1,-z1],[x1,-z0],[x0,-z0]].map(([x,z])=>new THREE.Vector2(x,z)));
   const hole=new THREE.Path();
   for(let i=0;i<=64;i++){const [x,z]=wellPoint(i*Math.PI*2/64);if(!i)hole.moveTo(x,-z);else hole.lineTo(x,-z);}
   floor.holes.push(hole);
-  const fm=new THREE.Mesh(new THREE.ShapeGeometry(floor),material(lobbyColors.ivory));fm.name='米白方磚地板';fm.rotation.x=-Math.PI/2;fm.position.y=15.02;g.add(fm);
-  for(const [x,z,w,d] of [[25.9,-29.65,0.4,10.3],[36.4,-29.65,0.4,10.3],[31.15,-34.9,10.9,0.4],[31.15,-24.4,10.9,0.4]])
-    lobbyBox(g,'灰色格紋邊帶',x,15.035,z,w,0.01,d,lobbyColors.grey,0);
+  const fm=new THREE.Mesh(new THREE.ShapeGeometry(floor),material(lobbyColors.ivory));fm.name='米白方磚地板';fm.rotation.x=-Math.PI/2;fm.position.y=FLOOR+0.02;g.add(fm);
+  // 照片 9011：地板沿牆一圈灰色格紋邊帶。
+  for(const [x,z,w,d] of [[x0+0.6,(z0+z1)/2,0.4,z1-z0-0.8],[x1-0.6,(z0+z1)/2,0.4,z1-z0-0.8],[(x0+x1)/2,z0+0.6,x1-x0-0.8,0.4],[(x0+x1)/2,z1-0.6,x1-x0-0.8,0.4]])
+    lobbyBox(g,'灰色格紋邊帶',x,FLOOR+0.035,z,w,0.01,d,lobbyColors.grey,0);
   for(const [n,x,z,w,d,th] of wellParts()) {
-    const wall=lobbyBox(g,n,x,15.5,z,w,1,d,lobbyColors.ivory,0.02);wall.rotation.y=th??0;
-    const rail=lobbyBox(g,'木扶手',x,16.04,z,w,0.09,d+0.06,lobbyColors.wood,0.015);rail.rotation.y=th??0;
+    if(n==='開口矮牆') {
+      const wall=lobbyBox(g,n,x,FLOOR+0.5,z,w,1,d,lobbyColors.ivory,0.02);wall.rotation.y=th??0;
+      const rail=lobbyBox(g,'木扶手',x,FLOOR+1.04,z,w,0.09,d+0.06,lobbyColors.wood,0.015);rail.rotation.y=th??0;
+    } else {
+      // 樓梯口是兩根不鏽鋼短柱拉一條紅繩，不是一塊木板（碰撞仍擋在樓梯口內側）。
+      const post=new THREE.Group();post.name=n;g.add(post);
+      for(const dz of [-d/2,d/2])round(post,'樓梯口短柱',x,FLOOR+0.45,z+dz,0.04,0.9,lobbyColors.grey);
+      lobbyBox(post,'樓梯口紅繩',x,FLOOR+0.82,z,0.03,0.03,d,lobbyColors.red,0);
+    }
   }
-  lobbyBox(g,'開口下層方磚地板',31.2,12.02,-28.6,7,0.04,5,lobbyColors.ivory,0);
+  // 下層地板：天窗正下方一圈光斑，往外漸暗。
+  const poolGeometry=new THREE.CircleGeometry(WR,32,0,Math.PI*2).rotateX(-Math.PI/2);
+  {const p=poolGeometry.attributes.position,a=new Float32Array(p.count*3),c=new THREE.Color();
+    for(let i=0;i<p.count;i++){c.copy(LIT).lerp(DIM,Math.min(1,Math.hypot(p.getX(i),p.getZ(i))/WR));c.toArray(a,i*3);}
+    poolGeometry.setAttribute('color',new THREE.Float32BufferAttribute(a,3));}
+  const lower=new THREE.Mesh(poolGeometry,shadedMaterial);lower.name='開口下層方磚地板';lower.position.set(WX,12.02,WZ);g.add(lower);
+  // 開口內壁從大廳地板往下到下層：上緣靠天窗較亮，往下漸暗，往下看是一個有深度的圓筒。
+  // 圓筒翻面（鏡射後法線朝內），從開口裡面看得到內壁，且能與其他陳設共用正面材質合併。
+  const shaftGeometry=verticalShade(new THREE.CylinderGeometry(WR,WR,3,32,4,true).scale(-1,1,1),-1.5,1.5,new THREE.Color('#dcecdf'),new THREE.Color('#8aa392'));
+  {const n=shaftGeometry.attributes.normal;for(let i=0;i<n.count;i++)n.setXYZ(i,-n.getX(i),n.getY(i),-n.getZ(i));}
+  const shaft=new THREE.Mesh(shaftGeometry,shadedMaterial);
+  shaft.name='開口內壁';shaft.position.set(WX,13.5,WZ);g.add(shaft);
+  // 天窗灑下的光柱：很淡的半透明圓柱，不是光源。
+  const beam=new THREE.Mesh(new THREE.CylinderGeometry(WR-0.3,WR-0.1,CEIL-12.05,24,1,true),
+    new THREE.MeshBasicMaterial({color:'#fff6d8',transparent:true,opacity:0.12,depthWrite:false,side:THREE.DoubleSide}));
+  beam.name='天窗光柱';beam.position.set(WX,(CEIL+12.05)/2,WZ);beam.userData.noOcc=true;g.add(beam);
   const roof=new THREE.Group();roof.name='九舍大廳屋頂';g.add(roof);
-  for(const [x,z,w,d] of [[27,-29.65,3.6,11.9],[35.75,-29.65,2.7,11.9],[31.6,-34,5.6,3.2],[31.6,-24.7,5.6,2]])
-    lobbyBox(roof,'薄荷綠天花板',x,20.62,z,w,0.24,d,lobbyColors.mint,0.04);
-  for(const z of [-34,-31.5,-25])lobbyBox(roof,'外露橫樑',31.15,20.3,z,11.9,0.4,0.3,lobbyColors.mint,0.03);
-  const sky=lobbyBox(roof,'玻璃格子天窗',31.6,20.63,-28.5,5.6,0.08,6.4,lobbyColors.glass,0);sky.material=glassMaterial;
-  for(let x=28.8;x<=34.4;x+=0.8)lobbyBox(roof,'天窗格子',x,20.69,-28.5,0.035,0.06,6.4,lobbyColors.grey,0);
-  for(let z=-31.7;z<=-25.3;z+=0.8)lobbyBox(roof,'天窗格子',31.6,20.69,z,5.6,0.06,0.035,lobbyColors.grey,0);
+  const sk=WR+0.4;
+  for(const [x,z,w,d] of [[(x0+WX-sk)/2,(z0+z1)/2,WX-sk-x0,z1-z0],[(WX+sk+x1)/2,(z0+z1)/2,x1-WX-sk,z1-z0],[WX,(z0+WZ-sk)/2,2*sk,WZ-sk-z0],[WX,(WZ+sk+z1)/2,2*sk,z1-WZ-sk]])
+    lobbyBox(roof,'薄荷綠天花板',x,CEIL+0.12,z,w,0.24,d,lobbyColors.mint,0.04);
+  for(const z of [z0+3,WZ-sk-0.6,WZ+sk+0.6])lobbyBox(roof,'外露橫樑',(x0+x1)/2,CEIL-0.2,z,x1-x0,0.4,0.3,lobbyColors.mint,0.03);
+  // 照片 9018：開口正上方的玻璃格子天窗。
+  const sky=lobbyBox(roof,'玻璃格子天窗',WX,CEIL+0.13,WZ,2*sk,0.08,2*sk,lobbyColors.glass,0);sky.material=glassMaterial;
+  for(let v=-sk;v<=sk+1e-9;v+=0.8){lobbyBox(roof,'天窗格子',WX+v,CEIL+0.19,WZ,0.035,0.06,2*sk,lobbyColors.grey,0);lobbyBox(roof,'天窗格子',WX,CEIL+0.19,WZ+v,2*sk,0.06,0.035,lobbyColors.grey,0);}
   roof.traverse(o=>{o.userData.noOcc=true;});
   mergeParts(roof);
-  for(const [x,z] of columns)round(g,'圓柱',x,17.75,z,0.23,5.5,lobbyColors.mint);
+  for(const [x,z] of columns)round(g,'圓柱',x,FLOOR+LOBBY.ceiling/2,z,0.23,LOBBY.ceiling,lobbyColors.mint);
   const stairs=new THREE.Group();stairs.name='旋轉樓梯';g.add(stairs);
-  for(let arm=0;arm<2;arm++)for(let i=0;i<10;i++) {
-    const r=LOBBY.well.rx/2-0.25,t=(i+0.5)*Math.PI/10*(arm?1:-1);
-    const x=LOBBY.well.cx+(arm?-r:r)+Math.cos(t)*r,z=LOBBY.well.cz+Math.sin(t)*r;
-    const y=LOBBY.base-0.075-(arm*10+i)*0.15;
-    const step=lobbyBox(stairs,'弧形踏階',x,y,z,1.15,0.15,0.45,lobbyColors.ivory,0.01);step.rotation.y=-t;
-    const strip=lobbyBox(stairs,'黃色止滑條',x,y+0.085,z,1.1,0.02,0.06,lobbyColors.yellow,0);strip.rotation.y=-t;
+  {const column=new THREE.Mesh(verticalShade(new THREE.CylinderGeometry(0.32,0.32,3.2,16,4),-1.6,1.6,LIT,DIM),shadedMaterial);
+    column.name='旋轉樓梯中柱';column.position.set(WX,13.6,WZ);stairs.add(column);
+    const out=new THREE.Mesh(CYLINDER,edge);out.scale.set(0.35,3.26,0.35);column.add(out);}
+  // 每階是從中柱到外緣的扇形踏板，相鄰兩階略為重疊，往下看是一圈接一圈的螺旋。
+  const span=Math.PI/8+0.04;
+  for(const st of spiralSteps()) {
+    // 踏階本體（踢面與側邊）用較暗的踢面色，頂面另疊一片較亮的踏面色。
+    const {tread,riser}=stairShade(st.k);
+    const wedge=new THREE.CylinderGeometry(WR-0.12,WR-0.12,0.15,6,1,false,Math.PI/2-st.a-span/2,span);
+    const step=new THREE.Mesh(wedge,material('#'+riser.getHexString()));step.name='弧形踏階';step.position.set(WX,st.top-0.075,WZ);stairs.add(step);
+    const out=new THREE.Mesh(wedge,edge);out.scale.set(1.01,1.15,1.01);step.add(out);
+    const top=new THREE.Mesh(new THREE.CylinderGeometry(WR-0.13,WR-0.13,0.012,6,1,false,Math.PI/2-st.a-span/2+0.01,span-0.02),material('#'+tread.getHexString()));
+    top.name='踏面';top.position.set(WX,st.top+0.002,WZ);stairs.add(top);
+    // 黃色止滑條沿每階往下走的前緣。
+    const front=st.a-Math.PI/16,mid=(0.32+WR-0.12)/2;
+    const strip=lobbyBox(stairs,'黃色止滑條',WX+mid*Math.cos(front),st.top+0.005,WZ+mid*Math.sin(front),WR-0.12-0.32,0.02,0.06,lobbyColors.yellow,0);strip.rotation.y=-front;
   }
   for(const [n,x,z,w,d,h,c] of furniture) {
-    if(n==='紅色圓沙發') {round(g,n,x,15+h/2,z,w/2,h,lobbyColors.red);round(g,'圓沙發中央靠背',x,15.85,z,0.23,0.9,lobbyColors.red);}
-    else lobbyBox(g,n,x,15+h/2,z,w,h,d,lobbyColors[c]);
+    if(n==='紅色圓沙發') {round(g,n,x,FLOOR+h/2,z,w/2,h,lobbyColors.red);round(g,'圓沙發中央靠背',x,FLOOR+0.75,z,0.22,0.6,lobbyColors.red);}
+    else lobbyBox(g,n,x,FLOOR+h/2,z,w,h,d,lobbyColors[c]);
     if(['飲料機','咖啡機','販賣機'].includes(n)) {
-      const screen=lobbyBox(g,'販賣展示窗',x,16.12,z+0.36,w-0.16,1.05,0.025,lobbyColors.glass,0);
+      const screen=lobbyBox(g,'販賣展示窗',x,FLOOR+1.05,z+0.36,w-0.16,1.0,0.025,lobbyColors.glass,0);
       screen.userData.vending=true;
-      sign(g,n==='飲料機'?'飲料':n==='咖啡機'?'咖啡':'販賣機',x,16.68,z+0.38,0.95,0.38);
+      sign(g,n==='飲料機'?'飲料':n==='咖啡機'?'咖啡':'販賣機',x,FLOOR+1.65,z+0.38,0.9,0.3);
     }
   }
   const table=new THREE.Group();table.name='桌椅';g.add(table);
-  lobbyBox(table,'桌面',28,15.75,-32.2,0.9,0.08,0.9,lobbyColors.grey);
-  lobbyBox(table,'桌腳',28,15.36,-32.2,0.1,0.72,0.1,lobbyColors.coffee,0.015);
-  for(const [x,z] of chairs){lobbyBox(table,'椅座',x,15.45,z,0.4,0.08,0.4,lobbyColors.coffee,0.015);lobbyBox(table,'椅背',x,15.72,z-0.18,0.4,0.5,0.05,lobbyColors.coffee,0.015);}
-  const partition=lobbyBox(g,'玻璃隔間',31.15,17.3,-35.35,10.6,2,0.04,lobbyColors.glass,0);partition.material=glassMaterial;
-  for(const x of [26.4,28.6,30.8,33,35.2])lobbyBox(g,'隔間窗框',x,17.3,-35.29,0.07,2.1,0.08,lobbyColors.grey,0);
-  lobbyBox(g,'公佈欄',35.9,16.9,-35.25,1.4,1.1,0.08,lobbyColors.wood,0.02);
-  for(const [text,x,y,z,w,h] of [['服務台',26.6,18.7,-35.2,1.5,0.5],['WELCOME to FRONT DESK',29.3,18.7,-35.18,3.5,0.5],['DORM 9',35.7,18.2,-35.2,1.3,0.45],['往安九',34.9,16.8,-29.7,1.2,0.45]])sign(g,text,x,y,z,w,h);
+  lobbyBox(table,'桌面',TABLE[0],FLOOR+0.75,TABLE[1],0.9,0.06,0.9,lobbyColors.grey);
+  lobbyBox(table,'桌腳',TABLE[0],FLOOR+0.36,TABLE[1],0.1,0.72,0.1,lobbyColors.coffee,0.015);
+  for(const [x,z] of chairs){
+    lobbyBox(table,'椅座',x,FLOOR+0.45,z,0.4,0.06,0.4,lobbyColors.coffee,0.015);
+    const back=lobbyBox(table,'椅背',x+(x-TABLE[0])*0.25,FLOOR+0.72,z+(z-TABLE[1])*0.25,0.4,0.5,0.05,lobbyColors.coffee,0.015);back.rotation.y=Math.atan2(x-TABLE[0],z-TABLE[1]);
+  }
+  // 照片 9009、9012：南牆是玻璃隔間，掛公佈欄與 DORM 9 門牌。
+  const partition=lobbyBox(g,'玻璃隔間',(x0+x1)/2,FLOOR+1.3,z1-0.25,x1-x0-0.6,2.2,0.04,lobbyColors.glass,0);partition.material=glassMaterial;
+  for(let x=x0+0.9;x<x1-0.3;x+=2.2)lobbyBox(g,'隔間窗框',x,FLOOR+1.3,z1-0.29,0.07,2.3,0.08,lobbyColors.grey,0);
+  lobbyBox(g,'公佈欄',29.4,FLOOR+1.5,z1-0.33,1.4,1.0,0.06,lobbyColors.wood,0.02);
+  for(const [text,x,y,z,w,h,angle] of [['服務台',26.6,FLOOR+2.75,z0+0.2,1.2,0.4,0],['WELCOME to FRONT DESK',28.7,FLOOR+2.75,z0+0.22,2.8,0.4,0],
+    ['DORM 9',33.6,FLOOR+2.6,z1-0.33,1.0,0.35,Math.PI],['往安九',WX+WR+0.25,FLOOR+1.35,WZ-0.95,0.9,0.3,-Math.PI/2]])sign(g,text,x,y,z,w,h,angle);
   const signs=[];g.traverse(o=>{if(o.userData.sign)signs.push(o);});
   const signParts=signs.map((o,i)=>{
     const {w,h}=o.userData.sign;

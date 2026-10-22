@@ -5,10 +5,10 @@ import {signMapModel,drawSignMap} from '../src/systems/baozhong/activity-sign-ma
 import {signPlacement} from '../src/systems/baozhong/activity-sign-logic.js';
 const read=p=>JSON.parse(fs.readFileSync(new URL(p,import.meta.url)));
 const layout=read('../src/systems/baozhong/layout.json'),content=read('../src/content/baozhong.json');
-test('printed sign uses all 40 true positions and source college colors',()=>{
-const m=signMapModel(layout,content,{x:0,z:-32});assert.equal(m.entries.length,40);
-for(const e of m.entries){const t=layout.tents.find(t=>t.id===e.id);assert.equal(e.x,t.x);assert.equal(e.z,t.z);}
-const texts=[]; const ctx=new Proxy({}, {get:(o,k)=>o[k]||(k==='fillText'?((t)=>texts.push(t)):(()=>{})),set:(o,k,v)=>(o[k]=v,true)});drawSignMap(ctx,1536,800,m);assert.ok(texts.includes('26'));assert.ok(texts.some(t=>t.includes('噴水池')));assert.equal(m.legend.length,12);
+test('printed sign uses all 42 true positions and source college colors',()=>{
+const m=signMapModel(layout,content,{x:0,z:-32});assert.equal(m.entries.length,42);
+for(const e of m.entries.filter(e=>!['FM','X'].includes(e.id))){const t=layout.tents.find(t=>t.id===e.id);assert.equal(e.x,t.x);assert.equal(e.z,t.z);}
+const texts=[]; const ctx=new Proxy({}, {get:(o,k)=>o[k]||(k==='fillText'?((t)=>texts.push(t)):(()=>{})),set:(o,k,v)=>(o[k]=v,true)});drawSignMap(ctx,1536,800,m);assert.ok(texts.includes('26'));assert.ok(texts.some(t=>t.includes('噴水池')));assert.equal(m.legend.length,13);assert.ok(texts.includes('FM'));
 });
 test('sign avoids real campus snapshot blocker omitted from first synthetic test',()=>{
 const c=[{c:true,x:0,z:-32,r:5.8},{x0:-13.9,x1:-12.9,z0:-41.5,z1:-35.5}];

@@ -76,7 +76,7 @@ const slowTex = hText('慢', WHITE, '900 150px "Noto Sans TC",sans-serif', 160, 
   // 兩側紅線
   [-1, 1].forEach(s => flat(0.22, len, RED, X + s * (HW - 0.15), 0.025, c));
   // 中間雙黃線（路口和斑馬線那段不畫）
-  const y0 = -7.2, y1 = ZS + 0.6;
+  const y0 = -16.2, y1 = ZS + 0.6;   // 北端從八德道路口（z 約 -12.8）往南才開始畫
   [-0.15, 0.15].forEach(dx => flat(0.12, y0 - y1, YELLOW, X + dx, 0.025, (y0 + y1) / 2));
   // 斑馬線：北端路口、中段（集英樓／新聞館到電算中心）、南端
   [-5.2, -21, ZS + 3].forEach(z => { for (let k = -HW + 0.6; k < HW - 0.3; k += 1.05) flat(0.5, 2.6, WHITE, X + k + 0.25, 0.026, z); });
@@ -86,7 +86,7 @@ const slowTex = hText('慢', WHITE, '900 150px "Noto Sans TC",sans-serif', 160, 
   flat(HW - 0.3, 0.3, WHITE, X + HW / 2, 0.026, ZS + 4.8);
   // 箭頭：東半邊往北、西半邊往南；南端前有左轉（往東接四維道）
   [-13, -29].forEach(z => decal(arrowTex, 0.7, 2.8, X - HW / 2, z, Math.PI));
-  [-12, -27].forEach(z => decal(arrowTex, 0.7, 2.8, X + HW / 2, z, 0));
+  [-7.8, -27].forEach(z => decal(arrowTex, 0.7, 2.8, X + HW / 2, z, 0));   // 第一個箭頭在八德道路口和側門路口之間
   decal(leftTex, 1.3, 2.1, X + HW / 2, ZS + 7.5, 0);
   decal(slowTex, 1.4, 1.5, X - HW / 2, -9.2, Math.PI);
   decal(slowTex, 1.4, 1.5, X + HW / 2, -24.5, 0);

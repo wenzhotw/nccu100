@@ -1,7 +1,11 @@
 /**
+<<<<<<< HEAD
  * 八德道的標線、人行道與街道設施。
  *
  * 東段：樂活館到電算中心（x 12～92.5，斜的那段）。依照片：
+=======
+ * 八德道樂活館到電算中心這一段（x 12～92.5）。依照片：
+>>>>>>> 0726bd6 (依 OpenNCCU 模型修正八德道、樂活館、集英樓一帶)
  * - 雙黃線、兩側紅線、「慢」字、斑馬線
  * - 南側（電算中心、資訊大樓這邊）寬紅磚人行道：靠車道一排水泥花台和路燈，裡面一排種在樹穴裡的行道樹，
  *   最裡面是電算中心的方柱框架（在 computer-center 資料夾）
@@ -63,7 +67,7 @@ strip(X0, 33, HALF, 4.8, brickMat(14, 1.5), 0.0193);
 strip(30, 88.6, HALF, SOUTH, brickMat(34, 2.8), 0.0194);
 strip(14, 92.2, -NORTH, -HALF, brickMat(46, 1.4), 0.0193);
 // 跟電算中心後面那條路的東側人行道在轉角接起來（補上兩塊斜鋪面中間的縫）
-{ const m = brickMat(2, 4); const f = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 7.9), m); f.rotation.x = -Math.PI / 2; f.position.set(88.1, 0.0191, -8.3); f.receiveShadow = true; scene.add(f); }
+{ const m = brickMat(2, 4); const f = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 7.9), m); f.rotation.x = -Math.PI / 2; f.position.set(88.1, 0.0191, alongBd(88.1, 6.06)[1]); f.receiveShadow = true; scene.add(f); }
 // 路緣石
 strip(X0, 88.6, HALF, HALF + 0.2, '#a7a7a1', 0.022);
 strip(14, 92.2, -HALF - 0.2, -HALF, '#a7a7a1', 0.022);
