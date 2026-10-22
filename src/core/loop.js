@@ -75,7 +75,7 @@ function update(dt){
   { const before=Math.floor(state.walkPh/Math.PI); animateHero(dt,sp,run); if(state.grounded&&sp>1&&Math.floor(state.walkPh/Math.PI)!==before){ AU.sfx('step'); if(run&&sp>6) puff(pos.x,pos.y,pos.z,1,0.6,0.26); } }
   heroJuice(dt,sp,run); cameraFov(dt,sp,run);
   shadowBlob.position.set(pos.x,gh+0.03,pos.z); shadowBlob.scale.setScalar(1-Math.min(0.5,(pos.y-gh)*0.3));
-  if(state.holdPang){ H.shL.rotation.x=-1.35; H.shR.rotation.x=-1.35; H.shL.rotation.z=-0.35; H.shR.rotation.z=0.35; }
+  if(state.holdPang||state.holdNaiwa){ H.shL.rotation.x=-1.35; H.shR.rotation.x=-1.35; H.shL.rotation.z=-0.35; H.shR.rotation.z=0.35; }
   if(state.holdUmbrella){ H.shR.rotation.set(-0.15,0,2.55); }   // 撐傘：右手舉起來（systems/weather）
   // 游泳：身體往前趴、雙手輪流划水、腳打水（state.swimming 由所在房間設定，例如游泳館）
   if(state.swimming){ const mv=sp>0.5||state.racing, t=state.time*(mv?6:2.5), a=mv?1:0.35;

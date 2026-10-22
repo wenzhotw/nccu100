@@ -50,6 +50,7 @@ import './systems/old-principal/index.js'; // 老校長：騎馬、歷史問答�
 import './systems/weather/index.js'; // 天氣：石獅子、下雨、偷傘、淋雨體力、四維道噴水磁磚
 import './systems/swimming/index.js'; // 游泳館：換泳衣、救生員、下水游泳
 import './systems/fountain-swim/index.js'; // 穿泳衣出游泳館：路人議論、噴水池噴水游泳、生日快樂、噴水池曝露狂成就
+import './systems/naiwa/index.js'; // 奶蛙立牌：校園流動迷因，會自己出沒、自己跳，可以搬著走、打卡拍照
 import './systems/wenz/index.js'; // 遊戲製作人 Wenz：好玩嗎？破壞死光、Instagram
 import './systems/eagle/index.js'; // 雄鷹吉祥物：收集三個故事後校長的任務，永久變身、飛行、四維堂頂樓躲 Wenz
 import './systems/gym/index.js'; // 體育館：打球的人、雄鷹隊長的投籃挑戰、送毛巾、找雄鷹吉祥物支線
