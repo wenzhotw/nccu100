@@ -20,7 +20,7 @@ const CSS = `
 @media(max-width:540px){#bz-activity-map .bz-map-content{grid-template-columns:1fr}#bz-activity-map .bz-map-list{max-height:25vh}#bz-activity-map h2{font-size:18px}#bz-activity-map section{padding:10px}}
 `;
 /** 呼叫端在會場啟用時掛載、每幀 update、離場 dispose。位置只讀。 */
-export function mountActivityMap({ layout, content, state, getPosition, fountain = null, document: doc = globalThis.document } = {}) {
+export function mountActivityMap({ layout, content, state, getPosition, fountain = null, exploration, document: doc = globalThis.document } = {}) {
   const entries = activityEntries(layout, content);
   const hud = doc.querySelector('#hud .col.r');
   if (!hud) throw new Error('Activity map requires #hud .col.r');
@@ -36,7 +36,7 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   const college = make('select'); college.setAttribute('aria-label', '篩選學院');
   for (const name of ['', ...new Set(entries.map(e => e.college))]) { const o = make('option', name || '全部學院及功能攤位'); o.value = name; college.append(o); }
   filters.append(search, college);
-  const note = make('p', '依遊戲實際攤位配置。沿用遊戲北向：校門在上、四維堂在下。點選攤位會標記方向，不會傳送。');
+  const note = make('p', '★ 代表你的收藏。依遊戲實際攤位配置。沿用遊戲北向：校門在上、四維堂在下。點選攤位會標記方向，不會傳送。');
   const grid = make('div'); grid.className = 'bz-map-content';
   const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 640 360'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', '攤位與玩家位置圖');
   const list = make('div'); list.className = 'bz-map-list'; const status = make('p'); status.setAttribute('role', 'status');
@@ -49,13 +49,13 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
     const model=activityGuideModel(layout,content,p);
     svg.setAttribute('viewBox','0 0 1000 700');svg.replaceChildren();
     const matches=new Set(filterActivity(entries,search.value,college.value).map(e=>e.id));
-    for(const command of guideScene(model,1000,700,{selected,matchIds:matches,position:p})) svgNode(command.type,command.attrs,command.text);
+    for(const command of guideScene(model,1000,700,{selected,matchIds:matches,position:p,favoriteIds:new Set(exploration?.getSnapshot().favorites.map(item=>item.id)||[])})) svgNode(command.type,command.attrs,command.text);
   }
 
   function renderList() {
     const matches = filterActivity(entries, search.value, college.value); list.replaceChildren();
     for (const e of matches) {
-      const b = make('button', `${e.id} ${e.name} · ${e.college}${e.id.startsWith('D') && state.flags?.has(stFlag(e.id)) ? ' · 已蓋章 ✓' : ''}`); b.type = 'button'; b.dataset.boothId = e.id;
+      const b = make('button', `${exploration?.getSnapshot().favorites.some(item=>item.id===e.id)?'★ ':''}${e.id} ${e.name} · ${e.college}${e.id.startsWith('D') && state.flags?.has(stFlag(e.id)) ? ' · 已蓋章 ✓' : ''}`); b.type = 'button'; b.dataset.boothId = e.id;
       b.style.setProperty('--college-color', e.color); b.setAttribute('aria-pressed', String(selected?.id === e.id)); list.append(b);
     }
     status.textContent = `${matches.length}／${entries.length} 個攤位${selected ? `，目標：${selected.id} ${selected.name}` : ''}`; drawMap();
@@ -97,8 +97,9 @@ export function mountActivityMap({ layout, content, state, getPosition, fountain
   button.setAttribute('aria-controls', overlay.id); button.setAttribute('aria-expanded','false');
   button.addEventListener('click', toggle); closeButton.addEventListener('click',close); search.addEventListener('input',renderList); college.addEventListener('change',renderList);
   list.addEventListener('click',choose); svg.addEventListener('click',choose); overlay.addEventListener('click',backdrop); clear.addEventListener('click',clearTarget); doc.addEventListener('keydown',key,true);
+  const unsubscribe = exploration?.subscribe(() => { if (opened && active) renderList(); });
   return { open, close, select, update, setActive, get target() { return selected; }, dispose() {
-    if (disposed) return; close(); disposed = true; selected = null;
+    if (disposed) return; close(); disposed = true; unsubscribe?.(); selected = null;
     button.removeEventListener('click',toggle); closeButton.removeEventListener('click',close); search.removeEventListener('input',renderList); college.removeEventListener('change',renderList);
     list.removeEventListener('click',choose); svg.removeEventListener('click',choose); overlay.removeEventListener('click',backdrop); clear.removeEventListener('click',clearTarget); doc.removeEventListener('keydown',key,true);
     button.remove(); overlay.remove(); targetHUD.remove(); style.remove();

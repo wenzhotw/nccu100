@@ -8,7 +8,9 @@ import { createHash } from 'node:crypto';
 import { chromium } from 'playwright';
 const root = process.cwd(), output = path.join(root, 'test-results/booth-browser');
 const digest = b => createHash('sha256').update(b).digest('hex');
-const manifest = { status: 'running', commit: execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
+const stages = []; let stageStart = Date.now();
+const stage = label => { const now=Date.now(); stages.push({label,elapsedMs:now-stageStart,at:new Date(now).toISOString()}); console.log(`[booth-preview] ${label} ${now-stageStart}ms`); stageStart=now; };
+const manifest = { stages, status: 'running', commit: execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   startedAt: new Date().toISOString(), captures: [], profiles: [],
   dataSHA256: digest(fs.readFileSync('src/systems/baozhong/booth-browser-data.json')),
   limitations: ['Debug teleport stages player position, not a walk-through route test.', 'Mobile is Chromium touch/viewport emulation, not a physical phone.'] };
@@ -29,7 +31,10 @@ try {
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader']});
   manifest.browser=browser.version();
-  for(const profile of [{name:'desktop',viewport:{width:1440,height:900}}, {name:'mobile',viewport:{width:390,height:844},isMobile:true,hasTouch:true}]){
+  const profiles = [{name:'desktop',viewport:{width:1440,height:900}}, {name:'mobile',viewport:{width:390,height:844},isMobile:true,hasTouch:true}];
+  const requested=process.env.BOOTH_PREVIEW_PROFILE; if(requested&&!profiles.some(p=>p.name===requested))throw new Error('Unknown preview profile');
+  for(const profile of profiles.filter(p=>!requested||p.name===requested)){
+    stage(`${profile.name}:start`); save();
     const {name,...options}=profile, context=await browser.newContext(options), page=await context.newPage();
     page.setDefaultTimeout(60000);const errors=[];page.on('pageerror',e=>errors.push(String(e)));
     await page.goto(`http://127.0.0.1:${server.address().port}/?debug=1`);
@@ -39,7 +44,7 @@ try {
     const approach=async id=>{await page.evaluate(id=>{const e=__bz26.boothBrowsing.entries.find(e=>e.id===`bz26-browse-${id}`);__game.teleport(e.x,e.z);},id);await page.waitForFunction(id=>__bz26.boothBrowsing.nearbyId===id,id);};
     const shot=async subject=>{await page.evaluate(()=>document.fonts.ready);const file=`${name}-${subject}.png`;await page.screenshot({path:path.join(output,file)});manifest.captures.push({file,sha256:digest(fs.readFileSync(path.join(output,file))),subject,profile:name});save();};
     for(const id of ['D01','D26','D37','D22']){
-      await approach(id);await shot(`${id}-entry`);await page.locator('#bz-booth-browse-button').click();
+      await approach(id);await shot(`${id}-entry`);stage(`${name}:${id}:entry`);save();await page.locator('#bz-booth-browse-button').click();
       await page.waitForFunction(id=>__bz26.boothBrowsing.panel.currentId===id,id);
       const before=await page.evaluate(()=>__game.pos.toArray());await page.keyboard.down('w');await page.waitForTimeout(150);await page.keyboard.up('w');
       assert.deepEqual(await page.evaluate(()=>__game.pos.toArray()),before,'reading must not move the player');
@@ -49,8 +54,16 @@ try {
       await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>__game.state.bzBoothBrowsing),false);
       assert.equal(await page.locator('#bz-booth-browse-button').evaluate(e=>document.activeElement===e),true);
     }
+    stage(`${name}:four-department-panels`);save();
     // Every registered counter opens its own data, including NPC-adjacent entries.
     for(let i=1;i<=37;i++){const id=`D${String(i).padStart(2,'0')}`;await approach(id);await page.locator('#bz-booth-browse-button').click();assert.equal(await page.locator('[data-booth-panel]').getAttribute('data-booth-id'),id);await page.keyboard.press('Escape');}
+    stage(`${name}:all37-entries`);save();
+    for(const id of ['D01','D26','D37']){await approach(id);await page.locator('#bz-booth-browse-button').click();await page.locator('[data-favorite-reason="courses"]').click();await page.locator(`[data-compare-toggle="${id}"]`).click();await page.keyboard.press('Escape');}
+    await page.locator('#bz-exploration-button').click(); await shot('exploration-list');
+    await page.locator('[data-exploration-compare]').click();assert.equal(await page.locator('[data-compare-department]').count(),3);await shot('three-department-comparison');
+    if(name==='mobile'){await page.locator('.bz-browser__comparison-tabs button').last().click();await shot('comparison-preparation');}
+    await page.keyboard.press('Escape');await page.locator('#bz-activity-button').click();assert.equal(await page.locator('[data-favorite-id]').count(),3);await shot('favorite-map');await page.keyboard.press('Escape');
+    stage(`${name}:exploration-and-map`);save();
     await approach('D26');await page.keyboard.press('b');await page.locator('[data-booth-talk]').click();
     assert.equal(await page.evaluate(()=>__bz26.boothBrowsing.panel.isOpen),false);assert.equal(await page.locator('#dlg').isVisible(),true);
     // Start a clean actual game session after proving the close-before-talk handoff.
@@ -64,6 +77,7 @@ try {
     assert.equal(await page.evaluate(()=>__game.spots.filter(s=>s.id?.startsWith('bz26-browse-')).length),37);
     await approach('D26'); await page.locator('#bz-booth-browse-button').click();
     assert.equal(await page.evaluate(()=>__bz26.boothBrowsing.panel.currentId),'D26'); await page.keyboard.press('Escape');
+    stage(`${name}:exit-and-reentry`);save();
     manifest.profiles.push({name,errors,all37Entries:true,exitAndReentry:true});assert.deepEqual(errors,[]);await context.close();
   }
   manifest.status='passed';save();

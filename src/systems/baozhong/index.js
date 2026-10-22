@@ -1,3 +1,4 @@
+import { createExplorationStore } from './exploration-store.js';
 // src/systems/baozhong/index.js（P06 重建，Grok，T065）：包種茶節流程整合。
 // 邀請人（校門 -2,17）→ 答應：40 頂帳篷、碰撞、佈景、37 位系攤 NPC、服務台、醫護、友校、四維堂 11 位關主與大會考出現 →
 // 系攤對話→洗牌→openQuiz→蓋章計點 → 關主（提示卡）→ 大會考 → 首次發成就 → 會場收起。離開會場（服務台或邀請人）也會收起。
@@ -86,6 +87,7 @@ for (const m of LAYOUT.hall.masters) {
 let passport = null;
 let activityMap = null, activitySign = null, activitySignError = null;
 let boothBrowsing = null;
+const exploration = createExplorationStore({ validIds: LAYOUT.tents.filter(t => /^D\d{2}$/.test(t.id)).map(t => t.id) });
 const venueFocus = createVenueFocus({ foliage: FOLIAGE, colliders, npcs: NPCS, spots, state, enabled: SCENERY });
 const venue = {
   on: false,
@@ -115,12 +117,12 @@ function openActivityGuide() {
 if (SCENERY) {
   try { activitySign = createActivitySign({ onOpen: openActivityGuide, layout: LAYOUT, content: CONTENT }); }
   catch (error) { activitySignError = { message: error.message, placements: error.placements || [] }; console.error('[bz26 slice] 看板缺少安全站位，地圖按鈕仍可用', error); }
-  try { activityMap = mountActivityMap({ layout: LAYOUT, content: CONTENT, state, getPosition: () => pos, fountain: activitySign?.fountain }); }
+  try { activityMap = mountActivityMap({ layout: LAYOUT, content: CONTENT, state, getPosition: () => pos, fountain: activitySign?.fountain, exploration }); }
   catch (error) { console.error('[bz26 slice] 地圖未能建立', error); activitySign?.dispose(); activitySign = null; }
   activitySign?.setActive(venue.on); activityMap?.setActive(venue.on);
 }
 
-boothBrowsing = createBoothBrowsing({ layout: LAYOUT, content: CONTENT, tents, state, spots,
+boothBrowsing = createBoothBrowsing({ exploration, onLocate: id => { if (venue.on && activityMap) { activityMap.select(id); activityMap.open(); } }, layout: LAYOUT, content: CONTENT, tents, state, spots,
   getPosition: () => pos, canInteract: () => dlg.hidden && document.getElementById('mapw').hidden,
   onTalk: id => {
     const npc = venueNPCs.find(n => n.id === `bz26-${id}`);

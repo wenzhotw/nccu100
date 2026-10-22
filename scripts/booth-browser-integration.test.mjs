@@ -30,7 +30,7 @@ class Target {
   getBoundingClientRect() { return { left: 0, top: 0, width: 100, height: 100 }; }
 }
 function fixture() {
-  const doc = new Target(), elements = []; doc.body = new Target(); doc.createElement = () => { const e = new Target(); elements.push(e); return e; };
+  const doc = new Target(), elements = []; doc.body = new Target(); doc.querySelector = () => null; doc.createElement = () => { const e = new Target(); elements.push(e); return e; };
   const state = { started: true, busy: false, room: null, driving: false }, original = { id: 'npc', x: 0, z: 0 };
   const spots = [original], position = { ...boothBrowsePoint(departments[0]) }, counts = { resets: 0, stops: 0, talks: [], disposals: 0 };
   let allowed = true;

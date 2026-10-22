@@ -1,6 +1,6 @@
 {
-  "version": "booth-browser-on-main46770d2c",
-  "note": "Historical v2 lock retained verbatim. Scenery-only release wiring is explicit; content and matching remain SLICE gated. Main77 deps/adapter bytes unchanged. Restore original covered tents and 37 tabletop prop builders; latest expected integration hashes updated, historical baseline unchanged. Activity guide now follows venue visibility, collisions, interaction spots and HUD lifecycle. Activity-only NPC costume integration; frozen NPC core and original content unchanged. Read-only booth browser integration updates index.js only; historical baseline, frozen content, dependencies and scenery remain unchanged.",
+  "version": "booth-exploration-on-main13c1c8d8",
+  "note": "Historical v2 lock retained verbatim. Scenery-only release wiring is explicit; content and matching remain SLICE gated. Main77 deps/adapter bytes unchanged. Restore original covered tents and 37 tabletop prop builders; latest expected integration hashes updated, historical baseline unchanged. Activity guide now follows venue visibility, collisions, interaction spots and HUD lifecycle. Activity-only NPC costume integration; frozen NPC core and original content unchanged. Read-only booth browser integration updates index.js only; historical baseline, frozen content, dependencies and scenery remain unchanged. Stage two explicitly wires one shared exploration store into the booth browser and activity map; only the expected index.js integration hash changes, not any historical baseline or frozen source.",
   "baseline": {
     "src/systems/baozhong/deps.js": "9a08095c4c8020c1831d91ecebd95ea826c98029201e1b7e3565513a78481b35",
     "src/systems/baozhong/index.js": "085279a1c518e513591d2cfa5d602ec8fcdeb0a86a448bd2ffebbf49b3d08175",
@@ -9,7 +9,7 @@
   },
   "expected": {
     "src/systems/baozhong/deps.js": "a81fde11bbabf4a6da6c828b0ff59fe8d5d9327f63a80b4f54e5aeb872e82062",
-    "src/systems/baozhong/index.js": "037425333a498a2ad780bfb4482c80ad03ba9f4a5f315c1fb438035e7f534658",
+    "src/systems/baozhong/index.js": "f3983ae03227adb7b78c8a40d308833674c9a22ae9d57063c667e3bc8eb3c1fb",
     "src/systems/baozhong/tents-logic.js": "d5801820324f80b5466f12a10558f2e158e6c50a1ca1502d2efd596ec705bc1c",
     "src/systems/baozhong/tents.js": "f73a7c367e28155b157d5658ce9af8ec312a7ab929305f910e464189534ccdcc"
   },
