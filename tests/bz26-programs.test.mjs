@@ -53,6 +53,10 @@ test('placement: tent clears every venue tent, the radio booth and the activity 
   assert.ok(p.box.z1 < sign.box.z0 && p.box.z0 > LAYOUT.tents.find(t => t.id === 'F03').box[3], '在看板與友校交流帳篷之間');
   assert.equal(P.tentColliders(p).length, 1);
   assert.deepEqual(P.tentConflicts(p, { colliders: P.tentColliders(p) }), [], '自己的碰撞體不算衝突');
+  // 交談半徑 2.4 的互動點不算擋路，只看站位本身。
+  assert.deepEqual(P.tentConflicts(p, { spots: [{ x: sign.x, z: sign.z + 1.25, r: 2.4 }] }), []);
+  const under = P.foliageUnder(p, [{ x: p.x, z: p.z }, { x: p.box.x1 + 0.5, z: p.z }, { x: p.box.x1 + 3, z: p.z }]);
+  assert.equal(under.length, 2, '帳篷底下與緊貼帳篷的植栽會暫收，遠的不動');
   const wall = { x0: -20, x1: -5, z0: -46, z1: -34 };
   const q = P.tentPlacement({ colliders: [wall], tents: [] });
   assert.ok(q.conflicts.length > 0);
