@@ -8,6 +8,7 @@
  *     room/房間代號          走進某個室內
  *     achievement/成就代號   拿到成就
  *     naiwa/pickup          搬起奶蛙立牌
+ *     launch/homescreen     從主畫面（加到主畫面後）打開
  * - 本機開發（localhost）和自動測試（無頭瀏覽器）不送出，數字只算真的玩家。
  * - 後台：https://nccu100.goatcounter.com（帳號名稱改了就改下面的 GC_CODE）。
  */
@@ -32,6 +33,9 @@ if (ENABLED) {
   s.addEventListener('load', () => { while (queue.length && window.goatcounter && window.goatcounter.count) window.goatcounter.count(queue.shift()); });
   document.head.appendChild(s);
 }
+
+/* 從主畫面打開（加到主畫面後全螢幕玩）的另外記一筆，知道有多少人這樣玩 */
+if (window.matchMedia('(display-mode: fullscreen)').matches || window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) track('launch/homescreen', '從主畫面打開');
 
 /* 開始／繼續冒險（用 capture，比其他系統的點擊處理先記到；程式呼叫 .click() 也算） */
 const go = document.getElementById('go');

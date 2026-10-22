@@ -139,3 +139,54 @@ button.chip:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(35,42,77,.2
 @keyframes blink{50%{box-shadow:0 6px 0 var(--gold2),0 0 0 10px rgba(255,182,39,.25),0 14px 26px rgba(35,42,77,.3)}}
 .card .note{font-size:11px;font-weight:700;margin-top:18px;color:#fff;text-shadow:0 1px 0 rgba(35,42,77,.6);letter-spacing:.06em}
 @media (prefers-reduced-motion:reduce){.dnext,.card h1,.card h1 span,#go,#prompt button,#dlg{animation:none}#banner,#intro,#toast{transition:none}}
+
+/* ---------- 手機橫向（畫面很扁）與加入主畫面的全螢幕 ---------- */
+/* 開始畫面不顯示搖桿和跳躍鍵 */
+body.title #stick,body.title #jump{opacity:0;pointer-events:none}
+/* 橫拿手機時瀏海在左右兩側，所有貼邊的東西都要讓開 */
+#hud{padding-left:calc(env(safe-area-inset-left,0px) + 16px);padding-right:calc(env(safe-area-inset-right,0px) + 16px)}
+#stick{left:calc(env(safe-area-inset-left,0px) + 24px)}
+#jump{right:calc(env(safe-area-inset-right,0px) + 26px)}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:520px){
+  /* 上方資訊列整體縮小，右欄太多按鈕時不會一路疊到跳躍鍵 */
+  #hud{padding-top:calc(env(safe-area-inset-top,0px) + 8px);zoom:.78}
+  #hud .col{gap:6px}
+  #mini{width:96px;height:96px}
+  #quest{max-width:200px}
+  #stick{width:108px;height:108px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px)}
+  #knob{width:48px;height:48px;margin:-24px 0 0 -24px}
+  #jump{width:66px;height:66px;font-size:19px;bottom:calc(env(safe-area-inset-bottom,0px) + 22px)}
+  #banner{top:12%}
+  #banner .b-main{font-size:min(9vh,44px);-webkit-text-stroke:5px var(--ink)}
+  #toast{top:calc(env(safe-area-inset-top,0px) + 12px);font-size:13px;max-width:70vw;white-space:normal}
+  #dlg{width:min(calc(100vw - 260px),640px);padding:20px 26px 18px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+  #dtext{font-size:15px;line-height:1.6;min-height:3.2em}
+  #prompt{top:40%}
+  /* 開始畫面：大標題、緞帶、按鈕依畫面高度縮，按鈕一定看得到 */
+  #intro{overflow-y:auto;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(env(safe-area-inset-bottom,0px) + 8px)}
+  .card .kicker{font-size:11px;letter-spacing:.3em}
+  .card h1{font-size:min(17vw,21vh);-webkit-text-stroke:min(14px,2.4vh) var(--ink);filter:drop-shadow(0 4px 0 rgba(35,42,77,.45))}
+  .ribbon{margin-top:6px;font-size:min(4.6vw,4.6vh);padding:5px 22px 5px 28px}
+  .howto{margin-top:8px;padding:5px 14px;font-size:12px;line-height:1.6}
+  #go{margin-top:10px;padding:10px 38px;font-size:16px}
+  #newGame{margin-top:8px;padding:5px 14px;font-size:12px}
+  .card .note{display:none}
+  #intro .ver{margin-top:4px}
+}
+/* 直拿手機：開始畫面提醒橫過來玩比較順 */
+.rotate-tip{display:none;margin-top:10px;font:800 12px var(--sans);letter-spacing:.08em;color:#fff;text-shadow:0 1px 0 rgba(35,42,77,.6)}
+@media (pointer:coarse) and (orientation:portrait){.rotate-tip{display:block}}
+/* 「加到主畫面」按鈕與說明（ui/install-hint.js） */
+#installBtn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(255,250,239,.95);color:var(--ink);border:0;border-radius:999px;padding:7px 16px;font:900 13px var(--sans);letter-spacing:.06em;box-shadow:0 4px 0 rgba(35,42,77,.25)}
+#installBtn:active{transform:translateY(2px)}
+#installHelp{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(35,42,77,.55)}
+#installHelp .sheet{width:min(100%,420px);max-height:100%;overflow:auto;box-sizing:border-box;background:var(--paper);border-radius:22px;padding:20px 22px;box-shadow:var(--lift);color:var(--ink);text-align:left}
+#installHelp h2{margin:0 0 8px;font-size:18px;font-weight:900;letter-spacing:.08em}
+#installHelp ol{margin:0;padding-left:1.4em;font-size:14px;font-weight:700;line-height:1.8}
+#installHelp .share{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--sky);color:#fff;font-size:13px;vertical-align:-4px}
+#installHelp p{margin:10px 0 0;font-size:12px;font-weight:700;color:var(--ink2)}
+#installHelp button{margin-top:14px;width:100%;background:var(--gold);border:0;border-radius:999px;padding:10px;font:900 15px var(--sans);letter-spacing:.2em;box-shadow:0 4px 0 var(--gold2)}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:520px){
+  #bzGo{margin-top:8px!important;padding:7px 24px!important;font-size:14px!important}
+  #installBtn{margin-top:8px;padding:5px 14px;font-size:12px}
+}
