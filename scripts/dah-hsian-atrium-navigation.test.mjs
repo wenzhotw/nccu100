@@ -135,3 +135,11 @@ test('轉角出口細門框也阻擋角色身體，中央路線保持暢通',asy
   const center={x:exit.x,y:l.y,z:exit.z};nav.clampAtrium(center);assert.deepEqual(center,{x:exit.x,y:l.y,z:exit.z});
  }
 });
+test('手機快速下樓在不同遊戲步進落穩同一樓層，不以牆鐘毫秒假定已落地',async()=>{
+ const nav=await import('../src/world/buildings/dah-hsian/atrium-layout.js');for(const dt of [1/60,.05]){
+  const p={x:10,y:23.1,z:15.6},angle=Math.atan2(1.5,6.2);let vy=0;
+  const gravity=()=>{vy-=18*dt;p.y+=vy*dt;const h=nav.atriumHeight(p.x,p.z,p.y);if(p.y<=h){p.y=h;vy=0;}};
+  for(let i=0;i<200&&p.z>=9.55;i++){p.x-=Math.sin(angle)*8.2*dt;p.z-=Math.cos(angle)*8.2*dt;nav.clampAtrium(p);gravity();}
+  for(let i=0;i<Math.ceil(.5/dt);i++)gravity();assert.ok(Math.abs(p.y-20)<.15,JSON.stringify({dt,p,vy}));
+ }
+});

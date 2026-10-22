@@ -75,3 +75,6 @@
 - 2F真鍵盤公開路線、原滑鼠仰視、手機進出/重入/進度/舊館回校園PASS，/tmp/nccu100-visual-interior-final.log。
 - visual-smoke原跨房/按鈕/減少動態/觸控上下樓PASS，新增時間連續檢查時獨立review先校準：夜間天空色可持平，改測normalized(sun-target)方向；平移目標不會誤判時鐘。固定預設先等下一個遊戲步進讓渲染更新，再取基準，不把按鈕文字立即更新當作材質已更新。最新增強smoke正重跑。
 - 不新增高風險外部入口，安全範圍為本區狀態/輸入隔離、離館還原、進度不改。這是既有網站的區域視覺擴充，非首次發布/登入/付費/個資改動，未主動測第三方或宣稱全案資安認證。
+
+## 遠端慢速渲染同步修正
+PR95首次完整CI39772792191：npmtest/build/全站冒煙/戶外/2F均成功，但visual手機7F下6F在400牆鐘ms後高度未落穩失敗。保持20±.15原要求，釋放搖桿後改等.5simulation，新增不同dt重力回歸nav21通過；獨立真vel/resolve/gravity校準三步長均落至20，本機增強visualsmoke重跑PASS（/tmp/nccu100-visual-mobile-settle.log）。不改產品物理、不把遠端fail當pass；新CI仍待。booth桌機首次30min被workflow取消，手機success，需另記與重跑。

@@ -1,3 +1,9 @@
+# 2026-10-22 遠端CI失敗修正（最新，未發布）
+- PR95仍OPEN，正式未部署。branch/main都曾在7744037，本機main全套PASS（Node331/skip1、portable80、npc9、stage2 45/skip1）、check/buildpass。遠端check39772792191在全test/build/全站冒煙/戶外/2F均success後，visual手機7F下6F高度assertfail。沒有忽略或合併。
+- 原touchWalk釋放後等400牆鐘ms，慢速softwareGPU不能保證重力落地。改等.5simulation，同高度20±.15不變，新增實際dt1/60與.05回歸，nav21pass；獨立review用真vel/resolve/gravity校準三步長通過，無product修改。最新本機visualsmoke PASS /tmp/nccu100-visual-mobile-settle.log，preview5195已重啟exec78066（原server因會話中斷消失，第一次重跑拒連不當PASS）。
+- 現branch feat/dah-hsian-visual-atmosphere，僅navtest與visualsmoke待提交；下一步commit/push觸發新CI、保留原完整全站已過證據但新CI仍需pass。boothdesktop39772792135因30分鐘workflow取消，mobilepass，非達賢product缺陷；需重跑/查準原因，不說allgreen。
+- 上線政策仍自動main全套/push/既有Pages exactSHA+原網址真流程。不得問再次批准/不帶failure發布。
+
 # 主線整合與發布準備（最新）
 - 本輪產品commit0f28d8c，已無衝突merge origin/main528f422，保留奶蛙/包種/山上校區等他人成果。最新visualclock真瀏覽器PASS /tmp/nccu100-visual-clock-runtime-final.log，含自動方向連續/固定午後穩定/live減少動態恢復、手機上下梯。
 - branch全套exact PASS，戶外泳岸/2F/upper後區PASS，所有review已closed。現在整合全套/check/build，再升既有3版本標示為v1.75（最後remotev1.74/openPR空）；metadata不改玩法。尚未push/部署，不能把本機完成當正式上線。

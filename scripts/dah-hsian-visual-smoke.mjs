@@ -34,13 +34,14 @@ try{
  const touchWalk=async(target,condition)=>{
   await mobile.locator('#stick').dispatchEvent('pointerdown',{pointerId:71,pointerType:'touch',clientX:stick.x+stick.width/2,clientY:stick.y+10});
   try{await mobile.waitForFunction(condition,target,{timeout:60000});}finally{await mobile.locator('#stick').dispatchEvent('pointerup',{pointerId:71,pointerType:'touch'});}
-  await mobile.waitForTimeout(400);
+  // 渲染器可能很慢；牆鐘400ms不保證重力已走過足夠步進。
+  const settleStart=await mobile.evaluate(()=>__game.state.time);await mobile.waitForFunction(t=>__game.state.time>=t+.5,settleStart,{timeout:60000});
  };
  await mobile.evaluate(()=>{__game.pos.set(-19,0,17.1);__game.state.vy=0;__game.state.yaw=Math.PI;});
  await touchWalk(null,()=>__game.pos.y>4.4&&__game.pos.z>22.9);assert.ok(await mobile.evaluate(()=>Math.abs(__game.pos.y-4.5)<.05));
  await mobile.evaluate(()=>{__game.state.yaw=0;});await touchWalk(null,()=>__game.pos.z<17.2&&__game.pos.y<.05);
  await mobile.evaluate(()=>{__game.pos.set(10,23.1,15.6);__game.state.vy=0;__game.state.yaw=Math.atan2(1.5,6.2);});
- await touchWalk(null,()=>__game.pos.z<9.55);assert.ok(await mobile.evaluate(()=>Math.abs(__game.pos.y-20)<.15));
+ await touchWalk(null,()=>__game.pos.z<9.55);assert.ok(await mobile.evaluate(()=>Math.abs(__game.pos.y-20)<.15),'手機下樓落穩6F '+JSON.stringify(await mobile.evaluate(()=>({p:__game.pos.toArray(),vy:__game.state.vy,time:__game.state.time}))));
  assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await mobile.close();
  assert.deepEqual(errors,[]);console.log('PASS 達賢視覺：三時段/真燈/單投影光/跨房間/按鈕鍵盤不跳躍/減少動態/觸控2F上下3F與7F下6F/離區隱藏/無shader錯誤');
 }finally{await browser.close();}
