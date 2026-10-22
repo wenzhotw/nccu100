@@ -53,7 +53,7 @@ export const RESTROOM_DOORS=[
  {name:'男廁入口門',label:'男廁',x:-16.7,z:-17.57,w:1.1},
 ];
 export function interiorColliders(){
-  return [...WALLS,...ENTRANCE_STRUCTURES,...ENTRANCE_GLAZING,...FURNITURE,...COLUMNS.map(([x,z])=>({x,z,w:.7,d:.7,h:4.2})),
+  return [...WALLS,...ENTRANCE_STRUCTURES,...ENTRANCE_GLAZING,...FURNITURE.filter(o=>o.name!=='西南D梯封閉入口'),...COLUMNS.map(([x,z])=>({x,z,w:.7,d:.7,h:4.2})),
     {x:11,z:-3,w:22,d:38,h:4.2}].map(o=>({x0:o.x-o.w/2,x1:o.x+o.w/2,z0:o.z-o.d/2,z1:o.z+o.d/2,top:o.h}));
 }
 export function interiorZone(p){if(p.x<-15&&p.z<-15)return '達賢2樓・廁所前廊';return p.z>16?'達賢2樓・窗邊閱覽區':p.z>0?'達賢2樓・挑空展示區':'達賢2樓・大廳';}

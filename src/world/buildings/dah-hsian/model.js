@@ -47,12 +47,12 @@ const LEAF = new THREE.IcosahedronGeometry(1,1);
 const ROCK = new THREE.IcosahedronGeometry(1,0);
 export const TREE_POSITIONS=[[-40,74],[-37,48],[-42,13],[-41,-14],[-44,-43],[-43,-71],[-26,-96],[22,-98],[38,-89],[42,-66],[47,-39],[46,-14],[43,18],[42,57],[-33,101],[43,99],[TREE_PLAZA.x,TREE_PLAZA.z]];
 const COLORS = {
-  concrete:'#afb8b5', edge:'#cbd3d0', seam:'#85918e', glass:'#536f77',
-  glassLight:'#9bb9ba', glassDark:'#3f5f62', frame:'#d6ded7', louver:'#956b48',
-  louverEdge:'#b38c62', paving:'#aaafa6', stone:'#a6afa1', grass:'#6fae5c',
+  distantHill:'#82988b',distantHillDark:'#6d8279',concrete:'#b2b1a9', edge:'#cbd3d0', seam:'#85918e', glass:'#536f77',
+  glassLight:'#9bb9ba', glassDark:'#3f5f62', frame:'#d6ded7', louver:'#aaa9a1',
+  louverEdge:'#bdbdb3', paving:'#aaafa6', stone:'#a6afa1', grass:'#6fae5c',
   grassDark:'#648258', trunk:'#726653', leaves:'#456c4b', leavesLight:'#69874f',
-  leavesDark:'#365e48', hedge:'#557447', rail:'#bfcac3', water:'#687e51', waterHighlight:'#bdc7a7',
-  timber:'#9d6335',timberLight:'#c49b65',timberDark:'#594738',shopGlass:'#a8c3bd',
+  leavesDark:'#365e48', hedge:'#557447', rail:'#bfcac3', water:'#355b63', waterHighlight:'#9ebfc3',
+  timber:'#ad875d',timberLight:'#c3a37a',timberDark:'#594738',shopGlass:'#a8c3bd',
   shopFloor:'#b8afa0',shopWall:'#b4b9ad',upholstery:'#d2cbbb',pot:'#474b47',lamp:'#e5dab5',
 };
 
@@ -338,7 +338,7 @@ function garden(parent,materialFor){
     if(insidePolygon(x,z,POND)&&insidePolygon(x+1.6,z+offset,POND))rippleLines.push(x,-0.205,z,x+1.6,-0.205,z+offset*0.12);
   }
   const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute(rippleLines,3));
-  const rl=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:COLORS.waterHighlight,transparent:true,opacity:0.28}));g.add(rl);
+  const rl=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:COLORS.waterHighlight,transparent:true,opacity:0.12}));g.add(rl);
   // Tina20/22與Angela06：岸邊成片低植栽，保留湖面與小屋主視線，不圍一整圈高籬。
   const banks=new THREE.Group();banks.name='湖岸低植栽';g.add(banks);const bankBatch=batch(banks,materialFor);
   for(const [x,z]of [[21,-82],[20,-77],[17,-71],[17,-65],[16,-57],[16,-49],[14,-38],[-26,-73],[-23,-79],[-9,-82],[2,-93]]){
@@ -356,7 +356,7 @@ function garden(parent,materialFor){
   // 遠景林帶與低丘只出現在區域外，與可走地面分開。
   for(let i=0;i<24;i++){
     const a=i/24*Math.PI*2,x=Math.cos(a)*145,z=Math.sin(a)*220;
-    b.add(i%2?'leavesDark':'leaves',x,-3,z,22+(i%3)*4,12+(i%4)*5,25,a,LEAF);
+    b.add(i%2?'distantHillDark':'distantHill',x,-3,z,22+(i%3)*4,12+(i%4)*5,25,a,LEAF);
   }
   for(let i=0;i<45;i++){
     const x=-40+(i*17%83),z=-100+(i*23%82);

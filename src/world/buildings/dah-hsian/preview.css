@@ -7,3 +7,10 @@
     padding-right: 9px;
   }
 }
+/* 時段沿用既有HUD紙色與字體，只在達賢顯示。 */
+#dah-time {padding:9px 13px;min-height:38px;align-self:flex-start;}
+#dah-time[hidden] {display:none;}
+@media (hover:hover) and (pointer:fine) {
+  #dah-time:hover {background:var(--paper2);}
+}
+@media (max-width:520px) {#dah-time {min-height:40px;}}

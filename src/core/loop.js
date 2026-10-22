@@ -30,7 +30,7 @@ import { camT, groundH, indoor, lerpA, pos, spots, vel, zoneOf } from './gamepla
 import { NPCS, npcUpdate } from '../actors/npc.js';
 import { carSpot, exitCar, sirenB, sirenR, updateDrive } from '../systems/police-drive.js';
 import { buildOccluders, camDir, camRay } from '../systems/camera-occlusion.js';
-import {frameRoomCamera,roomOrbitDirection} from '../systems/room-view.js';
+import {frameRoomCamera,roomOrbitDirection,roomCameraAtHeight} from '../systems/room-view.js';
 import { updateFoliage } from '../systems/foliage-fade.js';
 import { cameraFov, drawMini, heroJuice, placePrompt, puff, updatePuffs } from '../systems/feel.js';
 
@@ -124,7 +124,7 @@ function update(dt){
   if(state.driving&&Math.abs(state.carSpeed)>1&&state.camPtr===null) state.yaw=lerpA(state.yaw,state.carYaw+(state.carSpeed>0?Math.PI:0),1-Math.exp(-dt*2.5));
   const tf=(!dlg.hidden&&state.talkFocus)?state.talkFocus:null;
   camT.lerp(tf?new THREE.Vector3((pos.x+tf.x)/2,pos.y+1.05,(pos.z+tf.z)/2):new THREE.Vector3(pos.x,pos.y+(state.driving?1.5:0.9),pos.z),1-Math.exp(-dt*(tf?3:8)));
-  const RC=ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.camera;
+  const RC=roomCameraAtHeight(ROOMS.current&&ROOMS.current.def&&ROOMS.current.def.camera,pos.y);
   let dWant=indoor()?Math.min(state.dist,(RC&&RC.maxDist)||6.5):(state.driving?Math.max(state.dist,10):state.dist); if(tf) dWant=Math.min(dWant,4.6);
   roomOrbitDirection(camDir,state.yaw,state.pitch,camT,dWant,RC);
   if(state.OCC.length){ camRay.set(camT,camDir); camRay.far=dWant+0.6; const hit=camRay.intersectObjects(state.OCC,false)[0]; if(hit) dWant=Math.max(0.9,hit.distance-0.45); }

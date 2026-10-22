@@ -6,20 +6,19 @@ import { toon, basic, canvasTex, OUT, outline } from '../../../render/kit.js';
 import { groundHeight, coreColliders } from './layout.js';
 import { tree, FOLIAGE } from '../../vegetation.js';
 import { COLORS, TREE_POSITIONS, createOutdoorModel } from './model.js';
+import {createDahMaterialFactory,addDahContactShadows} from './materials.js';
+import {createDahLighting,configureDahShadows} from './daylight.js';
+import {createDahAtmosphere} from './atmosphere.js';
+import {dahClock} from './visual-clock.js';
 import {createDucks,updateDucks} from './ducks.js';
 import {LAKESIDE_SHOPS,LOWER_WC,HOTPOT_MENU,LAKESIDE_Y} from './layout.js';
-let ducks;
+let ducks,materialFor,lighting,contacts,atmosphere;
+const canopy=[];
 const reducedMotion=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):null;
-export function updateMap(time){if(ducks)updateDucks(ducks,time,reducedMotion?.matches);}
-
-function concreteTexture() {
-  return canvasTex(256,512,(g,w,h)=>{
-    g.fillStyle='#e0e3df';g.fillRect(0,0,w,h);
-    // 細直木紋模板與橫向施工縫，色差刻意收斂，不把清水模畫成木牆。
-    for(let x=0;x<w;x+=3){g.fillStyle=`rgba(105,108,99,${0.018+(x%17)*0.002})`;g.fillRect(x,0,1,h);}
-    g.strokeStyle='rgba(97,103,96,.14)';g.lineWidth=1;
-    for(const y of [128,256,384]){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
-  });
+export function updateMap(time,position){
+ const profile=dahClock.sample(time);materialFor?.setEnvironment(profile);contacts?.update(profile);lighting?.update(profile,position);
+ atmosphere?.update(time,profile,{reducedMotion:reducedMotion?.matches});
+ if(ducks)updateDucks(ducks,time,reducedMotion?.matches);
 }
 
 function textSign(parent,text,x,y,z,w,h,color,background,angle=0) {
@@ -35,26 +34,7 @@ function textSign(parent,text,x,y,z,w,h,color,background,angle=0) {
 }
 
 export function buildMap() {
-  const texture=concreteTexture();const materials=new Map();
-  // 程式繪製沿木紋細線，實拍只用來判讀，沒有把第三方照片貼進遊戲。
-  const timber=canvasTex(128,512,(g,w,h)=>{
-    g.fillStyle='#ead9bd';g.fillRect(0,0,w,h);
-    for(let x=0;x<w;x+=4){
-      g.strokeStyle=`rgba(75,48,25,${.08+(x%7)*.012})`;g.beginPath();
-      for(let y=0;y<=h;y+=8){const xx=x+Math.sin(y*.03+x)*.9;y?g.lineTo(xx,y):g.moveTo(xx,y);}g.stroke();
-    }
-    for(const y of [91,273,431]){g.strokeStyle='rgba(70,40,20,.12)';g.beginPath();g.ellipse(31+y%47,y,3,14,.1,0,Math.PI*2);g.stroke();}
-  });
-  const paving=canvasTex(256,256,(g,w,h)=>{
-    g.fillStyle='#bcc0b6';g.fillRect(0,0,w,h);g.strokeStyle='#929e96';g.lineWidth=1;
-    for(let i=0;i<=256;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
-  },[.4,.4]);
-  const materialFor=kind=>{
-    if(kind==='outline')return OUT;
-    if(!materials.has(kind))materials.set(kind,toon(COLORS[kind]||COLORS.concrete,
-      kind==='concrete'?{map:texture}:kind==='paving'?{map:paving}:kind==='timber'||kind==='timberLight'?{map:timber}:kind==='lamp'?{emissive:'#bfa26c',emissiveIntensity:.5}:kind==='shopGlass'?{transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}:undefined));
-    return materials.get(kind);
-  };
+  materialFor=createDahMaterialFactory({palette:COLORS,toon,outline:OUT});
   const model=createOutdoorModel(materialFor);scene.add(model);
   ducks=createDucks(color=>toon(color));model.add(ducks);
   for(const s of LAKESIDE_SHOPS){
@@ -73,7 +53,7 @@ export function buildMap() {
     if(FOLIAGE.length===count)continue; // 共用工具會略過既有預定地。
     const y=groundHeight(x,z);
     scene.children.slice(start).forEach(root=>{root.position.y+=y;root.name='達賢共用樹';});
-    const foliage=FOLIAGE.at(-1);foliage.y0+=y;foliage.y1+=y;
+    const foliage=FOLIAGE.at(-1);canopy.push(...foliage.parts);foliage.y0+=y;foliage.y1+=y;
     // 進場時全域 prefab 已完成合批；這些是一般網格，使用既有材質淡出分支。
     foliage.setFade=null;
   }
@@ -88,10 +68,11 @@ export function buildMap() {
   textSign(model,'國立政治大學',-22,groundHeight(-22,89)+1.65,89.29,7.4,0.7,'#e6d09b');
   textSign(model,'指南校區',-22,groundHeight(-22,89)+0.80,89.29,5.6,0.8,'#e6d09b');
   colliders.push({x0:-26.1,x1:-17.9,z0:88.7,z1:89.3});
+  contacts=addDahContactShadows(model);
+  atmosphere=createDahAtmosphere({water:model.getObjectByName('景觀池水面'),foliage:canopy});
 }
 
 export function mapLight(s) {
-  const sky='#b4d6ed';s.background=new THREE.Color(sky);s.fog=new THREE.Fog(sky,120,330);
-  s.add(new THREE.HemisphereLight('#e5efff','#667f75',0.85));
-  const sun=new THREE.DirectionalLight('#fff9ef',0.75);sun.position.set(-48,70,55);s.add(sun);
+ configureDahShadows(s);
+ lighting=createDahLighting(s,{mobile:typeof matchMedia==='function'&&matchMedia('(max-width: 520px)').matches});
 }

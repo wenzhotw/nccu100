@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { insidePolygon, POND, BRIDGE } from '../src/world/buildings/dah-hsian/layout.js';
 const base = process.env.NCCU_BASE_URL || 'http://127.0.0.1:5187/';
-const browser = await chromium.launch({ args: ['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ args: process.env.NCCU_BROWSER_METAL?['--use-angle=metal','--ignore-gpu-blocklist']:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
 try {
   const page = await browser.newPage({ viewport: {width:960,height:600} });
   const errors=[];page.on('pageerror', e=>errors.push(String(e)));
@@ -56,10 +56,12 @@ try {
   assert.equal(shore.swimming,true,'水中啟用既有泳姿');assert.ok(shore.y<-.4);
   time=await frameTime();await page.keyboard.down('d');await waitTime(time,3.6);await page.keyboard.up('d');
   assert.ok(await page.evaluate(()=>!__game.state.swimming&&__game.pos.y>=0),'實際游回岸上，恢復站立');
+  // 上一段游泳的橫向慣性要先自然停止，才設定下一個獨立站位；不能搬動角色卻保留速度。
+  time=await frameTime();await waitTime(time,.7);
   // 真實管線驗證一樓廁所前廊，不能只在Node略過共用碰撞。
   await page.evaluate(()=>{__game.pos.set(-21.3,0,-26);__game.state.yaw=Math.PI;__game.state.vy=0;});
   time=await frameTime();await page.keyboard.down('w');await waitTime(time,1);await page.keyboard.up('w');
-  assert.ok(await page.evaluate(()=>__game.pos.z>-23&&Math.abs(__game.pos.x+21.3)<.15),'1F廁所前廊沒有2F隱形牆');
+  assert.ok(await page.evaluate(()=>__game.pos.z>-23&&Math.abs(__game.pos.x+21.3)<.15),'1F廁所前廊沒有2F隱形牆 '+JSON.stringify(await page.evaluate(()=>__game.pos.toArray())));
   const modelId=await page.evaluate(()=>__game.rooms['dah-hsian'].scene.getObjectByName('達賢戶外區域').uuid);
   await page.setViewportSize({width:375,height:812});
   assert.ok(await page.locator('#hud').evaluate(el=>[...el.querySelectorAll('.chip')].filter(c=>c.getBoundingClientRect().width).every(c=>{
