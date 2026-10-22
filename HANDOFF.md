@@ -1,4 +1,4 @@
-# 2026-10-23 F01 D梯結構修復（最新，發布準備）
+# 2026-10-23 F01 D梯結構修復（最新，已發布局部修復）
 
 - 使用者「好」，沿已核可查核順序修現有2F→3F D梯，不再批准同範圍。原NCCU100 checkout，branch fix/dah-d-stair-opening，base80f17b2，開工乾淨。無同檔並行修改／新相依；未碰另一專案5090。
 - 模型／通行共用梯段、洞口與三側護欄；3F樓板與2F窗邊天花分割，D梯踏面、連續踢面、扶手與立柱修正。獨立review找到上半段側穿越，先紅後修，原reviewer複查40條雙向側路＋快速上下往返通過，無剩餘阻擋項。報告.git/sdd/d-stair-f01-review.md。
@@ -8,7 +8,10 @@
 - version1.77；遠端PR97手機橫向已用1.76，未合併，不覆蓋其工作。check與標準build PASS；branch exact完整npmtest /tmp/dah-d-stair-branch-exact-tests.log exit0（Node340pass/1skip、portable80、npc9、stage2 45pass/1skip），直接讀各runner摘要；其後只有文件修改。upper Metal真鍵盤2F→8F→7F後廊→2F /tmp/dah-d-stair-upper-final.log PASS，舊直線穿側護欄的失敗原始結果保留，driver已改走上端入口，原斷言未放寬。
 - 查到來源80f遠端CI39815578473既有upper長路段30秒逾時；尚不能斷言只有速度。driver保留原到達斷言，timeout120s與.5simulation settle經獨立限項複查通過。真software /tmp/dah-d-stair-upper-software.log 已走過原失敗長段並到3MF；此後自主停止自己的Node59425／browser59428（相關PID確認皆已退出），**只有該段通過，不是全軟體高樓往返PASS**。完整2F→8F→2F保留本輪Metal成功證據。主線CI後續仍會跑完整軟體流程，不宣稱遠端全綠。
 - a74e55f已本機fast-forward合入main；合併後完整npmtest /tmp/dah-d-stair-main-tests.log exit0（Node340pass/1skip、portable80、npc9、stage2 45pass/1skip），main check PASS。來源與branch full後相同；之後只有本文件／QA記錄，無新產品碼。標準dist index-rbpPgA_o.js，build成功。發布核心驗證helper .references/dah-hsian/d-stair-f01-20261023/verify-live.js，包含桌機E／手機act進出、鍵盤／觸控D梯與平台往返、原2F戶外平台、版本及錯誤檢查；不再新增截圖自評輪次。
-- 下一步push沿既有Pages追蹤exactSHA與原網址真流程；部署後結果補記。原URL目前轉http://play.gaiacraft.tw，本輪未改網域。任何失敗先診斷不硬發布。
+- 已push至origin/main950d13b667e755ac2a35228f92b40a963490b00a；Pages39824223223 success且exactSHA一致。原 https://wenzhotw.github.io/nccu100/?area=dah-hsian 轉http://play.gaiacraft.tw，實際v1.77/index-rbpPgA_o.js；線上與本機標準build byte相同，SHA256 45eb901bc0977f6bedbea58f770f014d0222bd3e2c5e6ec13e959e000ff5330c。未改網域。
+- 正式桌機E／手機act進出、鍵盤／真touch上下D梯及鄰平台、回同戶外2F平台y4、版本／寬度／console/pageerror均PASS，/tmp/dah-d-stair-release-live.log；本機同helper校準PASS /tmp/dah-d-stair-release-local.log。沒有用除錯相機假裝照片對位；只在各流程起點設站位，實際梯段用鍵盤／搖桿走。正式沒有第三輪自評截圖。
+- 遠端完整CI39824223233仍進行（最後效能基礎測試），不可宣稱遠端all green；原80f既有upper逾時與本輪driver改法見QA。此次證據同步只有文件，產品碼／版本／相依／設定不再變，後續Pages以同產物hash辨識，不重複觸發手動部署。
+- 下一步F02–F06及F01實景標高／轉折校準：按官方各層平面和可定位照片逐段重建，不在目前模板上直接繼續美化。
 
 # 2026-10-23 室內品質否決後重新查核（最新，未修復）
 
