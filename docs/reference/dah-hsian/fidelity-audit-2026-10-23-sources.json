@@ -1,0 +1,131 @@
+{
+  "auditDate": "2026-10-23",
+  "sourceRevision": "aa7b1b6260a8e2bd7b8f6deade181ba56b477816",
+  "scope": "read-only interior fidelity audit; no game changes",
+  "plans": [
+    {
+      "floor": "2F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl2f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "0767f6837e47f06dfafc80e4e049dc0f28c909045f0928d72250050d6070a999",
+      "matchesPreviousOriginal": true
+    },
+    {
+      "floor": "3F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl3f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "3207b668adca8175603676be9d8a9b10c066447f5d962df120f22d76795696ee",
+      "matchesPreviousOriginal": true
+    },
+    {
+      "floor": "4F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl4f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "2e595e0c11e3f00ceb3e9b4d185f1229a40e403ae2a25910e17a24a376579bce",
+      "matchesPreviousOriginal": true
+    },
+    {
+      "floor": "5F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl5f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "44c0f36f9232bd596721ce47431634437fa735419ef56f2b9578fe46641a8478",
+      "matchesPreviousOriginal": true
+    },
+    {
+      "floor": "7F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl7f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "f571f8acea23dd1b9fc9f7603c03be34fa9cd9a3a4130cfcbc281af726d7e580",
+      "matchesPreviousOriginal": true
+    },
+    {
+      "floor": "8F",
+      "url": "https://sub.lib.nccu.edu.tw/map/imgs/dhl8f.jpg",
+      "retrievedOn": "2026-10-23",
+      "publishedOrRevisedOn": "not established",
+      "ok": true,
+      "sha256": "07de01fb6e248fccaf7017cb0c7727d18f03d8a79f28a46884f19e45c2841297",
+      "matchesPreviousOriginal": true
+    }
+  ],
+  "otherSources": [
+    {
+      "id": "official-floor-functions",
+      "url": "https://dhl.lib.nccu.edu.tw/p/404-1001-597.php?Lang=zh-tw",
+      "role": "floor function cross-check; not exact dimensions"
+    },
+    {
+      "id": "official-tour",
+      "url": "https://walkinto.in/tour/WktjYS6ipb-ketjKSTo6Z",
+      "inspection": "UI path: 達賢圖書館 > 2樓 > 大廳; panorama imagery actually rendered after initial black loading state",
+      "panoFromDisplayedGoogleLink": "CIHM0ogKEICAgIDq7ZbeDA",
+      "captureDate": "not established in this audit",
+      "role": "lobby relationships; not surveyed camera registration"
+    },
+    {
+      "id": "user-atrium",
+      "local": ".references/dah-hsian/visual-atmosphere-20261022/user-atrium-reference.png",
+      "role": "upper atrium furniture and spatial appearance; user supplied, photo date unknown"
+    },
+    {
+      "id": "annual-report-2018",
+      "url": "https://www.lib.nccu.edu.tw/var/file/0/1000/img/37/793003030.pdf",
+      "pages": "PDF page14 / printed page11 text",
+      "role": "historical planning only; NOT current built-condition evidence",
+      "visualInspection": "web PDF screenshot timeout; no figure-based geometry claims"
+    }
+  ],
+  "runtimeEvidence": {
+    "requestedUrl": "https://wenzhotw.github.io/nccu100/?debug&area=dah-hsian",
+    "observedRedirect": "http://play.gaiacraft.tw/?debug&area=dah-hsian",
+    "version": "v1.75",
+    "scriptAsset": "index-D-v9UGny.js",
+    "screenshots": ".screenshots/dah-fidelity-20261023",
+    "poses": ".references/dah-hsian/fidelity-audit-20261023/capture.js",
+    "poseStatus": "Estimated inspection cameras, NOT registered real-photo matches",
+    "stairSlab": {
+      "calibration": "unit box top .5 and outside miss passed",
+      "stairMidpoint": {
+        "x": -19,
+        "y": 2.25,
+        "z": 20.3
+      },
+      "navigationHeight": 2.25,
+      "unbrokenSlabAboveStair": [
+        {
+          "name": "可行走層退平台",
+          "hit": [
+            -19,
+            4.5,
+            20.299999999999997
+          ],
+          "slabCenter": [
+            -11.025,
+            4.34,
+            20.1
+          ],
+          "slabSize": [
+            22.349999999999998,
+            0.32,
+            7.800000000000001
+          ]
+        }
+      ]
+    },
+    "initialInvalidEvidence": [
+      "3f-stairs.png points into a continuous floor: not accepted as a valid architectural comparison",
+      "initial banner screenshots overwritten after computed opacity zero; not accepted as clean comparison"
+    ]
+  },
+  "privacy": "Public sources / isolated game browser; no account, stored player data, uploads or active security probing."
+}

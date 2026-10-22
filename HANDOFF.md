@@ -1,3 +1,25 @@
+# 2026-10-23 F01 D梯結構修復（最新，發布準備）
+
+- 使用者「好」，沿已核可查核順序修現有2F→3F D梯，不再批准同範圍。原NCCU100 checkout，branch fix/dah-d-stair-opening，base80f17b2，開工乾淨。無同檔並行修改／新相依；未碰另一專案5090。
+- 模型／通行共用梯段、洞口與三側護欄；3F樓板與2F窗邊天花分割，D梯踏面、連續踢面、扶手與立柱修正。獨立review找到上半段側穿越，先紅後修，原reviewer複查40條雙向側路＋快速上下往返通過，無剩餘阻擋項。報告.git/sdd/d-stair-f01-review.md。
+- 新entry-stair8項，navigation21合跑29PASS，真實resolve／房間邊界／重力兩步長。紅綠logs /tmp/dah-d-stair-{red,green}-*.log；最終真邊界 /tmp/dah-d-stair-real-boundary.log。
+- 兩輪各桌機1280×800、真手機375×812，鍵盤／觸控2F→3F鄰平台→2F皆PASS、errors空。普通鏡頭，r1手機遮擋多，r2改站位朝向；已實讀4圖。最終圖 .screenshots/d-stair-f01-20261023/round2-desktop.png、round2-mobile.png；/tmp/dah-d-stair-qa-round{1,2}.log；QA八項逐項記docs/reference/dah-hsian/d-stair-f01-qa-2026-10-23.md。單次detector=[]無ignore，無動效程式變更。
+- 九欄產品教學與共用幾何→模型／導航→檢查架構已交付。只修F01交疊／穿越，D梯現況轉折與尺寸仍待照片校準；F02–F06未修，整館仍不通過還原驗收。不是實景完全還原／法規認證。
+- version1.77；遠端PR97手機橫向已用1.76，未合併，不覆蓋其工作。check與標準build PASS；branch exact完整npmtest /tmp/dah-d-stair-branch-exact-tests.log exit0（Node340pass/1skip、portable80、npc9、stage2 45pass/1skip），直接讀各runner摘要；其後只有文件修改。upper Metal真鍵盤2F→8F→7F後廊→2F /tmp/dah-d-stair-upper-final.log PASS，舊直線穿側護欄的失敗原始結果保留，driver已改走上端入口，原斷言未放寬。
+- 查到來源80f遠端CI39815578473既有upper長路段30秒逾時；尚不能斷言只有速度。driver保留原到達斷言，timeout120s與.5simulation settle經獨立限項複查通過。真software /tmp/dah-d-stair-upper-software.log 已走過原失敗長段並到3MF；此後自主停止自己的Node59425／browser59428（相關PID確認皆已退出），**只有該段通過，不是全軟體高樓往返PASS**。完整2F→8F→2F保留本輪Metal成功證據。主線CI後續仍會跑完整軟體流程，不宣稱遠端全綠。
+- a74e55f已本機fast-forward合入main；合併後完整npmtest /tmp/dah-d-stair-main-tests.log exit0（Node340pass/1skip、portable80、npc9、stage2 45pass/1skip），main check PASS。來源與branch full後相同；之後只有本文件／QA記錄，無新產品碼。標準dist index-rbpPgA_o.js，build成功。發布核心驗證helper .references/dah-hsian/d-stair-f01-20261023/verify-live.js，包含桌機E／手機act進出、鍵盤／觸控D梯與平台往返、原2F戶外平台、版本及錯誤檢查；不再新增截圖自評輪次。
+- 下一步push沿既有Pages追蹤exactSHA與原網址真流程；部署後結果補記。原URL目前轉http://play.gaiacraft.tw，本輪未改網域。任何失敗先診斷不硬發布。
+
+# 2026-10-23 室內品質否決後重新查核（最新，未修復）
+
+- 使用者對整個新版室內品質不滿，核可先停止擴建／美化並重新核對。**撤回還原驗收合格／limited ship作為還原依據**；舊功能通過只保留其範圍，不能當實景正確。
+- 本輪只做研究與查核文件，遊戲source/玩法/版本無變；workspace main aa7b1b6，開工乾淨，origin/main同SHA。報告 docs/reference/dah-hsian/fidelity-audit-2026-10-23.md，來源ledger同名-sources.json；已區分6項確定缺陷／驗收缺口與待驗證事項，列各主樓層站位與TDD修正順序。
+- 最重要F01：2F→3F D梯被連續3F樓板蓋住，導航中點y2.25，上方真模型ray擊中y4.5樓板；單位box命中/外部不命中先校準。raw/script .references/dah-hsian/fidelity-audit-20261023/{stair-slab-evidence.json,check-stair.mjs}。F02任意T短後廊不等同5/7F長廊，F03缺斜向公共交通區，F04上層椅無腳，F05展示地毯斜界/圖形缺漏，F06站位索引gamePoseMatched:false及既有高度測試未驗洞口。
+- 六張館方2/3/4/5/7/8F平面重新取得並實讀，SHA均同前存原檔；取回日期不等於圖面修訂日。2018年報是歷史規劃，不能拿搜尋收錄時間當新現況。館方環景實際操作達賢→2樓→大廳並看見照片；初始black不算。感恩牆精確位置、層高／MF對應、8F平台、玻璃門／各層廁所仍待校準，不再憑印象說對／錯。
+- 正式觀察從原GitHubURL轉至 http://play.gaiacraft.tw/?debug&area=dah-hsian，v1.75／index-D-v9UGny.js。本輪未改網域。新七個1280×800檢查鏡頭 .screenshots/dah-fidelity-20261023/，已實讀；capture.js明列估計站位，**沒有冒稱實景對位**。首張3f-stairs朝地板無效；後重取d-stair-lower。標題淡出以computed opacity=0確認。僅favicon404，未進行安全攻擊。
+- 已交付教學：來源→校準→幾何/可走範圍→分類；推薦逐層重建骨架，備案只補家具不足；無新依賴/付費/資料變更。未做場景修復，所以沒有新UI兩輪或產品全測／新上線成果，不能說完成還原。現有src/scripts/package/config與前全測79aba相同，純查核文件不拿舊綠燈掩蓋本次F01。
+- 下一步依報告先固定柱網／層與夾層關係，對D梯洞口做單一紅→最小修復→綠，再逐層動線；不得直接在模板樓層上繼續美化。原使用者已授權實景重建，不需要再次批准已核可範圍。此輪無同檔並行修改。
+
 # 2026-10-22 23:33 正式站驗收（本輪最新；以下舊段為歷史）
 
 - PR95由wenzhotw於15:19:35 UTC合併為a2bb594，隨後PR96合併為79aba372c8bcb09423e6a55c7d32a0ed83124838；不是本輪CLI執行merge。工作區已乾淨fast-forward至該main，保留他人安全防護修改。正式Pages39803805924成功且headSha一致，原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 為v1.75。
