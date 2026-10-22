@@ -8,7 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const content = JSON.parse(fs.readFileSync(path.join(root, 'src/content/baozhong.json')));
-const booth = content.booths.find(b => b.id === 'D26');
+const minigames = JSON.parse(fs.readFileSync(path.join(root, 'src/content/baozhong-minigames.json')));
+// v1.64 起 D26 預設是兩階段攤位：初訪玩配對小遊戲蓋章（T074，CLD-001）。
+const d26 = minigames.games.find(g => g.booth === 'D26');
 const server = createServer((req, res) => {
   let p = path.join(root, 'dist', decodeURIComponent(req.url.split('?')[0]));
   if (fs.existsSync(p) && fs.statSync(p).isDirectory()) p = path.join(p, 'index.html');
@@ -63,16 +65,16 @@ try {
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-D26-counter.png') });
   await finishDialog();
-  await page.getByRole('button', { name: '接受挑戰', exact: true }).click();
-  for (let i = 0; i < booth.quiz.questions.length; i++) {
-    const question = (await page.locator('#quiz .q').textContent()).replace(/^第 \d+ 題．/, '');
-    const q = booth.quiz.questions.find(q => q.q === question);
-    assert.ok(q, '題目必須來自凍結內容');
-    const correct = q.options[q.answer];
-    const index = await page.locator('#quiz .opts button').evaluateAll((buttons, answer) => buttons.findIndex(b => Array.from(b.childNodes).filter(n => n.nodeType === Node.TEXT_NODE).map(n => n.textContent).join('') === answer), correct);
-    assert.ok(index >= 0, '洗牌後仍能找到正確答案');
-    await page.locator('#quiz .opts button').nth(index).click();
+  await page.getByRole('button', { name: '玩小遊戲', exact: true }).click();
+  await page.locator('#bz-matching').waitFor();
+  assert.equal(await page.locator('#bz-matching .match-guide').count(), 0, '初訪配對不能先列出答案');
+  await page.getByRole('button', { name: '開始配對' }).click();
+  const left = page.locator('#bz-matching .match-column').nth(0), right = page.locator('#bz-matching .match-column').nth(1);
+  for (const pair of d26.pairs) {
+    await left.getByRole('button', { name: pair.left }).click();
+    await right.getByRole('button', { name: pair.right }).click();
   }
+  await page.getByRole('button', { name: '完成配對' }).click();
   await page.waitForFunction(() => window.__bz26.flags().has('bz26_st_D26'));
   await finishDialog();
   await page.locator('#bz-passport-button').click();
@@ -83,9 +85,9 @@ try {
   await page.getByRole('button', { name: '離開會場', exact: true }).click();
   await finishDialog();
   await page.waitForFunction(() => !window.__bz26.counts().active);
-  const left = await page.evaluate(() => window.__bz26.counts());
-  assert.equal(left.colliders, initial.colliders);
-  assert.equal(left.passportButtons, 0);
+  const leftCounts = await page.evaluate(() => window.__bz26.counts());
+  assert.equal(leftCounts.colliders, initial.colliders);
+  assert.equal(leftCounts.passportButtons, 0);
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible || window.__game.spots.includes(window.__bz26.activitySign.spot)), false);
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
@@ -103,7 +105,7 @@ try {
   await page.waitForFunction(() => window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   assert.equal(await page.locator('#bz-passport-button').count(), 1);
   assert.deepEqual(errors, []);
-  console.log('包種茶節瀏覽器主要流程通過', JSON.stringify({ initial, active, left, reentered, saveReload: true, pageErrors: errors }));
+  console.log('包種茶節瀏覽器主要流程通過', JSON.stringify({ initial, active, left: leftCounts, reentered, saveReload: true, pageErrors: errors }));
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));

@@ -12,9 +12,11 @@ const progress = college => {
 };
 const status = college => college.medal ? '🏅 已獲勳章' : college.ready ? '可挑戰' : '收集中';
 const selectedIndex = (colleges, selected) => Math.max(0, colleges.findIndex((c, i) => key(c, i) === selected));
+// T074 兩階段（旗標開啟才有 view.advanced）：顯示進階茶罐；沒有這個欄位時輸出與原本相同。
+const advancedSummary = view => view.advanced && typeof view.advanced === 'object' ? `<p class="bz-advanced">進階茶罐：${count(view.advanced.cans)}／${count(view.advanced.total)} · 進階過關 ${count(view.advanced.done)}／${count(view.advanced.available)} 攤</p>` : '';
 export function renderPassportHTML(view = {}, { selectedCollegeId } = {}) {
   const colleges = list(view.colleges), selected = selectedIndex(colleges, selectedCollegeId), current = colleges[selected];
-  return `<div class="bz-summary"><p>茶葉點數：${count(view.points)} · 提示卡：${count(view.hints)}</p><p>大會考：${view.examPassed ? '本輪已通過' : view.examUnlocked ? '已解鎖' : '需三枚不同學院勳章'}</p></div><div class="bz-spread"><nav class="bz-colleges" aria-label="學院護照">${colleges.map((c, i) => `<button type="button" class="bz-college" data-bz-college="${i}" data-bz-college-id="${esc(key(c,i))}" aria-pressed="${i === selected}" aria-controls="bz-current-college"><span class="bz-college-dot" style="--bz-college-color:${color(c.color)}" aria-hidden="true"></span><span>${esc(c.name)}<small>${status(c)} · 已蓋${progress(c)}</small></span></button>`).join('')}</nav><section id="bz-current-college" class="bz-page" aria-label="${esc(current?.name ?? '學院集章')}" tabindex="-1">${current ? `<h3>${esc(current.name)}</h3><p class="bz-page-progress">${status(current)} · 已蓋${progress(current)}</p><ul class="bz-stamp-grid">${list(current.booths).map(b => `<li class="bz-stamp-slot${b.stamp ? ' is-stamped' : ''}"><span class="bz-stamp-mark" aria-hidden="true">${b.stamp ? '✓' : '○'}</span><span>${esc(b.dept)}</span><small>${b.stamp ? '✓ 已蓋章' : '○ 未蓋章'}${b.perfect ? ' · ★ 全對' : ''}</small></li>`).join('')}</ul>${list(current.booths).length ? '' : '<p>本院目前沒有可顯示的學系。</p>'}` : '<p>目前沒有可顯示的學院。</p>'}</section></div>`;
+  return `<div class="bz-summary"><p>茶葉點數：${count(view.points)} · 提示卡：${count(view.hints)}</p><p>大會考：${view.examPassed ? '本輪已通過' : view.examUnlocked ? '已解鎖' : '需三枚不同學院勳章'}</p>${advancedSummary(view)}</div><div class="bz-spread"><nav class="bz-colleges" aria-label="學院護照">${colleges.map((c, i) => `<button type="button" class="bz-college" data-bz-college="${i}" data-bz-college-id="${esc(key(c,i))}" aria-pressed="${i === selected}" aria-controls="bz-current-college"><span class="bz-college-dot" style="--bz-college-color:${color(c.color)}" aria-hidden="true"></span><span>${esc(c.name)}<small>${status(c)} · 已蓋${progress(c)}</small></span></button>`).join('')}</nav><section id="bz-current-college" class="bz-page" aria-label="${esc(current?.name ?? '學院集章')}" tabindex="-1">${current ? `<h3>${esc(current.name)}</h3><p class="bz-page-progress">${status(current)} · 已蓋${progress(current)}</p><ul class="bz-stamp-grid">${list(current.booths).map(b => `<li class="bz-stamp-slot${b.stamp ? ' is-stamped' : ''}"><span class="bz-stamp-mark" aria-hidden="true">${b.stamp ? '✓' : '○'}</span><span>${esc(b.dept)}</span><small>${b.stamp ? '✓ 已蓋章' : '○ 未蓋章'}${b.perfect ? ' · ★ 全對' : ''}${b.advancedAvailable ? (b.advanced ? ' · 🍵 進階' : ' · 進階未過') : ''}</small></li>`).join('')}</ul>${list(current.booths).length ? '' : '<p>本院目前沒有可顯示的學系。</p>'}` : '<p>目前沒有可顯示的學院。</p>'}</section></div>`;
 }
 
 // 所有選擇器限定活動 body 與本模組節點。沒有外部字型、圖片、既有對話框或問答卡選擇器。
@@ -85,13 +87,17 @@ body.bz26 #bz-passport-feedback .bz-feedback-label{display:block;font-size:15px;
 }`;
 
 let mounted = null;
+// T074：實驗功能可登記一個 view 裝飾函式（預設沒有，畫面不變），並在旗標變動後要求重畫。
+let viewDecorator = null;
+export function setPassportViewDecorator(fn) { viewDecorator = typeof fn === 'function' ? fn : null; mounted?.refresh(); }
+export function refreshPassport() { return mounted ? mounted.refresh() : false; }
 export function mountPassport({ getView } = {}) {
   if (typeof getView !== 'function') throw new TypeError('getView must be a function');
   if (typeof document === 'undefined' || !document.body) throw new Error('mountPassport requires a DOM');
   const doc = document, hud = doc.querySelector('#hud .col.r');
   // 加入既有直向欄位，讓故事、道具、毛巾及支線自然排版，不猜固定 top 座標。
   if (!hud) throw new Error('mountPassport requires the existing #hud .col.r');
-  const readView = () => { const value = getView(); if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('getView must return an object'); return value; };
+  const readView = () => { const raw = getView(), value = viewDecorator && raw && typeof raw === 'object' && !Array.isArray(raw) ? viewDecorator(raw) : raw; if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('getView must return an object'); return value; };
   const initialView = readView(); // 資料失敗時，不拆掉仍可使用的上一個實例。
   mounted?.destroy();
   const addedActivityClass = !doc.body.classList.contains('bz26');

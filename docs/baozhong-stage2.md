@@ -1,0 +1,41 @@
+# 包種茶節兩階段攤位（試作，T074）
+
+v1.64 起預設開啟（Wenzel 2026-10-22 09:24 決定），所有玩家直接進入兩階段流程；網址加 `?bz26stage2=0` 可暫時關閉，回到原本流程。存檔格式不變，只新增 `bz26_adv_*` 旗標。
+
+## 決策來源
+- 2026-10-22 06:32 +08:00 Wenzel 提出：第一次見面玩簡單小遊戲，回訪再挑戰原本較難的問答（進階版）。
+- 06:33 Wenzel 決定：關主與大會考考第一次小遊戲的內容；由 Grok 先做，再請另一個 AI 驗收。
+
+## 流程
+1. **初訪**：攤位 NPC 台詞 → 「玩小遊戲」→ 30–60 秒小遊戲。每一步答完立刻顯示對錯與一句說明。完成就蓋一般攤位章 `bz26_st_<攤>`（+2 點），每步首次都答對再加 `bz26_pf_<攤>`（+1）。這個章就是關主與勳章看的章。
+2. **回訪**（已有攤位章）：可選「進階挑戰（全對才過）」或「再玩一次小遊戲」。進階版就是原本的攤位問答，每題當場顯示對錯與說明（說明取自既有內容；沒有說明就顯示正確答案）。全對才過，過關給 `bz26_adv_<攤>` 和資料指定的既有茶罐 `bz26_can_N`（點數公式原本就計入 +1）。進階不影響勳章。
+3. **重玩不重複給**：章、全對、進階、茶罐都只在第一次給。取消（先離開、Esc、離場、讀檔）一律不結算。
+4. **關主**：試作攤所屬學院（C03、C04、C05）的關主，每院只抽 1 題小遊戲題，其餘從原學院題庫補到 5 題並打亂順序，門檻照舊 4/5。其他學院關主不改。
+5. **大會考**：已得勳章學院中有試作攤的，每院只抽 1 題小遊戲題，再用原本的 `drawExam` 補到 10 題，最後整份打亂順序，門檻照舊 7/10。沒有試作學院勳章時與原本抽題完全相同。
+6. **情境題進題庫**：情境題離開攤位後會缺前提，`pool.context`（逐字引文）會加在題幹前面，讓關主與大會考的題目可以獨立作答。
+
+驗收紀錄：2026-10-22 Claude 驗收（CLD-001），依 M1 至 M3 修正關主與大會考的出題比重、題目順序與情境題前提。
+
+沒有小遊戲資料的攤位（另外 34 攤）維持原流程：原本的問答就是初訪關卡。要加一攤，只要在 `src/content/baozhong-minigames.json` 加一筆資料，不必改程式。
+
+## 試作攤位
+| 攤位 | 類型 | 內容來源（全部是 baozhong.json 逐字引文） | 進階獎勵 |
+|---|---|---|---|
+| D26 日文 | 配對（沿用 matching.js，不再先列答案） | features[0] 課程、features[1] 都留交換 | bz26_can_1 |
+| D19 新聞 | 分類：事實還是意見（可拖放也可點選） | quiz 第 1 題三個選項、features[0]、features[1] | bz26_can_2 |
+| D13 會計（商學院） | 情境選擇：包種茶攤一日老闆（假想） | npc.lines[2–3]、after.pass 算式；prop 設計稿（標明未實作）的營收300／成本250 只當數字佐證，畫面不宣稱攤位上看得到 | bz26_can_3 |
+
+每一筆資料都有 `trace: {path, quote}`，測試會檢查 quote 逐字出現在 path 指的欄位。待查事項寫在每筆的 `pending`。
+
+## 檔案
+- `src/content/baozhong-minigames.json`：小遊戲資料（新）。
+- `src/systems/baozhong/stage2/stage-core.js`：階段控制、結算、題庫（純邏輯，新）。
+- `src/systems/baozhong/stage2/rounds.js`：一步一回饋的回合引擎（純邏輯，新）。
+- `src/systems/baozhong/stage2/stage-ui.js`：分類／情境／進階問答對話框（新）。
+- `src/systems/baozhong/stage2/index.js`：旗標開啟時重新接線試作攤、C03–C05 關主與大會考 NPC（新）。
+- `src/systems/baozhong/matching.js`：加 `revealPairs:false` 與每組 `explain`；預設行為不變。
+- `src/systems/baozhong/passport-ui.js`：可選的 view 裝飾與重畫；沒有裝飾時輸出不變。
+- `src/main.js`：在包種茶節之後、存檔之前 import stage2。
+- `tests/bz26-stage2.test.mjs`、`package.json` 的 `test:stage2`、`scripts/bz26-stage2-shots.mjs`。
+
+沒有改任何雜湊鎖檔，也沒有改被鎖住的 `index.js`、`deps.js`、`flow-core.js`、`passport-logic.js`、`baozhong.json`。
