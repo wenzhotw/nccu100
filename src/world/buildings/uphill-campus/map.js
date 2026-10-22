@@ -20,6 +20,7 @@ import { createLandmarks, landmarkColliders, landmarkSigns } from './landmarks.j
 import { buildCourtyardScenery, batchCourtyardScene } from './courtyard-scenery.js';
 import {installLobbyRoof,signTextLayout} from './lobby.js';
 import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
+import { buildShanju } from './shanju.js';
 
 export function buildAnjiu() {
   const group=createAnjiu();group.traverse(o=>{if(o.isMesh&&o.material.isMeshToonMaterial)o.material.gradientMap=GRAD;});
@@ -182,6 +183,7 @@ export function buildMap() {
   busStop();
   buildGreybox();
   buildLandmarks();
+  buildShanju();
   const scenery=buildCourtyardScenery();
   batchCourtyardScene(scene.getObjectByName('山上校區灰盒'),scenery);
 }
