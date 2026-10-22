@@ -98,3 +98,11 @@ Node24.15、Three0.149、工作差異含最後WC連續地板：`npm test` exec15
 ### 整合既有main後
 
 達賢f4c48c0無衝突整合origin/main dccf640，保留其他作者四維牌樓與包種小遊戲；版本暫沿1.66避免與open PR84的1.67衝號。`npm test` exec60899 exit0：node271通過/1略過、baozhong80、npc9、stage2 24通過/1略過（新增遠端既有script）；原始log `/tmp/nccu100-reality-integrated-tests.log`。check pass，build成功outDir `/tmp/nccu100-reality-integrated-dist`，避免覆換正在驗真的5187產物。最後2F真鍵盤路線及原拖曳仰視已PASS，觸控後段仍執行中；之後只有文件變動。這些是整合分支證據，不冒稱main合併或正式部署已完成。
+
+
+## 主線與正式站證據（版本標示收尾）
+
+- PR85全場CI39716370486 **success**：含原全場冒煙與新增達賢戶外真流程/2F鍵盤手機。
+- main968ba5d含PR84+PR85，本機metadata v1.68：npm test271通過/1略過、baozhong80、npc9、stage2 29通過/1略過；check/build通過。三個版本檔之外產品程式沒有後續修改。
+- 正式v1.67核心verify-release exec75377 exit0：鍵盤/觸控E入館出館平台、前廊、泳岸、鴨群、進度/寬度、console/pageerror PASS；log /tmp/nccu100-dah-live-v167.log。程式資產index-Cdlq7Eea.js與本機v1.68 build逐byte相同，SHA256 0374d03a318f705abdbc3b7faf0f978f8405f5918028c33cf7553ec0b2386668。驗收方法先以已知v1.64正例及v0.00錯版本負例校準（各exit0/1），TLS使用既有curl，未繞過憑證。
+- v1.68 metadata正式部署後仍需核對Pages exactSHA、標示與核心流程；main968ba5d CI尚在執行，不能以PR CI代稱最新main CI。

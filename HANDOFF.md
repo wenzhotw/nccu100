@@ -1,3 +1,21 @@
+# 2026-10-22 達賢已上線、版本標示收尾（最新）
+
+- PR85已合併968ba5d且完整CI39716370486 SUCCESS（含全場冒煙、達賢戶外泳岸、2F真鍵盤/手機）；不是只check/build。遠端main968ba5d的CI39716505402仍進行，暫勿說latest main CI已過。
+- main968ba5d+本地v1.68 metadata全套 exec61696 exit0：node271pass/1skip、baozhong80、npc9、stage2 29pass/1skip，/tmp/nccu100-reality-main-tests.log；check與標準build均PASS，/tmp/nccu100-reality-main-{check,build}.log。沒有產品程式變更。
+- 正式v1.67已跑ignored verify-release.mjs，exec75377 exit0，/tmp/nccu100-dah-live-v167.log：真鍵盤/手機E入館、出館同門2F平台、1F前廊、泳岸往返、鴨群、進度、寬度，無關鍵console/pageerror。與main v1.68 build程式檔 index-Cdlq7Eea.js逐byte一致（curl已下載JS至/tmp/nccu100-dah-live-index.js；SHA256以已知空輸入校準後兩檔相等0374d03a318f705abdbc3b7faf0f978f8405f5918028c33cf7553ec0b2386668）。版本差異只index/package metadata。
+- 驗收helper正例v1.64 exit0，錯版本v0.00確實exit1(actualv1.64)，不會把舊頁認成新版本。Python urllib憑證失敗，改既有curl驗證，不關TLS/不安裝設定。正式圖.screenshots/dah-release-desktop/mobile已1280x800/375x812，尚需在最終1.68部署後重取/讀圖。
+- 此次準備提交v1.68與QA/HANDOFF，不另建正式站；push前查遠端變動，追蹤新Pages exactSHA/HTML v1.68與same asset，再以helper跑最終1.68核心。原網址https://wenzhotw.github.io/nccu100/?area=dah-hsian。
+- 使用者新問「陽光、日夜與不改畫風的材質配色」：已讀既有engine/kit/post/Dah lights與官方Three docs，只給建議，未核可/未實作新日夜系統。發現Dah DirectionalLight未castShadow，模型接影尚未普遍接線；主方案先午後投影/接地暗部/材料色，再午後/黃昏/夜晚預設，後續才連續世界時間；備案固定午後。不得擅改全遊戲光線或引新依賴。
+
+# 2026-10-22 遠端已合併，主線驗收與版本辨識（最新）
+
+- PR85 https://github.com/wenzhotw/nccu100/pull/85 已附聊天；遠端顯示wenzhotw於03:22:49 UTC合併為968ba5d（非本輪CLI執行合併），包括PR84 b335a7b之v1.67。Pages run39716505405已成功，遠端主線check39716505402仍進行；PR85 check39716370486亦仍進行全場冒煙。本輪不得把舊版本號判為不含達賢：正式HTML已v1.67/asset index-Cdlq7Eea.js，需用SHA/資產內容確認。
+- 本機已clean switch main並ff到origin/main968ba5d，保留所有其他內容。因舊1.67同號發布，精確改3版本metadata為1.68（目前未commit/push）。main全套npm test exec61696在跑，log /tmp/nccu100-reality-main-tests.log；main check已PASS /tmp/nccu100-reality-main-check.log。無新產品程式修改，最終達賢模型等同f4c48c0及全套最終版。
+- 最終2F fullflow exec19514 exit0，/tmp/nccu100-reality-interior-final.log三行PASS：真鍵盤公開路線、原拖曳仰視、手機進出/重入/進度/舊gym回校園。戶外最終同樣PASS。分支整合main dccf640全測/check/build也pass（見下節），但main現再含PR84需用此次全套。
+- 為正式站核心驗收準備ignored helper .references/dah-hsian/survey-20261022/verify-release.mjs（讀package版本、真E入出2F、1F前廊、鍵盤/觸控泳岸、鴨群、進度/寬度/console、1280與375截圖）。正以既有5187 dist v1.64作已知正例校準，exec68240 /tmp/nccu100-dah-release-calibration.log；之後用錯版本驗證會失敗。此helper不發布。第一次試跑因return THREE object改boolean已終止7629，重跑才有效，不能把被終止結果當pass。
+- 5187仍舊dist供校準，不可中途替換。校準完可標準build main v1.68；查遠端open PR版本再確認未衝號（上次[]），main全測/check/build pass後commit/push3版本metadata與最終QA/HANDOFF，追蹤該次Pages exactSHA/HTMLversion/asset。正式原網址要用helper真鍵盤/手機E與泳岸驗收、無關鍵console，並讀有效截圖。原PR/fullmain全場CI仍需追蹤不能宣稱已過。
+- fresh視覺review限定七項resolved/disposition ship；documenter最後No changes；code最後43/43無新P2。source/audit/QA檔有A1無新照、非測繪等限制，不得宣稱全區完全現實。
+
 # 2026-10-22 已整合分支、準備遠端CI（最新）
 
 - 達賢實作commit f4c48c0，已無衝突merge origin/main dccf640（保留四維牌樓與包種新內容），目前版本暫沿1.66，不占別人open PR84的1.67；最終main發布前才升未用版本，避免3個版本檔衝突。
