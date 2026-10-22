@@ -214,7 +214,7 @@ test('passport: default render has no advanced UI; decorated view shows cans and
 
 test('wiring is flag-gated and does not touch hash-locked files', () => {
   const src = fs.readFileSync(new URL('../src/systems/baozhong/stage2/index.js', import.meta.url), 'utf8');
-  assert.match(src, /export const STAGE2 = params\.get\(DATA\.flag\) === '1';/);
+  assert.match(src, /export const STAGE2 = params\.get\(DATA\.flag\) !== '0';/);
   assert.match(src, /\nif \(STAGE2\) \{/);
   const main = fs.readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   assert.ok(main.indexOf("systems/baozhong/index.js") < main.indexOf("systems/baozhong/stage2/index.js"));

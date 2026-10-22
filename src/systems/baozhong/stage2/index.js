@@ -1,6 +1,6 @@
-// src/systems/baozhong/stage2/index.js（T074，Grok）：兩階段攤位的試作接線，只在網址有 ?bz26stage2=1 時生效。
+// src/systems/baozhong/stage2/index.js（T074，Grok）：兩階段攤位的試作接線。v1.64 起預設開啟（Wenzel 2026-10-22 09:24 決定）；網址加 ?bz26stage2=0 可暫時關閉，回到原本流程。
 // 不改包種茶節既有的 index.js（有雜湊鎖）；在它建好 NPC 之後，把試作攤位、所屬學院關主與大會考 NPC 的互動換成兩階段流程。
-// 沒開旗標時本模組什麼都不做，預設遊戲、老校長問答與存檔格式都不變；新增的旗標只有 bz26_adv_<攤位>，獎勵沿用既有 bz26_can_*。
+// 關閉時本模組什麼都不做，預設遊戲、老校長問答與存檔格式都不變；新增的旗標只有 bz26_adv_<攤位>，獎勵沿用既有 bz26_can_*。
 import CONTENT from '../../../content/baozhong.json';
 import DATA from '../../../content/baozhong-minigames.json';
 import * as L from '../passport-logic.js';
@@ -14,7 +14,7 @@ import { stepsFromGame } from './rounds.js';
 import { openFeedbackRound, cancelStage } from './stage-ui.js';
 
 const params = new URLSearchParams(globalThis.location ? location.search : '');
-export const STAGE2 = params.get(DATA.flag) === '1';
+export const STAGE2 = params.get(DATA.flag) !== '0';
 
 if (STAGE2) {
   const F = createFlow({ logic: L, prepareQuiz, content: CONTENT });

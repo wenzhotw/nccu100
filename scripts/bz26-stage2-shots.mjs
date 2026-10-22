@@ -13,10 +13,10 @@ const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable
 const T0 = Date.now(); const log = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(0)}s]`, ...a);
 const report = { real: [], debug: [], checks: {} };
 
-// 1) 沒開旗標：預設流程不變（D26 仍是原本的「接受挑戰」問答）。
+// 1) 關閉旗標（?bz26stage2=0）：回到原本流程（D26 仍是「接受挑戰」問答）。
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 760 } }); page.setDefaultTimeout(60000);
-  await page.goto(base + '?debug', { waitUntil: 'domcontentloaded' });
+  await page.goto(base + '?debug&bz26stage2=0', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__game && window.__bz26);
   report.checks.defaultHasStage2Hook = await page.evaluate(() => 'undefined' !== typeof window.__bz26stage2);
   await page.close();
