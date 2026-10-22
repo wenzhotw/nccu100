@@ -81,6 +81,30 @@ try {
   await page.getByRole('button', { name: '完成配對' }).click();
   await page.waitForFunction(() => window.__bz26.flags().has('bz26_st_D26'));
   await finishDialog();
+  // v1.67 新模板：排序、找錯、組合各實際玩一攤（資料裡第一個該類型的攤位），全部答對並確認蓋章。
+  for (const type of ['sort', 'spot', 'build']) {
+    const g = minigames.games.find(x => x.type === type);
+    if (!g) continue;
+    await approach(`bz26-${g.booth}`);
+    await finishDialog();
+    await page.getByRole('button', { name: '玩小遊戲', exact: true }).click();
+    await page.locator('#bz-stage').waitFor();
+    await page.getByRole('button', { name: '開始', exact: true }).click();
+    if (type === 'sort') {
+      for (const c of g.cards) await page.locator(`#bz-stage button[data-card="${c.id}"]`).click();
+    } else {
+      for (let i = 0; i < g.steps.length; i++) {
+        const s = g.steps[i];
+        if (type === 'spot') await page.locator(`#bz-stage button[data-option="${s.answer}"]`).click();
+        else { for (const k of s.target) await page.locator(`#bz-stage button[data-part="${k}"]`).click(); await page.getByRole('button', { name: '送出', exact: true }).click(); }
+        await page.getByRole('button', { name: i + 1 < g.steps.length ? '下一題' : '看結果', exact: true }).click();
+      }
+    }
+    await page.screenshot({ path: path.join(root, `test-results/baozhong-${type}-${g.booth}.png`) });
+    await page.getByRole('button', { name: '完成', exact: true }).click();
+    await page.waitForFunction(id => window.__bz26.flags().has('bz26_st_' + id) && window.__bz26.flags().has('bz26_pf_' + id), g.booth);
+    await finishDialog();
+  }
   await page.locator('#bz-passport-button').click();
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-passport.png') });
   await page.keyboard.press('p');
