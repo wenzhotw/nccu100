@@ -173,6 +173,9 @@ function wireGuide() {
   const n = NPCS.find(x => x.id === 'bz26-F03');
   if (!n) return;
   n.spot.fn = onPartnerGame; n.spot.label = '友校配對';
+  // 站進交流大使那一排的中間，玩家從大道面對他們時不會點錯人。
+  n.home = { x: P.GUIDE_SPOT.x, z: P.GUIDE_SPOT.z }; n.face = P.PARTNER_FACE;
+  n.g.position.x = n.spot.x = P.GUIDE_SPOT.x; n.g.position.z = n.spot.z = P.GUIDE_SPOT.z; n.g.rotation.y = P.PARTNER_FACE;
   guideWired = true;
 }
 
