@@ -1,3 +1,13 @@
+# 2026-10-22 23:33 正式站驗收（本輪最新；以下舊段為歷史）
+
+- PR95由wenzhotw於15:19:35 UTC合併為a2bb594，隨後PR96合併為79aba372c8bcb09423e6a55c7d32a0ed83124838；不是本輪CLI執行merge。工作區已乾淨fast-forward至該main，保留他人安全防護修改。正式Pages39803805924成功且headSha一致，原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 為v1.75。
+- 正式index-D-v9UGny.js與本機79aba標準build逐byte SHA256相同（070ab60d942b9da1fddbd4c9b3eb29690c5fe5cefe6fd47c6fbf2ca6b1f6c4dc）；先前已知輸入校準有效，不只看HTTP或部署狀態。
+- 正式真鍵盤2F→8F→2F與7F轉角後廊往返PASS：/tmp/nccu100-visual-live-atrium.log。正式三時段/自動連續/跨房/減少動態恢復/真touch上下梯PASS：/tmp/nccu100-visual-live-clock.log。正式v1.75桌機與手機E進出回同2F平台、泳岸、鴨群、進度及寬度/console/pageerror PASS：/tmp/nccu100-visual-live-release.log；1280×800與375×812截圖已實讀。舊戶外/2F全流程本機證據仍有效。
+- 15c1本機main全npm test成功：Node332pass/1skip、portable80、npc9、stage2 45pass/1skip（/tmp/nccu100-visual-main-final-tests.log）。79aba main全套亦成功 /tmp/nccu100-visual-main-79aba-tests.log：Node332pass/1skip、portable80、npc9、stage2 45pass/1skip；check/build成功。計數直接讀各runner結尾摘要。
+- 遠端合併a2bb的39803766651失敗於整站smoke手機goto預設30秒，未到達賢專用步驟；現79aba已含PR96將該goto設120秒的修正。最新main CI39803805588、feature CI39803596921、booth39803596922仍進行；不宣稱all green。前feature774全站smoke通過但當時visual手機settle失敗，修法/新回歸見下文，未忽略。
+- 本輪限制：尺寸/層高為照片估算；只完成公開中庭平台與可查證主樓層後廊，MF/6F後區無獨立平面，周邊房間未完整建置。未宣稱全區完全實景或真機FPS。視覺/程式/文件獨立審查已限項通過，兩輪自評與動效驗收已完成，九欄教學已交付。
+- 下一步：本機全套已通過；追蹤遠端最新結果。此次只提交驗收文件更新，推送沿既有Pages追蹤新SHA/同產物，不新增站、不重複手動部署。若遠端失敗，先診斷不硬稱完成。現無未解產品缺陷；不擴作周邊房間。
+
 # CI容量設定補充（最新）
 - boothdesktop舊run不是業務斷言失敗：log確認11:51開始browserpreview，12:12已驗完37攤，12:14被workflow總30min取消；其餘重載/篩選仍未跑完。保留全部驗收，僅既有workflow上限30→45min，不加新服務/依賴、不弱化斷言。Mobile舊run成功。此設定與手機simulation同步修復一起新CI驗證。
 # 2026-10-22 遠端CI失敗修正（最新，未發布）

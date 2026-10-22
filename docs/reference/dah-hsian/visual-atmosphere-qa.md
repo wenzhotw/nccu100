@@ -1,4 +1,13 @@
-# 達賢視覺與層退中庭驗收（進行中）
+# 達賢視覺與層退中庭驗收紀錄
+
+## 最新正式站證據（2026-10-22 23:33；以下為過程紀錄）
+
+- 已發布v1.75：Pages39803805924 success exact79aba372c8bcb09423e6a55c7d32a0ed83124838。PR95由wenzhotw合併，另保留PR96；非代理CLI自行合併。原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 。
+- 線上真鍵盤2F→8F→2F、7F書牆開口與後方公共走廊往返PASS（/tmp/nccu100-visual-live-atrium.log）。線上三時段/自動日夜/跨房/鍵盤按鈕/減少動態恢復/手機上下梯PASS（/tmp/nccu100-visual-live-clock.log）。
+- 線上v1.75桌機及真手機context：E入出2F同門平台、1F前廊（鍵盤）、泳岸、鴨群、進度、寬度與console/pageerror PASS（/tmp/nccu100-visual-live-release.log）。1280×800/375×812正式截圖已實讀；過場banner圖僅當流程證據，視覺評分沿用兩輪已核可清晰圖。
+- 主程式index-D-v9UGny.js與79aba本機build SHA256一致：070ab60d942b9da1fddbd4c9b3eb29690c5fe5cefe6fd47c6fbf2ca6b1f6c4dc；check/build成功。15c1 main全套Node332/skip1、portable80、npc9、stage2 45/skip1通過；79aba main全套同樣Node332/skip1、portable80、npc9、stage2 45/skip1成功，/tmp/nccu100-visual-main-79aba-tests.log；計數取各runner結尾摘要，無失敗。
+- 最新遠端main CI39803805588/feature39803596921/booth39803596922仍進行，不宣稱全綠。舊a2bb CI39803766651的手機頁30秒goto逾時，79aba已含另一作者120秒修正；不是達賢通道斷言失敗。來源與空間限制維持下文，不宣稱測繪或完整周邊房間。
+
 
 範圍：原戶外/2F視覺升級，後追加使用者提供中庭高處照片與其他樓層；公開層退平台/斜梯，高處站位，不聲稱周邊教室與研究室已完整還原。主方案為本區獨立卡通材料、單主投影光+有限非投影局部燈、共享慢速時間；不新增依賴，不改主校園雨劇情或存檔。
 
