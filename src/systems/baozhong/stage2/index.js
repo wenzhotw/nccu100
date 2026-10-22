@@ -68,7 +68,8 @@ if (STAGE2) {
     const r = SC.advancedResult(flags(), id, result);
     apply(r); AU.sfx(r.passed ? 'win' : 'faint');
     const line = !r.passed ? `進階版要全對才過關，這次答對 ${r.score}／${r.total}。想好了可以再挑戰。`
-      : r.set.length ? `進階全對！送你一個進階茶罐（${SC.passportExtras(flags()).cans}／5）。` : '進階全對！這攤的進階獎勵之前已經領過了。';
+      : !r.set.length ? '進階全對！這攤的進階挑戰之前就過關了。'
+      : r.reward ? `進階全對！送你一個進階茶罐（${SC.passportExtras(flags()).cans}／5）。` : '進階全對！這攤的進階挑戰過關了，護照上會記一筆。';
     say(title, [line], () => { if (r.gained) toast(`茶葉點數 +${r.gained}（進階茶罐）`); afterResult(); });
   }
   function onStageBooth(id) {
@@ -77,7 +78,8 @@ if (STAGE2) {
       say(t.title, t.lines, () => openChoice(['玩小遊戲', '下次再來'], i => { if (i === 0) playFirst(id, t.title); }));
       return;
     }
-    const lines = [s.advancedDone ? '進階版你已經過關了，茶罐收好囉！想再練習也可以，不會重複給獎勵。' : '歡迎回來！這次可以挑戰進階版：每題都會告訴你對錯，全部答對才過關，過關送一個進階茶罐。'];
+    const lines = [s.advancedDone ? '進階版你已經過關了！想再練習也可以，不會重複給獎勵。'
+      : `歡迎回來！這次可以挑戰進階版：每題都會告訴你對錯，全部答對才過關${s.reward ? '，過關送一個進階茶罐' : ''}。`];
     say(t.title, lines, () => openChoice(['進階挑戰（全對才過）', '再玩一次小遊戲', '下次再來'], i => {
       if (i === 0) playAdvanced(id, t.title); else if (i === 1) playFirst(id, t.title);
     }));

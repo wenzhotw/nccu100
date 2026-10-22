@@ -18,10 +18,10 @@ const apply = (flags, r) => { const f = new Set(flags); for (const c of r.clear 
 const done = (total, score) => ({ status: 'completed', total, score });
 const PILOTS = { D26: 'matching', D19: 'classify', D13: 'situation' };
 
-test('pilot data: three booths, supported types, distinct existing reward flags', () => {
+test('pilot data: three pilot booths keep their types and distinct existing reward flags', () => {
   const games = indexGames(DATA, C);
-  assert.deepEqual(Object.fromEntries([...games].map(([id, g]) => [id, g.type])), PILOTS);
-  for (const g of games.values()) assert.match(g.advanced.reward, /^bz26_(can_[1-5]|hs_(RADIO|STAGE|FRIEND))$/);
+  for (const [id, type] of Object.entries(PILOTS)) assert.equal(games.get(id).type, type);
+  for (const id of Object.keys(PILOTS)) assert.match(games.get(id).advanced.reward, /^bz26_(can_[1-5]|hs_(RADIO|STAGE|FRIEND))$/);
   assert.equal(DATA.flag, 'bz26stage2');
 });
 
@@ -134,18 +134,19 @@ test('advanced questions keep the original booth quiz; explanation from content,
 test('master and exam questions are built from first-visit minigame data', () => {
   const sc = SC(), rng = makeRng(3);
   const derivedAll = new Map(sc.buildQuestionPool(C.colleges.map(c => c.id)).map(q => [q.q, q]));
-  assert.equal(derivedAll.size, 3 + 5 + 3);
+  assert.equal(derivedAll.size, [...sc.games.values()].reduce((n, g) => n + gameSteps(g), 0));
   for (const [cid, booth] of [['C05', 'D26'], ['C04', 'D19'], ['C03', 'D13']]) {
     const m = sc.masterQuestions(cid, rng), c = C.colleges.find(x => x.id === cid);
     assert.equal(m.questions.length, c.quiz.length, '關主題數不變，過關門檻照舊 4/5');
-    assert.equal(m.derived.length, 1, '驗收 CLD-001 M2：每院關主最多 1 題小遊戲題'); assert.equal(m.derived[0].booth, booth);
+    assert.equal(m.derived.length, 1, '驗收 CLD-001 M2：每院關主最多 1 題小遊戲題'); assert.ok(c.booths.includes(m.derived[0].booth) && sc.games.has(m.derived[0].booth), booth);
     const inQuiz = m.questions.filter(q => derivedAll.has(q.q));
     assert.equal(inQuiz.length, 1);
     const d = derivedAll.get(inQuiz[0].q); assert.equal(inQuiz[0].options[inQuiz[0].answer], d.options[d.answer]);
     prepareQuiz(m.questions, { rng });
   }
-  // 非試作學院：只用原題庫。
-  assert.equal(sc.masterQuestions('C01', rng).derived.length, 0);
+  // 沒有小遊戲攤位的學院：只用原題庫。
+  const plain = C.colleges.find(c => !c.booths.some(id => sc.games.has(id)));
+  if (plain) assert.equal(sc.masterQuestions(plain.id, rng).derived.length, 0);
   const f = new Set(['bz26_md_C03', 'bz26_md_C04', 'bz26_md_C05']);
   const ex = sc.examDraw(f, rng);
   assert.equal(ex.questions.length, L.EXAM_SIZE);
@@ -158,7 +159,7 @@ test('master and exam questions are built from first-visit minigame data', () =>
   for (let s = 0; s < 200; s++) { const e = sc.examDraw(f, makeRng(s)); if (e.questions.slice(0, 3).every(q => derivedAll.has(q.q))) allFront++; }
   assert.ok(allFront < 20, `小遊戲題排在最前面的次數過多：${allFront}/200`);
   // 沒有試作學院勳章時，大會考等同原本的抽題。
-  const g = new Set(['bz26_md_C01', 'bz26_md_C06', 'bz26_md_C07']);
+  const g = new Set(['bz26_md_C06', 'bz26_md_C07', 'bz26_md_C08']);
   assert.deepEqual(sc.examDraw(g, makeRng(5)).questions, L.drawExam(C, g, makeRng(5)).map(({ q, options, answer }) => ({ q, options, answer })));
 });
 
@@ -190,7 +191,7 @@ test('old-save compatibility: old flags load unchanged, only new bz26_adv_* flag
   assert.equal(sc.stageFor(f, 'D19').kind, 'first');
   assert.equal(sc.stageFor(f, 'D01').kind, 'legacy');
   const dv = sc.decorateView(view, f);
-  assert.deepEqual(dv.advanced, { cans: 0, total: 5, done: 0, available: 3 });
+  assert.deepEqual(dv.advanced, { cans: 0, total: 5, done: 0, available: sc.games.size });
   assert.deepEqual({ ...dv, advanced: undefined, colleges: undefined }, { ...view, advanced: undefined, colleges: undefined });
   assert.equal(L.points(f), before);
   // 存回去再讀：只多了新的旗標，舊旗標一個不少。
@@ -221,4 +222,58 @@ test('wiring is flag-gated and does not touch hash-locked files', () => {
   assert.ok(main.indexOf("systems/baozhong/stage2/index.js") < main.indexOf("systems/save.js"));
   const lock = read('./baozhong-scenery-lock.json');
   for (const [rel, hash] of Object.entries(lock.expected)) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../' + rel, import.meta.url))).digest('hex'), hash, rel);
+});
+
+// v1.66 第一批擴充（17 系）
+const BATCH1 = { D02: 'matching', D05: 'matching', D08: 'matching', D21: 'matching', D23: 'matching', D25: 'matching', D30: 'matching', D06: 'classify', D20: 'classify', D29: 'classify', D09: 'situation', D10: 'situation', D11: 'situation', D12: 'situation', D15: 'situation', D17: 'situation', D18: 'situation' };
+
+test('batch 1: 17 booths with the planned template, every answer traced, no reward flags spent', () => {
+  const sc = SC();
+  assert.equal(sc.games.size, 20);
+  for (const [id, type] of Object.entries(BATCH1)) {
+    const g = sc.games.get(id);
+    assert.ok(g, id); assert.equal(g.type, type, id);
+    assert.equal(g.advanced.reward, undefined, `${id} 茶罐用途待決定，不先發`);
+    assert.ok(gameSteps(g) >= 2 && gameSteps(g) <= 6, `${id} 步數要短`);
+  }
+  assert.deepEqual(traceErrors(C, DATA), []);
+});
+
+test('batch 1: advanced pass without a reward flag records the pass but gives no can or points', () => {
+  const sc = SC();
+  const n = C.booths.find(b => b.id === 'D02').quiz.questions.length;
+  let f = new Set(['bz26_st_D02']);
+  const before = L.points(f);
+  const r = sc.advancedResult(f, 'D02', done(n, n));
+  assert.equal(r.passed, true); assert.deepEqual(r.set, ['bz26_adv_D02']); assert.equal(r.gained, 0);
+  f = apply(f, r); assert.equal(L.points(f), before);
+  assert.equal(sc.stageFor(f, 'D02').advancedDone, true);
+  assert.equal(sc.stageFor(f, 'D02').reward, undefined);
+});
+
+test('batch 1: situation choices give per-choice consequences', () => {
+  const sc = SC();
+  const steps = stepsFromGame(sc.games.get('D15'));
+  const round = createFeedbackRound(steps);
+  round.answer(steps[0].answer); round.next();
+  const wrong = round.answer(0);
+  assert.equal(wrong.correct, false); assert.match(wrong.explain, /製茶仍然最慢/);
+  const r2 = createFeedbackRound(steps); r2.answer(steps[0].answer); r2.next();
+  assert.match(r2.answer(steps[1].answer).explain, /瓶頸/);
+});
+
+test('batch 1: master and exam still use at most one minigame question per college', () => {
+  const sc = SC();
+  for (const c of C.colleges) {
+    for (let s = 0; s < 20; s++) assert.ok(sc.masterQuestions(c.id, makeRng(s)).derived.length <= 1, c.id);
+  }
+  const all = new Set(C.colleges.map(c => 'bz26_md_' + c.id));
+  for (let s = 0; s < 50; s++) {
+    const ex = sc.examDraw(all, makeRng(s));
+    assert.equal(ex.questions.length, L.EXAM_SIZE);
+    const byCollege = new Map();
+    for (const d of ex.derived) { const cid = C.booths.find(b => b.id === d.booth).college; byCollege.set(cid, (byCollege.get(cid) || 0) + 1); }
+    assert.ok([...byCollege.values()].every(n => n === 1));
+    prepareQuiz(ex.questions, { rng: makeRng(s), hints: 3 });
+  }
 });

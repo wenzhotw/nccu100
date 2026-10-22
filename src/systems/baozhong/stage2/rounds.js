@@ -2,7 +2,7 @@
 // 分類、情境選擇與進階問答共用。每步只能作答一次：答完立刻回傳對錯、正解與一句說明，再前進下一步。
 // finish() 只在每步都答完時回 completed；cancel() 回 cancelled 且分數 0，呼叫端據此不發任何獎勵。
 
-/** steps: [{prompt, options:[文字], answer:索引, explain:文字}] */
+/** steps: [{prompt, options:[文字], answer:索引, explain:文字, feedback?:[每個選項選到時的結果說明]}] */
 export function createFeedbackRound(steps) {
   if (!Array.isArray(steps) || !steps.length) throw new TypeError('回合至少要一步');
   for (const s of steps) {
@@ -20,7 +20,7 @@ export function createFeedbackRound(steps) {
     const correct = choice === s.answer;
     if (correct) score++;
     log.push({ index, choice, correct });
-    return { kind: correct ? 'correct' : 'incorrect', correct, correctIndex: s.answer, correctText: s.options[s.answer], explain: s.explain || '', ...snapshot() };
+    return { kind: correct ? 'correct' : 'incorrect', correct, correctIndex: s.answer, correctText: s.options[s.answer], explain: (Array.isArray(s.feedback) && s.feedback[choice]) || s.explain || '', ...snapshot() };
   }
   function next() {
     if (closed || !answered) return { kind: 'ignored', ...snapshot() };
@@ -46,6 +46,6 @@ export function stepsFromGame(game) {
     const labels = game.categories.map(c => c.label), ids = game.categories.map(c => c.id);
     return game.items.map(it => ({ id: it.id, prompt: it.text, options: labels, answer: ids.indexOf(it.category), explain: it.explain || '' }));
   }
-  if (game.type === 'situation') return game.steps.map(s => ({ id: s.id, prompt: s.prompt, options: [...s.choices], answer: s.answer, explain: s.explain || '' }));
+  if (game.type === 'situation') return game.steps.map(s => ({ id: s.id, prompt: s.prompt, options: [...s.choices], answer: s.answer, explain: s.explain || '', ...(Array.isArray(s.feedback) ? { feedback: [...s.feedback] } : {}) }));
   throw new TypeError(`回合引擎不處理 ${game.type}`);
 }
