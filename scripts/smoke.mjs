@@ -308,7 +308,8 @@ try {
   await page.screenshot({path:path.join(root,'test-results/law-education-overview.jpg'),quality:85});
   const mobile = await browser.newPage({ viewport:{width:390,height:844}, isMobile:true, hasTouch:true });
   mobile.on('pageerror', e => errors.push(String(e)));
-  await mobile.goto(`http://localhost:${port}/?debug`,{waitUntil:'domcontentloaded'});
+  // 電腦版頁面還開著，沒有顯示卡的機器同時跑兩個 3D 場景很慢，給手機頁 2 分鐘載入
+  await mobile.goto(`http://localhost:${port}/?debug`,{waitUntil:'domcontentloaded',timeout:120000});
   await mobile.waitForFunction(()=>window.__game);
   await mobile.tap('#go');
   await mobile.waitForTimeout(1000);

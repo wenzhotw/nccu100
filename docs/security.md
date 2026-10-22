@@ -14,6 +14,23 @@ NCCU100 是放在 GitHub Pages 的純前端遊戲：沒有後端、沒有登入�
 | CI 權限 | 測試工作流程只給讀取權限；部署只給 Pages 需要的權限 | `.github/workflows/` |
 | 統計 | GoatCounter 不用 Cookie、不記個人資料；本機與自動測試不送出 | `src/systems/analytics.js` |
 
+## CSP 對之後開發的影響（2026-10-22 實測）
+
+用真瀏覽器在 `npm run dev` 與打包版各測一次：
+
+| 之後可能做的事 | 結果 | 要做什麼 |
+| --- | --- | --- |
+| `npm run dev` 開發、熱更新 | 可以，0 次違規 | 不用改 |
+| Blender 匯出 `.glb`、`.gltf` 內嵌資料、Draco／KTX2 壓縮模型 | 可以（已開 `wasm-unsafe-eval` 與 `connect-src data: blob:`） | 模型檔放在 repo 裡；解碼器（draco、basis）也放 repo，不要從 CDN 載 |
+| `canvasTex`、blob 貼圖、Web Worker | 可以 | 不用改 |
+| 行內 style、`<style>` | 可以 | 不用改 |
+| 顯示其他網站的圖片（例如秘書處攝影展照片放在 nccu.edu.tw） | **會被擋** | 照片放進 repo；或在 `img-src` 加上該網域 |
+| 嵌入 YouTube、Google 地圖等 iframe | **會被擋** | 在 CSP 加 `frame-src https://www.youtube-nocookie.com` 等網域 |
+| 呼叫外部 API（Google 試算表、雲端資料庫、排行榜、明信片） | **會被擋** | 在 `connect-src` 加上 API 網域 |
+| 從 CDN 載入套件（jsdelivr、unpkg） | **會被擋**（刻意的） | 改用 `npm install`，由 Vite 打包 |
+
+被擋時瀏覽器主控台會出現「Refused to ... because it violates the following Content Security Policy directive」，冒煙測試也會因主控台錯誤而失敗，不會悄悄壞掉。
+
 ## 新增功能時的規則
 
 1. **新的外部網域**（字型、統計、圖片、API）要同時加進 CSP，否則瀏覽器會擋下，冒煙測試會因主控台錯誤而失敗。
