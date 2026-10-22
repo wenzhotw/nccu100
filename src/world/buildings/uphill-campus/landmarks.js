@@ -1,6 +1,6 @@
 /** 山上校區的純地標模型與碰撞資料，文字貼圖由地圖入口建立。 */
 import * as THREE from 'three';
-import { ANCHORS, STOP, RAMPS, STAIRS } from './layout.js';
+import { ANCHORS, LOBBY, STOP, STAIRS } from './layout.js';
 import { heightAt } from './terrain.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
@@ -20,8 +20,10 @@ export function landmarkSigns() {
   return [
     ['好漢坡下', -3.5, -0.5, Math.PI / 2, '自強五舍・六舍', ANCHORS['好漢坡下']],
     ['好漢坡上', 0.5, 4.5, 0, '自強五舍・六舍', ANCHORS['五舍入口']],
-    ['九舍樓梯下', -0.05, 2.4, 0, '自強九舍・十舍', { x: STAIRS[2].path.at(-1)[0], z: STAIRS[2].path.at(-1)[1] }],
-    ['外部斜坡上', 5.5, 1, Math.PI / 2, '自強九舍・十舍', { x: RAMPS[0].path.at(-1)[0], z: RAMPS[0].path.at(-1)[1] }],
+    // 照片 9034：藍色直式指標立在樓梯左手邊（西側）下段的土坡上，牌面離樓梯與道路各留半公尺。
+    ['九舍樓梯下', -0.36, -3.3, 0, '自強九舍・十舍', { x: STAIRS[2].path.at(-1)[0], z: STAIRS[2].path.at(-1)[1] }],
+    // 坡頂牌立在廣場西南角路邊，牌面迎向上坡來車，指往中庭的九舍大廳。
+    ['外部斜坡上', 1.24, 6.04, 2.48, '自強九舍・十舍', { x: LOBBY.door.x, z: LOBBY.door.z }],
     // 山居牌以站牌 STOP 為基準，放在道路對面的空地，沿南側道路往東指向安九。
     ['山居下車點', 0, 6.7, 0, '安九食堂・自強九舍', { x: 14.9, z: 4.6 }],
   ].map(([anchor, dx, dz, yaw, destination, target]) => {

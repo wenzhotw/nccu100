@@ -1,5 +1,5 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
-import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT } from './layout.js';
+import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT, PLAZA } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 export function projectToPath(x, z, path) {
@@ -38,7 +38,7 @@ export function stairHeight(stair, s) {
   const start = stair.fromRamp ? RAMPS.find(candidate => candidate.id === stair.fromRamp) : null;
   const from = parent
     ? stairHeight(parent, projectToPath(...stair.path[0], parent.path).s)
-    : start ? rampHeight(start, projectToPath(...stair.path[0], start.path).s) : stair.from;
+    : start ? rampHeight(start, projectToPath(...stair.path[0], start.path).s) + CURB : stair.from;
   const ramp = stair.joinRamp ? RAMPS.find(candidate => candidate.id === stair.joinRamp) : null;
   const to = ramp ? rampHeight(ramp, projectToPath(...stair.path.at(-1), ramp.path).s) : stair.to;
   const length = pathLength(stair.path);
@@ -91,6 +91,25 @@ function distanceToPolySquared(x, z, poly) {
   return nearest;
 }
 
+/**
+ * 照片 9031、9032：九舍 ABC 區西翼北側是一片草坡土堆，從坡道邊往九舍緩升。
+ * L2／L3 分界（ABC 西北角往坡道轉角）兩側各 3 公尺平滑過渡，供草坡與樓梯旁草坡取用；平台本身不變。
+ */
+const MOUND = { a: [-0.7, -17.2], b: [-13.5, -19], half: 3 };
+export function moundLevel(x, z) {
+  const [ax, az] = MOUND.a, [bx, bz] = MOUND.b, dx = bx - ax, dz = bz - az, l = Math.hypot(dx, dz);
+  const along = ((x - ax) * dx + (z - az) * dz) / l;
+  // 往北（z 變小）為正：北側是第三層土坡。
+  const side = -((x - ax) * -dz + (z - az) * dx) / l * Math.sign(dx);
+  // 兩端各多延伸 3 公尺，土堆在 ABC 西北角與坡道轉角處不會突然截斷。
+  if (along < -MOUND.half || along > l + MOUND.half || Math.abs(side) >= MOUND.half) return LEVELS[platformLevel(x, z)];
+  const t = (side + MOUND.half) / (2 * MOUND.half), w = t * t * (3 - 2 * t);
+  return LEVELS.L2 + (LEVELS.L3 - LEVELS.L2) * w;
+}
+
+/** 人行道比路面高一個路緣石（照片 9033 的人行道高出路面一階）。 */
+export const CURB = 0.12;
+
 /** 照片中的東側步道與草坡，共用投影供碰撞、腳底與可見地表取用。 */
 export function rampLandscape(x, z) {
   for (const ramp of RAMPS) {
@@ -105,8 +124,10 @@ export function rampLandscape(x, z) {
         const d = Math.sqrt(p.distance), edge = ramp.width / 2;
         if (signed > 0 && d > edge && d <= edge + 4.2) {
           const h = rampHeight(ramp,p.s);
+          // 草坡外緣接回當地平台高度：九舍土坡是 15 公尺，坡道下段旁的低處是 12 公尺，不再一律拉到 15 而形成直壁。
+          const walk = h + CURB;
           return { kind: d <= edge + 1.2 ? 'sidewalk' : 'grass-slope',
-            h: h + Math.max(0,(d-edge-1.2)/3) * (15-h) };
+            h: d <= edge + 1.2 ? walk : walk + Math.min(1,(d-edge-1.2)/3) * (moundLevel(x,z)-walk) };
         }
         break;
       }
@@ -114,6 +135,68 @@ export function rampLandscape(x, z) {
     }
   }
   return null;
+}
+
+/**
+ * 照片 9034：九舍樓梯兩側是順著樓梯的草坡。離樓梯中線 1.6 公尺內貼齊樓梯高度，
+ * 往外到 5 公尺平滑接回原本地面（坡道草坡或平台），人行道不受影響。
+ */
+export const BANK = { inner: 1.6, outer: 5 };
+export function stairBank(x, z) {
+  const stair = STAIRS.find(s => s.id === 'jiu-plaza');
+  if (!stair) return null;
+  const p = projectToPath(x, z, stair.path), d = Math.sqrt(p.distance);
+  if (d <= stair.width / 2 || d >= BANK.outer) return null;
+  const length = pathLength(stair.path);
+  // 樓梯兩端外的地面不受影響，只處理樓梯側邊。
+  const [a, b] = stair.path, along = ((x - a[0]) * (b[0] - a[0]) + (z - a[1]) * (b[1] - a[1])) / length;
+  if (along < 0 || along > length) return null;
+  const ramp = rampLandscape(x, z);
+  if (ramp?.kind === 'sidewalk') return null;
+  // 建築輪廓內不是草坡（九舍 ABC 區西翼緊鄰樓梯東側）。
+  if (LAYOUT.buildings.some(b => pointInPoly(x, z, b.pts))) return null;
+  const ground = ramp?.h ?? moundLevel(x, z);
+  let t = Math.max(0, Math.min(1, (d - BANK.inner) / (BANK.outer - BANK.inner)));
+  // 樓梯靠路那一側：草坡要在人行道外緣 1.2 公尺內回到人行道高度，人行道邊不會突然冒出一階。
+  if (ramp?.kind === 'grass-slope') {
+    const edge = RAMPS[0].width / 2 + 1.2, dr = Math.sqrt(projectToPath(x, z, RAMPS[0].path).distance);
+    t = Math.max(t, Math.max(0, Math.min(1, 1 - (dr - edge) / 1.2)));
+  }
+  const w = t * t * (3 - 2 * t);
+  return { kind: 'bank', h: stairHeight(stair, p.s) * (1 - w) + ground * w };
+}
+
+/** 坡道東側與九舍樓梯兩側的地景高度（人行道、草坡、樓梯旁草坡），平台與通路以外才生效。 */
+/**
+ * 紅磚廣場範圍：PLAZA 長方形扣掉坡道最後一段人行道外緣（離中線 width/2+1.2 公尺）靠路的一側。
+ * 用一條直線切，廣場與人行道沿同一條直線相接；鋪面多邊形由 plazaOutline() 取得。
+ */
+function plazaCut() {
+  const P = RAMPS[0].path, a = P.at(-2), b = P.at(-1), dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz);
+  return { a, n: [-dz / l, dx / l], offset: RAMPS[0].width / 2 + 1.2 };
+}
+export function inPlaza(x, z) {
+  if (x < PLAZA.x0 || x > PLAZA.x1 || z < PLAZA.z0 || z > PLAZA.z1) return false;
+  const { a, n, offset } = plazaCut();
+  return (x - a[0]) * n[0] + (z - a[1]) * n[1] >= offset;
+}
+/** 廣場鋪面輪廓（以 Sutherland–Hodgman 把長方形裁到人行道外緣那條直線）。 */
+export function plazaOutline() {
+  const { a, n, offset } = plazaCut(), side = ([x, z]) => (x - a[0]) * n[0] + (z - a[1]) * n[1] - offset;
+  const rect = [[PLAZA.x0, PLAZA.z0], [PLAZA.x1, PLAZA.z0], [PLAZA.x1, PLAZA.z1], [PLAZA.x0, PLAZA.z1]], out = [];
+  rect.forEach((p, i) => {
+    const q = rect[(i + 1) % rect.length], sp = side(p), sq = side(q);
+    if (sp >= 0) out.push(p);
+    if ((sp >= 0) !== (sq >= 0)) { const t = sp / (sp - sq); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+  });
+  return out;
+}
+
+export function landscapeAt(x, z) {
+  // 紅磚廣場是平整鋪面，維持平台高度，不跟著草坡起伏。
+  // 人行道與路面照常延伸到廣場邊，廣場從人行道外緣開始。
+  if (inPlaza(x, z)) return { kind: 'plaza', h: LEVELS.L3 };
+  return stairBank(x, z) ?? rampLandscape(x, z);
 }
 
 /** 高度依階梯、坡道、平台順序查詢。 */
@@ -154,7 +237,7 @@ export function heightAt(x, z) {
     return rampHeight(nearestRamp, nearestProjection.s);
   }
 
-  return rampLandscape(x, z)?.h ?? LEVELS[platformLevel(x, z)];
+  return landscapeAt(x, z)?.h ?? LEVELS[platformLevel(x, z)];
 }
 
 /** 原分區、補區優先，只有補區之外才沿用最近分區備援。 */
@@ -225,7 +308,7 @@ export function wallSegments() {
       // 照片修正區由草坡與磁磚矮牆承接，不再沿舊分區或新樓梯長出高牆。
       const jiu = STAIRS.find(stair => stair.id === 'jiu-plaza');
       if ((jiu && projectToPath(...middle,jiu.path).distance <= 2.2 ** 2)
-        || (source === 'region' && rampLandscape(...middle))) { run=null;continue; }
+        || (source === 'region' && landscapeAt(...middle))) { run=null;continue; }
       // 保留整個取樣小段的開口，避免小段端點伸入通路。
       const blocked = passages.some(passage => passage !== owner
         && projectToPath(...middle, passage.path).distance <= (passage.width / 2 + length / count / 2) ** 2);
