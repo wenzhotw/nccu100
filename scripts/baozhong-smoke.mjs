@@ -9,6 +9,7 @@ import { chromium } from 'playwright';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const content = JSON.parse(fs.readFileSync(path.join(root, 'src/content/baozhong.json')));
 const minigames = JSON.parse(fs.readFileSync(path.join(root, 'src/content/baozhong-minigames.json')));
+const programs = JSON.parse(fs.readFileSync(path.join(root, 'src/content/baozhong-programs.json')));
 // v1.64 起 D26 預設是兩階段攤位：初訪玩配對小遊戲蓋章（T074，CLD-001）。
 const d26 = minigames.games.find(g => g.booth === 'D26');
 const server = createServer((req, res) => {
@@ -60,7 +61,7 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.host.bubble), '你想要來包種茶節嗎？我帶你去吧。');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const active = await page.evaluate(() => window.__bz26.counts());
   assert.equal(active.passportButtons, 1);
   const hiddenTreeColliders = await page.evaluate(() => window.__bz26.venueFocus.counts().treeColliders);
@@ -69,7 +70,10 @@ try {
   // v1.69 政大之聲電台棚：棚身一個方塊、喇叭一個圓，會場開時才加入。
   const radioColliders = await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-radio').length);
   assert.equal(radioColliders, 2, '電台棚只有棚身與喇叭兩個碰撞');
-  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders - archColliders - radioColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱與電台棚兩個碰撞，扣除活動暫收植栽');
+  // v1.70 跨域學程帳篷：整頂一個方塊碰撞。
+  const programsColliders = await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-programs').length);
+  assert.equal(programsColliders, 1, '跨域學程帳篷只有一個碰撞');
+  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders - archColliders - radioColliders - programsColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱、電台棚兩個與跨域學程帳篷一個碰撞，扣除活動暫收植栽');
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible && window.__game.spots.includes(window.__bz26.activitySign.spot)), true);
   await approach('bz26-D26');
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
@@ -134,6 +138,50 @@ try {
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await page.waitForFunction(() => window.__bz26.flags().has('bz26_hs_RADIO'));
   await finishDialog();
+  // v1.70 跨域學程帳篷：第一句說明校內雙主修；人工智慧應用的排序小遊戲全對蓋學程章。
+  const pg = await page.evaluate(() => { const r = window.__bz26programs; return { conflicts: r.placement.conflicts.length, box: r.placement.box, npcs: r.programNpcs.map(n => ({ id: n.id, x: n.spot.x, z: n.spot.z })) }; });
+  assert.equal(pg.conflicts, 0, '跨域學程帳篷位置不能壓到既有物件');
+  const p04 = pg.npcs.find(n => n.id === 'bz26-pg-P04');
+  await page.evaluate(([x, z]) => { window.__game.teleport(x + 0.9, z); window.__game.state.yaw = Math.PI / 2; }, [pg.box.x1, p04.z]);
+  await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.programNpcs[3].spot);
+  await page.screenshot({ path: path.join(root, 'test-results/baozhong-programs-tent.png') });
+  await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
+  assert.match(await page.locator('#dlg').innerText(), /校內雙主修，不是正式科系，不能考進來/);
+  await finishDialog();
+  await page.getByRole('button', { name: '玩小遊戲', exact: true }).click();
+  await page.locator('#bz-stage').waitFor();
+  await page.getByRole('button', { name: '開始', exact: true }).click();
+  for (const c of programs.programs[3].game.cards) await page.locator(`#bz-stage button[data-card="${c.id}"]`).click();
+  await page.getByRole('button', { name: '完成', exact: true }).click();
+  await page.waitForFunction(() => window.__bz26.flags().has('bz26_pg_P04') && window.__bz26.flags().has('bz26_pgpf_P04'));
+  await finishDialog();
+  // 友校：清華交流大使翻開學系清單；F03 引路人主持友校配對。
+  await page.evaluate(() => { window.__game.teleport(-5.9, -44.1); window.__game.state.yaw = Math.PI / 2; });
+  await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.partnerNpcs[0].spot);
+  await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
+  await finishDialog();
+  await page.getByRole('button', { name: '看開放的學系清單', exact: true }).click();
+  await page.locator('#dlg').waitFor({ state: 'visible' });
+  assert.match(await page.locator('#dlg').innerText(), /清華大學 115 學年/);
+  await finishDialog();
+  await page.evaluate(() => { window.__game.teleport(-6.5, -46.0); window.__game.state.yaw = Math.PI / 2; });
+  await page.waitForFunction(() => window.__game.state.near?.label === '友校配對');
+  await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
+  await finishDialog();
+  await page.getByRole('button', { name: '玩友校配對', exact: true }).click();
+  await page.locator('#bz-matching').waitFor();
+  await page.getByRole('button', { name: '開始配對' }).click();
+  {
+    const left = page.locator('#bz-matching .match-column').nth(0), right = page.locator('#bz-matching .match-column').nth(1);
+    for (const pair of programs.partners.game.pairs) {
+      await left.getByRole('button', { name: pair.left }).click();
+      await right.getByRole('button', { name: pair.right }).click();
+    }
+  }
+  await page.getByRole('button', { name: '完成配對' }).click();
+  await page.waitForFunction(() => window.__bz26.flags().has('bz26_pt_F03'));
+  await finishDialog();
+  assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_hs_RADIO') && [...window.__bz26.flags()].filter(f => /^bz26_(pg|pgpf|pt|ptpf)_/.test(f)).length), 4);
   await page.locator('#bz-passport-button').click();
   await page.screenshot({ path: path.join(root, 'test-results/baozhong-passport.png') });
   await page.keyboard.press('p');
@@ -149,10 +197,12 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const reentered = await page.evaluate(() => window.__bz26.counts());
   assert.equal(await archColliderCount(), 2, '重入不重複拱門碰撞');
   assert.equal(await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-radio').length), 2, '重入不重複電台棚碰撞');
+  assert.equal(await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-programs').length), 1, '重入不重複跨域學程帳篷碰撞');
+  assert.deepEqual(await page.evaluate(() => [window.__bz26programs.programNpcs.length, window.__bz26programs.partnerNpcs.length, window.__game.spots.filter(s => s.label === '了解學程' || s.label === '和交流大使聊聊').length]), [4, 4, 8], '重入不重複建學程代表與交流大使');
   assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '重入沿用單一拱門模型');
   assert.deepEqual(reentered, active, '重入不能重複建立 NPC、帳篷、碰撞與護照');
   await page.waitForFunction(() => {

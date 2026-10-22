@@ -10,7 +10,8 @@ const progress = college => {
   const booths = list(college.booths);
   return `${booths.filter(b => b.stamp).length}／${booths.length}`;
 };
-const status = college => college.medal ? '🏅 已獲勳章' : college.ready ? '可挑戰' : '收集中';
+// v1.70：跨域學程、友校這類不算學院勳章的頁面，可用 statusText 自訂狀態文字。
+const status = college => typeof college.statusText === 'string' && college.statusText ? esc(college.statusText) : college.medal ? '🏅 已獲勳章' : college.ready ? '可挑戰' : '收集中';
 const selectedIndex = (colleges, selected) => Math.max(0, colleges.findIndex((c, i) => key(c, i) === selected));
 // T074 兩階段（旗標開啟才有 view.advanced）：顯示進階茶罐；沒有這個欄位時輸出與原本相同。
 const advancedSummary = view => view.advanced && typeof view.advanced === 'object' ? `<p class="bz-advanced">進階茶罐：${count(view.advanced.cans)}／${count(view.advanced.total)} · 進階過關 ${count(view.advanced.done)}／${count(view.advanced.available)} 攤</p>` : '';
@@ -89,7 +90,11 @@ body.bz26 #bz-passport-feedback .bz-feedback-label{display:block;font-size:15px;
 let mounted = null;
 // T074：實驗功能可登記一個 view 裝飾函式（預設沒有，畫面不變），並在旗標變動後要求重畫。
 let viewDecorator = null;
+// v1.70：除了兩階段的主裝飾器，其他模組（跨域學程、友校）可再串接額外裝飾器，依加入順序套用。
+const extraDecorators = [];
 export function setPassportViewDecorator(fn) { viewDecorator = typeof fn === 'function' ? fn : null; mounted?.refresh(); }
+export function addPassportViewDecorator(fn) { if (typeof fn === 'function' && !extraDecorators.includes(fn)) extraDecorators.push(fn); mounted?.refresh(); }
+const decorate = raw => [viewDecorator, ...extraDecorators].reduce((v, fn) => (fn && v && typeof v === 'object' && !Array.isArray(v) ? fn(v) : v), raw);
 export function refreshPassport() { return mounted ? mounted.refresh() : false; }
 export function mountPassport({ getView } = {}) {
   if (typeof getView !== 'function') throw new TypeError('getView must be a function');
@@ -97,7 +102,7 @@ export function mountPassport({ getView } = {}) {
   const doc = document, hud = doc.querySelector('#hud .col.r');
   // 加入既有直向欄位，讓故事、道具、毛巾及支線自然排版，不猜固定 top 座標。
   if (!hud) throw new Error('mountPassport requires the existing #hud .col.r');
-  const readView = () => { const raw = getView(), value = viewDecorator && raw && typeof raw === 'object' && !Array.isArray(raw) ? viewDecorator(raw) : raw; if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('getView must return an object'); return value; };
+  const readView = () => { const raw = getView(), value = decorate(raw); if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('getView must return an object'); return value; };
   const initialView = readView(); // 資料失敗時，不拆掉仍可使用的上一個實例。
   mounted?.destroy();
   const addedActivityClass = !doc.body.classList.contains('bz26');

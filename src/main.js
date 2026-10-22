@@ -56,6 +56,7 @@ import './systems/gym/index.js'; // 體育館：打球的人、雄鷹隊長的�
 import './systems/baozhong/index.js'; // 包種茶節（T065）：邀請人、40 頂帳篷、系攤集章、學院關主、大會考
 import './systems/baozhong/festival-arch.js'; // 會場開時四維堂前的氣球拱門
 import './systems/baozhong/entry-radio.js'; // v1.69：邀請人泡泡、開始畫面「參加包種茶節」、政大之聲電台棚
+import './systems/baozhong/programs-partners.js'; // v1.70：跨域學程帳篷（校內雙主修）與友校交流大使
 import './systems/baozhong/stage2/index.js'; // 兩階段攤位（T074）：預設開啟，?bz26stage2=0 可暫時關閉
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
 import './systems/police-drive.js';
