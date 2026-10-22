@@ -13,7 +13,7 @@ import { addPassportViewDecorator, refreshPassport } from './passport-ui.js';
 import { openMatching } from './matching.js';
 import { openFeedbackRound, openSortRound } from './stage2/stage-ui.js';
 import { stepsFromGame } from './stage2/rounds.js';
-import { AU, NPCS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
+import { AU, FOLIAGE, NPCS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
 import * as P from './programs-logic.js';
 import { buildProgramsTent } from './programs-tent-model.js';
 import { countTriangles } from './radio-booth-model.js';
@@ -115,7 +115,7 @@ async function onPartnerGame() {
 
 /* ---------- 會場出現與收起 ---------- */
 let placement = null, tent = null, active = false, onSince = 0;
-let tentColliders = [];
+let tentColliders = [], hidden = [];
 const programNpcs = [], partnerNpcs = [];
 function gate(n, fn, label) {
   const ok0 = n.spot.ok;
@@ -143,7 +143,9 @@ function setVenueActive(on) {
   if (on === active) return;
   active = on;
   if (on && !tent) {
-    placement = P.tentPlacement({ colliders, tents: LAYOUT.tents, spots: spots.filter(s => !s.room) });
+    // 帳篷底下的植栽會暫收，所以位置檢查時先不算它們的碰撞。
+    const movable = new Set(FOLIAGE.map(f => f.collider).filter(Boolean));
+    placement = P.tentPlacement({ colliders: colliders.filter(c => !movable.has(c)), tents: LAYOUT.tents, spots: spots.filter(s => !s.room) });
     if (placement.conflicts.length) console.warn('[bz26 programs] 跨域學程帳篷候選位置都有衝突，暫用第一個', placement.tried);
     tent = buildProgramsTent({ toon, basic, canvasTex, programs: DATA.programs, notice: NOTICE });
     tent.group.position.set(placement.x, groundH(placement.x, placement.z), placement.z);
@@ -153,6 +155,13 @@ function setVenueActive(on) {
     createNpcs();
   }
   if (tent) tent.group.visible = on;
+  if (on && tent) {
+    hidden = P.foliageUnder(placement, FOLIAGE).filter(f => typeof f.setVisible === 'function').map(f => ({ f, visible: f.isVisible?.() ?? true, collider: f.collider && colliders.includes(f.collider) ? f.collider : null }));
+    for (const h of hidden) { h.f.setVisible(false); if (h.collider) colliders.splice(colliders.indexOf(h.collider), 1); }
+  } else if (!on) {
+    for (const h of hidden) { h.f.setVisible(h.visible); if (h.collider && !colliders.includes(h.collider)) colliders.push(h.collider); }
+    hidden = [];
+  }
   for (const b of tentColliders) { const i = colliders.indexOf(b); if (on && i < 0) colliders.push(b); else if (!on && i >= 0) colliders.splice(i, 1); }
   for (const n of [...programNpcs, ...partnerNpcs]) { n.g.visible = on; if (!on) n.sp.say(''); }
 }
@@ -183,6 +192,6 @@ if (DEBUG) {
   window.__bz26programs = {
     get placement() { return placement; }, get tent() { return tent; }, programNpcs, partnerNpcs, sync,
     onProgram: id => onProgram(DATA.programs.find(p => p.id === id)), onPartner: id => onPartner(SCHOOLS.get(id)), onPartnerGame,
-    get active() { return active; }, get guideWired() { return guideWired; }, triangles: () => (tent ? countTriangles(tent.group) : 0),
+    get active() { return active; }, get hiddenTreeColliders() { return hidden.filter(h => h.collider).length; }, get hiddenFoliage() { return hidden.length; }, get guideWired() { return guideWired; }, triangles: () => (tent ? countTriangles(tent.group) : 0),
   };
 }
