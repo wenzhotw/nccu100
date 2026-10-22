@@ -8,8 +8,12 @@ permissions:
   contents: read
 jobs:
   scenery:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [desktop, mobile-emulation]
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,9 +27,11 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: node scripts/baozhong-scenery-screenshots.mjs
+        env:
+          SCENERY_PREVIEW_PROFILE: ${{ matrix.profile }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: baozhong-scenery-guide
+          name: baozhong-scenery-guide-${{ matrix.profile }}
           path: test-results/baozhong-scenery/
           retention-days: 7
