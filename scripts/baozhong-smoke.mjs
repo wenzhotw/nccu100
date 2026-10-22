@@ -28,11 +28,13 @@ try {
   page.on('pageerror', e => errors.push(String(e)));
   const url = `http://127.0.0.1:${server.address().port}/?debug`;
   await page.goto(url, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__game && window.__bz26);
+  await page.waitForFunction(() => window.__game && window.__bz26 && window.__bz26arch);
   await page.click('#go');
   await page.waitForFunction(() => window.__game.state.started);
   const initial = await page.evaluate(() => window.__bz26.counts());
   assert.equal(initial.active, false);
+  const archColliderCount = () => page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-arch').length);
+  assert.equal(await archColliderCount(), 0, '活動前沒有拱門碰撞');
   assert.equal(initial.passportButtons, 0);
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible || window.__game.spots.includes(window.__bz26.activitySign.spot)), false);
   async function finishDialog() {
@@ -55,11 +57,13 @@ try {
   await approach('host');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const active = await page.evaluate(() => window.__bz26.counts());
   assert.equal(active.passportButtons, 1);
   const hiddenTreeColliders = await page.evaluate(() => window.__bz26.venueFocus.counts().treeColliders);
-  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders, 323, '原帳篷320＋鳥居2＋活動看板1，扣除活動暫收植栽');
+  const archColliders = await archColliderCount();
+  assert.equal(archColliders, 2, '新版拱門只有兩根柱子碰撞');
+  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders - archColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱，扣除活動暫收植栽');
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible && window.__game.spots.includes(window.__bz26.activitySign.spot)), true);
   await approach('bz26-D26');
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
@@ -84,7 +88,7 @@ try {
   await finishDialog();
   await page.getByRole('button', { name: '離開會場', exact: true }).click();
   await finishDialog();
-  await page.waitForFunction(() => !window.__bz26.counts().active);
+  await page.waitForFunction(() => !window.__bz26.counts().active && !window.__bz26arch.arch.active);
   const leftCounts = await page.evaluate(() => window.__bz26.counts());
   assert.equal(leftCounts.colliders, initial.colliders);
   assert.equal(leftCounts.passportButtons, 0);
@@ -92,8 +96,10 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const reentered = await page.evaluate(() => window.__bz26.counts());
+  assert.equal(await archColliderCount(), 2, '重入不重複拱門碰撞');
+  assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '重入沿用單一拱門模型');
   assert.deepEqual(reentered, active, '重入不能重複建立 NPC、帳篷、碰撞與護照');
   await page.waitForFunction(() => {
     const saved = JSON.parse(localStorage.getItem('nccu100-save') || 'null');
@@ -102,8 +108,10 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__bz26?.counts().active && window.__bz26.flags().has('bz26_st_D26'));
   await page.click('#go');
-  await page.waitForFunction(() => window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   assert.equal(await page.locator('#bz-passport-button').count(), 1);
+  assert.equal(await archColliderCount(), 2, '讀檔仍恰有兩根拱門柱碰撞');
+  assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '讀檔只建立一座拱門');
   assert.deepEqual(errors, []);
   console.log('包種茶節瀏覽器主要流程通過', JSON.stringify({ initial, active, left: leftCounts, reentered, saveReload: true, pageErrors: errors }));
 } finally {
