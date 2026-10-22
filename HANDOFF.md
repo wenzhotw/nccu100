@@ -1,3 +1,13 @@
+# 2026-10-23 室內品質否決後重新查核（最新，未修復）
+
+- 使用者對整個新版室內品質不滿，核可先停止擴建／美化並重新核對。**撤回還原驗收合格／limited ship作為還原依據**；舊功能通過只保留其範圍，不能當實景正確。
+- 本輪只做研究與查核文件，遊戲source/玩法/版本無變；workspace main aa7b1b6，開工乾淨，origin/main同SHA。報告 docs/reference/dah-hsian/fidelity-audit-2026-10-23.md，來源ledger同名-sources.json；已區分6項確定缺陷／驗收缺口與待驗證事項，列各主樓層站位與TDD修正順序。
+- 最重要F01：2F→3F D梯被連續3F樓板蓋住，導航中點y2.25，上方真模型ray擊中y4.5樓板；單位box命中/外部不命中先校準。raw/script .references/dah-hsian/fidelity-audit-20261023/{stair-slab-evidence.json,check-stair.mjs}。F02任意T短後廊不等同5/7F長廊，F03缺斜向公共交通區，F04上層椅無腳，F05展示地毯斜界/圖形缺漏，F06站位索引gamePoseMatched:false及既有高度測試未驗洞口。
+- 六張館方2/3/4/5/7/8F平面重新取得並實讀，SHA均同前存原檔；取回日期不等於圖面修訂日。2018年報是歷史規劃，不能拿搜尋收錄時間當新現況。館方環景實際操作達賢→2樓→大廳並看見照片；初始black不算。感恩牆精確位置、層高／MF對應、8F平台、玻璃門／各層廁所仍待校準，不再憑印象說對／錯。
+- 正式觀察從原GitHubURL轉至 http://play.gaiacraft.tw/?debug&area=dah-hsian，v1.75／index-D-v9UGny.js。本輪未改網域。新七個1280×800檢查鏡頭 .screenshots/dah-fidelity-20261023/，已實讀；capture.js明列估計站位，**沒有冒稱實景對位**。首張3f-stairs朝地板無效；後重取d-stair-lower。標題淡出以computed opacity=0確認。僅favicon404，未進行安全攻擊。
+- 已交付教學：來源→校準→幾何/可走範圍→分類；推薦逐層重建骨架，備案只補家具不足；無新依賴/付費/資料變更。未做場景修復，所以沒有新UI兩輪或產品全測／新上線成果，不能說完成還原。現有src/scripts/package/config與前全測79aba相同，純查核文件不拿舊綠燈掩蓋本次F01。
+- 下一步依報告先固定柱網／層與夾層關係，對D梯洞口做單一紅→最小修復→綠，再逐層動線；不得直接在模板樓層上繼續美化。原使用者已授權實景重建，不需要再次批准已核可範圍。此輪無同檔並行修改。
+
 # 2026-10-22 23:33 正式站驗收（本輪最新；以下舊段為歷史）
 
 - PR95由wenzhotw於15:19:35 UTC合併為a2bb594，隨後PR96合併為79aba372c8bcb09423e6a55c7d32a0ed83124838；不是本輪CLI執行merge。工作區已乾淨fast-forward至該main，保留他人安全防護修改。正式Pages39803805924成功且headSha一致，原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 為v1.75。
