@@ -35,6 +35,6 @@ export function updateDucks(root,time,reducedMotion=false){
   const r=g.userData.route,t=(reducedMotion?0:time)*.035+r.phase;
   g.position.set(r.x+Math.cos(t)*r.rx,WATER_Y+(reducedMotion?0:Math.sin(time*1.4+r.phase)*.012),r.z+Math.sin(t)*r.rz);
   g.rotation.y=Math.atan2(-Math.sin(t)*r.rx,Math.cos(t)*r.rz);
-  g.getObjectByName('細尾流').visible=!reducedMotion;
+  const wake=g.getObjectByName('細尾流');wake.visible=!reducedMotion;wake.material.opacity=.25+Math.sin(time*.65+r.phase)*.07;
  }
 }

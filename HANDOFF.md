@@ -1,3 +1,57 @@
+# CI容量設定補充（最新）
+- boothdesktop舊run不是業務斷言失敗：log確認11:51開始browserpreview，12:12已驗完37攤，12:14被workflow總30min取消；其餘重載/篩選仍未跑完。保留全部驗收，僅既有workflow上限30→45min，不加新服務/依賴、不弱化斷言。Mobile舊run成功。此設定與手機simulation同步修復一起新CI驗證。
+# 2026-10-22 遠端CI失敗修正（最新，未發布）
+- PR95仍OPEN，正式未部署。branch/main都曾在7744037，本機main全套PASS（Node331/skip1、portable80、npc9、stage2 45/skip1）、check/buildpass。遠端check39772792191在全test/build/全站冒煙/戶外/2F均success後，visual手機7F下6F高度assertfail。沒有忽略或合併。
+- 原touchWalk釋放後等400牆鐘ms，慢速softwareGPU不能保證重力落地。改等.5simulation，同高度20±.15不變，新增實際dt1/60與.05回歸，nav21pass；獨立review用真vel/resolve/gravity校準三步長通過，無product修改。最新本機visualsmoke PASS /tmp/nccu100-visual-mobile-settle.log，preview5195已重啟exec78066（原server因會話中斷消失，第一次重跑拒連不當PASS）。
+- 現branch feat/dah-hsian-visual-atmosphere，僅navtest與visualsmoke待提交；下一步commit/push觸發新CI、保留原完整全站已過證據但新CI仍需pass。boothdesktop39772792135因30分鐘workflow取消，mobilepass，非達賢product缺陷；需重跑/查準原因，不說allgreen。
+- 上線政策仍自動main全套/push/既有Pages exactSHA+原網址真流程。不得問再次批准/不帶failure發布。
+
+# 主線整合與發布準備（最新）
+- 本輪產品commit0f28d8c，已無衝突merge origin/main528f422，保留奶蛙/包種/山上校區等他人成果。最新visualclock真瀏覽器PASS /tmp/nccu100-visual-clock-runtime-final.log，含自動方向連續/固定午後穩定/live減少動態恢復、手機上下梯。
+- branch全套exact PASS，戶外泳岸/2F/upper後區PASS，所有review已closed。現在整合全套/check/build，再升既有3版本標示為v1.75（最後remotev1.74/openPR空）；metadata不改玩法。尚未push/部署，不能把本機完成當正式上線。
+# 最終發布前證據（最新）
+- 產品source exact全npmtest PASS /tmp/nccu100-visual-exact-full-tests.log：Node313+skip1/portable80/npc9/stage2 29+skip1。check/buildpass，之後只smoke驗證碼小修。戶外真鍵盤+touch泳岸/前廊/空橋PASS /tmp/nccu100-visual-outdoor-final.log；2F路線/滑鼠仰視/手機進出PASS /tmp/nccu100-visual-interior-final.log；完整upper與7FrearPASS。
+- 戶外smoke前次fail根因是設WC站位前保留上岸側移vel，兩次實際位置x偏.284但z通過；新增.7simulation idle在pos.set前，原斷言不放寬，Metal/CI預設software可選。visualsmoke增強時鐘真連續以sun-target方向校準，不看深夜平坦色；固定午後基準等下一幀。最新visualclockruntime exec20970尚待結果。
+- 獨立code全部P2/P3/testfindingresolved、visualship僅指定項、doc同步；正式收尾仍未做。originmain528f422/v1.74，其他作者成果不得覆蓋。下一步完成visualsmoke→commit本輪→mergeoriginmain→main全套與既有CI/Pages部署/正式原址真流程，不需再批准。
+
+# 2026-10-22 轉角出口修復驗收（最新，未發布）
+
+- 使用者最新「繼續」，保留所有既有範圍。新增18:37截圖指正轉角交叉阻擋與後區出口；已正式列入plan/PRODUCT/sourceledger，原照保留ignoreduser-corner-obstruction.png。補讀May5張近距照片+館方書房近照、5/7官方平面，均<=1280實讀。
+- 兩翼欄杆原誤延伸4.8m插入平台，已按挑空邊收口；主3/4/5/7/8F書牆端部開口與可走後廊、門框。MF/6F無獨立後區平面，不虛構整層房間。桌島改垂直欄杆中央隔板、兩側各兩席、成列；模型與阻擋一致。導航聯集/可見地板分割避免共面閃爍。
+- focused最新navigation20、interior30、daylight8、materials7、atmosphere4、timecontrol2pass。freshwholebranchP2支柱/斜梯側跳全部resolved，後補P3細門框也resolved；原reviewer獨立真resolve+gravity。報告.git/sdd/visual-code-final-review.md。
+- 真鍵盤完整2F→8F→2F及7F轉角後方公共走廊進出PASS，/tmp/nccu100-visual-atrium-corner-final.log exec35126。其後只細門框阻擋共享座標，中央routeNodepass；最終正式仍需相同核心真驗證。
+- 獨立visual六項與R1夜泛黃/最新轉角全部resolved，disposition ship（僅限項，非完全實景），.references/dah-hsian/visual-atmosphere-20261022/visual-review-verdict-r1-corner.md。freshdocumenter兩次PRODUCT/DESIGN完成，sidecar既有缺漏未擅修。原圖same11r2已覆寫，新增corner-exit，root實讀主圖與夜/正常/開口；全尺寸有效，真mobile375×812。
+- 九欄產品教學/3區塊架構已交付；動效review源碼Approve，live減少動態恢復正在最新visualsmoke驗證。第一次全套npmtest PASS：node308+1skip/baozhong80/npc9/stage2 29+1skip，/tmp/nccu100-visual-full-tests.log；其後轉角新功能與門框變更，最終全套exec55785尚進行，不能沿用前次當exactpass。check最新PASS；exactbuild成功，preview5195。visualsmokeexec12273/log /tmp/nccu100-visual-smoke-exact.log進行中。
+- 下一步只缺最新visual/舊戶外泳岸/2Fsmokes、最終全套、提交與整合遠端/主線全測/既有CI+Pages exactSHA原網址實際流程。originmain最後26d49a6/v1.73（又fetch中），最後openPR空；版本發布前再核對。所有本輪未commit/push，不得說上線。共享3D一次只開一個自己的瀏覽器；未動他人session。
+
+# 2026-10-22 視覺升級與上層中庭：本輪狀態（最新，未發布）
+
+- 工作區 NCCU100，branch feat/dah-hsian-visual-atmosphere，base4ea23ac；所有本輪內容未提交。origin/main最後b74a41e/v1.71、openPR91使用v1.72，收尾重新fetch避免覆蓋他人或版本衝號。
+- 使用者新增糾正「桌島方向跟排列不對」：已讀原994×1492照、官方contest02及5F/7F平面。先紅→綠，中央白隔板改垂直欄杆、座椅相對，桌島按同側書牆成列，移除無依據的隔層錯開；東北角保留走道。模型與阻擋共用atriumDesks；導航12/12、interior30/30當前通過。
+- 獨立視覺review disposition fix，六項：建築層次/暖光/水面/午後投影/普通鏡頭/文件。已批次修，但尚待原reviewer限六項複核，不能宣稱完成。桌面轉向為最新使用者要求，併入item1驗收。
+- materials7、daylight7、atmosphere4、timecontrol2已focused通過；上一次真visualsmoke PASS包含鍵盤按鈕不跳、共享時間、reducedmotion、手機D梯上下/7F下6F、無shader錯誤。其後模型/燈/鏡頭變更需重跑。新tracked atrium-smoke完整上8F再下2F尚未跑。
+- 最新build成功；preview5195既有exec90478。own CLI dah-visual-metal於aboutblank或取圖；只關本session。capture exec32864進行（同11個r2檔覆寫，latest桌島方向），log /tmp/nccu100-visual-review-fixes-capture.log；完後讀圖/交原dah_visual_finish_review。
+- 兩輪桌機1280×800/手機375×812自評已完成，之後只處理獨立六項與使用者桌島指正，不開第三輪自行找瑕疵。最終圖.screenshots/dah-visual-r2-{desktop,mobile,upper-night,upper-dusk,upper-gameplay,platform-afternoon,cafe-afternoon,lake-afternoon,lake-dusk,lake-night,atrium-night}.png。
+- fresh documenter astra遇servicequota未做；fallback fresh gpt6.1-sol已完成PRODUCT/DESIGN，保留原系統/記錄公共3–8F/材料與燈色，missing sidecar屬既有漂移未擅修。六項reviewer可用，等ready。仍需最後wholebranch code+motionreview。
+- 一次manualdetector只2項deskGlow/contact色提示，已集中DAH_LIGHT_COLORS並由DESIGN記實際用途；無ignore/無重跑。技術/視覺均不可把未跑當pass。
+- 仍需：最新實際smokes（舊戶外泳岸/2F/新visual/完整upper）、九欄產品教學、全套test/check/build、commit/整合最新main保留他人、main全套、PR與既有CI/Pages exactSHA/原網址正式核心驗收。未上線，本輪不因服務quota省略必需關卡。
+
+# 2026-10-22 新增中庭上層範圍（最新）
+
+- 使用者附994×1492實景照，要求達賢層退中庭漂亮震撼，明確允許開始其他樓層。保留進行中光影/材質/日夜/環境動態，不取消前範圍。
+- 官方關於本館確認3–8F層退；官方plan3/4/5/7/8已下載ignored visual-atmosphere-20261022，3/5/8已實際讀圖。注意夾層，不能簡單把6F當完整平面層；原上層僅五層重複裝飾，需重新核對層退/階梯/高處俯視。
+- 本輪局部已實作未全驗：daylight.js四項單檔通過（代理因額度失敗，root接手修陰影lightspace texelsnap）；materials.js四項、timecontrol兩項通過；atmosphere.js三項（最後尾流opacity紅→綠已修ducks.js）。map/interiormap/index接線與HUD chip、共享clock。第一版check/build通過，之後材質contact/wakes/CSS尚未重build。未commit/push/deploy，正式仍v1.68。
+- visual-smoke最初被使用者打斷，原server/process停止，重跑因5195拒連失敗屬環境；已重啟preview5195 exec90478，最新smoke exec59356進行（需取結果）。不能當pass。前before照片front被相機位置角色擋住無效；after取圖需角色位置與固定view分開，不要複製錯誤。atriumbefore有banner也非正式對照。
+- fresh代理dah_daylight_impl額度錯誤無report，SDD gate尚未通過；其餘任務root接手，後續獨立review若可用再嘗試，否則揭露實際限制。新兩輪視覺QA/獨立審查/全測/收尾皆未做。
+
+# 2026-10-22 達賢視覺升級（最新核可，進行中）
+
+- 使用者「這邊都要做」核可午後投影/接地暗部、卡通材料細分、午後/黃昏/夜晚與連續日夜、水波/鴨尾流/樹葉/遠景，全做戶外與2F。舊段「未核可」僅歷史，已被此次取代。
+- branch feat/dah-hsian-visual-atmosphere，base4ea23ac9e61037c76bb92f038ffbab9e0fc940be，原工作區乾淨；沿現有checkout，不碰薪火專案。計畫docs/superpowers/plans/2026-10-22-dah-hsian-visual-atmosphere.md。
+- 正式v1.68先前已驗收；最後文件Pages39718611243 success exact4ea23ac，產品產物同09cbc86。新視覺尚未實作，不得宣稱上線。
+- 新官方101–103已讀圖確認正面灰色仿木紋清水模，現有brown louver需校正；官方夜圖繼續分類，原照片ignored不當貼圖。
+- 根代理統籌接線/UI/瀏覽器/全測/發布；SDD獨立任務逐項含審查，檔案分工見計畫。新功能不可沿用舊視覺ship。
+
 # 2026-10-22 達賢v1.68正式核心驗收（最新）
 
 - 原網址 https://wenzhotw.github.io/nccu100/?area=dah-hsian 已v1.68；main09cbc86640d7715f1c898a1b582d6c349ae45deb已push且ls-remote確認。Pages39717983946 success，headSha完全相符。正式HTML引index-Cdlq7Eea.js，和本機最後main build逐byte相同。

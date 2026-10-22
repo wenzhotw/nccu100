@@ -3,10 +3,10 @@ import * as THREE from 'three';
 import {FURNITURE,COLUMNS,WALLS,ENTRANCE_STRUCTURES,RESTROOM_DOORS,ENTRANCE_DOORS,UTILITY_DOOR} from './interior-layout.js';
 import {buildAtrium} from './interior-atrium.js';
 const BOX=new THREE.BoxGeometry(1,1,1);
-export const INTERIOR_COLORS={concrete:'#c7c6bd',wall:'#e4e2d8',floor:'#d7d1c2',carpet:'#51758a',white:'#ecebe6',wood:'#bb9469',woodDark:'#8b684c',gratitude:'#827c55',glass:'#b1cfce',clear:'#bdd8da',ink:'#35495a',metal:'#b6c5c4',light:'#fff6d7',sofa:'#967b68',green:'#75a95a',bookRed:'#bc7969',bookGold:'#d6b465',bookBlue:'#7195a4',bookGreen:'#8ca68b'};
+export const INTERIOR_COLORS={concrete:'#c7c6bd',wall:'#e4e2d8',floor:'#d7d1c2',carpet:'#51758a',white:'#ecebe6',litWood:'#b08a50',taskGlow:'#ffd28e',wood:'#bb9469',woodDark:'#8b684c',gratitude:'#827c55',glass:'#b1cfce',clear:'#bdd8da',ink:'#35495a',metal:'#b6c5c4',light:'#fff6d7',sofa:'#967b68',green:'#75a95a',bookRed:'#bc7969',bookGold:'#d6b465',bookBlue:'#7195a4',bookGreen:'#8ca68b'};
 export function createInteriorModel(materialFor){
  const materials=new Map();
- const mat=materialFor||((kind)=>{if(!materials.has(kind))materials.set(kind,kind==='outline'?new THREE.MeshBasicMaterial({color:'#2a2c4a',side:THREE.BackSide}):new THREE.MeshToonMaterial({color:INTERIOR_COLORS[kind]||INTERIOR_COLORS.wall}));return materials.get(kind);});
+ const mat=materialFor||((kind)=>{if(!materials.has(kind))materials.set(kind,kind==='taskGlow'?new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}):kind==='outline'?new THREE.MeshBasicMaterial({color:'#2a2c4a',side:THREE.BackSide}):new THREE.MeshToonMaterial({color:INTERIOR_COLORS[kind]||INTERIOR_COLORS.wall}));return materials.get(kind);});
  const root=new THREE.Group();root.name='達賢2樓公開空間';
  const batches=new Map();const transform=new THREE.Object3D();
  const box=(parent,kind,x,y,z,w,h,d,name,outlined=false)=>{
@@ -173,13 +173,14 @@ export function createInteriorModel(materialFor){
     }
    }
   }else if(o.kind==='stairs'){
-   const flight=box(g,'concrete',0,1.9,-.15,o.w,.18,Math.hypot(o.d,4),'斜向樓梯底板');flight.rotation.x=-Math.atan2(4,o.d);
-   for(let i=0;i<20;i++)box(g,'concrete',0,(i+1)*.2-.07,-o.d/2+i*.3,o.w,.14,.3,'可見上樓階梯');
-   for(const side of [-1,1])for(let i=0;i<20;i++)box(g,'metal',side*(o.w/2-.1),(i+1)*.2+.5,-o.d/2+i*.3,.045,1,.045,'樓梯扶手柱');
+   const rise=o.name==='西南D梯封閉入口'?4.5:4;
+   const flight=box(g,'concrete',0,rise/2,-.2,o.w,.18,Math.hypot(5.6,rise),'斜向樓梯底板');flight.rotation.x=-Math.atan2(rise,5.6);
+   for(let i=0;i<20;i++)box(g,'concrete',0,(i+.5)*rise/20-.05,-o.d/2+(i+.5)*.28,o.w,.10,.28,'可見上樓階梯');
+   for(const side of [-1,1])for(let i=0;i<20;i++)box(g,'metal',side*(o.w/2-.1),(i+.5)*rise/20+.5,-o.d/2+(i+.5)*.28,.045,1,.045,'樓梯扶手柱');
    for(const side of [-1,1]){
     const rail=box(g,'wood',side*(o.w/2-.1),2.6,0,.065,.065,Math.hypot(o.d,4),'樓梯連續扶手');rail.rotation.x=-Math.atan2(4,o.d);
    }
-   box(g,'metal',0,.55,-o.d/2-.05,o.w,1.1,.08,'關閉樓梯欄門',true);
+   if(o.name!=='西南D梯封閉入口')box(g,'metal',0,.55,-o.d/2-.05,o.w,1.1,.08,'關閉樓梯欄門',true);
   }else if(o.kind==='gate'){
    box(g,'metal',0,.52,0,o.w,1.04,o.d,'閘門機柱',true);
    box(g,'ink',0,1.07,0,o.w+.015,.035,o.d*.8,'閘門頂蓋');

@@ -32,6 +32,8 @@ jobs:
           trap 'kill "$dah_preview_pid"' EXIT
           node scripts/dah-hsian-smoke.mjs
           node scripts/dah-hsian-interior-smoke.mjs
+          node scripts/dah-hsian-visual-smoke.mjs
+          node scripts/dah-hsian-atrium-smoke.mjs
       - name: 保留冒煙測試截圖
         if: always()
         uses: actions/upload-artifact@v4

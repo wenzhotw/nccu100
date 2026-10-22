@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {OUTDOOR_RETURN} from '../src/world/buildings/dah-hsian/interior-layout.js';
 import {chromium} from 'playwright';
 const base=process.env.NCCU_BASE_URL||'http://127.0.0.1:5187/';
-const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+const browser=await chromium.launch({args:process.env.NCCU_BROWSER_METAL?['--use-angle=metal','--ignore-gpu-blocklist']:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
 try{
  const page=await browser.newPage({viewport:{width:960,height:600}}),errors=[];
  page.on('pageerror',e=>errors.push(String(e)));
