@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "flag": "bz26stage2",
+  "note": "兩階段攤位試作（Grok，T074）。第一次見面玩小遊戲得一般攤位章；回訪才開放原本的攤位問答當進階版。每個答案與說明都附 trace（path 指向 baozhong.json，quote 必須逐字出現在該欄位），不新增系所事實；查不到的標待查。題內數字是攤位內容既有的假設數字。",
+  "games": [
+    {
+      "booth": "D26",
+      "type": "matching",
+      "title": "日文系：四年與交換，配配看",
+      "intro": [
+        { "text": "大一大二修「日語會話演習」；大一到大三每年都有日語必修，大二、大三修「日文習作」，大四有「日本專題研究」", "trace": { "path": "D26.features.0", "quote": "大一大二修「日語會話演習」；大一到大三每年都有日語必修，大二、大三修「日文習作」，大四有「日本專題研究」" } },
+        { "text": "系上和日本山梨縣的都留文科大學簽交換留學合作，每年招募學生去交換，也接受對方交換生來政大", "trace": { "path": "D26.features.1", "quote": "系上和日本山梨縣的都留文科大學簽交換留學合作，每年招募學生去交換，也接受對方交換生來政大" } }
+      ],
+      "pairs": [
+        { "id": "conversation", "left": "大一、大二", "right": "日語會話演習", "explain": "課程地圖寫著：大一大二修「日語會話演習」。", "trace": { "path": "D26.features.0", "quote": "大一大二修「日語會話演習」" } },
+        { "id": "research", "left": "大四", "right": "日本專題研究", "explain": "課程地圖寫著：大四有「日本專題研究」。", "trace": { "path": "D26.features.0", "quote": "大四有「日本專題研究」" } },
+        { "id": "tsuru", "left": "都留文科大學", "right": "山梨縣的交換留學合作校", "explain": "系上和日本山梨縣的都留文科大學簽交換留學合作。", "trace": { "path": "D26.features.1", "quote": "日本山梨縣的都留文科大學簽交換留學合作" } }
+      ],
+      "pool": { "prompt": "日文系配對：「{left}」對應哪一項？" },
+      "advanced": {
+        "reward": "bz26_can_1",
+        "explain": [
+          { "question": 0, "text": "尊敬語是抬高對方，謙讓語是降低自己。", "trace": { "path": "D26.after.fail", "quote": "尊敬語是抬高對方，謙讓語是降低自己" } },
+          { "question": 1, "text": "尊敬語是抬高對方，謙讓語是降低自己。", "trace": { "path": "D26.after.fail", "quote": "尊敬語是抬高對方，謙讓語是降低自己" } }
+        ]
+      },
+      "pending": ["大三讀日本名著出自 baozhong-d26-matching.json（官方 113 課程地圖），baozhong.json 沒有，本試作不用；要用請先補進攤位內容。"]
+    },
+    {
+      "booth": "D19",
+      "type": "classify",
+      "title": "新聞系：事實還是意見？",
+      "intro": [
+        { "text": "事實和意見要分開", "trace": { "path": "D19.after.fail", "quote": "事實和意見要分開" } },
+        { "text": "大學報是新聞系的實驗報紙，學生仿照報社自己做，大四帶大三採訪編輯，老師只當顧問", "trace": { "path": "D19.features.0", "quote": "大學報是新聞系的實驗報紙，學生仿照報社自己做，大四帶大三採訪編輯，老師只當顧問" } }
+      ],
+      "categories": [
+        { "id": "fact", "label": "事實" },
+        { "id": "opinion", "label": "意見" }
+      ],
+      "items": [
+        { "id": "budget", "text": "市府昨天公布明年預算為 100 億元", "category": "fact", "explain": "有時間、有數字，可以查證，是攤位原題的「事實」答案。", "trace": { "path": "D19.quiz.questions.0.options.0", "quote": "市府昨天公布明年預算為 100 億元" } },
+        { "id": "waste", "text": "這份預算編得太浪費了", "category": "opinion", "explain": "「太浪費」是評價，每個人看法不同，是意見。", "trace": { "path": "D19.quiz.questions.0.options.1", "quote": "這份預算編得太浪費了" } },
+        { "id": "mayor", "text": "市長是史上最用心的市長", "category": "opinion", "explain": "「最用心」是主觀評價，沒辦法查證，是意見。", "trace": { "path": "D19.quiz.questions.0.options.2", "quote": "市長是史上最用心的市長" } },
+        { "id": "paper", "text": "大學報是新聞系的實驗報紙", "category": "fact", "explain": "系網寫明大學報是新聞系的實驗報紙，可以查證。", "trace": { "path": "D19.features.0", "quote": "大學報是新聞系的實驗報紙" } },
+        { "id": "ginkgo", "text": "學生做過雜誌《銀杏》，印 500 本賣出 400 多本", "category": "fact", "explain": "有具體數字和來源，可以查證。", "trace": { "path": "D19.features.1", "quote": "學生做過雜誌《銀杏》，印 500 本賣出 400 多本" } }
+      ],
+      "pool": { "prompt": "新聞系：「{text}」是事實還是意見？" },
+      "advanced": {
+        "reward": "bz26_can_2",
+        "explain": [
+          { "question": 0, "text": "事實和意見要分開：有數字、可查證的是事實。", "trace": { "path": "D19.after.fail", "quote": "事實和意見要分開" } }
+        ]
+      },
+      "pending": ["5W1H 與倒金字塔兩題在攤位內容裡沒有解說，進階版只顯示正確答案（待查：若要加說明，先補進 baozhong.json）。"]
+    },
+    {
+      "booth": "D13",
+      "type": "situation",
+      "title": "商學院：包種茶攤一日老闆（假想）",
+      "intro": [
+        { "text": "假想茶攤賣15杯，每杯20點，材料每杯10點，固定租金100點，沒有其他收支。", "trace": { "path": "D13.npc.lines.2", "quote": "假想茶攤賣15杯，每杯20點，材料每杯10點，固定租金100點，沒有其他收支。" } },
+        { "text": "營收要減材料和租金，才是這題的利潤；題內點數不是遊戲獎勵。", "trace": { "path": "D13.npc.lines.3", "quote": "營收要減材料和租金，才是這題的利潤；題內點數不是遊戲獎勵。" } }
+      ],
+      "steps": [
+        { "id": "revenue", "prompt": "收攤了！先算營收：賣15杯、每杯20點，營收是多少點？", "choices": ["300點", "150點", "35點"], "answer": 0, "explain": "15×20＝300。營收就是賣出杯數乘上每杯價格。", "trace": [ { "path": "D13.npc.lines.2", "quote": "賣15杯，每杯20點" }, { "path": "D13.prop", "quote": "營收300" } ] },
+        { "id": "cost", "prompt": "材料每杯10點，再加固定租金100點，總成本是多少點？", "choices": ["250點", "150點", "100點"], "answer": 0, "explain": "15×10＋100＝250。材料和租金都要算進成本。", "trace": [ { "path": "D13.npc.lines.2", "quote": "材料每杯10點，固定租金100點" }, { "path": "D13.prop", "quote": "成本250" } ] },
+        { "id": "profit", "prompt": "營收減材料和租金，老闆今天的利潤是多少點？", "choices": ["50點", "150點", "300點"], "answer": 0, "explain": "15×20−15×10−100＝50。", "trace": [ { "path": "D13.after.pass", "quote": "15×20−15×10−100＝50" } ] }
+      ],
+      "pool": { "prompt": "{prompt}", "context": { "text": "假想茶攤賣15杯，每杯20點，材料每杯10點，固定租金100點，沒有其他收支。", "trace": { "path": "D13.npc.lines.2", "quote": "假想茶攤賣15杯，每杯20點，材料每杯10點，固定租金100點，沒有其他收支。" } } },
+      "advanced": {
+        "reward": "bz26_can_3",
+        "explain": [
+          { "question": 0, "text": "15×20−15×10−100＝50。", "trace": { "path": "D13.after.pass", "quote": "15×20−15×10−100＝50" } },
+          { "question": 1, "text": "雙聯是有條件的進修路徑，不能省略資格、甄選與畢業規定。", "trace": { "path": "D13.after.fail", "quote": "雙聯是有條件的進修路徑，不能省略資格、甄選與畢業規定" } }
+        ]
+      },
+      "pending": ["D15 企管系的瓶頸題（6、2、5杯）也能做成同一套情境選擇，本試作只接 D13。"]
+    }
+  ]
+}

@@ -54,6 +54,7 @@ import './systems/wenz/index.js'; // 遊戲製作人 Wenz：好玩嗎？破壞�
 import './systems/eagle/index.js'; // 雄鷹吉祥物：收集三個故事後校長的任務，永久變身、飛行、四維堂頂樓躲 Wenz
 import './systems/gym/index.js'; // 體育館：打球的人、雄鷹隊長的投籃挑戰、送毛巾、找雄鷹吉祥物支線
 import './systems/baozhong/index.js'; // 包種茶節（T065）：邀請人、40 頂帳篷、系攤集章、學院關主、大會考
+import './systems/baozhong/stage2/index.js'; // 兩階段攤位試作（T074）：只有 ?bz26stage2=1 才生效，預設遊戲不變
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
