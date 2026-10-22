@@ -16,6 +16,7 @@ import { stepsFromGame } from './stage2/rounds.js';
 import { AU, FOLIAGE, NPCS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
 import * as P from './programs-logic.js';
 import { buildProgramsTent } from './programs-tent-model.js';
+import { mountCollegeTee } from './college-tee.js';
 import { countTriangles } from './radio-booth-model.js';
 
 const flags = () => state.flags || (state.flags = new Set());
@@ -133,7 +134,10 @@ function createNpcs() {
   });
   for (const at of P.PARTNER_SPOTS) {
     const s = SCHOOLS.get(at.id);
-    const n = addNPC({ id: `bz26-pt-${s.id}`, title: `${s.name}・交流大使`, tag: s.name, home: { x: at.x, z: at.z }, face: P.PARTNER_FACE, look: s.npc.look, tagCol: '#ffcdd2', dialog: [{ lines: ['……'] }] });
+    // 美式大學 T 恤：袖子用 T 恤底色，胸前印校名縮寫與簡稱（college-tee.js）。
+    const look = s.tee ? { ...s.npc.look, top: s.tee.color } : s.npc.look;
+    const n = addNPC({ id: `bz26-pt-${s.id}`, title: `${s.name}・交流大使`, tag: s.name, home: { x: at.x, z: at.z }, face: P.PARTNER_FACE, look, tagCol: '#ffcdd2', dialog: [{ lines: ['……'] }] });
+    if (s.tee) mountCollegeTee(n, s.tee, { toon, canvasTex });
     gate(n, () => onPartner(s), '和交流大使聊聊');
     partnerNpcs.push(n);
   }
