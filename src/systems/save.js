@@ -26,8 +26,20 @@ const VERSION = 1;
 
 // localStorage 在部分瀏覽器（無痕、關閉網站資料）會丟錯誤，全部包起來，存不了就當作沒有存檔
 function readRaw() {
-  try { const d = JSON.parse(localStorage.getItem(KEY)); return d && d.v === VERSION ? d : null; }
+  try { const d = JSON.parse(localStorage.getItem(KEY)); return d && d.v === VERSION ? sanitize(d) : null; }
   catch { return null; }
+}
+/** 存檔是玩家瀏覽器裡的資料，可能被改壞或手動修改：只留格式正確的欄位，避免讀檔時座標變 NaN、旗標塞進奇怪的值 */
+const MAX_LIST = 2000;
+const RESERVED = new Set(['__proto__', 'constructor', 'prototype']);   // setFlag 會寫進 state[旗標名]
+const isName = s => typeof s === 'string' && s.length > 0 && s.length <= 80 && !/[<>"'`\\]/.test(s) && !RESERVED.has(s);
+const finite = n => typeof n === 'number' && Number.isFinite(n);
+function sanitize(d) {
+  const list = a => (Array.isArray(a) ? a : []).filter(isName).slice(0, MAX_LIST);
+  const s = d.spot;
+  const spot = s && finite(s.x) && finite(s.z) && Math.abs(s.x) < 1000 && Math.abs(s.z) < 1000
+    ? { x: s.x, z: s.z, yaw: finite(s.yaw) ? s.yaw : 0 } : null;
+  return { ...d, flags: list(d.flags), stories: list(d.stories), spot };
 }
 function writeRaw(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch { /* 存不了就算了 */ } }
 function clearSave() { try { localStorage.removeItem(KEY); } catch { /* 同上 */ } }
