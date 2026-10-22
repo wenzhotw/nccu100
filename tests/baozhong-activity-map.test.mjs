@@ -6,10 +6,11 @@ import {signPlacement} from '../src/systems/baozhong/activity-sign-logic.js';
 const read=p=>JSON.parse(fs.readFileSync(new URL(p,import.meta.url),'utf8'));
 const layout=read('../src/systems/baozhong/layout.json'),content=read('../src/content/baozhong.json');
 const entries=activityEntries(layout,content);
-test('地圖四十攤完全沿用配置座標及內容學院色',()=>{
-  assert.equal(entries.length,40); assert.equal(entries.filter(e=>e.id.startsWith('D')).length,37);
-  for(const e of entries){const t=layout.tents.find(t=>t.id===e.id);assert.equal(e.x,t.x);assert.equal(e.z,t.z);assert.deepEqual(e.anchor,t.anchor);}
+test('地圖四十攤完全沿用配置座標及內容學院色；另加電台與跨域學程兩處',()=>{
+  assert.equal(entries.length,42); assert.equal(entries.filter(e=>e.id.startsWith('D')).length,37);
+  for(const e of entries.filter(e=>!['FM','X'].includes(e.id))){const t=layout.tents.find(t=>t.id===e.id);assert.equal(e.x,t.x);assert.equal(e.z,t.z);assert.deepEqual(e.anchor,t.anchor);}
   const d=entries.find(e=>e.id==='D26');const b=content.booths.find(b=>b.id==='D26');assert.equal(d.name,b.dept);assert.equal(d.color,content.colleges.find(c=>c.id===b.college).color);
+  const fm=entries.find(e=>e.id==='FM'),x=entries.find(e=>e.id==='X');assert.ok(fm.x<-6&&fm.z<-32&&fm.z>-77.5);assert.ok(x.x<-6&&x.z<-36&&x.z>-47.5);assert.match(x.name,/校內雙主修/);
 });
 test('搜尋、學院篩選及 D26 指引只讀，不傳送',()=>{
   assert.equal(filterActivity(entries,'d26')[0].id,'D26');
