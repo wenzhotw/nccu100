@@ -88,3 +88,13 @@ fresh reviewer `impeccable_finish_reality` 的 disposition 為 fix，限定七�
 - 原程式reviewer末次限定複核：ramp單面向上可命中、WC地板3個點與支撐同為.3、舊rebuild契約仍嚴格；site22+rebuild21共43/43，自行實跑，未新增P2。
 - documenter最後確認No changes：DESIGN與PRODUCT已同步；WC補地板沿用既有shopFloor與LAKESIDE_Y，不新增系統。既有缺.impeccable/design.json保留，不冒稱已具備。
 - 此前全套npm test為261通過+1 opt-in browser略過、baozhong80/80、npc9/9；最後WC補地板後正在重跑exact全套，不能混用舊結果為最新全部通過。
+
+
+### 最後模型全測與戶外真流程
+
+Node24.15、Three0.149、工作差異含最後WC連續地板：`npm test` exec15114 exit0，`/tmp/nccu100-reality-tests-final-exact.log`為263項中262通過、1項opt-in browser略過；其後baozhong80/80、npc9/9。原始結果保留真退出碼，未用tail狀態當測試結果。最後戶外`node scripts/dah-hsian-smoke.mjs`實際鍵盤／觸控泳岸往返、正確WC前廊、橋上橋下、重入、進度、正常網址及手機畫面PASS；`/tmp/nccu100-reality-outdoor-final.log`。2F最終流程與整合main測試仍進行中。
+
+
+### 整合既有main後
+
+達賢f4c48c0無衝突整合origin/main dccf640，保留其他作者四維牌樓與包種小遊戲；版本暫沿1.66避免與open PR84的1.67衝號。`npm test` exec60899 exit0：node271通過/1略過、baozhong80、npc9、stage2 24通過/1略過（新增遠端既有script）；原始log `/tmp/nccu100-reality-integrated-tests.log`。check pass，build成功outDir `/tmp/nccu100-reality-integrated-dist`，避免覆換正在驗真的5187產物。最後2F真鍵盤路線及原拖曳仰視已PASS，觸控後段仍執行中；之後只有文件變動。這些是整合分支證據，不冒稱main合併或正式部署已完成。

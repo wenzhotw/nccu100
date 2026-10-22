@@ -1,3 +1,10 @@
+# 2026-10-22 已整合分支、準備遠端CI（最新）
+
+- 達賢實作commit f4c48c0，已無衝突merge origin/main dccf640（保留四維牌樓與包種新內容），目前版本暫沿1.66，不占別人open PR84的1.67；最終main發布前才升未用版本，避免3個版本檔衝突。
+- 整合後 `npm test` exec60899 exit0，/tmp/nccu100-reality-integrated-tests.log：node271pass/1skip、baozhong80、npc9、stage2 24pass/1skip。`npm run check` pass，build exec30222 exit0，以--outDir /tmp/nccu100-reality-integrated-dist避免取代正跑真流程的5187舊dist。最後模型未變，達賢源碼等同全套最終版；之後只文件改動。
+- 最終戶外真鍵盤/手機PASS；2F最終真鍵盤公開動線和原拖曳仰視也PASS，手機後段exec19514仍進行，/tmp/nccu100-reality-interior-final.log。
+- fresh視覺七項全部resolved，limited ship；fresh doc No changes，code最後43/43無新P2；詳見reality-qa/audit。尚未正式發布。準備push本分支/PR附聊天，待既有CI全場與最終2Fflow，之後最新main整合、main全測、既有Pages exactSHA/正式核心流程。
+
 # 2026-10-22 發布前驗收（最新）
 
 - fresh視覺review七項fix已全部resolved，disposition ship，僅指定七項而非全實景認證。最後WC地板缺口補齊並同檔r2取圖，草地消失。fresh documenter最後No changes，DESIGN水亮紋/PRODUCT核可範圍已同步；不修既有missing sidecar。
