@@ -151,5 +151,12 @@ export function sourceErrors(data) {
   }
   for (const x of data.partners.game.pairs) x.source ? need(x.source, `partner.${x.id}`) : out.push(`partner.${x.id}: 沒有來源`);
   for (const s of data.partners.schools) need(s.list.source, s.id);
+  // 交流大使的 T 恤：縮寫要有來源；顏色要有來源，查不到的要寫明 colorInvented（示意配色、待確認）。
+  for (const s of data.partners.schools) {
+    const t = s.tee; if (!t) { out.push(`${s.id}: 沒有 T 恤資料`); continue; }
+    need(t.abbrSource, `${s.id}.tee.abbr`);
+    if (t.colorSource) need(t.colorSource, `${s.id}.tee.color`); else if (!t.colorInvented) out.push(`${s.id}.tee.color: 沒有來源也沒標示意`);
+    if (t.icon) need(t.iconSource, `${s.id}.tee.icon`);
+  }
   return out;
 }

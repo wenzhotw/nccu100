@@ -131,6 +131,7 @@
       {
         "id": "NTHU", "name": "清華大學", "group": "台聯大", "color": "#7b1fa2",
         "npc": { "title": "清華大學交流大使", "look": { "top": "#7b1fa2", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "short" } },
+        "tee": {"abbr": "NTHU", "sub": "清大", "color": "#7F1084", "ink": "#ffffff", "trim": "#B5B5B6", "colorSource": "nthu-cis", "abbrSource": "nthu-trademark", "note": "清華標準色：紫（網路用 RGB 127,16,132，Pantone 259 C），輔色銀。"},
         "lines": [
           "我們和政大都是台灣聯合大學系統的一員。",
           "你可以跨校選課，也可以申請跨校雙主修或輔系：大一下到大三申請，每年 7 月送件、8 月底放榜。",
@@ -142,6 +143,7 @@
       {
         "id": "NYCU", "name": "陽明交通大學", "group": "台聯大", "color": "#1565c0",
         "npc": { "title": "陽明交大交流大使", "look": { "top": "#1565c0", "pants": "#263238", "hair": "#3a2622", "hairStyle": "side" } },
+        "tee": {"abbr": "NYCU", "sub": "陽明交大", "color": "#0033A0", "ink": "#ffffff", "trim": "#8A8D8F", "colorSource": "nycu-brand", "abbrSource": "nycu-abbr", "note": "陽明交大品牌主色群青 #0033A0，輔色灰 #8A8D8F。"},
         "lines": [
           "陽明交大也在台灣聯合大學系統裡，跨校選課、跨校雙主修與輔系、全時選讀都可以申請。",
           "跨校雙主修或輔系每年 7 月送件、8 月底放榜，只能選和本系不同領域的系。",
@@ -154,6 +156,7 @@
       {
         "id": "NCU", "name": "中央大學", "group": "台聯大", "color": "#2e7d32",
         "npc": { "title": "中央大學交流大使", "look": { "top": "#2e7d32", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "bowl" } },
+        "tee": {"abbr": "NCU", "sub": "中大", "color": "#2e7d32", "ink": "#ffffff", "trim": "#e8f5e9", "colorInvented": "查不到中央大學官方標準色，沿用遊戲裡原本的綠色，待確認", "abbrSource": "ncu-brand"},
         "lines": [
           "中央大學在桃園中壢，也是台灣聯合大學系統的一員。",
           "跨校選課、跨校雙主修與輔系、全時選讀，政大學生都可以申請。",
@@ -166,6 +169,7 @@
       {
         "id": "TNUA", "name": "臺北藝術大學", "group": "藝術合作", "color": "#c62828",
         "npc": { "title": "北藝大交流大使", "look": { "top": "#c62828", "pants": "#212121", "hair": "#212121", "hairStyle": "long" } },
+        "tee": {"abbr": "TNUA", "sub": "北藝大", "color": "#fff8ec", "ink": "#c62828", "trim": "#c62828", "icon": "buffalo", "iconSource": "tnua-buffalo", "colorInvented": "查不到北藝大官方標準色，用米白底配遊戲裡原本的紅色，待確認", "abbrSource": "tnua-abbr", "note": "胸前印北藝大的校牛（水牛），是學校公認的校園代表。"},
         "lines": [
           "北藝大在關渡，政大學生可以來校際選課，學分費打六折。",
           "我們也開放部分學系給政大學生跨校雙主修或輔系，大二以上才能申請，名額不多。",
@@ -195,6 +199,13 @@
     "nycu-114-approved": { "title": "台灣聯合大學系統 114 學年度跨校雙主修／輔系審查結果（陽明交大）", "url": "https://aa.nycu.edu.tw/userfiles/aach/files/20250821151445066.pdf", "year": "114" },
     "ncu-112": { "title": "中央大學 112 學年度台聯大學生申請跨校修讀輔系／雙主修資格條件一覽表", "url": "https://pdc.adm.ncu.edu.tw/register/data/ust/UST1-03.pdf", "year": "112" },
     "tnua-115": { "title": "北藝大 115 學年度跨校（政大及陽明交大）學士班雙主修及輔系申請相關事項一覽表", "url": "https://aa.nycu.edu.tw/userfiles/aach/files/20260413161543202.pdf", "year": "115" },
-    "tnua-course-115": { "title": "政大教務處：115-1 北藝大開放本校學生校際選課說明", "url": "https://aca.nccu.edu.tw/db/upload/115-1北藝大開放本校學生校際選課說明.pdf", "year": "115" }
+    "tnua-course-115": { "title": "政大教務處：115-1 北藝大開放本校學生校際選課說明", "url": "https://aca.nccu.edu.tw/db/upload/115-1北藝大開放本校學生校際選課說明.pdf", "year": "115" },
+    "nthu-cis": {"title": "清華品牌管理：標準色（primary-color.pdf）", "url": "https://www.nthu.edu.tw/files/cis/primary-color.pdf", "year": "115（2026-10-22 查閱）"},
+    "nthu-trademark": {"title": "國立清華大學商標使用管理（NTHU、清華、清大）", "url": "https://www.nthu.edu.tw/files/cis/trademarkofnthu.pdf", "year": "115（2026-10-22 查閱）"},
+    "nycu-brand": {"title": "陽明交大品牌識別規範：Brand Colors", "url": "https://www.nycu.edu.tw/userfiles/nycuch/files/20231006224019703.pdf", "year": "112"},
+    "nycu-abbr": {"title": "中央社：陽明交大推動合校 英文校名簡稱將改為 NYCU", "url": "https://www.cna.com.tw/news/ahel/202004290400.aspx", "year": "108"},
+    "ncu-brand": {"title": "國立中央大學：中大品牌識別（官方簡稱中大）", "url": "https://www.ncu.edu.tw/p/412-1000-98.php?Lang=zh-tw", "year": "115（2026-10-22 查閱）"},
+    "tnua-abbr": {"title": "維基百科：國立臺北藝術大學（簡稱北藝大；英文 TNUA）", "url": "https://zh.wikipedia.org/wiki/%E5%9C%8B%E7%AB%8B%E8%87%BA%E5%8C%97%E8%97%9D%E8%A1%93%E5%A4%A7%E5%AD%B8", "year": "115（2026-10-22 查閱）"},
+    "tnua-buffalo": {"title": "ETtoday：北藝大新校牛取名「奧米加咆哮獸」（校牛是北藝人共同記憶）", "url": "https://www.ettoday.net/news/20170425/911832.htm", "year": "105"}
   }
 }

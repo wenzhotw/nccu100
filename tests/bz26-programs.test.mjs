@@ -126,3 +126,21 @@ test('dialog: list pages show at most three departments per line, then the note'
   assert.equal(lines.length, 1 + Math.ceil(s.list.items.length / 3) + 1);
   assert.equal(lines.slice(1, -1).join('、'), s.list.items.join('、'));
 });
+
+test('partner tees: abbreviations and official colors are sourced; guessed colors are labelled', async () => {
+  const { paintTee } = await import('../src/systems/baozhong/college-tee.js');
+  const tee = Object.fromEntries(D.partners.schools.map(s => [s.id, s.tee]));
+  assert.deepEqual(Object.values(tee).map(t => t.abbr), ['NTHU', 'NYCU', 'NCU', 'TNUA']);
+  assert.equal(tee.NTHU.color.toLowerCase(), '#7f1084', '清華紫：網路用 RGB 127,16,132');
+  assert.equal(tee.NYCU.color.toLowerCase(), '#0033a0', '陽明交大群青');
+  for (const id of ['NCU', 'TNUA']) assert.match(tee[id].colorInvented, /待確認/);
+  assert.equal(tee.TNUA.icon, 'buffalo');
+  for (const t of Object.values(tee)) {
+    const texts = [], calls = [];
+    const g = new Proxy({}, { get: (o, k) => k in o ? o[k] : (k === 'fillText' || k === 'strokeText') ? (s => texts.push(s)) : (() => calls.push(k)), set: (o, k, v) => (o[k] = v, true) });
+    paintTee(g, 512, 288, t);
+    assert.ok([...t.abbr].every(ch => texts.includes(ch)), `${t.abbr} 每個字母都有印`);
+    assert.ok(texts.includes(t.sub), `${t.sub} 有印`);
+    if (t.icon) assert.ok(calls.includes('ellipse'), '北藝大有畫校牛');
+  }
+});
