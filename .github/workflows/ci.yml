@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+# 測試只需要讀程式碼，不給寫入權限
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-24.04
