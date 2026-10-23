@@ -48,6 +48,8 @@ globalThis.document = {
   getElementById: () => element(),
   querySelector: () => element(),
   body: element(),
+  head: element(),
+  documentElement: element(),
   addEventListener() {},
 };
 globalThis.window = globalThis;
