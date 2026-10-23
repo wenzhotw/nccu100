@@ -1,0 +1,37 @@
+name: 達賢瀏覽器測試（夜間／手動）
+
+# 達賢四支瀏覽器冒煙測試在軟體 WebGL 下很慢（約 108 分鐘）且受影格率影響，
+# 不放在每個 PR 的「檢查」裡，改成每天台灣時間 03:00 在 main 上跑，也可以在 Actions 頁手動執行。
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dah-hsian:
+    runs-on: ubuntu-24.04
+    # 近期成功紀錄約 108 分鐘
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 打包
+        run: npm run build
+      - name: 安裝無頭瀏覽器
+        run: npx playwright install --with-deps chromium
+      - name: 達賢戶外游泳、2樓進出與手機操作
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 5187 > /tmp/dah-preview.log 2>&1 &
+          dah_preview_pid=$!
+          trap 'kill "$dah_preview_pid"' EXIT
+          node scripts/dah-hsian-smoke.mjs
+          node scripts/dah-hsian-interior-smoke.mjs
+          node scripts/dah-hsian-visual-smoke.mjs
+          node scripts/dah-hsian-atrium-smoke.mjs
