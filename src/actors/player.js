@@ -2,6 +2,7 @@
  * 主角：Q版小男生的模型與動畫。
  */
 import * as THREE from 'three';
+import { deactivateArticulatedArms } from './articulated-arms.js';
 import { registerTrialPlayer } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
@@ -196,6 +197,7 @@ const eagleFeet=[H.hipL,H.hipR].map(hp=>{ const foot=part(new THREE.ConeGeometry
 /** 永久變成雄鷹（校長的任務獎勵）：藏起人類的頭髮、臉、書包，換上雄鷹頭、翅膀、鳥爪 */
 function becomeEagle(){
   if(state.isEagle) return;
+  deactivateArticulatedArms(player);
   state.isEagle=true; state.outfit='normal';
   HAIR.forEach(m=>{ m.visible=false; });
   skull.visible=false; face.visible=false; PACK.forEach(m=>{ m.visible=false; });
@@ -210,6 +212,6 @@ function becomeEagle(){
   eagleFeet.forEach(m=>{ m.visible=true; });
 }
 
-registerTrialPlayer(player,rig,H,hc);
+registerTrialPlayer(player,rig,H,hc,limbParts,()=>!state.isEagle);
 
 export { hc as headCenter, limbParts, H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };
