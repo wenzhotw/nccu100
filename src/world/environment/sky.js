@@ -2,7 +2,7 @@
  * 天空、太陽光、天光與雲。
  */
 import * as THREE from 'three';
-import { scene } from '../../core/engine.js';
+import { MOBILE, scene } from '../../core/engine.js';
 import { gradTex } from '../../render/kit.js';
 
 /* ---------- sky, light, clouds ---------- */
@@ -19,7 +19,7 @@ const hemi=new THREE.HemisphereLight('#bfe0ff','#a89a7a',0.74);
 scene.add(hemi);
 const sun=new THREE.DirectionalLight('#fff1d4',1.7);
 sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);
+sun.shadow.mapSize.set(MOBILE?1024:2048,MOBILE?1024:2048);   // 手機用 1024，省 12 MB 顯示記憶體
 const sc=sun.shadow.camera;
 sc.left=-34;
 sc.right=34;

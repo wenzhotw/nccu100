@@ -52,19 +52,29 @@ const POST=(()=>{
   size();
   return {render,size,set enabled(v){ enabled=v; },get enabled(){ return enabled; },set bloom(v){ bloomOn=v; },get bloom(){ return bloomOn; }};
 })();
-/* 自動畫質：掉幀時降低解析度，必要時關閉 Bloom */
-const QUAL={pr:Math.min(window.devicePixelRatio||1,1.5)};
+/* 自動畫質：掉幀時先關 Bloom（看不太出來），還不夠才降解析度，但最低只到 1 倍（再低在手機上會明顯糊掉）。
+   之後連續很順就一步步調回來；調回去又卡的那一級記下來，不再嘗試，避免畫質忽高忽低。 */
+const DPR=window.devicePixelRatio||1;
+const QUAL={pr:Math.min(DPR,1.5), max:Math.min(DPR,1.5), min:Math.min(DPR,1), ceiling:Infinity, smoothRuns:0};
 const qualitySampler=createQualitySampler();
 renderer.setPixelRatio(QUAL.pr);
 renderer.setSize(innerWidth,innerHeight);
 if(POST) POST.size();
+function setPR(pr){ QUAL.pr=pr; renderer.setPixelRatio(pr); renderer.setSize(innerWidth,innerHeight); if(POST) POST.size(); }
 function qualityTick(dt){
   if(qualitySampler.sample(dt)){
-    if(QUAL.pr>0.8){ QUAL.pr=Math.max(0.75,QUAL.pr-0.25); renderer.setPixelRatio(QUAL.pr); renderer.setSize(innerWidth,innerHeight); if(POST) POST.size(); qualitySampler.coolDown(); }
-    else if(POST&&POST.bloom){ POST.bloom=false; qualitySampler.coolDown(); }
+    QUAL.smoothRuns=0;
+    if(POST&&POST.bloom){ POST.bloom=false; qualitySampler.coolDown(); }
+    else if(QUAL.pr>QUAL.min+0.01){ QUAL.ceiling=QUAL.pr; setPR(Math.max(QUAL.min,QUAL.pr-0.25)); qualitySampler.coolDown(); }
+    return;
+  }
+  if(qualitySampler.takeSmooth()&&++QUAL.smoothRuns>=4){
+    QUAL.smoothRuns=0;
+    const up=Math.min(QUAL.max,QUAL.pr+0.25);
+    if(up>QUAL.pr+0.01&&up<QUAL.ceiling-0.01){ setPR(up); qualitySampler.coolDown(); }
   }
 }
 
-function resetQualityMeasurement(){ qualitySampler.reset(); }
+function resetQualityMeasurement(){ qualitySampler.reset(); QUAL.smoothRuns=0; }
 
 export { POST, qualityTick, resetQualityMeasurement };
