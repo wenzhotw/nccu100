@@ -18,8 +18,12 @@ import npcsJson from '../../src/content/npcs.json';
 import bz from '../../src/content/baozhong.json';
 import programs from '../../src/content/baozhong-programs.json';
 import missionaries from '../../src/content/missionaries.json';
-import oldPrincipal from '../../src/content/old-principal.json';
 import fountain from '../../src/content/fountain-swim.json';
+// 老校長由事件系統建立，系統會再加上白鬍子、馬靴、皮帶、白手套和馬，所以直接載入真正的系統
+import '../../src/systems/old-principal/index.js';
+
+/** 快照格式版本：欄位定義改變時加一，並在 README 說明 */
+export const FORMAT = 2;
 
 const r4 = v => Math.round(v * 1e4) / 1e4 || 0;
 const vec = v => [r4(v.x), r4(v.y), r4(v.z)];
@@ -37,8 +41,11 @@ function geometryOf(geo) {
 const vertCache = new WeakMap();
 function vertsHash(geo) {
   if (!vertCache.has(geo)) {
-    const a = geo.attributes.position?.array || [];
-    vertCache.set(geo, hash(Array.from(a, r4)));
+    // 頂點位置、UV、索引一起算：形狀或貼圖對應改了都會反映在這個雜湊
+    const pos = Array.from(geo.attributes.position?.array || [], r4);
+    const uv = Array.from(geo.attributes.uv?.array || [], r4);
+    const index = Array.from(geo.index?.array || []);
+    vertCache.set(geo, hash([pos, uv, index]));
   }
   return vertCache.get(geo);
 }
@@ -74,10 +81,12 @@ export function serialize(root) {
   return parts;
 }
 
-/** 摘要：給表單用，人和 AI 一眼看得懂 */
+/** 摘要：給表單用，人和 AI 一眼看得懂。父層隱藏的零件也算隱藏（例如主角平常藏起來的雄鷹頭） */
 export function summarize(parts) {
+  const hiddenPaths = parts.filter(p => p.hidden).map(p => p.path);
+  const offScreen = p => hiddenPaths.some(h => p.path === h || p.path.startsWith(h + '/'));
   const meshes = parts.filter(p => p.geo && p.geo !== 'sprite');
-  const visible = meshes.filter(p => !p.hidden);
+  const visible = meshes.filter(p => !offScreen(p));
   const colors = new Set(visible.flatMap(p => [].concat(p.mat).filter(m => m && m.color && !m.outline).map(m => m.color)));
   return { meshes: meshes.length, visibleMeshes: visible.length, outlines: visible.filter(p => [].concat(p.mat).some(m => m.outline)).length, colors: colors.size };
 }
@@ -113,9 +122,9 @@ for (const s of programs.partners.schools) {
   add(`bz26-pt-${s.id}`, n.g);
 }
 
-/* 5. 特殊事件角色（只建人；老校長的馬是另一個模型，不在角色系統範圍內） */
+/* 5. 特殊事件角色（老校長用事件系統建好的版本，含馬；位置歸零，只比外觀） */
 for (const p of missionaries.pair) add(p.id, addNPC({ ...p, home: { x: 0, z: 0 }, dialog: [{ lines: ['……'] }] }).g);
-add('old-principal', addNPC({ id: 'old-principal', home: { x: 0, z: 0 }, look: oldPrincipal.look, dialog: [{ lines: ['……'] }] }).g);
+{ const op = NPCS.find(n => n.id === 'old-principal'); op.g.position.set(0, 0, 0); op.g.rotation.set(0, 0, 0); add('old-principal', op.g); }
 (fountain.crowd.people || []).forEach((look, i) => add(`fountain-crowd-${i}`, addNPC({ id: `fountain-crowd-${i}`, home: { x: 0, z: 0 }, look: { ...look, scale: 1.1 }, dialog: [{ lines: ['……'] }] }).g));
 
 export const CHARACTERS = out;

@@ -1,898 +1,901 @@
-[
- {
-  "id": "player",
-  "fingerprint": "b1a957265f93",
-  "meshes": 138,
-  "visibleMeshes": 135,
-  "outlines": 58,
-  "colors": 19
- },
- {
-  "id": "player#swim",
-  "fingerprint": "13e20a827ae9",
-  "meshes": 138,
-  "visibleMeshes": 118,
-  "outlines": 58,
-  "colors": 17
- },
- {
-  "id": "player#eagle",
-  "fingerprint": "c307d9bb39ae",
-  "meshes": 138,
-  "visibleMeshes": 114,
-  "outlines": 58,
-  "colors": 17
- },
- {
-  "id": "principal",
-  "fingerprint": "f1e9de859948",
-  "meshes": 37,
-  "visibleMeshes": 37,
-  "outlines": 12,
-  "colors": 9
- },
- {
-  "id": "dean",
-  "fingerprint": "16aeb928eb05",
-  "meshes": 36,
-  "visibleMeshes": 36,
-  "outlines": 12,
-  "colors": 9
- },
- {
-  "id": "chiang",
-  "fingerprint": "2d0849cbfaf8",
-  "meshes": 33,
-  "visibleMeshes": 33,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "koko",
-  "fingerprint": "73ef4392d0e2",
-  "meshes": 33,
-  "visibleMeshes": 33,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "fang",
-  "fingerprint": "238cd5ba91e2",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "cop",
-  "fingerprint": "621bf7136227",
-  "meshes": 39,
-  "visibleMeshes": 39,
-  "outlines": 13,
-  "colors": 11
- },
- {
-  "id": "warn-track",
-  "fingerprint": "43c4924e26dd",
-  "meshes": 30,
-  "visibleMeshes": 30,
-  "outlines": 13,
-  "colors": 7
- },
- {
-  "id": "warn-lion",
-  "fingerprint": "14c41db985b4",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "pool-counter",
-  "fingerprint": "d4f16d216bf4",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "wen",
-  "fingerprint": "a7ad2fdcf536",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "lifeguard",
-  "fingerprint": "a7befa8d7474",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "wenz",
-  "fingerprint": "8e144e0d6ae1",
-  "meshes": 34,
-  "visibleMeshes": 34,
-  "outlines": 12,
-  "colors": 8
- },
- {
-  "id": "biz-liang",
-  "fingerprint": "fac34537b1b6",
-  "meshes": 35,
-  "visibleMeshes": 35,
-  "outlines": 14,
-  "colors": 8
- },
- {
-  "id": "biz-huang",
-  "fingerprint": "f8c99e91602a",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "biz-tsai",
-  "fingerprint": "8c89d020f86d",
-  "meshes": 22,
-  "visibleMeshes": 22,
-  "outlines": 7,
-  "colors": 6
- },
- {
-  "id": "gym-jamal",
-  "fingerprint": "397afba60439",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-azhe",
-  "fingerprint": "a4e8f0ffe08f",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-kofi",
-  "fingerprint": "85e605462f8b",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-boyu",
-  "fingerprint": "c6d91d289945",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-andre",
-  "fingerprint": "a55462abfd2a",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-lin",
-  "fingerprint": "cafefbccec42",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-captain",
-  "fingerprint": "64346e5cff12",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-daniel",
-  "fingerprint": "df5a743ffdf6",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-yuxiang",
-  "fingerprint": "7dd69f8faccd",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-tunde",
-  "fingerprint": "22cc1ab7a1e0",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "gym-mei",
-  "fingerprint": "c0e7c38fceae",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 5
- },
- {
-  "id": "gym-staff",
-  "fingerprint": "9051fa730a9f",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "gym-tall",
-  "fingerprint": "e81ec936a80a",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "students-0",
-  "fingerprint": "f53b0aad64bc",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 13,
-  "colors": 7
- },
- {
-  "id": "students-1",
-  "fingerprint": "b762307f36dc",
-  "meshes": 30,
-  "visibleMeshes": 30,
-  "outlines": 13,
-  "colors": 7
- },
- {
-  "id": "students-2",
-  "fingerprint": "550d679495f5",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 13,
-  "colors": 7
- },
- {
-  "id": "students-3",
-  "fingerprint": "8c72bdd1346c",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "students-4",
-  "fingerprint": "8812ac3c75f8",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 13,
-  "colors": 7
- },
- {
-  "id": "students-5",
-  "fingerprint": "d660e650318e",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-D01",
-  "fingerprint": "c697722c8664",
-  "meshes": 62,
-  "visibleMeshes": 62,
-  "outlines": 28,
-  "colors": 7
- },
- {
-  "id": "bz26-D02",
-  "fingerprint": "fe66fa7500fc",
-  "meshes": 83,
-  "visibleMeshes": 83,
-  "outlines": 39,
-  "colors": 16
- },
- {
-  "id": "bz26-D03",
-  "fingerprint": "023c36cf28e9",
-  "meshes": 71,
-  "visibleMeshes": 71,
-  "outlines": 33,
-  "colors": 12
- },
- {
-  "id": "bz26-D04",
-  "fingerprint": "cb52fdfaeae2",
-  "meshes": 59,
-  "visibleMeshes": 59,
-  "outlines": 24,
-  "colors": 12
- },
- {
-  "id": "bz26-D05",
-  "fingerprint": "8df2a52dd681",
-  "meshes": 69,
-  "visibleMeshes": 69,
-  "outlines": 32,
-  "colors": 16
- },
- {
-  "id": "bz26-D06",
-  "fingerprint": "aecd187b0788",
-  "meshes": 72,
-  "visibleMeshes": 72,
-  "outlines": 34,
-  "colors": 12
- },
- {
-  "id": "bz26-D07",
-  "fingerprint": "78dfb1311ed5",
-  "meshes": 57,
-  "visibleMeshes": 57,
-  "outlines": 26,
-  "colors": 13
- },
- {
-  "id": "bz26-D08",
-  "fingerprint": "ff4305cab67b",
-  "meshes": 72,
-  "visibleMeshes": 72,
-  "outlines": 34,
-  "colors": 15
- },
- {
-  "id": "bz26-D09",
-  "fingerprint": "749a366fda27",
-  "meshes": 64,
-  "visibleMeshes": 64,
-  "outlines": 29,
-  "colors": 14
- },
- {
-  "id": "bz26-D10",
-  "fingerprint": "1884a8598e5e",
-  "meshes": 77,
-  "visibleMeshes": 77,
-  "outlines": 36,
-  "colors": 17
- },
- {
-  "id": "bz26-D11",
-  "fingerprint": "0e1b15df081f",
-  "meshes": 57,
-  "visibleMeshes": 57,
-  "outlines": 24,
-  "colors": 12
- },
- {
-  "id": "bz26-D12",
-  "fingerprint": "9894696c7669",
-  "meshes": 52,
-  "visibleMeshes": 52,
-  "outlines": 22,
-  "colors": 11
- },
- {
-  "id": "bz26-D13",
-  "fingerprint": "4c3fa3322844",
-  "meshes": 58,
-  "visibleMeshes": 58,
-  "outlines": 25,
-  "colors": 10
- },
- {
-  "id": "bz26-D14",
-  "fingerprint": "3763dcc3ae7e",
-  "meshes": 59,
-  "visibleMeshes": 59,
-  "outlines": 25,
-  "colors": 14
- },
- {
-  "id": "bz26-D15",
-  "fingerprint": "28be05b397e5",
-  "meshes": 62,
-  "visibleMeshes": 62,
-  "outlines": 26,
-  "colors": 13
- },
- {
-  "id": "bz26-D16",
-  "fingerprint": "390db72164f6",
-  "meshes": 46,
-  "visibleMeshes": 46,
-  "outlines": 19,
-  "colors": 10
- },
- {
-  "id": "bz26-D17",
-  "fingerprint": "525d6a84ddd3",
-  "meshes": 61,
-  "visibleMeshes": 61,
-  "outlines": 26,
-  "colors": 14
- },
- {
-  "id": "bz26-D18",
-  "fingerprint": "3ac8c0f05a7e",
-  "meshes": 46,
-  "visibleMeshes": 46,
-  "outlines": 19,
-  "colors": 10
- },
- {
-  "id": "bz26-D19",
-  "fingerprint": "c7a89d5af9df",
-  "meshes": 56,
-  "visibleMeshes": 56,
-  "outlines": 26,
-  "colors": 9
- },
- {
-  "id": "bz26-D20",
-  "fingerprint": "24ecd404015d",
-  "meshes": 87,
-  "visibleMeshes": 87,
-  "outlines": 41,
-  "colors": 14
- },
- {
-  "id": "bz26-D21",
-  "fingerprint": "78ad142b0e75",
-  "meshes": 76,
-  "visibleMeshes": 76,
-  "outlines": 36,
-  "colors": 8
- },
- {
-  "id": "bz26-D22",
-  "fingerprint": "6d44098306fa",
-  "meshes": 47,
-  "visibleMeshes": 47,
-  "outlines": 21,
-  "colors": 11
- },
- {
-  "id": "bz26-D23",
-  "fingerprint": "70e07334dcf0",
-  "meshes": 75,
-  "visibleMeshes": 75,
-  "outlines": 35,
-  "colors": 7
- },
- {
-  "id": "bz26-D24",
-  "fingerprint": "4743581b7d11",
-  "meshes": 66,
-  "visibleMeshes": 66,
-  "outlines": 30,
-  "colors": 7
- },
- {
-  "id": "bz26-D25",
-  "fingerprint": "9ed6a9aafd83",
-  "meshes": 54,
-  "visibleMeshes": 54,
-  "outlines": 25,
-  "colors": 7
- },
- {
-  "id": "bz26-D26",
-  "fingerprint": "97160810214d",
-  "meshes": 60,
-  "visibleMeshes": 60,
-  "outlines": 28,
-  "colors": 7
- },
- {
-  "id": "bz26-D27",
-  "fingerprint": "761870e04a0e",
-  "meshes": 56,
-  "visibleMeshes": 56,
-  "outlines": 26,
-  "colors": 7
- },
- {
-  "id": "bz26-D28",
-  "fingerprint": "e02864409a7b",
-  "meshes": 64,
-  "visibleMeshes": 64,
-  "outlines": 30,
-  "colors": 7
- },
- {
-  "id": "bz26-D29",
-  "fingerprint": "87d8268e458a",
-  "meshes": 70,
-  "visibleMeshes": 70,
-  "outlines": 33,
-  "colors": 8
- },
- {
-  "id": "bz26-D30",
-  "fingerprint": "4e61ee0b113d",
-  "meshes": 49,
-  "visibleMeshes": 49,
-  "outlines": 22,
-  "colors": 7
- },
- {
-  "id": "bz26-D31",
-  "fingerprint": "56f0840e9287",
-  "meshes": 70,
-  "visibleMeshes": 70,
-  "outlines": 33,
-  "colors": 7
- },
- {
-  "id": "bz26-D32",
-  "fingerprint": "6f2003cee4f4",
-  "meshes": 57,
-  "visibleMeshes": 57,
-  "outlines": 26,
-  "colors": 12
- },
- {
-  "id": "bz26-D33",
-  "fingerprint": "a4a16b27e958",
-  "meshes": 61,
-  "visibleMeshes": 61,
-  "outlines": 28,
-  "colors": 12
- },
- {
-  "id": "bz26-D34",
-  "fingerprint": "cba7f8cce3c1",
-  "meshes": 50,
-  "visibleMeshes": 50,
-  "outlines": 21,
-  "colors": 11
- },
- {
-  "id": "bz26-D35",
-  "fingerprint": "4df42bef775d",
-  "meshes": 86,
-  "visibleMeshes": 86,
-  "outlines": 41,
-  "colors": 12
- },
- {
-  "id": "bz26-D36",
-  "fingerprint": "a94c1a162d94",
-  "meshes": 66,
-  "visibleMeshes": 66,
-  "outlines": 27,
-  "colors": 16
- },
- {
-  "id": "bz26-D37",
-  "fingerprint": "b57d37ca78c0",
-  "meshes": 46,
-  "visibleMeshes": 46,
-  "outlines": 21,
-  "colors": 10
- },
- {
-  "id": "bz26-C01",
-  "fingerprint": "5bd60af0c76d",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "bz26-C02",
-  "fingerprint": "cf6627101437",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C03",
-  "fingerprint": "081e8686be17",
-  "meshes": 33,
-  "visibleMeshes": 33,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C04",
-  "fingerprint": "7cfefb208348",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C05",
-  "fingerprint": "59b9a50d1cf5",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "bz26-C06",
-  "fingerprint": "13c630004c6c",
-  "meshes": 70,
-  "visibleMeshes": 70,
-  "outlines": 33,
-  "colors": 7
- },
- {
-  "id": "bz26-C07",
-  "fingerprint": "5a28b5e15891",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C08",
-  "fingerprint": "b4a667e455c3",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C09",
-  "fingerprint": "c393a06f3a9a",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C10",
-  "fingerprint": "66ab55f6bb05",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-C11",
-  "fingerprint": "48ee8de47876",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 5
- },
- {
-  "id": "bz26-host",
-  "fingerprint": "2ddc6a88671c",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-F01",
-  "fingerprint": "a4d370a9bbbc",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-F02",
-  "fingerprint": "32975eb46c41",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 5
- },
- {
-  "id": "bz26-F03",
-  "fingerprint": "e6923f77240f",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-radio-dj1",
-  "fingerprint": "0e044e7e9525",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-radio-dj2",
-  "fingerprint": "a66c10bff0de",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "bz26-radio-dj3",
-  "fingerprint": "db8f34bd2f13",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-radio-dj4",
-  "fingerprint": "ae9017194cfe",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-pg-P01",
-  "fingerprint": "d5fa751ba485",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-pg-P02",
-  "fingerprint": "e9f491ed46eb",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-pg-P03",
-  "fingerprint": "701934797124",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "bz26-pg-P04",
-  "fingerprint": "bea5a9785eef",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "bz26-pt-NTHU",
-  "fingerprint": "d4b800c3c158",
-  "meshes": 30,
-  "visibleMeshes": 30,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "bz26-pt-NYCU",
-  "fingerprint": "eb53b08afe30",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "bz26-pt-NCU",
-  "fingerprint": "b2f4aac33cf6",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "bz26-pt-TNUA",
-  "fingerprint": "e3a246e2b331",
-  "meshes": 34,
-  "visibleMeshes": 34,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "missionary-a",
-  "fingerprint": "aca1fce9f1b7",
-  "meshes": 31,
-  "visibleMeshes": 31,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "missionary-b",
-  "fingerprint": "722f8802ab0b",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "old-principal",
-  "fingerprint": "22daa7589a98",
-  "meshes": 33,
-  "visibleMeshes": 33,
-  "outlines": 13,
-  "colors": 9
- },
- {
-  "id": "fountain-crowd-0",
-  "fingerprint": "f2ec227ce40a",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "fountain-crowd-1",
-  "fingerprint": "d7812c6b565f",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "fountain-crowd-2",
-  "fingerprint": "78701ee3c477",
-  "meshes": 33,
-  "visibleMeshes": 33,
-  "outlines": 13,
-  "colors": 9
- },
- {
-  "id": "fountain-crowd-3",
-  "fingerprint": "e16bfd4cdbb3",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 12,
-  "colors": 7
- },
- {
-  "id": "fountain-crowd-4",
-  "fingerprint": "f81cafaeaabd",
-  "meshes": 32,
-  "visibleMeshes": 32,
-  "outlines": 13,
-  "colors": 6
- },
- {
-  "id": "fountain-crowd-5",
-  "fingerprint": "bfb7bcd1ae4f",
-  "meshes": 30,
-  "visibleMeshes": 30,
-  "outlines": 12,
-  "colors": 5
- },
- {
-  "id": "fountain-crowd-6",
-  "fingerprint": "76dae9ede622",
-  "meshes": 28,
-  "visibleMeshes": 28,
-  "outlines": 12,
-  "colors": 6
- },
- {
-  "id": "fountain-crowd-7",
-  "fingerprint": "2577ac30ce1d",
-  "meshes": 29,
-  "visibleMeshes": 29,
-  "outlines": 12,
-  "colors": 6
- }
-]
+{
+ "format": 2,
+ "characters": [
+  {
+   "id": "player",
+   "fingerprint": "f2ee59a536a3",
+   "meshes": 138,
+   "visibleMeshes": 68,
+   "outlines": 30,
+   "colors": 10
+  },
+  {
+   "id": "player#swim",
+   "fingerprint": "f529b2fef507",
+   "meshes": 138,
+   "visibleMeshes": 36,
+   "outlines": 14,
+   "colors": 8
+  },
+  {
+   "id": "player#eagle",
+   "fingerprint": "ef24fe6aa945",
+   "meshes": 138,
+   "visibleMeshes": 81,
+   "outlines": 36,
+   "colors": 12
+  },
+  {
+   "id": "principal",
+   "fingerprint": "2efd932e24c9",
+   "meshes": 37,
+   "visibleMeshes": 37,
+   "outlines": 12,
+   "colors": 9
+  },
+  {
+   "id": "dean",
+   "fingerprint": "af21611744f7",
+   "meshes": 36,
+   "visibleMeshes": 36,
+   "outlines": 12,
+   "colors": 9
+  },
+  {
+   "id": "chiang",
+   "fingerprint": "26197a8d128d",
+   "meshes": 33,
+   "visibleMeshes": 33,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "koko",
+   "fingerprint": "ff16d182a825",
+   "meshes": 33,
+   "visibleMeshes": 33,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "fang",
+   "fingerprint": "4166e5630eed",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "cop",
+   "fingerprint": "0d09bc1e4726",
+   "meshes": 39,
+   "visibleMeshes": 39,
+   "outlines": 13,
+   "colors": 11
+  },
+  {
+   "id": "warn-track",
+   "fingerprint": "d8cc07ac17d9",
+   "meshes": 30,
+   "visibleMeshes": 30,
+   "outlines": 13,
+   "colors": 7
+  },
+  {
+   "id": "warn-lion",
+   "fingerprint": "0f111f99348a",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "pool-counter",
+   "fingerprint": "abb62c21257e",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "wen",
+   "fingerprint": "51fdfc1f65e5",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "lifeguard",
+   "fingerprint": "465b0ea54e54",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "wenz",
+   "fingerprint": "72ef154c524f",
+   "meshes": 34,
+   "visibleMeshes": 34,
+   "outlines": 12,
+   "colors": 8
+  },
+  {
+   "id": "biz-liang",
+   "fingerprint": "e5dfd252ab3e",
+   "meshes": 35,
+   "visibleMeshes": 35,
+   "outlines": 14,
+   "colors": 8
+  },
+  {
+   "id": "biz-huang",
+   "fingerprint": "c4256b7e9ad1",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "biz-tsai",
+   "fingerprint": "031c0f7dc2ea",
+   "meshes": 22,
+   "visibleMeshes": 22,
+   "outlines": 7,
+   "colors": 6
+  },
+  {
+   "id": "gym-jamal",
+   "fingerprint": "781bccbbab12",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-azhe",
+   "fingerprint": "d62d621cc69a",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-kofi",
+   "fingerprint": "5a1b7f4c9ac9",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-boyu",
+   "fingerprint": "d4e28a9b9e3d",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-andre",
+   "fingerprint": "8cd45266388c",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-lin",
+   "fingerprint": "1bfba6388fbf",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-captain",
+   "fingerprint": "c6b1c76fd4f6",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-daniel",
+   "fingerprint": "3cd671bc183e",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-yuxiang",
+   "fingerprint": "c33d6fa00f13",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-tunde",
+   "fingerprint": "a6ed73f95e0b",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "gym-mei",
+   "fingerprint": "6dfb924a5097",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 5
+  },
+  {
+   "id": "gym-staff",
+   "fingerprint": "11dc9a39fa9b",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "gym-tall",
+   "fingerprint": "1962c5a2ef7d",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "students-0",
+   "fingerprint": "6fec87ecbaf3",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 13,
+   "colors": 7
+  },
+  {
+   "id": "students-1",
+   "fingerprint": "f2e7615b230b",
+   "meshes": 30,
+   "visibleMeshes": 30,
+   "outlines": 13,
+   "colors": 7
+  },
+  {
+   "id": "students-2",
+   "fingerprint": "c3a63c3aeb21",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 13,
+   "colors": 7
+  },
+  {
+   "id": "students-3",
+   "fingerprint": "decb5c40b7c6",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "students-4",
+   "fingerprint": "a7f358d8832e",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 13,
+   "colors": 7
+  },
+  {
+   "id": "students-5",
+   "fingerprint": "000fc0c49834",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-D01",
+   "fingerprint": "7cfc2535a7e8",
+   "meshes": 62,
+   "visibleMeshes": 62,
+   "outlines": 28,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D02",
+   "fingerprint": "137317a26431",
+   "meshes": 83,
+   "visibleMeshes": 83,
+   "outlines": 39,
+   "colors": 16
+  },
+  {
+   "id": "bz26-D03",
+   "fingerprint": "d1ee1af0bff7",
+   "meshes": 71,
+   "visibleMeshes": 71,
+   "outlines": 33,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D04",
+   "fingerprint": "4b577f7ce6f4",
+   "meshes": 59,
+   "visibleMeshes": 59,
+   "outlines": 24,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D05",
+   "fingerprint": "f608bf8c24b9",
+   "meshes": 69,
+   "visibleMeshes": 69,
+   "outlines": 32,
+   "colors": 16
+  },
+  {
+   "id": "bz26-D06",
+   "fingerprint": "ccc1ba2e48d6",
+   "meshes": 72,
+   "visibleMeshes": 72,
+   "outlines": 34,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D07",
+   "fingerprint": "dcca8a26894e",
+   "meshes": 57,
+   "visibleMeshes": 57,
+   "outlines": 26,
+   "colors": 13
+  },
+  {
+   "id": "bz26-D08",
+   "fingerprint": "523e6704fff1",
+   "meshes": 72,
+   "visibleMeshes": 72,
+   "outlines": 34,
+   "colors": 15
+  },
+  {
+   "id": "bz26-D09",
+   "fingerprint": "f28248ddda3a",
+   "meshes": 64,
+   "visibleMeshes": 64,
+   "outlines": 29,
+   "colors": 14
+  },
+  {
+   "id": "bz26-D10",
+   "fingerprint": "158d1a015307",
+   "meshes": 77,
+   "visibleMeshes": 77,
+   "outlines": 36,
+   "colors": 17
+  },
+  {
+   "id": "bz26-D11",
+   "fingerprint": "b84345db1d90",
+   "meshes": 57,
+   "visibleMeshes": 57,
+   "outlines": 24,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D12",
+   "fingerprint": "960622f974c5",
+   "meshes": 52,
+   "visibleMeshes": 52,
+   "outlines": 22,
+   "colors": 11
+  },
+  {
+   "id": "bz26-D13",
+   "fingerprint": "5efb3002bbdb",
+   "meshes": 58,
+   "visibleMeshes": 58,
+   "outlines": 25,
+   "colors": 10
+  },
+  {
+   "id": "bz26-D14",
+   "fingerprint": "efca8310ba42",
+   "meshes": 59,
+   "visibleMeshes": 59,
+   "outlines": 25,
+   "colors": 14
+  },
+  {
+   "id": "bz26-D15",
+   "fingerprint": "0d6420771dbc",
+   "meshes": 62,
+   "visibleMeshes": 62,
+   "outlines": 26,
+   "colors": 13
+  },
+  {
+   "id": "bz26-D16",
+   "fingerprint": "720b9086219a",
+   "meshes": 46,
+   "visibleMeshes": 46,
+   "outlines": 19,
+   "colors": 10
+  },
+  {
+   "id": "bz26-D17",
+   "fingerprint": "52e1be805eab",
+   "meshes": 61,
+   "visibleMeshes": 61,
+   "outlines": 26,
+   "colors": 14
+  },
+  {
+   "id": "bz26-D18",
+   "fingerprint": "48d5694367b5",
+   "meshes": 46,
+   "visibleMeshes": 46,
+   "outlines": 19,
+   "colors": 10
+  },
+  {
+   "id": "bz26-D19",
+   "fingerprint": "3df2692b1edb",
+   "meshes": 56,
+   "visibleMeshes": 56,
+   "outlines": 26,
+   "colors": 9
+  },
+  {
+   "id": "bz26-D20",
+   "fingerprint": "a66c3eaa340f",
+   "meshes": 87,
+   "visibleMeshes": 87,
+   "outlines": 41,
+   "colors": 14
+  },
+  {
+   "id": "bz26-D21",
+   "fingerprint": "51cba960c071",
+   "meshes": 76,
+   "visibleMeshes": 76,
+   "outlines": 36,
+   "colors": 8
+  },
+  {
+   "id": "bz26-D22",
+   "fingerprint": "7723f5c63f2d",
+   "meshes": 47,
+   "visibleMeshes": 47,
+   "outlines": 21,
+   "colors": 11
+  },
+  {
+   "id": "bz26-D23",
+   "fingerprint": "6d01576a0fb6",
+   "meshes": 75,
+   "visibleMeshes": 75,
+   "outlines": 35,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D24",
+   "fingerprint": "629c4ca08626",
+   "meshes": 66,
+   "visibleMeshes": 66,
+   "outlines": 30,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D25",
+   "fingerprint": "d6d9b67fee88",
+   "meshes": 54,
+   "visibleMeshes": 54,
+   "outlines": 25,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D26",
+   "fingerprint": "e9b83ba82c27",
+   "meshes": 60,
+   "visibleMeshes": 60,
+   "outlines": 28,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D27",
+   "fingerprint": "ef4d8054c981",
+   "meshes": 56,
+   "visibleMeshes": 56,
+   "outlines": 26,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D28",
+   "fingerprint": "0d96b036fc9f",
+   "meshes": 64,
+   "visibleMeshes": 64,
+   "outlines": 30,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D29",
+   "fingerprint": "c40aefd514ea",
+   "meshes": 70,
+   "visibleMeshes": 70,
+   "outlines": 33,
+   "colors": 8
+  },
+  {
+   "id": "bz26-D30",
+   "fingerprint": "8bd9314c5815",
+   "meshes": 49,
+   "visibleMeshes": 49,
+   "outlines": 22,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D31",
+   "fingerprint": "0e05a3de49f3",
+   "meshes": 70,
+   "visibleMeshes": 70,
+   "outlines": 33,
+   "colors": 7
+  },
+  {
+   "id": "bz26-D32",
+   "fingerprint": "7a0c55028eac",
+   "meshes": 57,
+   "visibleMeshes": 57,
+   "outlines": 26,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D33",
+   "fingerprint": "cdc632d7c5e1",
+   "meshes": 61,
+   "visibleMeshes": 61,
+   "outlines": 28,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D34",
+   "fingerprint": "57b389a3b842",
+   "meshes": 50,
+   "visibleMeshes": 50,
+   "outlines": 21,
+   "colors": 11
+  },
+  {
+   "id": "bz26-D35",
+   "fingerprint": "fdfe80cae612",
+   "meshes": 86,
+   "visibleMeshes": 86,
+   "outlines": 41,
+   "colors": 12
+  },
+  {
+   "id": "bz26-D36",
+   "fingerprint": "4865cdbdc506",
+   "meshes": 66,
+   "visibleMeshes": 66,
+   "outlines": 27,
+   "colors": 16
+  },
+  {
+   "id": "bz26-D37",
+   "fingerprint": "9b50655dc215",
+   "meshes": 46,
+   "visibleMeshes": 46,
+   "outlines": 21,
+   "colors": 10
+  },
+  {
+   "id": "bz26-C01",
+   "fingerprint": "a993bacf7a78",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C02",
+   "fingerprint": "4aaadc8707e0",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C03",
+   "fingerprint": "e73fc25035f1",
+   "meshes": 33,
+   "visibleMeshes": 33,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C04",
+   "fingerprint": "f548ab245625",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C05",
+   "fingerprint": "5fd451383180",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C06",
+   "fingerprint": "1bef860052a8",
+   "meshes": 70,
+   "visibleMeshes": 70,
+   "outlines": 33,
+   "colors": 7
+  },
+  {
+   "id": "bz26-C07",
+   "fingerprint": "1fb05e0d3532",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C08",
+   "fingerprint": "1dfa5c881a26",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C09",
+   "fingerprint": "e26b8d3812dd",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C10",
+   "fingerprint": "d1b522a0252f",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-C11",
+   "fingerprint": "564a6547fd01",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 5
+  },
+  {
+   "id": "bz26-host",
+   "fingerprint": "138364623ebd",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-F01",
+   "fingerprint": "323e3b181511",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-F02",
+   "fingerprint": "d0fd76d95a76",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 5
+  },
+  {
+   "id": "bz26-F03",
+   "fingerprint": "700c4184547d",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-radio-dj1",
+   "fingerprint": "b3f54877a644",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-radio-dj2",
+   "fingerprint": "5096158d7a05",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "bz26-radio-dj3",
+   "fingerprint": "cd2f2f8320a1",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-radio-dj4",
+   "fingerprint": "f7cf49db61f5",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-pg-P01",
+   "fingerprint": "ead8043438c0",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-pg-P02",
+   "fingerprint": "e3f1a8a23dc0",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-pg-P03",
+   "fingerprint": "e2e0e14ae155",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "bz26-pg-P04",
+   "fingerprint": "9f9d2ae271eb",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "bz26-pt-NTHU",
+   "fingerprint": "94d06dc37e88",
+   "meshes": 30,
+   "visibleMeshes": 30,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "bz26-pt-NYCU",
+   "fingerprint": "0e9943a441e0",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "bz26-pt-NCU",
+   "fingerprint": "c8061022fd5c",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "bz26-pt-TNUA",
+   "fingerprint": "021deb621de1",
+   "meshes": 34,
+   "visibleMeshes": 34,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "missionary-a",
+   "fingerprint": "ee580541d8ad",
+   "meshes": 31,
+   "visibleMeshes": 31,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "missionary-b",
+   "fingerprint": "f1fbc6ad984e",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "old-principal",
+   "fingerprint": "913a205f219e",
+   "meshes": 85,
+   "visibleMeshes": 85,
+   "outlines": 31,
+   "colors": 18
+  },
+  {
+   "id": "fountain-crowd-0",
+   "fingerprint": "75e7bcc03b4b",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "fountain-crowd-1",
+   "fingerprint": "234b9295f87f",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "fountain-crowd-2",
+   "fingerprint": "8d9308ab318a",
+   "meshes": 33,
+   "visibleMeshes": 33,
+   "outlines": 13,
+   "colors": 9
+  },
+  {
+   "id": "fountain-crowd-3",
+   "fingerprint": "889093792c58",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 12,
+   "colors": 7
+  },
+  {
+   "id": "fountain-crowd-4",
+   "fingerprint": "ea72bc80955b",
+   "meshes": 32,
+   "visibleMeshes": 32,
+   "outlines": 13,
+   "colors": 6
+  },
+  {
+   "id": "fountain-crowd-5",
+   "fingerprint": "46355720cde9",
+   "meshes": 30,
+   "visibleMeshes": 30,
+   "outlines": 12,
+   "colors": 5
+  },
+  {
+   "id": "fountain-crowd-6",
+   "fingerprint": "4c9b51a017cb",
+   "meshes": 28,
+   "visibleMeshes": 28,
+   "outlines": 12,
+   "colors": 6
+  },
+  {
+   "id": "fountain-crowd-7",
+   "fingerprint": "7d8ab495ba17",
+   "meshes": 29,
+   "visibleMeshes": 29,
+   "outlines": 12,
+   "colors": 6
+  }
+ ]
+}

@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { CHARACTERS } from './build.mjs';
+import { CHARACTERS, FORMAT } from './build.mjs';
 
 const DIR = new URL('./snapshots/', import.meta.url);
 const UPDATE = process.env.UPDATE_SNAPSHOTS === '1';
@@ -20,11 +20,12 @@ if (UPDATE) {
   fs.mkdirSync(DIR, { recursive: true });
   for (const c of CHARACTERS) fs.writeFileSync(file(c.id), lines(c).join('\n') + '\n');
   const index = CHARACTERS.map(({ id, fingerprint, meshes, visibleMeshes, outlines, colors }) => ({ id, fingerprint, meshes, visibleMeshes, outlines, colors }));
-  fs.writeFileSync(new URL('index.json', DIR), JSON.stringify(index, null, 1) + '\n');
+  fs.writeFileSync(new URL('index.json', DIR), JSON.stringify({ format: FORMAT, characters: index }, null, 1) + '\n');
 }
 
 test('每個角色都有快照，而且沒有多出或少掉角色', () => {
-  const index = JSON.parse(fs.readFileSync(new URL('index.json', DIR), 'utf8'));
+  const { format, characters: index } = JSON.parse(fs.readFileSync(new URL('index.json', DIR), 'utf8'));
+  assert.equal(format, FORMAT, '快照格式版本和程式不同；請用 UPDATE_SNAPSHOTS=1 重新產生');
   assert.deepEqual(CHARACTERS.map(c => c.id), index.map(c => c.id), '角色名單和快照不同；新增或移除角色後請用 UPDATE_SNAPSHOTS=1 更新');
 });
 

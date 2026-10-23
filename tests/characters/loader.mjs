@@ -27,5 +27,13 @@ export async function load(url, context, next) {
     const text = await readFile(new URL(url), 'utf8');
     return { format: 'module', source: `export default ${text};`, shortCircuit: true };
   }
+  // Vite 打包時會把 import.meta.env 換成常數；這裡照正式版（非開發模式）換掉
+  if (url.includes('/src/') && url.endsWith('.js')) {
+    const text = await readFile(new URL(url), 'utf8');
+    if (text.includes('import.meta.env')) {
+      const source = text.replaceAll('import.meta.env', '({ DEV: false, PROD: true, MODE: "production", BASE_URL: "/" })');
+      return { format: 'module', source, shortCircuit: true };
+    }
+  }
   return next(url, context);
 }
