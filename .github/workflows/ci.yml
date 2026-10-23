@@ -29,7 +29,8 @@ jobs:
       - name: 打包
         run: npm run build
 
-  # 無頭瀏覽器冒煙測試較慢，獨立成一個 job 與 quick 平行執行
+  # 無頭瀏覽器冒煙測試較慢，獨立成一個 job 與 quick 平行執行。
+  # 達賢四支瀏覽器測試改到 dah-hsian-nightly.yml，每天夜間或手動執行
   smoke:
     runs-on: ubuntu-24.04
     # 近期冒煙測試約 47 分鐘，留餘裕避免卡住時空等 6 小時
@@ -55,78 +56,3 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
-
-  # 達賢瀏覽器測試在軟體 WebGL 下很慢且受影格率影響，獨立成一個 job 與其他 job 平行執行。
-  # 只有改到達賢或它依賴的共用程式時才跑四支瀏覽器測試；沒改到時各步驟略過，job 仍回報成功，
-  # 這樣之後設成必須通過的檢查也不會一直卡住。判斷失敗時一律照跑。
-  dah-hsian:
-    runs-on: ubuntu-24.04
-    # 近期成功紀錄約 108 分鐘
-    timeout-minutes: 150
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # PR 取出的是合併提交，第一個父提交就是目標分支，深度 2 就能比對
-          fetch-depth: 2
-      - name: 判斷是否改到達賢相關檔案
-        id: changes
-        env:
-          EVENT: ${{ github.event_name }}
-          BEFORE: ${{ github.event.before }}
-        run: |
-          set -u
-          run=true
-          base=""
-          if [ "$EVENT" = "pull_request" ]; then
-            base=$(git rev-parse HEAD^1 2>/dev/null || true)
-          elif [ "$EVENT" = "push" ] && [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
-            git fetch --no-tags --depth=1 origin "$BEFORE" >/dev/null 2>&1 && base="$BEFORE"
-          fi
-          if [ -n "$base" ] && files=$(git -c core.quotepath=false diff --name-only "$base" HEAD); then
-            run=false
-            while IFS= read -r f; do
-              # 注意：case 的 * 也會比對到 /，其他建築要先排除
-              case "$f" in
-                src/world/buildings/dah-hsian/*|src/world/buildings/index.js) hit=true ;;
-                src/world/buildings/*) hit=false ;;
-                scripts/dah-hsian-*|src/core/*|src/render/*|src/actors/player.js|src/main.js|vite.config.js) hit=true ;;
-                src/systems/swimming/*|src/systems/room-view.js|src/systems/camera-occlu*|src/systems/map-cache.js|src/systems/items.js) hit=true ;;
-                src/world/*|.github/workflows/*) hit=true ;;
-                package.json|package-lock.json|index.html)
-                  # 每個 PR 都會改版本號；只改版本號時不算
-                  hit=false
-                  if git diff "$base" HEAD -- "$f" | grep -E '^[+-][^+-]' | grep -vqE '"version": "[0-9.]+"|class="ver"'; then hit=true; fi ;;
-                *) hit=false ;;
-              esac
-              if [ "$hit" = true ]; then run=true; echo "改到 $f，執行達賢瀏覽器測試"; break; fi
-            done <<EOF
-          $files
-          EOF
-          else
-            echo "無法取得比對基準，照常執行達賢瀏覽器測試"
-          fi
-          if [ "$run" = false ]; then echo "沒有改到達賢相關檔案，略過達賢瀏覽器測試"; fi
-          echo "run=$run" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v4
-        if: steps.changes.outputs.run == 'true'
-        with:
-          node-version: 22
-          cache: npm
-      - if: steps.changes.outputs.run == 'true'
-        run: npm ci
-      - name: 打包
-        if: steps.changes.outputs.run == 'true'
-        run: npm run build
-      - name: 安裝無頭瀏覽器
-        if: steps.changes.outputs.run == 'true'
-        run: npx playwright install --with-deps chromium
-      - name: 達賢戶外游泳、2樓進出與手機操作
-        if: steps.changes.outputs.run == 'true'
-        run: |
-          npm run preview -- --host 127.0.0.1 --port 5187 > /tmp/dah-preview.log 2>&1 &
-          dah_preview_pid=$!
-          trap 'kill "$dah_preview_pid"' EXIT
-          node scripts/dah-hsian-smoke.mjs
-          node scripts/dah-hsian-interior-smoke.mjs
-          node scripts/dah-hsian-visual-smoke.mjs
-          node scripts/dah-hsian-atrium-smoke.mjs
