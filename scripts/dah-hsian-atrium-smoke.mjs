@@ -3,12 +3,20 @@ async function verifyUpper(page,base){
  await page.goto(base+'?debug&area=dah-hsian',{timeout:120000});await page.locator('#go').click({timeout:120000});await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:120000});
  await page.evaluate(()=>__game.enterRoom('dah-hsian-2f'));await page.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:120000});
  await page.locator('#dah-time').click();await page.evaluate(()=>{__game.pos.set(-19,0,17.1);__game.state.vy=0;__game.state.pitch=.2;});
+ // 軟體繪圖下中庭每幀可能要好幾秒，遊戲步進又以50毫秒為上限，所以「卡住」改用遊戲時間判斷：
+ // 連續3遊戲秒沒有再靠近目標5公分才算被擋住；牆鐘時間只留寬鬆上限，避免畫面整個停住時無限等待。
+ const WALL_CLOCK_LIMIT=1800000;
  const walk=async(x,z)=>{try{
   await page.keyboard.down('w');
-  try{await page.waitForFunction(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);return Math.hypot(dx,dz)<.22;},{x,z},{timeout:120000});}
-  finally{await page.keyboard.up('w');}
+  let result;
+  try{result=await(await page.waitForFunction(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z,d=Math.hypot(dx,dz),t=__game.state.time;__game.state.yaw=Math.atan2(-dx,-dz);if(d<.22)return 'arrived';
+   const g=window.__smokeWalk;if(!g||g.x!==x||g.z!==z){window.__smokeWalk={x,z,best:d,at:t};return false;}
+   if(d<g.best-.05){g.best=d;g.at=t;return false;}
+   return t-g.at>3?'stalled':false;},{x,z},{timeout:WALL_CLOCK_LIMIT})).jsonValue();}
+  finally{await page.keyboard.up('w');await page.evaluate(()=>{window.__smokeWalk=null;});}
+  if(result!=='arrived')throw Error('連續3遊戲秒沒有靠近目標');
   const start=await page.evaluate(()=>__game.state.time);
-  await page.waitForFunction(t=>__game.state.time>=t+.5,start,{timeout:120000});
+  await page.waitForFunction(t=>__game.state.time>=t+.5,start,{timeout:WALL_CLOCK_LIMIT});
  }catch(e){throw Error('goal '+x+','+z+' actual '+JSON.stringify(await page.evaluate(()=>__game.pos.toArray()))+' '+e.message);}};
  await walk(-19,23.5);await walk(-16,23.5);await walk(-16,22.6);console.log('3F first stair',await page.evaluate(()=>__game.pos.toArray()));
  const levels=['3F','3MF','4F','4MF','5F','6F','7F','8F'];
