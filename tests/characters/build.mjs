@@ -23,7 +23,7 @@ import fountain from '../../src/content/fountain-swim.json';
 import '../../src/systems/old-principal/index.js';
 
 /** 快照格式版本：欄位定義改變時加一，並在 README 說明 */
-export const FORMAT = 2;
+export const FORMAT = 3;
 
 const r4 = v => Math.round(v * 1e4) / 1e4 || 0;
 const vec = v => [r4(v.x), r4(v.y), r4(v.z)];
@@ -81,6 +81,25 @@ export function serialize(root) {
   return parts;
 }
 
+/**
+ * 世界空間清單：只看「每個看得到的零件最後畫在哪裡、長什麼樣」，不看物件樹怎麼組。
+ * 插入一個不改位置的關節、換掛載層級、重新排序，這份清單都不會變；零件真的移動、變形、換色才會變。
+ * 換底層時以這份為準（GRK-001 第 17 列的建議）。座標相對於角色自己的原點，所以角色站在哪裡不影響。
+ */
+export function worldList(root) {
+  root.updateMatrixWorld(true);
+  const inv = root.matrixWorld.clone().invert(), m = new THREE.Matrix4(), out = [];
+  (function walk(o, hidden) {
+    hidden = hidden || !o.visible;
+    if (!hidden && (o.isMesh || o.isSprite) && o !== root) {
+      m.multiplyMatrices(inv, o.matrixWorld);
+      out.push(JSON.stringify({ geo: o.isMesh ? geometryOf(o.geometry) : 'sprite', mat: materialOf(o.material), m: m.elements.map(r4), ...(o.renderOrder ? { renderOrder: o.renderOrder } : {}) }));
+    }
+    o.children.forEach(c => walk(c, hidden));
+  })(root, false);
+  return out.sort();
+}
+
 /** 摘要：給表單用，人和 AI 一眼看得懂。父層隱藏的零件也算隱藏（例如主角平常藏起來的雄鷹頭） */
 export function summarize(parts) {
   const hiddenPaths = parts.filter(p => p.hidden).map(p => p.path);
@@ -93,7 +112,10 @@ export function summarize(parts) {
 
 const byId = new Map(NPCS.map(n => [n.id, n]));
 const out = [];
-const add = (id, root) => { const parts = serialize(root); out.push({ id, fingerprint: hash(parts), ...summarize(parts), parts }); };
+const add = (id, root) => {
+  const parts = serialize(root), world = worldList(root);
+  out.push({ id, fingerprint: hash(parts), worldFingerprint: hash(world), ...summarize(parts), parts, world });
+};
 
 /* 1. 主角：一般、泳裝、雄鷹（雄鷹不可逆，所以最後做） */
 add('player', player);
