@@ -41,20 +41,38 @@ try {
   camera.position.set(2.4,1.5,3.6);
   const controls = new OrbitControls(camera,renderer.domElement); controls.target.set(0,0.8,0);
   controls.minDistance=1.3;controls.maxDistance=7;controls.maxPolarAngle=Math.PI*0.49;controls.enablePan=false;controls.enableDamping=true;
-  let activeInput, handle, enabled=true, moving=false, destroyed=false, suspended=false;
+  let activeInput, handle, enabled=true, moving=false, destroyed=false, suspended=false, bendRequest=null, bendLimited=null;
+  // 記錄實際 Euler 角度，而非滑桿目標值。原版沒有新手肘，不以零度冒充。
+  const syncActualAngles = () => {
+    const data=document.documentElement.dataset;
+    const present=Boolean(enabled&&handle);
+    data.armTrialElbowPresent=String(present);
+    data.armTrialMotion=String(moving);
+    data.armTrialBendRequestedDeg=present&&bendRequest!==null?String(bendRequest):'';
+    data.armTrialBendLimited=present&&bendLimited!==null?String(bendLimited):'';
+    for(const side of ['L','R']) {
+      const rotation=present?handle.elbows[side].rotation:null;
+      const degrees=rotation?['x','y','z'].map(axis=>Math.round(rotation[axis]*180/Math.PI*1000)/1000):null;
+      data[`armTrialElbow${side}Deg`]=JSON.stringify(degrees);
+      data[`armTrialElbow${side}XDeg`]=degrees?String(degrees[0]):'';
+      data[`armTrialElbow${side}Order`]=rotation?.order||'';
+    }
+    $('trial-angle').textContent=present?`${bendRequest===null?'姿勢設定':`要求 ${Math.round(bendRequest*1000)/1000}°`}；左 ${data.armTrialElbowLXDeg}°／右 ${data.armTrialElbowRXDeg}°（X 軸實際值）${bendLimited?'；已套用角度限制':''}`:'原版未啟用新手肘';
+  };
   const updateStatus = () => {
+    syncActualAngles();
     document.documentElement.dataset.armTrialCharacter=activeInput.id;
     document.documentElement.dataset.armTrialMode=enabled?'articulated':'legacy';
     document.documentElement.dataset.armTrialPose=enabled?$('trial-pose').value:'neutral';
-    status.textContent=`${activeInput.id}\n${enabled?'上肢試點啟用':'原版中立對照'} · ${enabled?$('trial-pose').selectedOptions[0].textContent:'中立'}\n手肘可彎曲；手部掛點跟隨前臂。`;
+    status.textContent=`${activeInput.id}\n${enabled?'上肢試點啟用':'原版中立對照'} · ${enabled?$('trial-pose').selectedOptions[0].textContent:'中立'}\n手肘可彎曲；手部掛點跟隨前臂。${activeInput.id==='bz26-D12'?'\nD12 左手採低位閱讀姿勢，右手執行所選姿勢；保留 0–90° 手肘彎曲，中立外觀不變，仍需實機驗收。':''}`;
     $('trial-toggle').textContent=enabled?'切換原版中立對照':'啟用上肢試點';
     $('trial-pose').disabled=!enabled; $('trial-bend').disabled=!enabled; $('trial-motion').disabled=!enabled;
     $('trial-motion').textContent=moving?'停止連續彎曲':'播放連續手肘彎曲';
   };
   const setPose = () => {
-    moving=false;
+    moving=false;bendRequest=null;bendLimited=null;
     if (handle) handle.setPose($('trial-pose').value);
-    $('trial-bend').value='0'; $('trial-angle').textContent='依姿勢設定'; updateStatus();
+    $('trial-bend').value='0'; updateStatus();
   };
   const selectCharacter = () => {
     moving=false; handle?.dispose(); handle=null;
@@ -71,8 +89,9 @@ try {
   $('trial-toggle').addEventListener('click',guard(()=>{enabled=!enabled;selectCharacter();}));
   $('trial-motion').addEventListener('click',guard(()=>{moving=!moving;updateStatus();}));
   $('trial-bend').addEventListener('input',guard(()=>{
-    moving=false;const angle=Number($('trial-bend').value);handle.elbows.L.rotation.x=handle.elbows.R.rotation.x=-angle*Math.PI/180;
-    $('trial-angle').textContent=`${angle}°`;updateStatus();
+    moving=false;const angle=Number($('trial-bend').value);
+    const result=handle.setBendDegrees(angle);bendRequest=result.requestedDegrees;bendLimited=result.limited;
+    updateStatus();
   }));
   document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>{
     const positions={front:[0,1.15,4],side:[4,1.15,0],back:[0,1.15,-4]};camera.position.set(...positions[button.dataset.view]);controls.update();
@@ -86,8 +105,8 @@ try {
   const observer=new ResizeObserver(resize);observer.observe(view);resize();
   const renderFrame = time=>{
     if(destroyed)return;
-    if(moving&&handle){const angle=(Math.sin(time/500)+1)*Math.PI/4;handle.elbows.L.rotation.x=handle.elbows.R.rotation.x=-angle;$('trial-angle').textContent=`${Math.round(angle*180/Math.PI)}°`;}
-    controls.update();renderer.render(scene,camera);
+    if(moving&&handle){const result=handle.setBendDegrees((Math.sin(time/500)+1)*45);bendRequest=result.requestedDegrees;bendLimited=result.limited;}
+    syncActualAngles();controls.update();renderer.render(scene,camera);
   };
   renderer.setAnimationLoop(renderFrame);
   // bfcache 會保留整頁。暫停而非拆掉控制器，返回時恢復同一個迴圈與角色狀態。

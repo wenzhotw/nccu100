@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {Vector3,Group} from 'three';
+import {Vector3,Group,Box3} from 'three';
+import {OBB} from 'three/examples/jsm/math/OBB.js';
 import {state} from '../../src/core/state.js';
 import {activateArticulatedArms,ARM_POSES} from '../../src/actors/articulated-arms.js';
 import {getActorRigIdentity,TRIAL_IDS} from '../../src/actors/actor-rig-identity.js';
@@ -47,8 +48,34 @@ globalThis[hook]=(id,root,serialize,worldList,context)=>{
     if(id==='bz26-D12')assert.equal(root.getObjectByName('bz26-costume-finance-market-tablet').parent,rig.hands.L);
     if(id==='bz26-D23')for(const [side,s] of [['L',-1],['R',1]])for(const key of ['sleeve','cuff'])assert.equal(root.getObjectByName(`bz26-costume-doublet-${key}-${s}`).parent,rig.elbows[side]);
     for(const pose of ARM_POSES){rig.setPose(pose);root.traverse(n=>assert.ok(n.matrixWorld.elements.every(Number.isFinite)));}
+    for(const bad of [-1,91,NaN,Infinity])assert.throws(()=>rig.setBendDegrees(bad),/Bend degrees/);
+    for(const pose of ARM_POSES) {
+      rig.setPose(pose);
+      for(let angle=0;angle<=90;angle++) {
+        const result=rig.setBendDegrees(angle);
+        assert.equal(result.requestedDegrees,angle);assert.equal(result.leftDegrees,angle);assert.equal(result.rightDegrees,angle);assert.equal(result.limited,false);
+        assert.ok(Math.abs(rig.elbows.L.rotation.x+angle*Math.PI/180)<1e-10);
+        if(id==='bz26-D12' && angle>=4) {
+          const tablet=root.getObjectByName('bz26-costume-finance-market-tablet');
+          const tie=identity.body.children.find(n=>n.isMesh&&Math.abs(n.position.y-.57)<1e-8&&Math.abs(n.scale.x-.035)<1e-8);
+          assert.ok(tie,'actual tie mesh fixture');
+          const obb=n=>{n.geometry.computeBoundingBox();return new OBB().fromBox3(n.geometry.boundingBox).applyMatrix4(n.matrixWorld);};
+          const tieBox=obb(tie),bounds=new Box3();
+          tablet.traverse(n=>{if(n.isMesh){assert.equal(obb(n).intersectsOBB(tieBox),false,`${pose} ${angle} tablet/tie OBB`);const p=n.geometry.attributes.position;for(let i=0;i<p.count;i++)bounds.expandByPoint(identity.body.worldToLocal(new Vector3().fromBufferAttribute(p,i).applyMatrix4(n.matrixWorld)));}});
+          assert.ok(bounds.max.y<.718,`${pose} ${angle} tablet below head sphere`);
+        }
+      }
+    }
+    rig.setPose('neutral');
+    for(const [n,elements] of matrices)n.matrixWorld.elements.forEach((v,i)=>assert.ok(Math.abs(v-elements[i])<1e-10,`${id} neutral after bending world matrix`));
     assert.throws(()=>rig.setPose('invalid'),/Unknown/);
+    // 外部將自有暫存節點重掛到角色或另一個容器，仍需清乾淨再啟用。
+    const foreign=new Group();root.add(rig.hands.L);foreign.add(rig.hands.R);foreign.add(rig.elbows.R);
+    assert.throws(()=>rig.validate(),/hierarchy changed/);
+
     rig.dispose();rig.dispose();
+    for(const n of [...Object.values(rig.hands),...Object.values(rig.elbows)])assert.equal(n.parent,null);
+    assert.equal(foreign.children.length,0);
     assert.deepEqual(serialize(root),before,`${id} complete local hierarchy restore`);
     assert.deepEqual(worldList(root),neutral,`${id} complete world restore`);
     assert.throws(()=>rig.setPose('neutral'),/disposed/);
