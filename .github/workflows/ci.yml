@@ -10,8 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  # 快速檢查：結構檢查、npm test、打包。可單獨設為合併前必須通過的檢查
+  quick:
     runs-on: ubuntu-24.04
+    # 近期 npm test 約 2.5 分鐘
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,19 +28,26 @@ jobs:
         run: npm test
       - name: 打包
         run: npm run build
+
+  # 無頭瀏覽器冒煙測試較慢，獨立成一個 job 與 quick 平行執行。
+  # 達賢四支瀏覽器測試改到 dah-hsian-nightly.yml，每天夜間或手動執行
+  smoke:
+    runs-on: ubuntu-24.04
+    # 近期冒煙測試約 47 分鐘，留餘裕避免卡住時空等 6 小時
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 打包
+        run: npm run build
       - name: 安裝無頭瀏覽器
         run: npx playwright install --with-deps chromium
       - name: 冒煙測試
         run: npm run smoke
-      - name: 達賢戶外游泳、2樓進出與手機操作
-        run: |
-          npm run preview -- --host 127.0.0.1 --port 5187 > /tmp/dah-preview.log 2>&1 &
-          dah_preview_pid=$!
-          trap 'kill "$dah_preview_pid"' EXIT
-          node scripts/dah-hsian-smoke.mjs
-          node scripts/dah-hsian-interior-smoke.mjs
-          node scripts/dah-hsian-visual-smoke.mjs
-          node scripts/dah-hsian-atrium-smoke.mjs
       - name: 保留冒煙測試截圖
         if: always()
         uses: actions/upload-artifact@v4

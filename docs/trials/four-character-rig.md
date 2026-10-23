@@ -1,9 +1,9 @@
 # 四角色相容試做，階段 A
 
 固定來源：a40a04e03e618be0515e98fa51bbd41df9bd0784，v1.84。
-試做疊在 T015 PR105 的 tree 868ec3f3a980581b05ba059efe111b053ea2e514 上。遠端 T015 commit 是 b58e55108f0bc4281d114d1416b05e55fc6ba550，本地等樹 commit 是 ecb62a0；不宣稱兩者 ancestry 相同。
+試做 PR106 疊在 T015 PR105 上，目前依賴 commit c6ffdd66286b7270a45a7d4024ea204827a712bf，tree ba230ad3ba45ea486d6b8e9a1caa9f697fa3a22e，包含 PR104 的測試流程。既有角色與姿勢基準來源仍為上列 a40a04e。
 版本沿用 T015 的 v1.86，這不是新版本發布；未來合併時再決定版號。
-本地分支：trial/four-character-rig-t015。未推送、未開 PR、未合併、未部署。11/7 前不得合併角色底層遷移。
+PR106：https://github.com/wenzhotw/nccu100/pull/106。維持草稿，尚未合併或部署。使用者已撤回 11/7 日期限制，改以必要測試、獨立程式審查與 Grok 實機驗收作為後續合併條件，不因日期自動延後或放行。
 
 ## 交付範圍
 
