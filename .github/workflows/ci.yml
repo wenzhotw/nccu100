@@ -12,6 +12,8 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-24.04
+    # 近期成功紀錄約 50 分鐘（冒煙測試約 47 分鐘），留餘裕避免卡住時空等 6 小時
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +31,31 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: 冒煙測試
         run: npm run smoke
+      - name: 保留冒煙測試截圖
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # 達賢瀏覽器測試在軟體 WebGL 下很慢且受影格率影響，獨立成一個 job 與 check 平行執行
+  dah-hsian:
+    runs-on: ubuntu-24.04
+    # 近期成功紀錄約 108 分鐘
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 打包
+        run: npm run build
+      - name: 安裝無頭瀏覽器
+        run: npx playwright install --with-deps chromium
       - name: 達賢戶外游泳、2樓進出與手機操作
         run: |
           npm run preview -- --host 127.0.0.1 --port 5187 > /tmp/dah-preview.log 2>&1 &
@@ -38,11 +65,3 @@ jobs:
           node scripts/dah-hsian-interior-smoke.mjs
           node scripts/dah-hsian-visual-smoke.mjs
           node scripts/dah-hsian-atrium-smoke.mjs
-      - name: 保留冒煙測試截圖
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-screenshots
-          path: test-results/
-          if-no-files-found: ignore
-          retention-days: 7
