@@ -2,6 +2,7 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
+import { registerTrialNpc } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
@@ -113,6 +114,7 @@ function addNPC(o){
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
+  registerTrialNpc(n);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 function npcUpdate(n,dt){

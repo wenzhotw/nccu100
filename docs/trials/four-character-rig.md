@@ -11,7 +11,8 @@ PR106：https://github.com/wenzhotw/nccu100/pull/106。維持草稿，尚未合�
 這是穩定引用與 profile 相容層，不是完成的新骨架、角色工廠、全角色遷移或可換裝零件庫。
 
 - 新增 `optInFourCharacterRig({ id, root, body, joints, headCenter })`。必須明確呼叫，正式遊戲沒有匯入或自動啟用。
-- `joints` 直接接收原 NPC 的 P 或主角 H，不複製、不改綁，因此既有 callback 繼續使用原物件。
+- `joints` 直接接收原 NPC 的 P 或主角 H，不改綁，因此既有 callback 繼續使用原物件。
+- player.js 與 addNPC 在建立真正四角色時，將 id、profile、root、body、headCenter 與個別關節引用的不可變副本登記到獨立 WeakMap。adapter 在任何修改前核對來源，不只相信 caller id，老校長冒稱 chiang、學務長冒稱 player 或錯配 root／P 都會被拒絕。這是防誤用的來源檢查，不是防惡意程式碼的安全邊界。其他 NPC 不登記，不改模型或 userData。
 - `refs`、`get(name)` 提供角色內限定的名稱別名，不改原有 Object3D.name。完整 T013 零件名稱表仍待後續實作，不能把這份結果當成全部零件已命名。
 - NPC 的 head.pivot 與 head.center 同指舊 .99 中心。主角仍是 .72 頸部 pivot 加 .27 center，H.head 保持指向 pivot。legacy.head 表示舊掛載中心，legacy.joints.head 保持原動畫對象。
 - 主角袖、前臂、腿、鞋、鞋底與頭髮改保存建構時引用，不再使用 children 索引換裝。所有舊 export 仍保留，另加 headCenter、limbParts。
@@ -46,7 +47,7 @@ PR106：https://github.com/wenzhotw/nccu100/pull/106。維持草稿，尚未合�
 
 T015 的 test:characters 使用 *.test.mjs，npm test 因而會自動執行 rig-trial.test.mjs，不重複串接第二次。另保留 test:rig-trial 供單獨執行。套用本 patch 前必須先整合 T015；若缺少其模組或姿勢基準會失敗，不能省略測試。
 
-試做測試以既有 build.mjs 暫存副本插入同步觀察點，不改正式建構器。沿用相同 import 順序與固定亂數，避免 eager player 先載入造成雄鷹隨機羽毛基準漂移。暫存檔在 finally 移除。
+試做測試以既有 build.mjs 的系統 os.tmpdir 暫存副本插入同步觀察點，不在 repo 寫入暫存模組。將 import 解析成原來源的絕對 URL，沿用相同 import 順序、模組身分與固定亂數，避免 eager player 先載入造成雄鷹隨機羽毛基準漂移。整個暫存目錄在 finally 移除；中斷也不會在 repo 留下可誤提交的檔案。
 
 驗證全部 112 個中立世界清單，包含主角一般、泳裝、雄鷹。四個目標另驗證啟用前後各六姿勢完全相同，且逐份比對既定 24 個姿勢基準。原有結構逐列不變；四角色各增加四個明列空標記，共 16 個。主角後續泳裝與雄鷹共用同一組標記。
 

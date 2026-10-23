@@ -2,6 +2,7 @@
  * 主角：Q版小男生的模型與動畫。
  */
 import * as THREE from 'three';
+import { registerTrialPlayer } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
 import { BOX, OUT, SPH, basic, canvasTex, mk, outline, toon } from '../render/kit.js';
@@ -208,5 +209,7 @@ function becomeEagle(){
   limbParts.legL.sole.visible=false; limbParts.legR.sole.visible=false;   // 鞋底
   eagleFeet.forEach(m=>{ m.visible=true; });
 }
+
+registerTrialPlayer(player,rig,H,hc);
 
 export { hc as headCenter, limbParts, H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };

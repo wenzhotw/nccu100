@@ -3,12 +3,13 @@
  * 保留舊物件與掛載層級，不建立新的可彎曲骨架。
  */
 import { Group } from 'three';
+import { TRIAL_IDS, getActorRigIdentity } from './actor-rig-identity.js';
+export { TRIAL_IDS } from './actor-rig-identity.js';
 
 /** @typedef {import('three').Object3D} Node */
 /** @typedef {{shL: Node, shR: Node, hipL: Node, hipR: Node, head: Node}} LegacyJoints */
 /** @typedef {{id: string, root: Node, body: Node, joints: LegacyJoints, headCenter: Node}} RigInput */
 
-export const TRIAL_IDS = Object.freeze(['chiang', 'player', 'bz26-D12', 'bz26-D23']);
 export const RIG_PROFILES = Object.freeze({
   npc: Object.freeze({ headPivotY: 0.99, headCenterOffsetY: 0, shoulderX: 0.21, shoulderY: 0.65, hipX: 0.085, hipY: 0.33 }),
   player: Object.freeze({ headPivotY: 0.72, headCenterOffsetY: 0.27, shoulderX: 0.19, shoulderY: 0.63, hipX: 0.085, hipY: 0.32 }),
@@ -30,8 +31,12 @@ function belongs(node, root) {
 export function optInFourCharacterRig({id, root, body, joints, headCenter}) {
   if (!TRIAL_IDS.includes(id)) throw new RangeError(`Unsupported trial character: ${id}`);
   if (!root?.isObject3D) throw new TypeError('Invalid root');
+  const identity=getActorRigIdentity(root);
+  if (!identity || identity.id!==id || identity.root!==root || identity.body!==body ||
+      identity.joints!==joints || identity.headCenter!==headCenter ||
+      Object.entries(identity.jointRefs).some(([key,node])=>joints?.[key]!==node)) throw new Error('Actor provenance mismatch');
   const existing=installed.get(root);
-  const profileId=id==='player'?'player':'npc';
+  const profileId=identity.profileId;
   const names={root, body, 'head.pivot':joints?.head, 'head.center':headCenter,
     'shoulder.L':joints?.shL, 'shoulder.R':joints?.shR, 'hip.L':joints?.hipL, 'hip.R':joints?.hipR};
   for (const [name,node] of Object.entries(names)) {
