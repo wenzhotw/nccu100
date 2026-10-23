@@ -12,8 +12,8 @@ const C = JSON.parse(RAW);
 const F = createFlow({ logic: L, prepareQuiz, content: C });
 const perfect = (qs) => qs.length;
 
-test('內容版本鎖：baozhong.json 是 a686d556…ca72，37 系 11 院', () => {
-  assert.equal(crypto.createHash('sha256').update(RAW).digest('hex'), 'a686d5565cd8d36319d58e20579a4b5b713c4bfbd5c8f67541345a1d9fc9ca72');
+test('內容版本鎖：baozhong.json 是 f951dd73…f736（v1.83 斯語系、韓語系 NPC 改為學姊），37 系 11 院', () => {
+  assert.equal(crypto.createHash('sha256').update(RAW).digest('hex'), 'f951dd73ee1f60227f2785c6bfb4ad797ff51357a1266c932daaaadd59ddf736');
   assert.equal(C.booths.length, 37); assert.equal(C.colleges.length, 11);
 });
 

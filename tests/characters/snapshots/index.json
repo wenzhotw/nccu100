@@ -297,10 +297,10 @@
  },
  {
   "id": "bz26-D01",
-  "fingerprint": "ca7efcd36891",
-  "meshes": 64,
-  "visibleMeshes": 64,
-  "outlines": 29,
+  "fingerprint": "c697722c8664",
+  "meshes": 62,
+  "visibleMeshes": 62,
+  "outlines": 28,
   "colors": 7
  },
  {
@@ -529,7 +529,7 @@
  },
  {
   "id": "bz26-D30",
-  "fingerprint": "04a117862955",
+  "fingerprint": "4e61ee0b113d",
   "meshes": 49,
   "visibleMeshes": 49,
   "outlines": 22,
@@ -793,7 +793,7 @@
  },
  {
   "id": "bz26-pt-NCU",
-  "fingerprint": "6e94b17ea6c2",
+  "fingerprint": "b2f4aac33cf6",
   "meshes": 31,
   "visibleMeshes": 31,
   "outlines": 12,

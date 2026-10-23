@@ -184,7 +184,8 @@ function buildVietnamese(ctx) {
   cylinder(rig, 'ao-dai-standing-collar', teal, [0, 0.706, 0], 0.086, 0.095, 0.047);
   box(rig, 'ao-dai-front-panel', teal, [0, 0.374, 0.155], [0.31, 0.37, 0.052]);
   box(rig, 'ao-dai-back-panel', teal, [0, 0.374, -0.15], [0.31, 0.37, 0.052]);
-  box(rig, 'ao-dai-diagonal-fastening', GOLD, [-0.07, 0.638, 0.169], [0.014, 0.145, 0.013], [0, 0, 0.57]);
+  // 斜襟從領口往穿著者右側斜下，兩端對齊下面兩顆扣子（Grok 查核 GRK-002：原本 +0.57 會和扣子交叉成 X）。
+  box(rig, 'ao-dai-diagonal-fastening', GOLD, [-0.07, 0.638, 0.169], [0.014, 0.145, 0.013], [0, 0, -0.57]);
   for (const [x, y] of [[-0.031, 0.684], [-0.099, 0.577]]) {
     sphere(rig, `ao-dai-fastening-${y}`, GOLD, [x, y, 0.18], [0.014, 0.014, 0.011]);
   }

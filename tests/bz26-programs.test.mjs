@@ -133,7 +133,10 @@ test('partner tees: abbreviations and official colors are sourced; guessed color
   assert.deepEqual(Object.values(tee).map(t => t.abbr), ['NTHU', 'NYCU', 'NCU', 'TNUA']);
   assert.equal(tee.NTHU.color.toLowerCase(), '#7f1084', '清華紫：網路用 RGB 127,16,132');
   assert.equal(tee.NYCU.color.toLowerCase(), '#0033a0', '陽明交大群青');
-  for (const id of ['NCU', 'TNUA']) assert.match(tee[id].colorInvented, /待確認/);
+  assert.equal(tee.NCU.color.toLowerCase(), '#56008d', '中大紫（品牌識別「標準色」分頁，GRK-002）');
+  assert.equal(tee.NCU.ink.toLowerCase(), '#ffec5c', '中大金');
+  assert.equal(tee.NCU.colorSource, 'ncu-brand');
+  assert.match(tee.TNUA.colorInvented, /待確認/, '北藝大查無官方標準色，仍標為示意配色');
   assert.equal(tee.TNUA.icon, 'buffalo');
   for (const t of Object.values(tee)) {
     const texts = [], calls = [];
