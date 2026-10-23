@@ -5,10 +5,12 @@
  *
  * 必須用 `node --import ./tests/characters/register.mjs` 載入（見 snapshot.test.mjs）。
  */
+import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as THREE from 'three';
 import { NPCS, addNPC } from '../../src/actors/npc.js';
-import { player, setOutfit, becomeEagle } from '../../src/actors/player.js';
+import { H, player, setOutfit, becomeEagle } from '../../src/actors/player.js';
+import { POSE_IDS, POSE_JOINTS, capturePoseSnapshots } from './poses.mjs';
 import { toon, OUT, canvasTex } from '../../src/render/kit.js';
 import { costumeLook } from '../../src/systems/baozhong/npc-costume-profiles.js';
 import { mountNpcCostume } from '../../src/systems/baozhong/npc-costumes.js';
@@ -112,9 +114,21 @@ export function summarize(parts) {
 
 const byId = new Map(NPCS.map(n => [n.id, n]));
 const out = [];
+export const POSE_SNAPSHOTS = [];
 const add = (id, root) => {
   const parts = serialize(root), world = worldList(root);
   out.push({ id, fingerprint: hash(parts), worldFingerprint: hash(world), ...summarize(parts), parts, world });
+  // 必須在泳裝／雄鷹轉換前，從真正的角色根節點和關節擷取；不可從序列化資料重建。
+  if (POSE_IDS.includes(id)) {
+    const P = id === 'player' ? H : NPCS.find(n => n.id === id && n.g === root)?.P;
+    assert.ok(P, `Missing live pose joints for ${id}`);
+    const rotations = () => POSE_JOINTS.map(key => P[key].rotation.toArray());
+    const before = rotations();
+    POSE_SNAPSHOTS.push(...capturePoseSnapshots(id, root, P, worldList));
+    assert.deepEqual(rotations(), before, `${id}: pose capture must restore Euler values and order`);
+    assert.deepEqual(serialize(root), parts, `${id}: pose capture must preserve structure`);
+    assert.deepEqual(worldList(root), world, `${id}: pose capture must preserve neutral appearance`);
+  }
 };
 
 /* 1. 主角：一般、泳裝、雄鷹（雄鷹不可逆，所以最後做） */

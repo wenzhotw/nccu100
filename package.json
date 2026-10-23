@@ -1,7 +1,7 @@
 {
   "name": "nccu100",
   "private": true,
-  "version": "1.85.0",
+  "version": "1.86.0",
   "type": "module",
   "description": "蓋亞造界．政大百年慶版：政大山下校園 3D 冒險遊戲",
   "scripts": {
@@ -16,7 +16,7 @@
     "test:unit": "node --test scripts/*.test.mjs",
     "test:baozhong": "sh tests/run-portable.sh",
     "test:npc-costumes": "node --test tests/npc-costumes.test.mjs",
-    "test:characters": "node --import ./tests/characters/register.mjs --test tests/characters/snapshot.test.mjs",
+    "test:characters": "node --import ./tests/characters/register.mjs --test tests/characters/*.test.mjs",
     "test:stage2": "node --test tests/bz26-stage2.test.mjs tests/bz26-radio.test.mjs tests/bz26-programs.test.mjs src/systems/baozhong/matching.test.js"
   },
   "dependencies": {
