@@ -154,9 +154,9 @@
           "note": "這是去年核准名單裡的例子，不是完整的開放清單。" }
       },
       {
-        "id": "NCU", "name": "中央大學", "group": "台聯大", "color": "#2e7d32",
-        "npc": { "title": "中央大學交流大使", "look": { "top": "#2e7d32", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "bowl" } },
-        "tee": {"abbr": "NCU", "sub": "中大", "color": "#2e7d32", "ink": "#ffffff", "trim": "#e8f5e9", "colorInvented": "查不到中央大學官方標準色，沿用遊戲裡原本的綠色，待確認", "abbrSource": "ncu-brand"},
+        "id": "NCU", "name": "中央大學", "group": "台聯大", "color": "#56008D",
+        "npc": { "title": "中央大學交流大使", "look": { "top": "#56008D", "pants": "#37474f", "hair": "#2a2220", "hairStyle": "bowl" } },
+        "tee": {"abbr": "NCU", "sub": "中大", "color": "#56008D", "ink": "#FFEC5C", "trim": "#FFEC5C", "colorSource": "ncu-brand", "abbrSource": "ncu-brand", "note": "中大代表色：紫 #56008D、金 #FFEC5C，源自南京紫金山；在品牌識別頁的「標準色」分頁（Grok 2026-10-23 以瀏覽器查閱，協作看板 GRK-002）。"},
         "lines": [
           "中央大學在桃園中壢，也是台灣聯合大學系統的一員。",
           "跨校選課、跨校雙主修與輔系、全時選讀，政大學生都可以申請。",

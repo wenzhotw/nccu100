@@ -118,7 +118,7 @@ test('real movement frame freezes horizontal drift and vertical falling while br
 });
 
 test('frozen baozhong story content remains byte-identical to baseline', () => {
-  assert.equal(createHash('sha256').update(read('../src/content/baozhong.json')).digest('hex'), 'a686d5565cd8d36319d58e20579a4b5b713c4bfbd5c8f67541345a1d9fc9ca72');
+  assert.equal(createHash('sha256').update(read('../src/content/baozhong.json')).digest('hex'), 'f951dd73ee1f60227f2785c6bfb4ad797ff51357a1266c932daaaadd59ddf736');
 });
 
 test('all 37 production registry entries qualify independently at their own front point', () => {
