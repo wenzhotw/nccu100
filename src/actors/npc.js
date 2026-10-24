@@ -2,6 +2,8 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
+import { createHumanoid } from './humanoid-factory.js';
+import { npcHumanoidProfile } from './humanoid-profiles.js';
 import { registerTrialNpc } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { MOBILE, scene } from '../core/engine.js';
@@ -40,11 +42,9 @@ function npcFace(brow,mode){ return canvasTex(256,256,g=>{ g.save(); g.translate
   if(mode==='panic'){ g.fillStyle='#7a3238'; g.beginPath(); g.ellipse(128,182,13,18,0,0,7); g.fill(); }
   else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
   g.restore(); }); }
-function makePerson(o,where){
-  const g=new THREE.Group(), rig=new THREE.Group(); g.add(rig); (where||scene).add(g); g.userData.noOcc=true;
-  const limbParts={};
-  const P={}, top=o.top||'#5a7fb0', pants=o.pants||'#2f3446', skin=o.skin||'#ffe1cc';
-  const tor=part(new THREE.CapsuleGeometry(0.18,0.16,6,14),top,0,0.52,0,rig,0.014); tor.scale.z=0.85;
+function makePerson(o,where,shared=false){
+  const top=o.top||'#5a7fb0',pants=o.pants||'#2f3446',skin=o.skin||'#ffe1cc';
+  function decorateTorso(rig){
   if(o.suit){ part(BOX,'#ffffff',0,0.6,0.148,rig).scale.set(0.09,0.16,0.01); part(BOX,o.tie||'#6b3f8f',0,0.57,0.156,rig).scale.set(0.035,0.15,0.01);
     [-1,1].forEach(s=>{ const l=part(BOX,top,s*0.06,0.6,0.152,rig); l.scale.set(0.05,0.18,0.012); l.rotation.z=-s*0.35; });
     if(o.pin) part(SPH,'#f4f4f4',-0.1,0.64,0.15,rig).scale.setScalar(0.02); }
@@ -52,6 +52,21 @@ function makePerson(o,where){
   if(o.police){ part(BOX,'#e8c547',-0.08,0.62,0.154,rig).scale.set(0.05,0.06,0.01); part(BOX,'#e8c547',0.09,0.64,0.152,rig).scale.set(0.07,0.02,0.01); part(new THREE.CylinderGeometry(0.19,0.19,0.05,18),'#1a1d26',0,0.43,0,rig).scale.z=0.88; }
   if(o.hood) part(new THREE.TorusGeometry(0.13,0.05,8,16),top,0,0.68,-0.04,rig).rotation.x=Math.PI/2.2;
   if(o.bag){ const b=part(BOX,o.bag,0,0.53,-0.19,rig); b.scale.set(0.24,0.28,0.12); outline(b,0).scale.set(1.12,1.1,1.2); }
+  }
+  function decorateArms(P){
+  if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; }
+  if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); }
+  }
+  let g,rig,P,limbParts,hc;
+  if(shared){
+    const model=createHumanoid(npcHumanoidProfile(o),{parent:where||scene,part,outlineU,BOX,SPH,afterTorso:({body})=>decorateTorso(body),afterArms:({joints})=>decorateArms(joints)});
+    ({root:g,body:rig,joints:P,limbParts,headCenter:hc}=model);
+  }else{
+  g=new THREE.Group(); rig=new THREE.Group(); g.add(rig); (where||scene).add(g); g.userData.noOcc=true;
+  limbParts={};
+  P={};
+  const tor=part(new THREE.CapsuleGeometry(0.18,0.16,6,14),top,0,0.52,0,rig,0.014); tor.scale.z=0.85;
+  decorateTorso(rig);
   part(new THREE.CylinderGeometry(0.182,0.19,0.14,18),pants,0,0.38,0,rig,0.012).scale.z=0.85;
   const arm=s=>{ const sh=new THREE.Group(); sh.position.set(s*0.21,0.65,0); rig.add(sh);
     part(new THREE.CapsuleGeometry(0.052,0.08,4,10),top,0,-0.06,0,sh,0.012);
@@ -59,14 +74,14 @@ function makePerson(o,where){
     const hand=part(SPH,skin,0,-0.25,0,sh); hand.scale.setScalar(0.046);
     limbParts[s<0?'armL':'armR']={forearm,hand}; return sh; };
   P.shL=arm(-1); P.shR=arm(1);
-  if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; }
-  if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); }
+  decorateArms(P);
   const leg=s=>{ const hp=new THREE.Group(); hp.position.set(s*0.085,0.33,0); rig.add(hp);
     part(new THREE.CapsuleGeometry(0.06,0.09,4,10),pants,0,-0.1,0,hp,0.01);
     const sh=part(SPH,o.shoe||'#2a2a2e',0,-0.24,0.03,hp); sh.scale.set(0.07,0.05,0.1); outlineU(sh,1.15); return hp; };
   P.hipL=leg(-1); P.hipR=leg(1);
-  const hc=new THREE.Group(); hc.position.y=0.99; rig.add(hc); P.head=hc;
+  hc=new THREE.Group(); hc.position.y=0.99; rig.add(hc); P.head=hc;
   const sk=part(new THREE.SphereGeometry(0.28,28,20),skin,0,0,0,hc); sk.scale.set(1.05,0.97,1); outlineU(sk,1.045);
+  }
   const brow=o.brow||o.hair||'#2a2220';
   P.fA=npcFace(brow,'open'); P.fB=npcFace(brow,'closed'); P.fC=npcFace(brow,'panic');
   P.fm=basic({map:P.fA,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
@@ -109,7 +124,7 @@ const PANIC=PANIC_LINES;
 function addNPC(o){
   // room：在哪個室內（null 是戶外）。舊的 indoor: true 等於四維堂
   if(o.room===undefined) o={...o,room:o.indoorNPC?'siwei-hall':null};
-  const b=(o.kind==='capybara'?makeCapybara:makePerson)(o.look||{},o.room?roomScene(o.room):null);
+  const b=(o.kind==='capybara'?makeCapybara:makePerson)(o.look||{},o.room?roomScene(o.room):null,['chiang','bz26-D12','bz26-D23'].includes(o.id));
   const n=Object.assign({},o,{g:b.g,rig:b.rig,P:b.P,pi:0,fear:0,state:'idle',ph:Math.random()*6,blink:2+Math.random()*3,sayT:Math.random()*2,si:-1,chaseT:0});
   n.g.position.set(o.home.x,0,o.home.z); n.g.rotation.y=o.face||0;
   if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=o.kind==='capybara'?1.2:1.62; n.g.add(n.tag); }
