@@ -2,6 +2,8 @@
  * 主角：Q版小男生的模型與動畫。
  */
 import * as THREE from 'three';
+import { createHumanoid } from './humanoid-factory.js';
+import { playerHumanoidProfile } from './humanoid-profiles.js';
 import { deactivateArticulatedArms } from './articulated-arms.js';
 import { deactivateWardrobe, refreshWardrobeForm } from './wardrobe-factory.js';
 import { registerTrialPlayer } from './actor-rig-identity.js';
@@ -10,24 +12,14 @@ import { scene } from '../core/engine.js';
 import { BOX, OUT, SPH, basic, canvasTex, mk, outline, toon } from '../render/kit.js';
 
 /* ---------- player：Q版小男生 ---------- */
-const player=new THREE.Group();
-scene.add(player);
-const rig=new THREE.Group();
-player.add(rig);
 const HC={skin:'#ffe1cc',hair:'#4a3226',hair2:'#5d4030',shirt:'#5aa7e0',shorts:'#2f3e66',shoe:'#f6f5f1',sole:'#d9534a',bag:'#f2b33d',bag2:'#cf8f25',gold:'#e3b75a',white:'#ffffff'};
 const DS={side:THREE.DoubleSide};
 function part(geo,mat,x,y,z,parent,out){ return mk(geo,typeof mat==='string'?toon(mat):mat,x,y,z,{parent,out}); }
 function outlineU(m,k){ const o=new THREE.Mesh(m.geometry,OUT); o.scale.setScalar(k); m.add(o); return o; }
 function ring(r,tube,col,y,parent,sz){ const m=part(new THREE.TorusGeometry(r,tube,6,28),col,0,y,0,parent); m.rotation.x=Math.PI/2; m.scale.y=sz||1; m.castShadow=false; return m; }
-const H={};
-// 保留建構時引用，換裝不再依賴子節點順序。
-const limbParts={};
-/* 身體：T恤、短褲、書包 */
-H.torso=part(new THREE.CapsuleGeometry(0.17,0.12,6,16),HC.shirt,0,0.5,0,rig,0.014);
-H.torso.scale.z=0.85;
-const shorts=part(new THREE.CylinderGeometry(0.172,0.18,0.13,18),HC.shorts,0,0.36,0,rig,0.012); shorts.scale.z=0.85;
-// 換泳衣時要藏起來的東西（領口、胸前白線、書包）
 const PACK=[];
+const model=createHumanoid(playerHumanoidProfile(HC),{parent:scene,part,outlineU,BOX,SPH,afterBottom:({body:rig})=>{
+// 換泳衣時要藏起來的東西（領口、胸前白線、書包）
 PACK.push(ring(0.1,0.018,HC.white,0.68,rig,0.9));
 PACK.push(part(BOX,HC.white,0,0.5,0.148,rig)); PACK[1].scale.set(0.15,0.028,0.01);
 const bag=part(BOX,HC.bag,0,0.53,-0.2,rig); PACK.push(bag);
@@ -35,37 +27,11 @@ bag.scale.set(0.27,0.3,0.14);
 outline(bag,0).scale.set(1.12,1.1,1.2);
 PACK.push(part(BOX,HC.bag2,0,0.45,-0.28,rig)); PACK[3].scale.set(0.2,0.12,0.04);
 [-1,1].forEach(s=>{ const st=part(BOX,HC.bag2,s*0.1,0.56,0,rig); st.scale.set(0.035,0.28,0.31); PACK.push(st); });
-function arm(s){
-  const sh=new THREE.Group(); sh.position.set(s*0.19,0.63,0); rig.add(sh);
-  const sleeve=part(new THREE.CapsuleGeometry(0.055,0.06,4,10),HC.shirt,0,-0.05,0,sh,0.012);
-  const forearm=part(new THREE.CapsuleGeometry(0.046,0.06,4,10),HC.skin,0,-0.14,0,sh,0.01);
-  limbParts[s<0?'armL':'armR']={sleeve,forearm};
-  return sh;
-}
-H.shL=arm(-1);
-H.shR=arm(1);
-function leg(s){
-  const hp=new THREE.Group(); hp.position.set(s*0.085,0.32,0); rig.add(hp);
-  const leg=part(new THREE.CapsuleGeometry(0.06,0.08,4,10),HC.skin,0,-0.1,0,hp,0.01);
-  const sh=part(SPH,HC.shoe,0,-0.235,0.03,hp); sh.scale.set(0.075,0.055,0.11); outlineU(sh,1.15);
-  const sole=part(BOX,HC.sole,0,-0.275,0.03,hp); sole.scale.set(0.13,0.022,0.2);
-  limbParts[s<0?'legL':'legR']={leg,shoe:sh,sole};
-  return hp;
-}
-H.hipL=leg(-1);
-H.hipR=leg(1);
-/* 頭 */
-const headG=new THREE.Group();
-headG.position.set(0,0.72,0);
-rig.add(headG);
-H.head=headG;
-const hc=new THREE.Group();
-hc.position.y=0.27;
-headG.add(hc);
+}});
+const {root:player,body:rig,joints:H,limbParts,headCenter:hc}=model;
+const shorts=model.parts.bottom,skull=model.parts.skull;
+H.torso=model.parts.torso;
 const HS=[1.05,0.95,1];
-const skull=part(new THREE.SphereGeometry(0.3,32,24),HC.skin,0,0,0,hc);
-skull.scale.set(...HS);
-outlineU(skull,1.045);
 [-1,1].forEach(s=>{ const e=part(SPH,HC.skin,s*0.31,-0.02,0,hc); e.scale.set(0.05,0.07,0.04); outlineU(e,1.2); });
 function drawFace(g,closed){
   g.clearRect(0,0,256,256);
