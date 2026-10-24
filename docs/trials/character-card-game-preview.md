@@ -40,3 +40,11 @@ preview controller 的 `restore()` 逐角色回報錯誤，不掩蓋 v1 衝突�
 - 三入口 build、初始化順序、HTTP、全套測試及精確 head 的 Grok 實際遊戲驗收。
 
 Node 與靜態測試不能取代真機畫面；合併與部署仍由協調者確認，不能因本文件存在就視為已上線。
+
+## Grok GRK047 的安全限制修訂
+
+上衣／褲裝的原幾何與身體共用，沒有獨立裸身可在卸衣後接替。三角色的 top、bottom 暫只接受 default 或原生 catalog ID；none 在 UI 不提供，JSON／store／adapter 也拒絕，避免前臂、身軀或腿消失留下懸空手腳。舊預覽若存有此無效選項會顯示讀取錯誤，需清除或改為 default，不靜默覆寫。其他可拆獨立配件仍可 none；長袍裝配時的內層遮藏不變。
+
+D12 固定 walk 預覽沿用肩膀擺動與既有平板掛點，有平板擺到背後的姿態，並非新手腕閱讀姿勢；未重構動畫。無效 JSON 載入只在介面提示，真實裝配或啟動錯誤仍保留 console 記錄。
+
+Build byte equality 的比較對象是同一候選 source 的單入口 build 與分階段隔離 build，不是候選與舊 main 的產物必須一樣。

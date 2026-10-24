@@ -52,8 +52,10 @@ test('three actual game NPCs retain refs on storage failures; D12 appearance sys
   m.fail=true;assert.throws(()=>controller.apply(card),/quota/);assert.equal(ownership.ownerOf(id),null);assert.deepEqual(serialize(root),initial);m.fail=false;
   controller.apply(card);assert.equal(ownership.ownerOf(id),'cards-preview');const owned=[];root.traverse(n=>{if(n.name.startsWith('character-card.'))owned.push(n);});
   const held=owned.find(n=>n.name.startsWith('character-card.top.')),visible=held.visible;held.visible=false;
-  const stable=serialize(root),saved=m.data.get(CARD_GAME_PREVIEW_KEY);m.fail=true;
-  for(const change of [()=>controller.apply({...card,parts:{...card.parts,top:'none'}}),()=>controller.reset(id),()=>controller.apply(base),()=>controller.clear()]){
+  const stable=serialize(root),saved=m.data.get(CARD_GAME_PREVIEW_KEY);
+  for(const slot of ['top','bottom']){assert.throws(()=>controller.apply({...card,parts:{...card.parts,[slot]:'none'}}));assert.deepEqual(serialize(root),stable);assert.equal(m.data.get(CARD_GAME_PREVIEW_KEY),saved);assert.equal(ownership.ownerOf(id),'cards-preview');for(const node of owned)assert.ok(node.parent);}
+  m.fail=true;
+  for(const change of [()=>controller.apply({...card,parts:{...card.parts,top:'default'}}),()=>controller.reset(id),()=>controller.apply(base),()=>controller.clear()]){
    assert.throws(change,/quota/);assert.equal(ownership.ownerOf(id),'cards-preview');assert.deepEqual(serialize(root),stable);assert.equal(m.data.get(CARD_GAME_PREVIEW_KEY),saved);for(const n of owned)assert.ok(n.parent);
   }
   m.fail=false;held.visible=visible;

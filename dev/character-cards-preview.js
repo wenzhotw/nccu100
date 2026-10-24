@@ -9,7 +9,7 @@ async function start(){
   const {renderer}=await import('../src/core/engine.js'),{addNPC}=await import('../src/actors/npc.js');
   const {toon,OUT,canvasTex}=await import('../src/render/kit.js');
   const {costumeLook}=await import('../src/systems/baozhong/npc-costume-profiles.js'),{mountNpcCostume}=await import('../src/systems/baozhong/npc-costumes.js');
-  const {CHARACTER_CARD_CATALOG,CHARACTER_CARD_PREVIEW_KEY,validateCharacterCard}=await import('../src/actors/character-card-config.js');
+  const {CHARACTER_CARD_CATALOG,CHARACTER_CARD_PREVIEW_KEY,validateCharacterCard,characterCardPartChoices}=await import('../src/actors/character-card-config.js');
   const {createCharacterCardActor}=await import('../src/actors/character-card-actor.js'),{default:bz}=await import('../src/content/baozhong.json');
   const scene=new THREE.Scene();scene.background=new THREE.Color('#eef5f3');scene.add(new THREE.HemisphereLight('#fff7e8','#a7c9ba',1.3));
   const light=new THREE.DirectionalLight('#fff4df',1.8);light.position.set(-3,5,4);scene.add(light);
@@ -41,7 +41,7 @@ async function start(){
    handle=createCharacterCardActor(actor);$('parts').replaceChildren();
    for(const [slot,id] of Object.entries(CHARACTER_CARD_CATALOG[actor.id].parts)){
     const label=document.createElement('label');label.textContent=labels[slot];const select=document.createElement('select');select.dataset.slot=slot;label.appendChild(select);
-    for(const [value,text] of [['default','原樣'],['none','卸下'],[id,`裝配：${id}`]]){const o=document.createElement('option');o.value=value;o.textContent=text;select.appendChild(o);}
+    for(const [value,text] of characterCardPartChoices(actor.id,slot).map(value=>[value,value==='default'?'原樣':value==='none'?'卸下':`裝配：${id}`])){const o=document.createElement('option');o.value=value;o.textContent=text;select.appendChild(o);}
     select.addEventListener('change',guard(()=>{const card=handle.exportCard();card.parts[slot]=select.value;apply(card);}));$('parts').appendChild(label);
    }
    let message='原始外觀，未新增零件。';try{const saved=localStorage.getItem(key());if(saved){handle.loadCard(saved);message='已載回本機設定卡。';}}catch(error){message=`保存內容未載入：${error.message}`;}
@@ -49,7 +49,10 @@ async function start(){
   }
   $('actor').addEventListener('change',guard(selectActor));$('pose').addEventListener('change',guard(pose));
   $('reset').addEventListener('click',guard(()=>{handle.reset({commit:()=>localStorage.removeItem(key())});$('pose').value='neutral';pose();update('已還原原始外觀，刪除本機設定卡。');}));
-  $('import').addEventListener('click',guard(()=>apply(validateCharacterCard($('json').value,actor.id))));
+  $('import').addEventListener('click',()=>{
+   let card;try{card=validateCharacterCard($('json').value,actor.id);}catch(error){status.textContent=`設定卡未載入：${error.message}`;document.documentElement.dataset.cardError=error.message;return;}
+   guard(()=>apply(card))();
+  });
   $('export').addEventListener('click',guard(()=>{const text=JSON.stringify(handle.exportCard(),null,2);$('json').value=text;const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=`${actor.id}-character-card.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}));
   for(const [name,pos] of Object.entries({front:[0,1.15,4],side:[4,1.15,0],back:[0,1.15,-4]}))$(name).addEventListener('click',()=>{camera.position.set(...pos);controls.update();});
   selectActor();document.querySelectorAll('aside button,aside select').forEach(n=>n.disabled=false);

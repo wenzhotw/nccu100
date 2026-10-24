@@ -7,7 +7,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {Group} from 'three';
 import {capturePoseSnapshots} from './poses.mjs';
-import {CHARACTER_CARD_CATALOG as C,defaultCharacterCard,validateCharacterCard} from '../../src/actors/character-card-config.js';
+import {CHARACTER_CARD_CATALOG as C,defaultCharacterCard,validateCharacterCard,characterCardPartChoices} from '../../src/actors/character-card-config.js';
 import {createCharacterCardActor} from '../../src/actors/character-card-actor.js';
 import {createVisibilityRules} from '../../src/actors/visibility-rules.js';
 import {validateWardrobeConfig} from '../../src/actors/wardrobe-config.js';
@@ -25,7 +25,9 @@ test('card catalog is frozen plain JSON, strict schema and raw UTF-8 limits stay
   assert.throws(()=>validateWardrobeConfig(card));
   for(const bad of [null,[],{...card,kind:'wardrobe'},{...card,schemaVersion:2},{...card,actorId:'player'},{...card,extra:0},{...card,parts:[]},{...card,parts:{...card.parts,extra:'none'}},JSON.parse(raw.replace('"parts":{','"parts":{"__proto__":{},')),Object.assign(Object.create({evil:1}),card),{schemaVersion:1,actorId:id,slots:{headwear:'default',outerwear:'default',leftHand:'default'}}])assert.throws(()=>validateCharacterCard(bad));
   let read=false;const getter={...card};Object.defineProperty(getter,'parts',{enumerable:true,get(){read=true;return card.parts;}});assert.throws(()=>validateCharacterCard(getter));assert.equal(read,false);
-  const copy=validateCharacterCard(card);copy.parts.top='none';assert.equal(card.parts.top,'default');
+  const copy=validateCharacterCard(card);copy.parts.top=C[id].parts.top;assert.equal(card.parts.top,'default');
+  for(const slot of Object.keys(card.parts)){assert.deepEqual(characterCardPartChoices(id,slot),['top','bottom'].includes(slot)?['default',C[id].parts[slot]]:['default','none',C[id].parts[slot]]);}
+  for(const slot of ['top','bottom'])assert.throws(()=>validateCharacterCard({...card,parts:{...card.parts,[slot]:'none'}}));
   for(const slot of Object.keys(card.parts))assert.throws(()=>validateCharacterCard({...card,parts:{...card.parts,[slot]:'foreign-item'}}));
  }
 });
@@ -46,9 +48,17 @@ globalThis[hook]=(id,root,serialize,worldList,npc)=>{
  const before=serialize(root),world=worldList(root),refs=[];root.traverse(n=>refs.push([n,n.parent,n.visible]));
  const after=npc.after,P=npc.P,assembly=npc.assembly;
  const poseBaseline=capturePoseSnapshots('chiang',root,P,worldList);
+ const assertBodyRemovalRejected=actor=>{
+  const card=actor.exportCard(),snapshot=serialize(root),worldSnapshot=worldList(root),poses=capturePoseSnapshots('chiang',root,P,worldList),nodes=[];root.traverse(node=>nodes.push([node,node.parent,node.visible]));
+  for(const slot of ['top','bottom'])for(const value of [{...card,parts:{...card.parts,[slot]:'none'}},JSON.stringify({...card,parts:{...card.parts,[slot]:'none'}})]){
+   let committed=false;assert.throws(()=>actor.loadCard(value,{commit(){committed=true;}}));assert.equal(committed,false);assert.deepEqual(actor.exportCard(),card);assert.deepEqual(serialize(root),snapshot);assert.deepEqual(worldList(root),worldSnapshot);assert.deepEqual(capturePoseSnapshots('chiang',root,P,worldList),poses);
+   for(const [node,parent,visible] of nodes){assert.equal(node.parent,parent);assert.equal(node.visible,visible);}
+   for(const side of ['L','R']){assert.equal(assembly.limbParts['arm'+side].hand.parent,P['sh'+side]);assert.equal(assembly.limbParts['leg'+side].leg.parent,P['hip'+side]);}
+  }
+ };
  const geometries=new Set();root.traverse(n=>{if(n.geometry)geometries.add(n.geometry);});let disposed=0;
  const listener=()=>disposed++;for(const g of geometries)g.addEventListener('dispose',listener);
- const actor=createCharacterCardActor(npc),base=actor.exportCard();
+ const actor=createCharacterCardActor(npc),base=actor.exportCard();assertBodyRemovalRejected(actor);
  assert.deepEqual(serialize(root),before);assert.throws(()=>createCharacterCardActor(npc),/active/);
  {const anchor=actor.anchors['costume.head'],parent=anchor.parent,index=parent.children.indexOf(anchor),foreign=new Group();foreign.add(anchor);
  try{assert.throws(()=>actor.validate(),/hierarchy|anchor|reparent/i,'reparented costume anchor must reject before mutation');}finally{foreign.remove(anchor);parent.add(anchor);parent.children.splice(parent.children.indexOf(anchor),1);parent.children.splice(index,0,anchor);}}
@@ -61,13 +71,13 @@ globalThis[hook]=(id,root,serialize,worldList,npc)=>{
   assert.throws(()=>actor.reset({commit(){throw new Error('quota');}}),/quota/);assert.deepEqual(serialize(root),stable);assert.deepEqual(actor.exportCard(),next);for(const n of owned)assert.ok(n.parent);
   actor.reset();assert.deepEqual(serialize(root),before);
  }
- const all={...base,parts:{...C[id].parts}};actor.loadCard(all);const stable=serialize(root),saved=actor.exportCard();
+ const all={...base,parts:{...C[id].parts}};actor.loadCard(all);assertBodyRemovalRejected(actor);const stable=serialize(root),saved=actor.exportCard();
  for(const invalid of ['x',' '.repeat(4097),{...base,actorId:'player'}]){assert.throws(()=>actor.loadCard(invalid));assert.deepEqual(serialize(root),stable);}
  assert.throws(()=>actor.reset({commit:async()=>{}}),/synchronous/);assert.deepEqual(serialize(root),stable);
  assert.throws(()=>actor.reset({commit:()=>Promise.resolve()}),/Promise/);assert.deepEqual(serialize(root),stable);
  const existing=[];root.traverse(n=>{if(n.name.startsWith('character-card.'))existing.push(n);});
  {const node=existing.find(n=>n.name.startsWith('character-card.top.')),visible=node.visible;node.visible=false;
- const changed={...saved,parts:{...saved.parts,bottom:'none'}};actor.loadCard(changed);assert.equal(node.visible,false);assert.ok(node.parent);actor.loadCard(saved);node.visible=visible;}
+ const changed={...saved,parts:{...saved.parts,bottom:'default'}};actor.loadCard(changed);assert.equal(node.visible,false);assert.ok(node.parent);actor.loadCard(saved);node.visible=visible;}
  {const node=existing[0],parent=node.parent,index=parent.children.indexOf(node),foreign=new Group();foreign.add(node);
  try{assert.throws(()=>actor.loadCard(base),/reparent/i);}finally{foreign.remove(node);parent.add(node);parent.children.splice(parent.children.indexOf(node),1);parent.children.splice(index,0,node);}}
  const throwRemoved=()=>{throw new Error('removed callback');};existing[0].addEventListener('removed',throwRemoved);

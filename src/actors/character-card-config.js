@@ -7,6 +7,12 @@ export const CHARACTER_CARD_CATALOG=Object.freeze({
  'bz26-D31':entry('法律學系・法官袍',{top:'judge-base-top',bottom:'judge-base-bottom',dress:'judge-robe',headwear:'judge-wig',custom:'judge-tabs'},{dress:['top','bottom']}),
  'bz26-D12':entry('金融學系・西裝',{top:'business-suit',bottom:'business-trousers','hand.L':'finance-tablet'}),
 });
+/** 舊模型的衣身共用 mesh，尚無可替代的裸身；不可卸下軀幹或腿部。 */
+export function characterCardPartChoices(actorId,slot){
+ const parts=CHARACTER_CARD_CATALOG[actorId]?.parts;
+ if(!parts||!Object.hasOwn(parts,slot))throw new TypeError('Unknown card slot');
+ return ['top','bottom'].includes(slot)?['default',parts[slot]]:['default','none',parts[slot]];
+}
 function keys(value,expected){
  if(!value||Object.getPrototypeOf(value)!==Object.prototype)throw new TypeError('Card must be plain data');
  const actual=Reflect.ownKeys(value);
@@ -28,7 +34,8 @@ export function validateCharacterCard(value,expectedId){
  if(expectedId!==undefined&&value.actorId!==expectedId)throw new TypeError('Card actor mismatch');
  keys(value.parts,Object.keys(catalog));
  for(const slot of Object.keys(catalog)){
-  if(!['default','none',catalog[slot]].includes(value.parts[slot]))throw new TypeError(`Unknown card part: ${slot}`);
+  if(value.parts[slot]==='none'&&['top','bottom'].includes(slot))throw new TypeError('衣身一體：上衣與褲裝尚不能安全卸下，請選原樣或裝配。');
+  if(!characterCardPartChoices(value.actorId,slot).includes(value.parts[slot]))throw new TypeError(`Unknown card part: ${slot}`);
   result.parts[slot]=value.parts[slot];
  }
  return result;

@@ -32,8 +32,8 @@ test('預覽對話框 lock/輸入/關閉/focus 與原換裝共存，不自動套
 });
 test('逐件與原始JSON只在明確套用時送controller，超限或跨角色拒絕',()=>{
  const s=setup();s.id('card-preview-open').fire('click');
- const part=s.id('card-preview-parts').querySelectorAll('select')[0];part.value='none';assert.equal(s.calls.some(c=>c[0]==='apply'),false);
- s.text('套用選件並保存預覽').fire('click');assert.equal(s.calls.at(-1)[1].parts.top,'none');
+ const part=s.id('card-preview-parts').querySelectorAll('select').find(n=>n.dataset.slot==='dress');part.value='none';assert.equal(s.calls.some(c=>c[0]==='apply'),false);
+ s.text('套用選件並保存預覽').fire('click');assert.equal(s.calls.at(-1)[1].parts.dress,'none');
  const input=s.id('card-preview-json'),load=s.text('載入 JSON 並套用'),raw=JSON.stringify(defaultCharacterCard('bz26-D26'));
  for(const bytes of [4095,4096]){input.value=raw+' '.repeat(bytes-raw.length);load.fire('click');}
  assert.equal(s.calls.filter(c=>c[0]==='apply').length,3);
@@ -48,4 +48,14 @@ test('損壞預覽儲存有清除通道，不會套用空欄或改寫其他存�
  s.id('card-preview-actor').fire('change');s.store.read=()=>{throw Error('again');};s.id('card-preview-actor').value='bz26-D31';s.id('card-preview-actor').fire('change');
  s.store.read=()=>({actors:{}});s.text('套用選件並保存預覽').fire('click');assert.equal(s.calls.some(c=>c[0]==='apply'),false);
  s.text('清除全部預覽設定').fire('click');assert.equal(s.calls.some(c=>c[0]==='clear'),true);assert.equal(s.calls.some(c=>c[0]==='apply'),false);
+});
+test('衣身一體的上衣褲裝不提供卸下，偽造選項也在送 controller 前拒絕',()=>{
+ const s=setup();s.id('card-preview-open').fire('click');
+ for(const id of ['bz26-D26','bz26-D31','bz26-D12']){
+  s.id('card-preview-actor').value=id;s.id('card-preview-actor').fire('change');
+  for(const select of s.id('card-preview-parts').querySelectorAll('select').filter(n=>['top','bottom'].includes(n.dataset.slot))){
+   assert.equal(select.children.some(o=>o.value==='none'),false);select.value='none';
+   s.text('套用選件並保存預覽').fire('click');assert.equal(s.calls.some(c=>c[0]==='apply'),false);select.value='default';
+  }
+ }
 });
