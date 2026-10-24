@@ -87,10 +87,10 @@ test('Weather pauses narrative after visual updates without freezing the existin
 test('NPC pause guard preserves in-flight catch callback before any movement or state changes', () => {
   const text = source('../src/actors/npc.js');
   const start = text.indexOf('function npcUpdate(n,dt){');
-  const guard = text.slice(start, text.indexOf('  const p=n.g.position', start));
-  const n = { pauseWhen: () => true, state: 'chase', chaseT: 5, onCatch: () => {} };
+  const guard = text.slice(start, text.indexOf('  let tx=null,tz=null,spd=0;', start));
+  const n = { pauseWhen: () => true, state: 'chase', chaseT: 5, onCatch: () => {}, g: { position: { x: 60, y: 0, z: 0 } } };
   const before = { ...n };
-  vm.runInNewContext(guard + '\n}\nnpcUpdate(n, 1);', { n });
+  vm.runInNewContext(guard + '\n}\nnpcUpdate(n, 1);', { n, state: { room: null }, pos: { x: 0, z: 0 }, MOBILE: false });
   assert.deepEqual(n, before);
 });
 

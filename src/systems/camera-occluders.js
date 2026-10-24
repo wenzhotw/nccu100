@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export function collectCameraOccluders(root,{outline,sky}={}){
  const bounds=new THREE.Box3(),size=new THREE.Vector3(),list=[];
  const walk=o=>{
-  if(o.userData?.noOcc)return;
+  if(o.userData?.noOcc||o.userData?.cameraSkipSubtree)return;
   if(o.isMesh&&o.material!==outline&&!o.isInstancedMesh&&o!==sky){
    const type=o.geometry.type,eligible=type==='BoxGeometry'||type==='ExtrudeGeometry'||type==='CylinderGeometry'&&o.geometry.parameters.radiusTop>.6;
    if(o.userData?.cameraOccluder)list.push(o);

@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { registerTrialNpc } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
-import { scene } from '../core/engine.js';
+import { MOBILE, scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
 import { BOX, SPH, basic, canvasTex, outline, toon } from '../render/kit.js';
 import { resolve } from '../core/collision.js';
@@ -119,12 +119,16 @@ function addNPC(o){
   registerTrialNpc(n,b.limbParts);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
+const NPC_FAR=50;
 function npcUpdate(n,dt){
-  // 劇情角色可暫停，保留追逐與 onCatch，避免活動旗標與會場同步之間漏跑。
-  if(n.pauseWhen?.()) return;
   // 不在主角所在的場景：不畫也不動（一般遊戲換場景後，其他場景的角色會暫停）
   if((n.room||null)!==(state.room||null)) return;
   const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=true;
+  // 手機遠處只隱藏外觀，目的地、返回、劇情與互動座標仍照常更新。
+  if(MOBILE){ const far=!n.after&&dP>NPC_FAR&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'; n.rig.visible=!far; }
+  // 暫停只停止行為，距離造成的外觀隱藏仍可恢復；不改動活動控制的父層 visible。
+  // 保留追逐與 onCatch 狀態，不讓節慶期間的劇情邏輯繼續執行。
+  if(n.pauseWhen?.()) return;
   let tx=null,tz=null,spd=0;
   if(state.driving&&!n.room&&n!==cop&&Math.abs(state.carSpeed)>1.5&&Math.hypot(police.position.x-p.x,police.position.z-p.z)<13){ if(n.fear<=0&&Math.random()<0.6) AU.sfx('scream'); n.fear=3.2; }
   if(n.fear>0){ n.fear-=dt; let ax=p.x-police.position.x, az=p.z-police.position.z; const l=Math.hypot(ax,az)||1; tx=p.x+ax/l*5; tz=p.z+az/l*5; spd=6.2; }

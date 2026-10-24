@@ -8,6 +8,7 @@ import {interiorColliders,RESTROOM_DOORS,UTILITY_DOOR} from './interior-layout.j
 import {createDahMaterialFactory,addDahContactShadows} from './materials.js';
 import {createDahLighting,configureDahShadows} from './daylight.js';
 import {dahClock} from './visual-clock.js';
+import {batchDahStatic} from './static-batch.js';
 let materialFactory,lighting,contacts;
 export function updateInterior(time,position){const p=dahClock.sample(time);materialFactory?.setEnvironment(p);contacts?.update(p);lighting?.update(p,position);}
 function sign(parent,text,x,y,z,w,h,angle=0,bg=null,color='#eee9df'){
@@ -52,6 +53,7 @@ export function buildInterior(){
  sign(gratitude,'感恩牆',-3.1,1.02,.36,1.8,.28);
  contacts=addDahContactShadows(model,{interior:true});
  for(const z of [-17,-11,-6])sign(model,'作業區',-.32,2.7,z,1.3,.3,-Math.PI/2,null,'#35495a');
+ model.userData.dahStaticBatches=batchDahStatic(model);
 }
 export function interiorLight(s){
  configureDahShadows(s);
