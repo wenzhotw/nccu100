@@ -1,0 +1,929 @@
+{
+  "baselineCommit": "080213a52418f9152f13d24511ac8047256a2970",
+  "source": "tests/characters/snapshots/index.json",
+  "counts": {
+    "snapshotVariants": 112,
+    "uniqueInstances": 110,
+    "npcInstances": 109,
+    "humanoidNpcInstances": 108,
+    "capybaraNpcInstances": 1,
+    "playerInstances": 1
+  },
+  "scope": "NPC登記路徑與主角，非原105協作清冊完成率，非全場景動物",
+  "preservedSpecialPaths": [
+    {
+      "source": "src/actors/pangolin.js",
+      "note": "獨立穿山甲actor，維持專用路徑"
+    },
+    {
+      "source": "src/world/buildings/library/index.js",
+      "note": "建築內石獅，維持專用路徑"
+    },
+    {
+      "source": "src/systems/old-principal/index.js",
+      "note": "附屬馬維持專用路徑，騎者人形已遷移"
+    },
+    {
+      "source": "src/systems/baozhong/balloon-arch.js",
+      "note": "拱門動物裝飾，非互動NPC"
+    }
+  ],
+  "characters": [
+    {
+      "id": "player",
+      "instanceKey": "player",
+      "kind": "humanoid",
+      "source": "src/actors/player.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "player#swim",
+      "instanceKey": "player",
+      "kind": "humanoid",
+      "source": "src/actors/player.js",
+      "construction": "createHumanoid",
+      "note": "原主角形態轉換，非另建角色"
+    },
+    {
+      "id": "player#eagle",
+      "instanceKey": "player",
+      "kind": "humanoid",
+      "source": "src/actors/player.js",
+      "construction": "createHumanoid",
+      "note": "原主角形態轉換，非另建角色"
+    },
+    {
+      "id": "principal",
+      "instanceKey": "principal",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "dean",
+      "instanceKey": "dean",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "chiang",
+      "instanceKey": "chiang",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "koko",
+      "instanceKey": "koko",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fang",
+      "instanceKey": "fang",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "cop",
+      "instanceKey": "cop",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "warn-track",
+      "instanceKey": "warn-track",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "warn-lion",
+      "instanceKey": "warn-lion",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "pool-counter",
+      "instanceKey": "pool-counter",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "wen",
+      "instanceKey": "wen",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "lifeguard",
+      "instanceKey": "lifeguard",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "wenz",
+      "instanceKey": "wenz",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "biz-liang",
+      "instanceKey": "biz-liang",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "biz-huang",
+      "instanceKey": "biz-huang",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "biz-tsai",
+      "instanceKey": "biz-tsai",
+      "kind": "capybara",
+      "source": "src/actors/npc.js",
+      "construction": "createCapybara",
+      "note": "四足專用工廠，非人形換裝"
+    },
+    {
+      "id": "gym-jamal",
+      "instanceKey": "gym-jamal",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-azhe",
+      "instanceKey": "gym-azhe",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-kofi",
+      "instanceKey": "gym-kofi",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-boyu",
+      "instanceKey": "gym-boyu",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-andre",
+      "instanceKey": "gym-andre",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-lin",
+      "instanceKey": "gym-lin",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-captain",
+      "instanceKey": "gym-captain",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-daniel",
+      "instanceKey": "gym-daniel",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-yuxiang",
+      "instanceKey": "gym-yuxiang",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-tunde",
+      "instanceKey": "gym-tunde",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-mei",
+      "instanceKey": "gym-mei",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-staff",
+      "instanceKey": "gym-staff",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "gym-tall",
+      "instanceKey": "gym-tall",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-0",
+      "instanceKey": "students-0",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-1",
+      "instanceKey": "students-1",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-2",
+      "instanceKey": "students-2",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-3",
+      "instanceKey": "students-3",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-4",
+      "instanceKey": "students-4",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "students-5",
+      "instanceKey": "students-5",
+      "kind": "humanoid",
+      "source": "src/actors/npc.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D01",
+      "instanceKey": "bz26-D01",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D02",
+      "instanceKey": "bz26-D02",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D03",
+      "instanceKey": "bz26-D03",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D04",
+      "instanceKey": "bz26-D04",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D05",
+      "instanceKey": "bz26-D05",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D06",
+      "instanceKey": "bz26-D06",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D07",
+      "instanceKey": "bz26-D07",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D08",
+      "instanceKey": "bz26-D08",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D09",
+      "instanceKey": "bz26-D09",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D10",
+      "instanceKey": "bz26-D10",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D11",
+      "instanceKey": "bz26-D11",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D12",
+      "instanceKey": "bz26-D12",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D13",
+      "instanceKey": "bz26-D13",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D14",
+      "instanceKey": "bz26-D14",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D15",
+      "instanceKey": "bz26-D15",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D16",
+      "instanceKey": "bz26-D16",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D17",
+      "instanceKey": "bz26-D17",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D18",
+      "instanceKey": "bz26-D18",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D19",
+      "instanceKey": "bz26-D19",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D20",
+      "instanceKey": "bz26-D20",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D21",
+      "instanceKey": "bz26-D21",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D22",
+      "instanceKey": "bz26-D22",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D23",
+      "instanceKey": "bz26-D23",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D24",
+      "instanceKey": "bz26-D24",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D25",
+      "instanceKey": "bz26-D25",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D26",
+      "instanceKey": "bz26-D26",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D27",
+      "instanceKey": "bz26-D27",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D28",
+      "instanceKey": "bz26-D28",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D29",
+      "instanceKey": "bz26-D29",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D30",
+      "instanceKey": "bz26-D30",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D31",
+      "instanceKey": "bz26-D31",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D32",
+      "instanceKey": "bz26-D32",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D33",
+      "instanceKey": "bz26-D33",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D34",
+      "instanceKey": "bz26-D34",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D35",
+      "instanceKey": "bz26-D35",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D36",
+      "instanceKey": "bz26-D36",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-D37",
+      "instanceKey": "bz26-D37",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C01",
+      "instanceKey": "bz26-C01",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C02",
+      "instanceKey": "bz26-C02",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C03",
+      "instanceKey": "bz26-C03",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C04",
+      "instanceKey": "bz26-C04",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C05",
+      "instanceKey": "bz26-C05",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C06",
+      "instanceKey": "bz26-C06",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C07",
+      "instanceKey": "bz26-C07",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C08",
+      "instanceKey": "bz26-C08",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C09",
+      "instanceKey": "bz26-C09",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C10",
+      "instanceKey": "bz26-C10",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-C11",
+      "instanceKey": "bz26-C11",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-host",
+      "instanceKey": "bz26-host",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-F01",
+      "instanceKey": "bz26-F01",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-F02",
+      "instanceKey": "bz26-F02",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-F03",
+      "instanceKey": "bz26-F03",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-radio-dj1",
+      "instanceKey": "bz26-radio-dj1",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/entry-radio.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-radio-dj2",
+      "instanceKey": "bz26-radio-dj2",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/entry-radio.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-radio-dj3",
+      "instanceKey": "bz26-radio-dj3",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/entry-radio.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-radio-dj4",
+      "instanceKey": "bz26-radio-dj4",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/entry-radio.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pg-P01",
+      "instanceKey": "bz26-pg-P01",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pg-P02",
+      "instanceKey": "bz26-pg-P02",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pg-P03",
+      "instanceKey": "bz26-pg-P03",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pg-P04",
+      "instanceKey": "bz26-pg-P04",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pt-NTHU",
+      "instanceKey": "bz26-pt-NTHU",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pt-NYCU",
+      "instanceKey": "bz26-pt-NYCU",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pt-NCU",
+      "instanceKey": "bz26-pt-NCU",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "bz26-pt-TNUA",
+      "instanceKey": "bz26-pt-TNUA",
+      "kind": "humanoid",
+      "source": "src/systems/baozhong/programs-partners.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "missionary-a",
+      "instanceKey": "missionary-a",
+      "kind": "humanoid",
+      "source": "src/systems/missionaries/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "missionary-b",
+      "instanceKey": "missionary-b",
+      "kind": "humanoid",
+      "source": "src/systems/missionaries/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "old-principal",
+      "instanceKey": "old-principal",
+      "kind": "humanoid",
+      "source": "src/systems/old-principal/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-0",
+      "instanceKey": "fountain-crowd-0",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-1",
+      "instanceKey": "fountain-crowd-1",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-2",
+      "instanceKey": "fountain-crowd-2",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-3",
+      "instanceKey": "fountain-crowd-3",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-4",
+      "instanceKey": "fountain-crowd-4",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-5",
+      "instanceKey": "fountain-crowd-5",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-6",
+      "instanceKey": "fountain-crowd-6",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    },
+    {
+      "id": "fountain-crowd-7",
+      "instanceKey": "fountain-crowd-7",
+      "kind": "humanoid",
+      "source": "src/systems/fountain-swim/index.js",
+      "construction": "createHumanoid",
+      "note": ""
+    }
+  ]
+}
