@@ -35,6 +35,7 @@ import './world/environment/grass.js';
 import './world/environment/particles.js';
 import './world/prefabs/flush.js'; // 全部建好後，把工具箱的東西合成一批一批畫（要在所有建築、地形之後）
 import './world/bake/flush.js'; // 再把剩下沒名字、純色的小方塊合併成幾個大網格（要在工具箱之後、鏡頭防穿模之前）
+import './render/mobile-shadows.js'; // 手機：很小的東西不投影，少畫一輪（要在烘焙之後）
 import './actors/player.js';
 import './actors/pangolin.js';
 import './systems/stories.js';
@@ -67,3 +68,4 @@ import './systems/camera-occlusion.js';
 import './systems/feel.js';
 import './core/loop.js';
 import './core/debug.js';
+import './render/warmup.js'; // 開始畫面時先編譯材質、上傳貼圖，進遊戲後轉頭比較不會頓（放最後，等所有東西都蓋好）
