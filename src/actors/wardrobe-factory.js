@@ -4,12 +4,8 @@ import {state} from '../core/state.js';
 import {toon,OUT} from '../render/kit.js';
 import {getActorRigIdentity,TRIAL_IDS} from './actor-rig-identity.js';
 const active=new WeakMap();
-const options=values=>Object.freeze(values.map(([id,label])=>Object.freeze({id,label})));
-export const WARDROBE_CATALOG=Object.freeze({
-  headwear:options([['default','原本頭部'],['beret','藍綠貝雷帽'],['cap','金色學士帽']]),
-  outerwear:options([['default','原本服裝'],['teal-vest','藍綠背心'],['gold-vest','暖金背心']]),
-  leftHand:options([['default','原本道具'],['none','卸下手持物'],['book','藍綠書本'],['tablet','暖金平板']]),
-});
+import {WARDROBE_CATALOG,validateWardrobeConfig as parseConfig} from './wardrobe-config.js';
+export {WARDROBE_CATALOG};
 const slots=Object.keys(WARDROBE_CATALOG),defaults=()=>Object.fromEntries(slots.map(s=>[s,'default']));
 let shapes;
 function geometry(){return shapes??=( {box:new BoxGeometry(1,1,1),sphere:new SphereGeometry(1,16,10),cylinder:new CylinderGeometry(1,1,1,20)} );}
@@ -45,13 +41,6 @@ function build(slot,id){
     for(let i=0;i<3;i++)part(g,`wardrobe.prop.line.${i}`,'box','#6db8cc',[-.11,.06-i*.05,.053],[.13,.012,.008]);
   }
   return g;
-}
-function parseConfig(value,id){
-  if(typeof value==='string'){if(value.length>4096)throw new RangeError('Wardrobe JSON too large');value=JSON.parse(value);}
-  const plain=o=>o!==null&&typeof o==='object'&&!Array.isArray(o)&&Object.getPrototypeOf(o)===Object.prototype;
-  if(!plain(value)||Object.keys(value).sort().join(',')!=='actorId,schemaVersion,slots'||value.schemaVersion!==1||value.actorId!==id||!plain(value.slots)||Object.keys(value.slots).sort().join(',')!==[...slots].sort().join(','))throw new Error('Invalid wardrobe config or actor');
-  for(const slot of slots)if(!WARDROBE_CATALOG[slot].some(x=>x.id===value.slots[slot]))throw new Error(`Invalid wardrobe item: ${slot}`);
-  return {schemaVersion:1,actorId:id,slots:{...value.slots}};
 }
 export function refreshWardrobeForm(root){active.get(root)?.refreshForm();}
 export function deactivateWardrobe(root){active.get(root)?.dispose();}
@@ -107,10 +96,11 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
   validate();
   // 回呼拋錯時的結構回復只處理本控制器持有的節點，不再次觸發失敗的事件。
   function detachOwned(node){if(!node?.parent)return;const parent=node.parent,index=parent.children.indexOf(node);if(index>=0)parent.children.splice(index,1);node.parent=null;}
-  function apply(config){
+  function apply(config,commit){
+    if(commit!==undefined&&typeof commit!=='function')throw new TypeError('Invalid wardrobe commit callback');
     validate();const next=parseConfig(config,id),staged={};
     const changed=slots.filter(slot=>next.slots[slot]!==selection[slot]);
-    if(!changed.length)return result.exportConfig();
+    if(!changed.length){commit?.();return result.exportConfig();}
     const old=changed.map(slot=>({node:nodes[slot],parent:nodes[slot]?.parent,index:nodes[slot]?.parent?.children.indexOf(nodes[slot])}));
     try{
       for(const slot of changed){
@@ -121,6 +111,8 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
         }
       }
       for(const slot of changed)nodes[slot]?.removeFromParent();
+      // Synchronous persistence joins the staged transaction, before visibility/selection commit.
+      commit?.();
     }catch(error){
       for(const node of Object.values(staged))detachOwned(node);
       for(const saved of old.sort((a,b)=>(a.index??0)-(b.index??0))){
@@ -138,7 +130,7 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
     validate,refreshForm,
     equip(slot,itemId){if(!slots.includes(slot))throw new Error('Unknown wardrobe slot');return apply({schemaVersion:1,actorId:id,slots:{...selection,[slot]:itemId}});},
     exportConfig(){validate();return {schemaVersion:1,actorId:id,slots:{...selection}};},
-    loadConfig(value){return apply(parseConfig(value,id));},
+    loadConfig(value,{commit}={}){return apply(parseConfig(value,id),commit);},
     reset(){return apply({schemaVersion:1,actorId:id,slots:defaults()});},
     dispose(){if(disposed)return;disposed=true;for(const node of Object.values(nodes)){try{node?.removeFromParent();}catch{detachOwned(node);}}for(const node of [...visibilityLeases.keys()])releaseOriginal(node);nodes={};suppressed.clear();active.delete(root);root.updateWorldMatrix(true,true);},
   });
