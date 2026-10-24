@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
-import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY, SHANJU } from '../layout.js';
+import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY, SHANJU, ZQ10, footprintOf } from '../layout.js';
 import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath, landscapeAt } from '../terrain.js';
 import {isInsideLobby} from '../lobby.js';
 
@@ -129,11 +129,14 @@ test('範圍內建築依輪廓最低層擠出，並提供至多四個碰撞盒',
   assert.equal(model.userData.buildings.length, expected.length);
   for (const b of expected) {
     const info = model.userData.buildings.find(v => v.osm === b.osm);
-    const floors = BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2);
+    const floors = BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 8 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2);
     assert.equal(info.height, floors * FLOOR_H);
     assert.equal(info.base, b.osm === LOBBY.osm ? 15 : Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])));
     const boxes = colliders.filter(c => c.building === b.osm);
-    assert(boxes.length >= 1 && boxes.length <= 4);
+    // 十舍 C 棟西翼整棟一樓架空（照片 8998），改由柱子與中庭邊沿擋人。
+    if (ZQ10.lifted.some(l => l.building === b.osm && l.fromX === undefined)) { assert.equal(boxes.length, 0); continue; }
+    // A 棟一樓挖出門廊與走廊，分兩塊實心各自擋人。
+    assert(boxes.length >= 1 && boxes.length <= (ZQ10.groundFloor?.building === b.osm ? 8 : 4));
     for (const c of boxes) assert(c.hx > 0 && c.hz > 0);
   }
   assert.equal(colliders.filter(c => c.kind === 'wall').length, wallChains().filter(c => !c.ramp).length + 2);
@@ -301,16 +304,18 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
   assert(inPoly(1, 1, [[0, 0], [2, 0], [2, 2], [0, 2]]));
   assert(!inPoly(3, 1, [[0, 0], [2, 0], [2, 2], [0, 2]]));
   assert.equal(project(1, -1, [[0, 0], [2, 0], [2, 2], [0, 2], [0, 0], [0, 0]]), 1);
-  const { greyboxColliders } = await import('../greybox.js');
+  const { greyboxColliders, clipBuildingX } = await import('../greybox.js');
   const boxes = greyboxColliders().filter(c => c.kind === 'building');
   const buildings = LAYOUT.buildings.filter(b => b.pts.every(([x, z]) => x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1))
     // 大廳建物只剩大廳以南（z ≥ LOBBY.bounds.z1）是實心，取該段輪廓驗收碰撞覆蓋。
     .map(b=>b.osm===LOBBY.osm?{...b,pts:[[25.58,LOBBY.bounds.z1],[36.78,LOBBY.bounds.z1],[37,-10.4],[25.8,-10.1]]}:b)
     // 山居塔樓另外建模（騎樓可走進去），ABC 區只驗收切掉塔樓後的輪廓。
     .map(b=>b.osm===SHANJU.osm?{...b,pts:SHANJU.rest}:b);
-  for (const b of buildings) {
+  // A 棟凸出段挑高架空（照片 8988），只驗切線西側的實心段。
+  for (const b of buildings.filter(b => !ZQ10.lifted.some(l => l.building === b.osm && l.fromX === undefined))
+    .map(b => { const l = ZQ10.lifted.find(l => l.building === b.osm); return l ? { ...b, pts: clipBuildingX(footprintOf(b), l.fromX, false) } : b; })) {
     const own = boxes.filter(c => c.building === b.osm);
-    assert(own.length >= 1 && own.length <= 4);
+    assert(own.length >= 1 && own.length <= (ZQ10.groundFloor?.building === b.osm ? 8 : 4));
     let total = 0, covered = 0;
     for (let x = Math.min(...b.pts.map(p => p[0])); x <= Math.max(...b.pts.map(p => p[0])); x += 0.5)
       for (let z = Math.min(...b.pts.map(p => p[1])); z <= Math.max(...b.pts.map(p => p[1])); z += 0.5)
@@ -659,4 +664,42 @@ test('照片 9022／9027：九舍 D 區西端有四層高的圓弧樓梯間，�
   } finally { setActiveColliders([]); setRoomClamp(null); }
   // 沿樓梯間外側的草地往南北走不被擋。
   assert.ok(walkLine([4.4, -35.2], [4.4, -39.6], boxes) < 1e-6, '樓梯間外側草地被擋');
+});
+
+test('十舍：由馬路走樓梯上磚地中庭，再從咖啡廳旁樓梯下到花園；花園不能直接爬上中庭', async () => {
+  // 照片 8992、9001 與使用者說明（2026-10-23）：花園與馬路同高，中庭抬高，兩處樓梯連接。
+  const { greyboxColliders } = await import('../greybox.js');
+  const all = greyboxColliders();
+  // 平面圖 8990：樓梯貼著 A 棟主翼東牆，從橘色雨遮通道西端往北下到花園。
+  const route = [[56.7, -35], [66.8, -35], [70, -31], [71.1, -31], [71.1, -36.8], [71.1, -45.2], [73, -47.5]];
+  const { p, visited } = path(route, all);
+  assert(Math.hypot(p.x - 73, p.z + 47.5) <= 0.5, `未抵達花園：${p.x},${p.z}`);
+  assert(visited.some(v => v.y === ZQ10.deck), '沒有登上磚地中庭');
+  assert.equal(heightAt(73, -47.5), 15);
+  const blocked = path([[87, -40], [87, -30]], all).p;
+  assert(blocked.z < -35.7, `花園直接走上中庭：${blocked.z}`);
+  // 花園東北角另一座樓梯貼著 D 棟登上中庭（照片 9001 遠處）。
+  const east = path([[89.8, -46], [89.8, -35.5], [89.8, -30]], all);
+  assert(Math.hypot(east.p.x - 89.8, east.p.z + 30) <= 0.5, `東北角樓梯走不上去：${east.p.x},${east.p.z}`);
+  assert.equal(heightAt(89.8, -30), ZQ10.deck);
+  // 挑高層裡的咖啡廳木平台，從花園可以直接走到店門口。
+  const cafe = path([[73.6, -48], [73.6, -41.2]], all).p;
+  assert(Math.hypot(cafe.x - 73.6, cafe.z + 41.2) <= 0.5, `走不進挑高層：${cafe.x},${cafe.z}`);
+  assert.equal(heightAt(73.6, -41.2), 15);
+  // 從木平台不能直接翻上通道或穿過樓梯側牆。
+  const side = path([[73.6, -43], [70.6, -43]], all).p;
+  assert(side.x > 72, `從木平台穿過樓梯擋牆：${side.x}`);
+  // 使用者說明（2026-10-24）：門廊北通道是走廊，穿過 A 棟到十字路口，往北是萊爾富走道、往東沿花園直走。
+  const entry = path([[58, -39.6], [65.5, -39.6], [65.5, -45.5], [69.4, -45.5], [69.4, -54]], all);
+  assert(Math.hypot(entry.p.x - 69.4, entry.p.z + 54) <= 0.5, `走廊走不到萊爾富走道：${entry.p.x},${entry.p.z}`);
+  assert(entry.visited.slice(1).every(v => v.y === 15), '門廊與走廊應與馬路同高');
+  const straight = path([[69.4, -45.6], [80, -45.6]], all).p;
+  assert(Math.hypot(straight.x - 80, straight.z + 45.6) <= 0.5, `十字路口往東走不通：${straight.x},${straight.z}`);
+  // 南通道盡頭是玻璃幕牆，公告欄牆把兩條通道隔開。
+  const curtain = path([[61, -37], [69, -37]], all).p;
+  assert(curtain.x < 66.4, `穿過玻璃幕牆：${curtain.x}`);
+  const notice = path([[61, -38.3], [66, -38.3]], all).p;
+  assert(notice.x < 63, `穿過公告欄牆：${notice.x}`);
+  const fromRoad = path([[59.5, -30], [64, -30]], all).p;
+  assert(fromRoad.x < 60.5, `由馬路穿過異想食堂店面：${fromRoad.x}`);
 });

@@ -1,12 +1,13 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY, PLAZA, SHANJU } from './layout.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY, PLAZA, SHANJU, ZQ10, footprintOf } from './layout.js';
 import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, landscapeAt } from './terrain.js';
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 import { addLobbyExterior } from './lobby-exterior.js';
 import { addCourtyard, courtyardColliders, dTowerGeometries } from './courtyard.js';
 import {createLobby,lobbyColliders} from './lobby.js';
+import { zq10Colliders, deckGeometry } from './zq10-model.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -107,10 +108,30 @@ function addMerged(group, name, geometries, material) {
 
 function buildings() {
   return LAYOUT.buildings.filter(b => b.pts.every(([x, z]) =>
-    x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1)).map(b => ({ ...b,
+    x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1)).map(b => ({ ...b, pts: footprintOf(b),
     base: b.osm === LOBBY.osm ? LOBBY.base : Math.min(...b.pts.map(([x, z]) => LEVELS[platformLevel(x, z)])),
-    height: (BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 9 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2)) * FLOOR_H,
+    height: (BUILDING_FLOORS[b.osm] ?? (/十舍/.test(b.name) ? 8 : /九舍/.test(b.name) ? 6 : /五舍|六舍|七八舍/.test(b.name) ? 5 : 2)) * FLOOR_H,
   }));
+}
+
+/** 依 x 切線保留輪廓的一側，east 為真時留 x 大於切線的部分。 */
+export function clipBuildingX(pts, cutX, east) {
+  // 交換兩軸後沿用 clipBuilding：第二軸小於切線的一側是西側。
+  return clipBuilding(pts.map(([x, z]) => [z, x]), cutX, !east).map(([z, x]) => [x, z]);
+}
+
+/** 十舍架空：整棟或切線東側的牆底抬到架空層頂（照片 8988、8998）。 */
+function liftedParts(b) {
+  const lift = ZQ10.lifted.find(l => l.building === b.osm);
+  if (!lift) return [b];
+  const top = b.base + b.height;
+  if (lift.fromX === undefined) return [{ ...b, base: lift.bottom, height: top - lift.bottom }];
+  const east = { ...b, pts: clipBuildingX(b.pts, lift.fromX, true), base: lift.bottom, height: top - lift.bottom };
+  const west = clipBuildingX(b.pts, lift.fromX, false), ground = ZQ10.groundFloor;
+  if (ground?.building !== b.osm) return [{ ...b, pts: west }, east];
+  // 一樓挖出門廊與走廊：一樓只擠出實心塊，樓上恢復完整輪廓。
+  return [{ ...b, pts: west, base: ground.top, height: top - ground.top },
+    ...ground.parts.map(pts => ({ ...b, pts, height: ground.top - b.base })), east];
 }
 
 /** 山居塔樓由 shanju.js 另外建模，ABC 區只擠出切掉塔樓後的輪廓。 */
@@ -183,7 +204,7 @@ function addBuildingsAndWalls(group) {
     const parts = bridge ? [
       { pts: clipBuilding(b.pts, bridge.cutZ, true), base: b.base, height: b.height },
       { pts: clipBuilding(b.pts, bridge.cutZ, false), base: bridge.bottom, height: b.base + b.height - bridge.bottom, bridge: true },
-    ] : [b];
+    ] : liftedParts(b);
     for (const part of parts) {
       const shape = new THREE.Shape(part.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
       const g = new THREE.ExtrudeGeometry(shape, { depth: part.height, bevelEnabled: false, steps: 1 });
@@ -369,6 +390,9 @@ export function createGreybox() {
   group.add(createLobby());
   addCourtyard(group, { addMerged, TOP, BOX, wallMaterial, edgeMaterial });
   addRampDetails(group, rects, { addMerged, TOP, BOX, grass, concrete, edgeMaterial });
+  // 十舍磚地中庭，貼圖由 zq10.js 進場時換上。
+  const deck = new THREE.Mesh(deckGeometry(), new THREE.MeshToonMaterial({ color: '#a3a8ae' }));
+  deck.name = '十舍磚地中庭'; deck.position.y = 0.02; deck.userData.surface = true; deck.userData.surfaceOffset = 0.02; deck.userData.noOcc = true; group.add(deck);
   return group;
 }
 
@@ -391,7 +415,13 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...shanjuColliders(), ...buildings().map(withoutShanju).flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...zq10Colliders(), ...shanjuColliders(), ...buildings().map(withoutShanju).flatMap(b => {
+    // 架空層可以走，改由 zq10Colliders 的柱子與邊沿擋人；部分架空只留切線西側實心段。
+    const lift = ZQ10.lifted.find(l => l.building === b.osm);
+    if (lift && lift.fromX === undefined) return [];
+    // 一樓挖出門廊與走廊的棟別，只用一樓實心塊擋人。
+    if (lift && ZQ10.groundFloor?.building === b.osm) return ZQ10.groundFloor.parts.flatMap(pts => buildingBoxes({ ...b, pts }));
+    if (lift) return buildingBoxes({ ...b, pts: clipBuildingX(b.pts, lift.fromX, false) });
     if(b.osm===LOBBY.osm)return buildingBoxes({...b,pts:clipBuilding(b.pts,LOBBY.bounds.z1,false)});
     const bridge = BRIDGES.find(v => v.building === b.osm);
     if (!bridge) return buildingBoxes(b);
