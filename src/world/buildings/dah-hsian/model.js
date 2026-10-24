@@ -1,7 +1,8 @@
 /** 達賢戶外模型。只依賴 Three.js 與本區配置，可在 Node 直接驗收地面幾何。 */
 import * as THREE from 'three';
 import {createLakeside} from './lakeside-model.js';
-import { BOUNDS, POND, HOUSE, BRIDGE, DECK_Y, MAIN_ENTRANCE, LIBRARY_OUTLINE, TERRACE_RAILS, HOUSE_RAILS, OUTDOOR_STEPS, TREE_PLAZA, PLAZA_WALL, BENCHES, LAMPS, groundHeight, insidePolygon } from './layout.js';
+import {LAKE_FOREST_TREES} from './layout.js';
+import { BOUNDS, POND, HOUSE, BRIDGE, DECK_Y, MAIN_ENTRANCE, LIBRARY_OUTLINE, TERRACE_RAILS, HOUSE_RAILS, HOUSE_LOWER_RAILS, LAKE_FOREST_RAILS, OUTDOOR_STEPS, OUTDOOR_STAIR_FLIGHTS, OUTDOOR_STAIR_TURN_RAILS, TREE_PLAZA, PLAZA_SEGMENTS, PLAZA_WALL, BENCHES, LAMPS, LAKESIDE_SAPLINGS, SAPLING_BRACE_RADIUS, groundHeight, insidePolygon } from './layout.js';
 
 function shapeOf(points) {
   const s = new THREE.Shape();
@@ -17,9 +18,11 @@ export function createGround(material = new THREE.MeshToonMaterial({ color: COLO
   rear.holes.push(new THREE.Path(POND.map(([x,z])=>new THREE.Vector2(x,-z))));
   const back = new THREE.Mesh(new THREE.ShapeGeometry(rear),material);
   back.rotation.x=-Math.PI/2; group.add(back);
-  const zs=[-30,-20,0,28,36,48,50,62,70,76,80,90,104,210],vertices=[];
-  const xs=[x0,-59,-40,-30,-26,0,26,30,40,62,x1];
-  const v=(x,z)=>[x,z>=TREE_PLAZA.z&&Math.hypot(x-TREE_PLAZA.x,z-TREE_PLAZA.z)<TREE_PLAZA.radius?TREE_PLAZA.base-.03:groundHeight(x,z),z];
+  const plaza=TREE_PLAZA,half=plaza.radius+5,depth=plaza.radius+6;
+  const patch={x0:plaza.x-half,x1:plaza.x+half,z0:plaza.z,z1:plaza.z+depth};
+  const zs=[...new Set([-30,-20,0,28,36,48,50,62,70,76,80,90,104,210,patch.z0,patch.z1])].sort((a,b)=>a-b),vertices=[];
+  const xs=[...new Set([x0,-59,-40,-30,-26,0,26,30,40,62,x1,patch.x0,patch.x1])].sort((a,b)=>a-b);
+  const v=(x,z)=>[x,groundHeight(x,z),z];
   for(let k=0;k<xs.length-1;k++)for(let x=xs[k];x<xs[k+1];x+=2){
     const right=Math.min(x+2,xs[k+1]);
     for(let j=0;j<zs.length-1;j++){
@@ -27,19 +30,37 @@ export function createGround(material = new THREE.MeshToonMaterial({ color: COLO
       const dz=fine?.4:zs[j+1]-zs[j];
       for(let z=zs[j];z<zs[j+1]-.0001;z+=dz){
         const end=Math.min(z+dz,zs[j+1]);
+        // 廣場及其外緣由同心接合面處理，不能整格壓低而挖出圈外的深溝。
+        if(x>=patch.x0&&right<=patch.x1&&z>=patch.z0&&end<=patch.z1)continue;
         // x=30是低處與側坡的分界，各區用自己的端點標高，不跨過斷面補一張斜草坪。
-        const xx=x===30?30.00001:x,rr=right===30?29.99999:right;
-        const edge=end===28&&right<=30?27.99999:end;
+        const side=Math.abs((x+right)/2)>=30;
+        const atEdge=value=>Math.abs(value)===30?Math.sign(value)*(30+(side?1:-1)*.00001):value;
+        const xx=atEdge(x),rr=atEdge(right);
+        let edge=end===28&&!side?27.99999:end;
+        if(end===TREE_PLAZA.z&&right>TREE_PLAZA.x-TREE_PLAZA.radius&&x<TREE_PLAZA.x+TREE_PLAZA.radius)edge=end-.00001;
         const a=v(xx,z),b=v(xx,edge),c=v(rr,edge),d=v(rr,z);
-        if(fine&&[a,b,c,d].some(q=>q[1]===TREE_PLAZA.base-.03)){
-          for(const q of [a,b,c,d])q[1]=Math.min(q[1],TREE_PLAZA.base-.03);
-        }
+        // 只以微偏移選標高；實際頂點仍共用精確邊界，避免草坡間留下裂縫。
+        a[0]=b[0]=x;c[0]=d[0]=right;b[2]=c[2]=end;
         vertices.push(...a,...b,...c,...a,...c,...d);
       }
     }
   }
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.computeVertexNormals();
-  group.add(new THREE.Mesh(g,material));return group;
+  group.add(new THREE.Mesh(g,material));
+  // 弧階外緣接回矩形草坡。圓內留給真正的階梯／樹穴，不以草面蓋住踏面。
+  const angles=Array.from({length:PLAZA_SEGMENTS+1},(_,i)=>i*Math.PI/PLAZA_SEGMENTS);
+  angles.push(Math.atan2(depth,half),Math.atan2(depth,-half));angles.sort((a,b)=>a-b);
+  const joins=[],point=(r,a)=>{const x=plaza.x+r*Math.cos(a),z=plaza.z+r*Math.sin(a);return [x,groundHeight(x,z),z];};
+  const outer=a=>Math.min(Math.abs(Math.cos(a))<1e-8?Infinity:half/Math.abs(Math.cos(a)),Math.sin(a)<1e-8?Infinity:depth/Math.sin(a));
+  const rings=Array.from({length:11},(_,i)=>plaza.radius+i*.4);
+  for(let j=0;j<angles.length-1;j++)for(let i=0;i<rings.length;i++){
+    const a=angles[j],b=angles[j+1],inner=rings[i],last=i===rings.length-1;
+    const aa=point(inner,a),bb=point(last?outer(a):rings[i+1],a),cc=point(last?outer(b):rings[i+1],b),dd=point(inner,b);
+    joins.push(...aa,...dd,...cc,...aa,...cc,...bb);
+  }
+  const joinGeo=new THREE.BufferGeometry();joinGeo.setAttribute('position',new THREE.Float32BufferAttribute(joins,3));joinGeo.computeVertexNormals();
+  const join=new THREE.Mesh(joinGeo,material);join.name='老樹廣場草坡銜接';group.add(join);
+  return group;
 }
 
 const BOX = new THREE.BoxGeometry(1,1,1);
@@ -196,14 +217,27 @@ function library(parent,materialFor) {
   // 露台外欄杆沿 OSM 轉折，前草坡開口不設橫擋。
   for(const [a,c]of TERRACE_RAILS)
     railSegment(b,a,c,4);
-  for(const step of OUTDOOR_STEPS)b.add('concrete',step.x,step.y-.1,step.z,step.w,.2,step.d);
-  for(const x of [-32.4,-29.8,-29.3,-26.7]){
-    const ascending=x>-29.5;
-    for(let i=0;i<10;i++){
-      const z=ascending?-32.75+i*.55:-27.8-i*.55,y=ascending?2+(i+1)*.2:(i+1)*.2;
-      b.add('rail',x,y+.49,z,.045,.96,.045);
-      b.add('rail',x,y+.98,z,.065,.065,.64);
+  const stairs=new THREE.Group();stairs.name='樓外雙跑樓梯';g.add(stairs);
+  for(const step of OUTDOOR_STEPS)solid(stairs,materialFor,'concrete',step.x,step.y-.1,step.z,step.w,.2,step.d,'樓外可行走踏階');
+  const rod=(a,c,r,name)=>{
+    const delta=c.clone().sub(a),mesh=new THREE.Mesh(new THREE.CylinderGeometry(r,r,delta.length(),6),materialFor('rail'));
+    mesh.position.copy(a).add(c).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());mesh.name=name;stairs.add(mesh);
+  };
+  for(const flight of OUTDOOR_STAIR_FLIGHTS){
+    const a=flight[0],c=flight.at(-1),run=Math.abs(c.z-a.z),rise=c.y-a.y;
+    const underside=solid(stairs,materialFor,'concrete',a.x,(a.y+c.y)/2-.20,(a.z+c.z)/2,a.w,.22,Math.hypot(run,rise)+a.d,'樓外梯段連續底板');
+    // Signed slope keeps the lower flight's -z ascent correctly oriented.
+    underside.rotation.x=-Math.atan(rise/(c.z-a.z));
+    for(const side of [-1,1]){
+      const x=a.x+side*a.w/2;
+      for(const height of [.55,1.05])rod(new THREE.Vector3(x,a.y+height,a.z),new THREE.Vector3(x,c.y+height,c.z),.032,'樓外連續斜扶手');
+      for(const step of flight)rod(new THREE.Vector3(x,step.y,step.z),new THREE.Vector3(x,step.y+1.05,step.z),.022,'樓外梯側欄柱');
     }
+  }
+  for(const [a,c]of OUTDOOR_STAIR_TURN_RAILS){
+    const len=Math.hypot(c[0]-a[0],c[1]-a[1]),n=Math.ceil(len/.34);
+    for(const h of [.55,1.05])rod(new THREE.Vector3(a[0],2+h,a[1]),new THREE.Vector3(c[0],2+h,c[1]),.032,'樓外轉折平台扶手');
+    for(let i=0;i<=n;i++)rod(new THREE.Vector3(a[0]+(c[0]-a[0])*i/n,2,a[1]+(c[1]-a[1])*i/n),new THREE.Vector3(a[0]+(c[0]-a[0])*i/n,3.05,a[1]+(c[1]-a[1])*i/n),.022,'樓外轉折平台欄柱');
   }
   for(const x of [-25.9,-14,-2])solid(g,materialFor,'edge',x,1.82,-24.5,.45,3.64,.5,'池側落地柱');
   // 屋頂鋸齒採光與外周綠化。從地面只見收邊，空拍用來核對方向。
@@ -238,16 +272,17 @@ function readingHouse(parent,materialFor) {
   for(const side of [-1,1]){
     for(const y of [2.08,5.62])ribbonWindows(b,1.05,y,side*(d/2-.09),w-2.1,3.2,side>0?0:Math.PI);
 
-    for(const y of [2.08,5.62])ribbonWindows(b,w/2+.04,y,0,d-.3,3.2,Math.PI/2);
+
     solid(g,materialFor,'concrete',-w/2,3.85,side*(d/2-.12),.6,7.1,.55,'小屋入口端框柱');
   }
+  for(const y of [2.08,5.62])ribbonWindows(b,w/2+.04,y,0,d-.3,3.2,Math.PI/2);
   solid(g,materialFor,'concrete',-w/2,7.2,0,.6,.55,d+.45,'小屋入口端框樑');
   solid(g,materialFor,'concrete',-10.25,5.62,-4.1,.35,3.25,7.4,'小屋二樓入口實牆');
   ribbonWindows(b,-10.32,5.62,3.55,7.1,3.2,-Math.PI/2);
   ribbonWindows(b,-10.32,2.08,0,d-.3,3.2,-Math.PI/2);
   // 一樓入口前的下層露台與橋面上下分開；橋口不再被橫欄杆封住。
   for(const [a,c]of HOUSE_RAILS)railSegment(b,a,c,4);
-  for(const side of [-1,1])railSegment(b,[-13,side*8.75],[13,side*8.75],.4);
+  for(const [a,c]of HOUSE_LOWER_RAILS)railSegment(b,a,c,.4);
   for(const x of [-9,0,9])for(const z of [-5.8,5.8])
     solid(g,materialFor,'concrete',x,-.18,z,.5,.8,.65,'小屋水上支柱');
   b.finish();return g;
@@ -269,8 +304,51 @@ function pathStrip(parent,materialFor,points,width){
   const m=new THREE.Mesh(g,materialFor('paving'));m.material.side=THREE.DoubleSide;parent.add(m);
 }
 
+function lakePavers(parent,materialFor,points){
+ const vertices=[],hexVertices=[],tileCentres=[];
+ for(let i=1;i<points.length;i++){
+  const [ax,az]=points[i-1],[bx,bz]=points[i],dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len;
+  const rows=Math.max(1,Math.floor(len/.82)),spacing=len/rows;
+  for(let row=0;row<rows;row++)for(let col=0;col<4;col++){
+   const along=(row+.5)*spacing,across=(col-1.5)*.65,w=.56+((row+col)%3)*.018,d=Math.min(.72,spacing-.12);
+   const x=ax+ux*along+uz*across,z=az+uz*along-ux*across;
+   const p=(a,b)=>{const xx=x+uz*a+ux*b,zz=z-ux*a+uz*b;return[xx,groundHeight(xx,zz)+.018,zz];};
+   const a=p(-w/2,-d/2),b=p(-w/2,d/2),c=p(w/2,d/2),e=p(w/2,-d/2);
+   vertices.push(...a,...b,...c,...a,...c,...e);
+  }
+  // house-ground/lakewalk2020 show side islands of hexagonal units beside
+  // the long slab walk. Locations follow this fitted walk; unit size, island
+  // spacing and counts are estimates, not a paving construction survey.
+  if([5,6,13,14,15].includes(i))for(let along=2.5;along<len-1;along+=5.6)for(const side of [-1,1]){
+   for(let row=-2;row<=2;row++)for(let col=-2;col<=2;col++){
+    const u=along+row*.29,v=side*2.3+(col+(row%2)*.5)*.335;
+    const x=ax+ux*u+uz*v,z=az+uz*u-ux*v;
+    const centre=[x,groundHeight(x,z)+.018,z],corners=[];
+    for(let n=0;n<6;n++){const a=n*Math.PI/3,du=Math.cos(a)*.17,dv=Math.sin(a)*.17,xx=x+ux*du+uz*dv,zz=z+uz*du-ux*dv;corners.push([xx,groundHeight(xx,zz)+.018,zz]);}
+    if([centre,...corners].some(([xx,,zz])=>insidePolygon(xx,zz,POND)||insidePolygon(xx,zz,LIBRARY_OUTLINE)))continue;
+    tileCentres.push([x,z]);for(let n=0;n<6;n++)hexVertices.push(...centre,...corners[(n+1)%6],...corners[n]);
+   }
+  }
+ }
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();
+ const mesh=new THREE.Mesh(geo,materialFor('paving'));mesh.material.side=THREE.DoubleSide;mesh.name='湖岸草縫石板步道';parent.add(mesh);
+ const hexGeo=new THREE.BufferGeometry();hexGeo.setAttribute('position',new THREE.Float32BufferAttribute(hexVertices,3));hexGeo.computeVertexNormals();
+ const hexMesh=new THREE.Mesh(hexGeo,materialFor('paving'));hexMesh.name='湖岸六角草縫鋪面島';hexMesh.userData.tileCentres=tileCentres;parent.add(hexMesh);
+}
+
 function garden(parent,materialFor){
   const g=new THREE.Group();g.name='草坡與池畔園景';parent.add(g);const b=batch(g,materialFor);
+  const fence=new THREE.Group();fence.name='湖邊林地側護欄';g.add(fence);const fenceBatch=batch(fence,materialFor);
+  for(const [a,c]of LAKE_FOREST_RAILS)railSegment(fenceBatch,a,c,groundHeight((a[0]+c[0])/2,(a[1]+c[1])/2));
+  fenceBatch.finish();
+  const forest=new THREE.Group();forest.name='湖邊林地樹冠層';g.add(forest);const forestBatch=batch(forest,materialFor),forestTrunk=new THREE.CylinderGeometry(1,1,1,6);
+  for(const [i,t]of LAKE_FOREST_TREES.entries()){
+   const y=groundHeight(t.x,t.z),h=t.height;
+   forestBatch.add('trunk',t.x,y+h*.335,t.z,.14,h*.67,.14,0,forestTrunk);
+   forestBatch.add(i%2?'leavesDark':'leaves',t.x,y+h*.76,t.z,2.7,h*.24,2.5,i*.8,LEAF);
+   for(const side of [-1,1])forestBatch.add((i+side)%3?'leaves':'leavesLight',t.x+side*1.5,y+h*.64,t.z+side*.7,2.2,h*.22,2.1,i*.8,LEAF);
+  }
+  forestBatch.finish();
   // 長短石板錯落留草縫，四角分別取地面高度，不讓厚方塊浮在坡上。
   const stones=[];
   for(let row=0;row<31;row++)for(let col=0;col<5;col++){
@@ -283,7 +361,7 @@ function garden(parent,materialFor){
   }
   const stoneGeo=new THREE.BufferGeometry();stoneGeo.setAttribute('position',new THREE.Float32BufferAttribute(stones,3));stoneGeo.computeVertexNormals();
   const stoneMesh=new THREE.Mesh(stoneGeo,materialFor('paving'));stoneMesh.name='貼坡石板';g.add(stoneMesh);
-  pathStrip(g,materialFor,[[21,36],[23,24],[33,24],[35,8],[35,-24],[24,-34],[0,-35],[-31,-36],[-36,-50],[-35,-80],[-22,-96],[7,-99],[28,-85],[27,-57],[26,-35],[35,-24]],2.6);
+  lakePavers(g,materialFor,[[21,36],[23,24],[33,24],[35,8],[35,-24],[24,-34],[0,-35],[-31,-36],[-36,-50],[-35,-80],[-22,-96],[7,-99],[28,-85],[27,-57],[26,-35],[35,-24]]);
   // 門廊與前廣場的石板，同樣貼合高度。
   pathStrip(g,materialFor,[[-25,32],[16,32],[23,24]],3.6);
   // 兩端共用同一組接點；一般厚板 Mesh 也接入現有鏡頭遮擋。
@@ -304,10 +382,11 @@ function garden(parent,materialFor){
   const treeWell=new THREE.Mesh(new THREE.CircleGeometry(plaza.inner,48),materialFor('grassDark'));
   treeWell.rotation.x=-Math.PI/2;treeWell.position.set(plaza.x,plaza.base,plaza.z);treeWell.name='老樹樹穴';g.add(treeWell);
   const p=(r,a,y)=>[plaza.x+Math.cos(a)*r,y,plaza.z+Math.sin(a)*r];
-  for(let i=0;i<13;i++){
+  const plazaStepCount=Math.ceil((plaza.radius-plaza.inner)/plaza.tread);
+  for(let i=0;i<plazaStepCount;i++){
     const ri=plaza.inner+i*plaza.tread,ro=Math.min(plaza.radius,ri+plaza.tread),y=plaza.base+i*plaza.rise;
-    for(let k=0;k<64;k++){
-      const a=k/64*Math.PI,c=(k+1)/64*Math.PI;
+    for(let k=0;k<PLAZA_SEGMENTS;k++){
+      const a=k/PLAZA_SEGMENTS*Math.PI,c=(k+1)/PLAZA_SEGMENTS*Math.PI;
       const aa=p(ri,a,y),bb=p(ro,a,y),cc=p(ro,c,y),dd=p(ri,c,y);
       steps.push(...aa,...dd,...cc,...aa,...cc,...bb);
       if(i>0){const loA=p(ri,a,y-plaza.rise),loC=p(ri,c,y-plaza.rise);steps.push(...loA,...dd,...aa,...loA,...loC,...dd);}
@@ -317,7 +396,7 @@ function garden(parent,materialFor){
   const pm=new THREE.Mesh(pg,materialFor('stone'));pm.name='老樹廣場弧形階梯';g.add(pm);
   const wall=PLAZA_WALL;
   solid(g,materialFor,'concrete',wall.x,(wall.top+wall.bottom)/2,wall.z,wall.w,wall.top-wall.bottom,wall.d,'老樹廣場擋土牆');
-  for(const a of [.15,Math.PI*.5,Math.PI-.15])for(let i=0;i<13;i++){
+  for(const a of [.15,Math.PI*.5,Math.PI-.15])for(let i=0;i<plazaStepCount;i++){
     const r=plaza.inner+(i+.5)*plaza.tread,y=plaza.base+i*plaza.rise;
     b.add('rail',plaza.x+Math.cos(a)*r,y+.48,plaza.z+Math.sin(a)*r,.045,.96,.045);
   }
@@ -345,6 +424,44 @@ function garden(parent,materialFor){
     for(let i=0;i<4;i++)bankBatch.add(i%2?'hedge':'leavesLight',x+Math.sin(i*2.4)*.9,.27,z+Math.cos(i*2.4)*.7,1.25,.55,1.1,i,LEAF);
   }
   bankBatch.finish();
+  // Tina20/22：步道外側的林下植栽有高低層次，不是散放幾顆等大的球。
+  // 位置為照片估算；沿既有外側綠帶，保留石板通道與湖面視線。
+  const undergrowth=new THREE.Group();undergrowth.name='湖畔林下植栽';g.add(undergrowth);
+  const underBatch=batch(undergrowth,materialFor);
+  for(const [j,[x,z]]of [[33,-43],[36,-48],[37,-54],[36,-60],[35,-67],[37,-74],[34,-82],[30,-90],[-39,-53],[-39,-61],[-39,-70],[-35,-86]].entries()){
+    const y=groundHeight(x,z);
+    underBatch.add(j%2?'hedge':'leavesDark',x,y+.28,z,1.35,.48,1.1,j,LEAF);
+    for(let i=0;i<7;i++){
+      const a=i*Math.PI*2/7+j*.47,r=.3+(i%3)*.12,h=.5+((i+j)%4)*.12;
+      underBatch.add(i%2?'leaves':'leavesLight',x+Math.cos(a)*r,y+h*.55,z+Math.sin(a)*r,.18,h,.4,a,LEAF);
+    }
+  }
+  underBatch.finish();
+  // Sparse young crowns and timber braces preserve views through the real
+  // lakeside planting row. Keep the shared campus trees elsewhere unchanged.
+  const saplings=new THREE.Group();saplings.name='湖岸疏葉幼樹列';g.add(saplings);
+  const rodGeo=new THREE.CylinderGeometry(1,1,1,6);
+  const rod=(parent,a,c,r,name,kind='trunk')=>{
+    const delta=c.clone().sub(a),mesh=new THREE.Mesh(rodGeo,materialFor(kind));
+    mesh.position.copy(a).add(c).multiplyScalar(.5);mesh.scale.set(r,delta.length(),r);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());mesh.name=name;parent.add(mesh);return mesh;
+  };
+  for(const [j,t]of LAKESIDE_SAPLINGS.entries()){
+    const tree=new THREE.Group();tree.name='湖畔幼樹（照片估位）';tree.position.set(t.x,groundHeight(t.x,t.z),t.z);saplings.add(tree);
+    rod(tree,new THREE.Vector3(0,.01,0),new THREE.Vector3(0,t.height-.8,0),.08,'湖岸幼樹樹幹');
+    for(let i=0;i<3;i++){
+      const a=t.angle+i*Math.PI*2/3;
+      rod(tree,new THREE.Vector3(Math.cos(a)*SAPLING_BRACE_RADIUS,.035,Math.sin(a)*SAPLING_BRACE_RADIUS),new THREE.Vector3(0,2.4,0),.035,'幼樹三角支撐','timberDark');
+    }
+    const crown=batch(tree,materialFor);
+    for(let i=0;i<13;i++){
+      const a=i*2.39996+t.angle,h=2.9+i*.22,r=(.4+Math.sin(i*1.7)**2*.7)*(i>9?.65:1);
+      const end=new THREE.Vector3(Math.cos(a)*r,h,Math.sin(a)*r);
+      rod(tree,new THREE.Vector3(0,h-.7,0),end,.022,'幼樹細分枝');
+      crown.add((i+j)%3?'leavesLight':'leaves',end.x,end.y+.15,end.z,.45+(i%3)*.11,.48+(i%2)*.16,.5,a,LEAF);
+    }
+    crown.finish();
+  }
   // 石椅、細燈柱、場邊綠化。主要觀景方向不被樹冠擋住。
   for(const [x,z,angle]of BENCHES){
     const y=groundHeight(x,z);b.add('concrete',x,y+0.43,z,2.5,0.25,0.72,angle);

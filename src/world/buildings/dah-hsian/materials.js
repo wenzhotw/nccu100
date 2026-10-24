@@ -1,16 +1,33 @@
 import * as THREE from 'three';
 export const DAH_LIGHT_COLORS={deskGlow:'#ffd28e',contact:'#313c46'};
+/** Three's clone omits function-valued shader hooks. Keep the factory's world
+ * mapping and shared day/night rim uniform on otherwise identical variants. */
+export function cloneDahMaterial(base){
+ const material=base.clone();material.onBeforeCompile=base.onBeforeCompile;material.customProgramCacheKey=base.customProgramCacheKey;return material;
+}
 const localColors={concrete:'#b2b1a9',edge:'#c7c8bf',louver:'#aaa9a1',louverEdge:'#bdbdb3',timber:'#ad875d',timberLight:'#c3a37a',timberDark:'#6e5943',wood:'#b88746',litWood:'#c58a34',woodDark:'#463c2f',water:'#355b63',grass:'#7c9f66',glass:'#63818a',glassLight:'#9ab9b8',glassDark:'#405f66'};
 function texture(kind){
  const size=128,data=new Uint8Array(size*size*4);
+ // Periodic value noise: broad irregular patches, continuous across wrapped edges.
+ const grassNoise=(u,v,cells)=>{
+  const x=u*cells,y=v*cells,ix=Math.floor(x),iy=Math.floor(y);
+  const fade=t=>t*t*(3-2*t);
+  const at=(a,b)=>{const h=Math.imul((a%cells)+19,374761393)^Math.imul((b%cells)+37,668265263);return ((h^(h>>>13))>>>0)/4294967295;};
+  const tx=fade(x-ix),ty=fade(y-iy);
+  return THREE.MathUtils.lerp(THREE.MathUtils.lerp(at(ix,iy),at(ix+1,iy),tx),THREE.MathUtils.lerp(at(ix,iy+1),at(ix+1,iy+1),tx),ty);
+ };
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
   const i=(y*size+x)*4;
   const wood=['timber','timberLight','timberDark','wood','litWood'].includes(kind);
-  const grain=wood?Math.sin(x*.65+Math.sin(y*.05)*1.4)*6:Math.sin(x*1.7+y*.9)*2;
+  const grain=kind==='grass'?(grassNoise(x/size,y/size,7)*.7+grassNoise(x/size,y/size,3)*.3-.5)*24:wood?Math.sin(x*.65+Math.sin(y*.05)*1.4)*6:Math.sin(x*1.7+y*.9)*2;
   const seam=['paving','floor'].includes(kind)&&(x%32===0||y%32===0)?-12:0;
   const value=Math.round(246+grain+seam);data[i]=data[i+1]=data[i+2]=value;data[i+3]=255;
  }
- const t=new THREE.DataTexture(data,size,size,THREE.RGBAFormat);t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.needsUpdate=true;
+ const t=new THREE.DataTexture(data,size,size,THREE.RGBAFormat);t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;
+ // World-mapped detail gets very small at grazing angles. All material maps
+ // need filtered mip levels, not just grass, to avoid moiré on ceilings/floors.
+ t.magFilter=THREE.LinearFilter;t.minFilter=THREE.LinearMipmapLinearFilter;t.generateMipmaps=true;
+ t.needsUpdate=true;
  return t;
 }
 function softAlpha(){
@@ -27,7 +44,7 @@ export function createDahMaterialFactory({palette={},toon,outline}={}){
    const m=kind==='contact'?new THREE.MeshBasicMaterial({color:DAH_LIGHT_COLORS.contact,transparent:true,opacity:.26,depthWrite:false,alphaMap:softAlpha()}):kind==='taskGlow'?new THREE.MeshBasicMaterial({color:DAH_LIGHT_COLORS.deskGlow,transparent:true,opacity:0,depthWrite:false,alphaMap:softAlpha()}):kind==='outline'?(outline?.clone()||new THREE.MeshBasicMaterial({color:'#2a2c4a',side:THREE.BackSide})):(toon?.(color).clone()||new THREE.MeshToonMaterial({color}));
    if(!['outline','taskGlow','contact'].includes(kind))m.color.set(color);
    if(!['outline','taskGlow','contact'].includes(kind)){
-    if(['concrete','louver','louverEdge','timber','timberLight','timberDark','wood','litWood','floor','paving','carpet'].includes(kind))m.map=texture(kind);
+    if(['concrete','louver','louverEdge','timber','timberLight','timberDark','wood','litWood','floor','paving','carpet','grass'].includes(kind))m.map=texture(kind);
     if(['clear','shopGlass'].includes(kind)){m.transparent=true;m.opacity=.12;m.depthWrite=false;m.side=THREE.DoubleSide;}
     m.onBeforeCompile=shader=>{
      shader.uniforms.dahRim=rim;
@@ -41,10 +58,10 @@ export function createDahMaterialFactory({palette={},toon,outline}={}){
       vDahWorldPosition=(modelMatrix*dahPos).xyz;vDahWorldNormal=normalize(mat3(modelMatrix)*dahNormal);`);
      const mapping=`vec3 dahN=abs(normalize(vDahWorldNormal));
       vec2 dahMapUv=dahN.y>max(dahN.x,dahN.z)?vDahWorldPosition.xz:dahN.x>dahN.z?vDahWorldPosition.zy:vDahWorldPosition.xy;
-      dahMapUv*=0.5;`;
+      dahMapUv*=${kind==='grass'?1/64:.5};`;
      shader.fragmentShader='varying vec3 vDahWorldPosition;varying vec3 vDahWorldNormal;\n'+shader.fragmentShader.replace('#include <map_fragment>',mapping+'\n'+THREE.ShaderChunk.map_fragment.replace('texture2D( map, vUv )','texture2D( map, dahMapUv )'));
     };
-    m.customProgramCacheKey=()=> m.map?'dah-world-map-v2':'dah-rim-v1';
+    m.customProgramCacheKey=()=> m.map?(kind==='grass'?'dah-world-grass-map-v1':'dah-world-map-v2'):'dah-rim-v1';
    }
    m.userData.dahKind=kind;materials.set(kind,m);materialFor.setEnvironment(environment);
   }
@@ -55,9 +72,9 @@ export function createDahMaterialFactory({palette={},toon,outline}={}){
   for(const [kind,m]of materials){
    if(kind==='taskGlow'){m.opacity=(profile.night||0)*.42;continue;}
    if(!m.emissive)continue;
-   const litWood=kind==='litWood',shelf=kind==='wood',lamp=['lamp','light'].includes(kind),window=['glass','glassLight','glassDark','shopGlass'].includes(kind);
-   m.emissive.set(litWood?'#e5ab4d':shelf?'#c08a43':lamp?'#ffce88':window?'#edbd7d':'#000000');
-   m.emissiveIntensity=litWood?.06+(profile.night||0)*.34:shelf?.025+(profile.night||0)*.13:lamp?.18+(profile.night||0)*.9:window?(profile.night||0)*.16:0;
+   const lamp=['lamp','light'].includes(kind);
+   m.emissive.set(lamp?'#ffce88':'#000000');
+   m.emissiveIntensity=lamp?.18+(profile.night||0)*.9:0;
   }
  };
  return materialFor;
