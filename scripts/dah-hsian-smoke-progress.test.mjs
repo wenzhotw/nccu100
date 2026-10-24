@@ -31,3 +31,9 @@ test('continued slow progress stays valid across many simulation seconds, while 
  assert.equal(p.sample(.05,10.05),'arrived');
  const blocked=player();assert.equal(blocked.sample(2,0),false);assert.equal(blocked.sample(1.99,1),false);assert.equal(blocked.sample(1.98,2),false);assert.equal(blocked.sample(1.97,3.1),'stalled');
 });
+
+test('touch-route arrival releases the real joystick pointer rather than a keyboard-only key',()=>{
+ const events=[],context=vm.createContext({window:{__game:{pos:{x:0,z:0},state:{time:0,yaw:0}}},KeyboardEvent:class{constructor(type,options){this.type=type;Object.assign(this,options);}},PointerEvent:class{constructor(type,options){this.type=type;Object.assign(this,options);}},document:{getElementById:id=>({dispatchEvent:e=>events.push({id,...e})})},dispatchEvent:e=>events.push(e)});
+ const result=new vm.Script(`(${observeNativeWalk.toString()})({x:0,z:0,touchPointerId:71})`).runInContext(context);
+ assert.equal(result,'arrived');assert.equal(events.length,1);assert.equal(events[0].id,'stick');assert.equal(events[0].type,'pointerup');assert.equal(events[0].pointerId,71);
+});
