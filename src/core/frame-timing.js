@@ -17,10 +17,11 @@ export function createFrameTiming() {
 
 /** 保留原本 2.5 秒觀察窗與 3 秒冷卻，只改用未截斷的可見幀間隔。 */
 export function createQualitySampler() {
-  let acc = 0, n = 0, cool = 0, smooth = false;
+  let acc = 0, n = 0, cool = 0, smooth = false, window = null;
   return {
-    reset() { acc = 0; n = 0; smooth = false; },
-    coolDown() { cool = 3; },
+    reset() { acc = 0; n = 0; smooth = false; window = null; cool = 3; },
+    coolDown() { cool = 3; acc = 0; n = 0; smooth = false; window = null; },
+    takeWindow() { const value = window; window = null; return value; },
     /** 上一個觀察窗是否很順（平均快過 55 FPS）；讀一次就清掉，用來決定要不要把畫質調回來 */
     takeSmooth() { const s = smooth; smooth = false; return s; },
     sample(dt) {
@@ -29,6 +30,7 @@ export function createQualitySampler() {
       if (acc < 2.5) return false;
       const avg = acc / n; acc = 0; n = 0;
       smooth = cool <= 0 && avg < 1 / 55;
+      window = cool > 0 ? null : avg > 1 / 34 ? 'slow' : smooth ? 'fast' : 'neutral';
       return cool <= 0 && avg > 1 / 34;
     },
   };

@@ -2,6 +2,7 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
+import { registerTrialNpc } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { MOBILE, scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
@@ -113,6 +114,7 @@ function addNPC(o){
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
+  registerTrialNpc(n);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 const NPC_FAR=50;
@@ -122,8 +124,8 @@ function npcUpdate(n,dt){
   // 不在主角所在的場景：不畫也不動（一般遊戲換場景後，其他場景的角色會暫停）
   if((n.room||null)!==(state.room||null)) return;
   const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=true;
-  // 手機：50 公尺外、沒在追人或逃跑的角色先不畫也不動（遠處只剩幾個像素，每個角色卻要畫幾十塊）
-  if(MOBILE&&!n.after){ const far=dP>NPC_FAR&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'; n.rig.visible=!far; if(far){ n.sp.say(''); if(n.tag) n.tag.visible=false; return; } }
+  // 手機遠處只隱藏外觀，目的地、返回、劇情與互動座標仍照常更新。
+  if(MOBILE){ const far=!n.after&&dP>NPC_FAR&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'; n.rig.visible=!far; }
   let tx=null,tz=null,spd=0;
   if(state.driving&&!n.room&&n!==cop&&Math.abs(state.carSpeed)>1.5&&Math.hypot(police.position.x-p.x,police.position.z-p.z)<13){ if(n.fear<=0&&Math.random()<0.6) AU.sfx('scream'); n.fear=3.2; }
   if(n.fear>0){ n.fear-=dt; let ax=p.x-police.position.x, az=p.z-police.position.z; const l=Math.hypot(ax,az)||1; tx=p.x+ax/l*5; tz=p.z+az/l*5; spd=6.2; }
