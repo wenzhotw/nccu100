@@ -161,7 +161,7 @@ export function floorSurfacePolygons(f){
  return out;
 }
 /** Physical boundary of the union, split where intersections change its meaning. */
-export function floorBoundarySegments(f){
+export function floorBoundarySegments(f,{includeLandingEdges=false}={}){
  const edges=[...f.regions,...f.holes].flatMap(edgesOf),out=[];
  for(const e of edges){
   const dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],len=Math.hypot(dx,dz);if(len<1e-8)continue;
@@ -176,13 +176,13 @@ export function floorBoundarySegments(f){
    const t=(t0+t1)/2,x=e.a[0]+dx*t,z=e.a[1]+dz*t,nx=-dz/len,nz=dx/len;
    const left=floorContains(f,x+nx*.0001,z+nz*.0001),right=floorContains(f,x-nx*.0001,z-nz*.0001);if(left===right)continue;
    const a=[e.a[0]+dx*t0,e.a[1]+dz*t0],b=[e.a[0]+dx*t1,e.a[1]+dz*t1];
-   if(ALL_PUBLIC_STAIRS.some(stair=>{
+   if(!includeLandingEdges&&ALL_PUBLIC_STAIRS.some(stair=>{
     if(Math.abs(stair.b.y-f.y)>1e-5)return false;
     const dx=stair.b.x-stair.a.x,dz=stair.b.z-stair.a.z,len=Math.hypot(dx,dz);
     const da=(a[0]-stair.b.x)*dx/len+(a[1]-stair.b.z)*dz/len,db=(b[0]-stair.b.x)*dx/len+(b[1]-stair.b.z)*dz/len;
     return Math.abs(da)<.02&&Math.abs(db)<.02&&Math.hypot((a[0]+b[0])/2-stair.b.x,(a[1]+b[1])/2-stair.b.z)<stair.width;
    }))continue;
-   if(f.id==='3F'&&Math.abs(a[0]+9.4)<1e-5&&Math.abs(b[0]+9.4)<1e-5&&Math.min(a[1],b[1])>=17.44&&Math.max(a[1],b[1])<=19.56)continue;
+   if(!includeLandingEdges&&f.id==='3F'&&Math.abs(a[0]+9.4)<1e-5&&Math.abs(b[0]+9.4)<1e-5&&Math.min(a[1],b[1])>=17.44&&Math.max(a[1],b[1])<=19.56)continue;
    if(!out.some(s=>Math.hypot(s.a[0]-a[0],s.a[1]-a[1],s.b[0]-b[0],s.b[1]-b[1])<1e-5||Math.hypot(s.b[0]-a[0],s.b[1]-a[1],s.a[0]-b[0],s.a[1]-b[1])<1e-5))out.push({a,b,nx:left?nx:-nx,nz:left?nz:-nz});
   }
  }
