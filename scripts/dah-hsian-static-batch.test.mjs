@@ -57,3 +57,13 @@ test('快速預警計入所有實例的三角形，單一大型書本批次也�
  root.remove(small);const dense=new THREE.InstancedMesh(box,material,25001);root.add(dense);
  assert.throws(()=>assertDahModelBudget(root),/三角形.*300012/,'one draw object still contains 300012 real triangles');
 });
+
+test('來源父網格的非網格燈光與圖元不可被合批隱藏',async()=>{
+ const {batchDahStatic}=await import('../src/world/buildings/dah-hsian/static-batch.js');
+ const root=new THREE.Group(),box=new THREE.BoxGeometry(1,1,1),material=new THREE.MeshToonMaterial();
+ const children=[new THREE.PointLight(),new THREE.Sprite(),new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial()),new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial())];
+ for(const child of children){const frame=new THREE.Mesh(box,material);frame.add(child);root.add(frame);}
+ batchDahStatic(root);
+ const visible=[];root.traverseVisible(o=>visible.push(o));
+ for(const child of children)assert.ok(visible.includes(child),'non-mesh render/light child remains effectively visible');
+});

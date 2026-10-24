@@ -11,7 +11,7 @@ export function batchDahStatic(root,{cellSize=16}={}){
   if(o.isMesh&&!o.isInstancedMesh&&!o.isSkinnedMesh&&o.matrixWorld.determinant()>0&&!Array.isArray(o.material)&&!o.material.transparent&&!['light','lamp','taskGlow'].includes(o.material.userData.dahKind)&&!o.geometry.morphAttributes.position){
    // Never hide a source parent containing a transparent/dynamic/instanced
    // child that must continue rendering independently.
-   let independent=false;o.traverse(c=>{if(c!==o&&(c.userData.noOcc||c.isInstancedMesh||c.isSkinnedMesh||c.isMesh&&(c.matrixWorld.determinant()<=0||c.geometry.morphAttributes.position||Array.isArray(c.material)||c.material.transparent||['light','lamp','taskGlow'].includes(c.material.userData.dahKind))))independent=true;});
+   let independent=false;o.traverse(c=>{if(c!==o&&(c.userData.noOcc||c.isLight||c.isLine||c.isPoints||c.isSprite||c.isInstancedMesh||c.isSkinnedMesh||c.isMesh&&(c.matrixWorld.determinant()<=0||c.geometry.morphAttributes.position||Array.isArray(c.material)||c.material.transparent||['light','lamp','taskGlow'].includes(c.material.userData.dahKind))))independent=true;});
    if(!independent){
     bounds.setFromObject(o);centre.copy(bounds.getCenter(centre)).applyMatrix4(inverse);
     const key=[o.material.uuid,o.castShadow,o.receiveShadow,Math.floor(centre.x/cellSize),Math.floor(centre.z/cellSize),Math.floor(centre.y/4),o.geometry.index!==null,Object.keys(o.geometry.attributes).sort().join(',')].join(':');

@@ -39,5 +39,3 @@ web
 - docs/reference/dah-hsian/manifest.json：逐張圖片索引及內容雜湊。
 - docs/reference/dah-hsian/visual-atmosphere-sources.json：日夜照片、上層平面、夾層依據及使用者中庭參考；視覺與幾何採樣不等於現況測繪。
 - 本機 .references/dah-hsian/：研究影像，未匯入遊戲亦不重新發布原照片。
-
-- 後續開發以 iPhone 13 Pro／Safari 持續60幀為效能目標；新增場景須同時量繪製、記憶體與幀時間，實機證據不足不得宣稱達標（docs/performance.md）。

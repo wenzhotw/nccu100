@@ -17,7 +17,8 @@
     "test:baozhong": "sh tests/run-portable.sh",
     "test:npc-costumes": "node --test tests/npc-costumes.test.mjs",
     "test:characters": "node --import ./tests/characters/register.mjs --test tests/characters/*.test.mjs",
-    "test:stage2": "node --test tests/bz26-stage2.test.mjs tests/bz26-radio.test.mjs tests/bz26-programs.test.mjs src/systems/baozhong/matching.test.js"
+    "test:stage2": "node --test tests/bz26-stage2.test.mjs tests/bz26-radio.test.mjs tests/bz26-programs.test.mjs src/systems/baozhong/matching.test.js",
+    "test:rig-trial": "node --import ./tests/characters/register.mjs --test tests/characters/rig-trial.test.mjs"
   },
   "dependencies": {
     "three": "0.149.0"

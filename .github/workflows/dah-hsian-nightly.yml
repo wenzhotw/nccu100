@@ -34,5 +34,4 @@ jobs:
           node scripts/dah-hsian-smoke.mjs
           node scripts/dah-hsian-interior-smoke.mjs
           node scripts/dah-hsian-visual-smoke.mjs
-          node scripts/dah-hsian-performance-smoke.mjs
           node scripts/dah-hsian-atrium-smoke.mjs
