@@ -61,6 +61,7 @@ import './systems/baozhong/entry-radio.js'; // v1.69：邀請人泡泡、開始�
 import './systems/baozhong/programs-partners.js'; // v1.70：跨域學程帳篷（校內雙主修）與友校交流大使
 import './systems/baozhong/stage2/index.js'; // 兩階段攤位（T074）：預設開啟，?bz26stage2=0 可暫時關閉
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
+import './systems/wardrobe/index.js'; // 明確選用的四角色換裝，獨立於遊戲存檔
 import './systems/analytics.js'; // 遊玩人數統計（GoatCounter）：瀏覽、開始冒險、進室內、成就；本機與自動測試不送
 import './ui/install-hint.js'; // 手機開始畫面：「加到主畫面，全螢幕玩」按鈕與說明
 import './systems/police-drive.js';

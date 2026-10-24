@@ -1,0 +1,10 @@
+#game-wardrobe-open{font-size:12px;padding:7px 12px;align-self:flex-end}
+#game-wardrobe-panel{width:min(560px,calc(100vw - 28px));max-height:calc(100dvh - 32px);overflow:auto;border:2px solid #779a91;border-radius:18px;padding:22px;background:#fbf8ee;color:#243c3c;box-shadow:0 12px 40px #142d3b55;font:15px system-ui,sans-serif}
+#game-wardrobe-panel::backdrop{background:#132d3b99}
+#game-wardrobe-panel h2{margin:0 70px 14px 0}#game-wardrobe-panel p{line-height:1.6}
+#game-wardrobe-panel label{display:block;margin:14px 0 6px;font-weight:700}
+#game-wardrobe-panel select,#game-wardrobe-panel textarea{width:100%;font:inherit;border:1px solid #abc1b7;border-radius:8px;padding:9px;background:white;color:inherit}
+#game-wardrobe-panel textarea{height:180px;font:13px ui-monospace,monospace;resize:vertical}
+#game-wardrobe-panel button{font:inherit;border:1px solid #abc1b7;border-radius:9px;padding:9px;background:#e0efe8;color:inherit;cursor:pointer}
+#game-wardrobe-panel .wardrobe-close{float:right}#game-wardrobe-panel .wardrobe-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+#game-wardrobe-panel a{color:#226a5c;text-decoration:underline}
