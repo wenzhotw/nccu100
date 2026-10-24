@@ -55,8 +55,8 @@ function shapes(){
   const a=Math.min(.9,Math.abs(x)/.145),sourceY=(.9375+y-.79-.12*a)/(1-a),bodyT=(sourceY+.18)/.36,r=.138+.007*bodyT,wide=(1-.08*Math.exp(-(((bodyT-.25)/.18)**2)))*(1+.06*Math.exp(-(((bodyT-.70)/.22)**2)));
   return [x,y,Math.sqrt(Math.max(0,r*r-(x/wide)**2))*.78*(1-.45*Math.max(0,Math.min(1,(sourceY-.06)/.12)))+.0015];
  });
- // 閉合膠囊彎成後領U形，避免開放半環兩端出現黑洞。
- const hood=mapVertices(new THREE.CapsuleGeometry(.025,.28,6,16),(x,y,z)=>{const a=y/.28*Math.PI;return [(.09+x)*Math.sin(a),z,-(.09+x)*Math.cos(a)];});
+ // 扁小閉合帽體貼在後領，兩側埋入衣身，不留下橫管端面與外凸描邊盤。
+ const hood=mapVertices(new THREE.SphereGeometry(.1,16,12),(x,y,z)=>[x*.9,y*.4,z*.65]);
  const zip=mapVertices(new THREE.CylinderGeometry(.003,.003,.29,6,12),(x,y,z)=>{const sy=.755+y-.79,t=(sy+.18)/.36;return [x,y,z+(.138+.007*t)*.78*(1-.45*Math.max(0,Math.min(1,(sy-.06)/.12)))+.001];});
  const flow=sign=>{const g=mapVertices(new THREE.PlaneGeometry(.12,.24,4,8),(x,y)=>{const t=1-(y+.12)/.24,theta=.25+1.65*t,phi=.15+1.9*t+(x/.06)*.22*Math.sin(Math.PI*(.08+.92*t));return [sign*.211*Math.sin(theta)*Math.sin(phi),.211*Math.cos(theta),.211*Math.sin(theta)*Math.cos(phi)];});return jaw(g,.211,false);};
  geometry={flowL:flow(-1),flowR:flow(1),torso,forearm,sleeve,leg,waist,skull,face,cap,bang,bag,shoe,sole,inner,
@@ -85,7 +85,7 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  const inner=part(G.inner,C.shirt,0,.9375,0,rig);appearance.top.push(inner);
  const hem=part(G.hem,C.trim,0,.615,0,rig);hem.scale.z=.78;outlineU(hem,1.02);appearance.top.push(hem);
  const zip=part(G.zip,C.shirt,0,.755,0,rig);appearance.top.push(zip);
- const hood=part(G.hood,C.jacket,0,.947,0,rig);hood.scale.x=1.18;outlineU(hood,1.025);appearance.top.push(hood);
+ const hood=part(G.hood,C.jacket,0,.938,-.055,rig);outlineU(hood,1.025);appearance.top.push(hood);
  for(const sign of [-1,1]){const ear=part(G.ear,C.skin,sign*.17,-.025,.008,hc);ear.scale.set(.62,1,.55);appearance.body.push(ear);}
  for(const side of ['L','R']){
   replaceShape(limbParts[`arm${side}`].sleeve,G.sleeve);replaceShape(limbParts[`arm${side}`].forearm,G.forearm);replaceShape(limbParts[`leg${side}`].leg,G.leg);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
