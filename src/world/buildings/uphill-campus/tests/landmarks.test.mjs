@@ -89,7 +89,7 @@ test('三座好漢坡候車亭依地形落地，黑框玻璃與藍色站牌不�
   assert(collision.length >= 3); collision.forEach(c => verifyClear(c));
 });
 
-test('遮雨棚跨過道路，頂高十八公尺且只在路外立柱', async () => {
+test('遮雨棚跨過道路，頂高依照片約離路面四點八公尺且只在路外立柱', async () => {
   // 棚下加整塊碰撞會擋路，頂高或柱腳使用錯誤高度也會失敗。
   const { createLandmarks, landmarkColliders } = await import('../landmarks.js');
   const roof = createLandmarks().getObjectByName('遮雨棚'); assert(roof);
@@ -98,7 +98,8 @@ test('遮雨棚跨過道路，頂高十八公尺且只在路外立柱', async ()
   fixture.setMatrixAt(0, new THREE.Matrix4().makeTranslation(0, 4, 0));
   assert.equal(modelBounds(fixture).max.y, 4.5);
   const bounds = modelBounds(roof);
-  assert(Math.abs(bounds.max.y - 18) <= 0.1);
+  // 2026-10-23 依照片 8991、9003 改成跨路白色平板雨遮，頂面 19.81 公尺。
+  assert(Math.abs(bounds.max.y - 19.81) <= 0.1);
   assert(bounds.min.x <= 51.5 && bounds.max.x >= 61.5);
   for (const p of roof.userData.posts) assert.equal(p.base, heightAt(p.x, p.z));
   const posts = landmarkColliders().filter(c => c.landmark === '遮雨棚');

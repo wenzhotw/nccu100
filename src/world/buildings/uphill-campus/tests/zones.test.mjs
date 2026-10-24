@@ -20,6 +20,7 @@ test('地圖區域入口回傳地標、通路、建築與空地的新名稱', as
   // 只隔離 WebGL 引擎初始化，區域判斷與地形資料使用正式模組。
   const hooks = registerHooks({ resolve(specifier, context, next) {
     if (specifier.endsWith('courtyard-scenery.js')) return { url: 'data:text/javascript,export function buildCourtyardScenery(){};export function batchCourtyardScene(){}', shortCircuit: true };
+    if (specifier.endsWith('/zq10.js')) return { url: 'data:text/javascript,export function buildZq10(){}', shortCircuit: true };
     // 山居景觀跟中庭植栽一樣載入共用樹木，需要真的場景，這裡只測區域名稱。
     if (specifier.endsWith('/shanju.js')) return { url: 'data:text/javascript,export function buildShanju(){}', shortCircuit: true };
     if (specifier.endsWith('core/engine.js')) {

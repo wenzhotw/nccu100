@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { ANCHORS, LOBBY, STOP, STAIRS } from './layout.js';
 import { heightAt } from './terrain.js';
+import { CANOPY } from './zq10-model.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const stone = new THREE.MeshToonMaterial({ color: '#b4b0a2' });
@@ -10,7 +11,8 @@ const hedge = new THREE.MeshToonMaterial({ color: '#447b42' });
 const steel = new THREE.MeshToonMaterial({ color: '#26343c' });
 const blue = new THREE.MeshToonMaterial({ color: '#216aaf' });
 const glass = new THREE.MeshToonMaterial({ color: '#c6e5ec', transparent: true, opacity: 0.45 });
-const roofMaterial = new THREE.MeshToonMaterial({ color: '#759c94' });
+const canopyWhite = new THREE.MeshToonMaterial({ color: '#e7e4dc' });
+const canopyUnder = new THREE.MeshToonMaterial({ color: '#d4d0c7' });
 const signMaterial = new THREE.MeshToonMaterial({ color: '#24563e' });
 const cityMaterial = new THREE.MeshToonMaterial({ color: '#7fabb4', fog: false });
 const towerMaterial = new THREE.MeshToonMaterial({ color: '#528e97', fog: false });
@@ -44,9 +46,9 @@ export function landmarkSigns() {
   });
 }
 
+/** 照片 8991、9003：九舍 D 區東端旁一根白柱，十舍紅磚人行道上一根白柱。 */
 function canopyPosts() {
-  const a = ANCHORS['遮雨棚西端'];
-  return [-1, 1].map(dz => ({ x: a.x, z: a.z + dz, base: heightAt(a.x, a.z + dz) }));
+  return CANOPY.posts.map(([x, z]) => ({ x, z, base: heightAt(x, z) }));
 }
 
 function shelters() {
@@ -81,7 +83,7 @@ export function landmarkColliders() {
     { landmark: '好漢坡站', cx: s.x, cz: s.z + 0.55, hx: 1.1, hz: 0.06, th: 0 },
     ...[-1.05, 1.05].map(dx => ({ landmark: '好漢坡站', cx: s.x + dx, cz: s.z - 0.5, hx: 0.06, hz: 0.06, th: 0 })),
   ]);
-  const posts = canopyPosts().map(p => ({ landmark: '遮雨棚', cx: p.x, cz: p.z, hx: 0.12, hz: 0.12, th: 0 }));
+  const posts = canopyPosts().map(p => ({ landmark: '遮雨棚', cx: p.x, cz: p.z, hx: 0.3, hz: 0.3, th: 0 }));
   const signs = landmarkSigns().map(s => ({ landmark: '指路牌', sign: s.anchor,
     cx: s.x, cz: s.z, hx: s.width / 2, hz: 0.08, th: s.yaw }));
   return [...statue, ...station, ...posts, ...signs];
@@ -113,12 +115,14 @@ export function createLandmarks() {
   const canopy = placed(root, '遮雨棚西端'); canopy.name = '遮雨棚';
   const west = ANCHORS['遮雨棚西端'], east = ANCHORS['遮雨棚東端'];
   canopy.userData.posts = canopyPosts();
-  // 東端銜接既有建築，僅西端路外落柱，整片棚下保持淨空。
-  boxes(canopy, '遮雨棚柱', steel, canopy.userData.posts.map(p => {
-    const h = canopy.position.y + 2.8 - p.base;
-    return [p.x - west.x, p.base - canopy.position.y + h / 2, p.z - west.z, 0.24, h, 0.24];
+  // 照片 8991、9003、9006：白色混凝土平板雨遮，邊緣一圈厚收邊，兩端各一根方柱，棚下保持淨空。
+  const top = CANOPY.y - canopy.position.y, rx = (CANOPY.x0 + CANOPY.x1) / 2 - west.x, rz = (CANOPY.z0 + CANOPY.z1) / 2 - west.z;
+  boxes(canopy, '遮雨棚柱', canopyWhite, canopy.userData.posts.map(p => {
+    const h = CANOPY.y - p.base;
+    return [p.x - west.x, p.base - canopy.position.y + h / 2, p.z - west.z, 0.6, h, 0.6];
   }));
-  boxes(canopy, '遮雨棚頂', roofMaterial, [[(east.x - west.x) / 2, 2.9, 0, east.x - west.x + 0.4, 0.2, 2.6]]);
+  boxes(canopy, '遮雨棚頂', canopyWhite, [[rx, top, rz, CANOPY.x1 - CANOPY.x0, 0.42, CANOPY.z1 - CANOPY.z0]]);
+  boxes(canopy, '遮雨棚底板', canopyUnder, [[rx, top - 0.28, rz, CANOPY.x1 - CANOPY.x0 - 0.3, 0.16, CANOPY.z1 - CANOPY.z0 - 0.5]]);
   const signs = new THREE.Group(); signs.name = '指路牌'; root.add(signs);
   for (const s of landmarkSigns()) {
     const g = new THREE.Group(); g.name = `指路牌：${s.anchor}`;
