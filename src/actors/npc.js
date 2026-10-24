@@ -58,7 +58,7 @@ function makePerson(o,where){
   if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; }
   if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); }
   }
-  const model=createHumanoid(npcHumanoidProfile(o),{parent:where||scene,part,outlineU,BOX,SPH,afterTorso:({body})=>decorateTorso(body),afterArms:({joints})=>decorateArms(joints)});
+  const model=createHumanoid(npcHumanoidProfile(o),{parent:where||scene,part,outlineU,BOX,SPH,afterTorso:context=>{const before=new Set(context.body.children);decorateTorso(context.body);context.parts.torsoDecorations=context.body.children.filter(node=>!before.has(node));},afterArms:({joints})=>decorateArms(joints)});
   const {root:g,body:rig,joints:P,limbParts,headCenter:hc}=model;
   const brow=o.brow||o.hair||'#2a2220';
   P.fA=npcFace(brow,'open'); P.fB=npcFace(brow,'closed'); P.fC=npcFace(brow,'panic');
