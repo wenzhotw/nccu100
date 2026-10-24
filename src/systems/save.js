@@ -108,5 +108,6 @@ if (saved) {
 setInterval(saveGame, 3000);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
 window.addEventListener('pagehide', saveGame);
+window.addEventListener('nccu-context-lost', saveGame);
 
 export { saveGame, clearSave };

@@ -82,3 +82,11 @@ API：equip(slot,itemId)、exportConfig()、loadConfig(object 或 JSON 字串)�
 新增驗證包含頂髮／背包隱藏與還原、背心側片存在、全部新增配件跨 swim/normal 的 hidden 保留、D12 default 外部隱藏／覆蓋前最新狀態／外部新值優先及工作台建立失敗清理。原有角色結構與世界基準仍不改 goldens。這些是程式與數值證據，最後仍需新版可見驗收。
 
 GRK035 修正候選的完整 npm test：752 通過、2 個既有略過、0 失敗，五組皆 exit 0；角色組 274 通過。check、正式 MPA build、root／子路徑的 14 依賴與真 404 檢查通過。獨立程式審查覆驗通過；帽髮、背心、新入口與新版泳裝狀態仍需 Grok 可見確認。仍未合併或部署，版本保留 1.88 待整合順序決定。
+
+## CI 啟動順序修復
+
+PR111 f41039c 的正式 smoke 失敗，原因不是 HTTP 缺檔：原多頁共用 chunk 將 `core/gameplay.js` 放入 main 靜態依賴的 npc chunk，提前於 main 內的四維堂註冊執行。gameplay 頂層只建立一次 rooms 互動點，於是 pangolin-grab 讀取尚不存在的 siwei-hall-enter.ok。編譯成功與靜態 HTTP 成功不足以驗證此順序。
+
+改為兩次隔離 Vite build：第一遍維持正式遊戲原單入口；第二遍只建 wardrobe，保留 dist、不複製 public，並使用獨立 wardrobe/assets 目錄以免覆蓋主遊戲 chunk。不修改房間、main、loop 初始化，不以可選鏈忽略缺失互動點。
+
+新增 `scripts/wardrobe-build-order-check.mjs`，在 npm build 最後自動比較 dist 的正式主遊戲與原單入口設定重建的全部 14 個輸出，要求逐位元相同；同時檢查四維堂註冊、gameplay、pangolin-grab 留在同一 chunk 且執行順序正確。原 MPA 方案無法滿足此證明。兩次 build 前後另以 SHA256 核對 19 個原 dist 檔案未變。工作台現在為 13 個 JS 依賴，根／子路徑 HTTP、scaffold 與真 404 檢查通過。此處舊 MPA 描述僅保留為歷史，不代表現行發布方法。仍需 CI 瀏覽器 smoke 與 Grok 新入口驗收，不把編譯圖證據當實機完成。
