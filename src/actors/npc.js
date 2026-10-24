@@ -2,7 +2,7 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
-import { finishStudentStyleTrial } from './student-style-trial.js';
+import { finishStudentStyleTrial, drawStudentStyleFace } from './student-style-trial.js';
 import { createHumanoid } from './humanoid-factory.js';
 import { createCapybara } from './capybara-factory.js';
 import { npcHumanoidProfile } from './humanoid-profiles.js';
@@ -35,15 +35,15 @@ function speech(){ let text=''; const spr=textSprite(720,190,(g,w,h)=>{ if(!text
     g.beginPath(); g.moveTo(w/2-20,124); g.lineTo(w/2,170); g.lineTo(w/2+20,124); g.fill(); g.stroke(); g.fillRect(w/2-17,116,34,11);
     g.fillStyle='#2b2436'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,w/2,70); },3.6,0.95);
   spr.say=t=>{ if(t!==text){ text=t; spr.userData.tex.redraw(); } spr.visible=!!t; }; spr.visible=false; return spr; }
-function npcFace(brow,mode,soft=false){ return canvasTex(256,256,g=>{ g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0); g.lineCap='round';
-  (soft?[88,168]:[84,172]).forEach(cx=>{ const cy=soft?116:110;
+function npcFace(brow,mode,soft=false){ return canvasTex(256,256,g=>{ if(soft){drawStudentStyleFace(g,brow,mode);return;} g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0); g.lineCap='round';
+  [84,172].forEach(cx=>{ const cy=110;
     if(mode==='closed'){ g.strokeStyle='#2a1f2b'; g.lineWidth=5; g.beginPath(); g.moveTo(cx-11,cy+2); g.quadraticCurveTo(cx,cy+8,cx+11,cy+2); g.stroke(); }
     else if(mode==='panic'){ g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx,cy,15,0,7); g.fill(); g.strokeStyle='#2a1f2b'; g.lineWidth=4; g.stroke(); g.fillStyle='#2a1f2b'; g.beginPath(); g.arc(cx,cy,5,0,7); g.fill(); }
-    else { g.fillStyle='#2a1f2b'; g.beginPath(); g.ellipse(cx,cy,soft?10:9,soft?14:13,0,0,7); g.fill(); g.fillStyle='#fff'; g.beginPath(); g.arc(cx-3,cy-5,3.5,0,7); g.fill(); }
-    g.strokeStyle=brow; g.lineWidth=5; g.beginPath(); if(mode==='panic'){ g.moveTo(cx-13,cy-24); g.lineTo(cx+13,cy-32); } else { g.moveTo(cx-12,cy-(soft?25:27)); if(soft)g.quadraticCurveTo(cx,cy-29,cx+12,cy-25); else g.lineTo(cx+12,cy-28); } g.stroke(); });
+    else { g.fillStyle='#2a1f2b'; g.beginPath(); g.ellipse(cx,cy,9,13,0,0,7); g.fill(); g.fillStyle='#fff'; g.beginPath(); g.arc(cx-3,cy-5,3.5,0,7); g.fill(); }
+    g.strokeStyle=brow; g.lineWidth=5; g.beginPath(); if(mode==='panic'){ g.moveTo(cx-13,cy-24); g.lineTo(cx+13,cy-32); } else { g.moveTo(cx-12,cy-27); g.lineTo(cx+12,cy-28); } g.stroke(); });
   g.fillStyle='rgba(255,130,130,.28)'; [62,194].forEach(x=>{ g.beginPath(); g.ellipse(x,148,14,7,0,0,7); g.fill(); });
   if(mode==='panic'){ g.fillStyle='#7a3238'; g.beginPath(); g.ellipse(128,182,13,18,0,0,7); g.fill(); }
-  else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(soft?117:113,170); g.quadraticCurveTo(128,soft?178:182,soft?139:143,170); g.stroke(); }
+  else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
   g.restore(); }); }
 function makePerson(o,where,studentStyleTrial=false){
   const appearance={hair:[],headwear:[],accessory:[],body:[],protected:[]};
