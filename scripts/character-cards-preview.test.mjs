@@ -6,7 +6,7 @@ test('設定卡為獨立第三次建置，不改遊戲與原工作台入口',()=
  const config=read('vite.config.js'),pkg=JSON.parse(read('package.json'));
  assert.match(config,/mode === 'cards'/);assert.match(config,/\.\/cards\/index\.html/);assert.match(config,/'cards\/assets'/);
  assert.match(pkg.scripts.build,/vite build && vite build --mode wardrobe && vite build --mode cards && node scripts\/wardrobe-build-order-check.mjs/);
- const html=read('cards/index.html');assert.match(html,/href="\.\.\/index\.html"/);assert.match(html,/尚未套用正式遊戲/);assert.match(html,/box-sizing:border-box/);
+ const html=read('cards/index.html');assert.match(html,/href="\.\.\/index\.html"/);assert.match(html,/工作台不自動套用/);assert.match(html,/index\.html\?characterCardsPreview=1/);assert.match(html,/box-sizing:border-box/);
 });
 test('設定卡預覽保存 namespace 獨立，原字串驗證與儲存屬同筆裝配交易',()=>{
  const ui=read('dev/character-cards-preview.js');
