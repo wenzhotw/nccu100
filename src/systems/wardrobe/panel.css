@@ -1,5 +1,6 @@
+#game-wardrobe-panel,#game-wardrobe-panel *{box-sizing:border-box}
 #game-wardrobe-open{font-size:12px;padding:7px 12px;align-self:flex-end}
-#game-wardrobe-panel{width:min(560px,calc(100vw - 28px));max-height:calc(100dvh - 32px);overflow:auto;border:2px solid #779a91;border-radius:18px;padding:22px;background:#fbf8ee;color:#243c3c;box-shadow:0 12px 40px #142d3b55;font:15px system-ui,sans-serif}
+#game-wardrobe-panel{width:min(560px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:calc(100dvh - 32px);overflow:auto;border:2px solid #779a91;border-radius:18px;padding:22px;background:#fbf8ee;color:#243c3c;box-shadow:0 12px 40px #142d3b55;font:15px system-ui,sans-serif}
 #game-wardrobe-panel::backdrop{background:#132d3b99}
 #game-wardrobe-panel h2{margin:0 70px 14px 0}#game-wardrobe-panel p{line-height:1.6}
 #game-wardrobe-panel label{display:block;margin:14px 0 6px;font-weight:700}

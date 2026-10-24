@@ -19,3 +19,17 @@
 /src/world/buildings/siwei-tennis/               @wenzhotw @Frankfangcode
 /src/world/buildings/octagon-pavilion/           @wenzhotw @Frankfangcode
 /src/world/buildings/lohas-shop/                 @wenzhotw @Frankfangcode
+
+# 全專案守則與規範文件：只有 wenzhotw 可以決定或修改（見 CLAUDE.md「守則修改權與需求確認」）。
+# 注意：要等 wenzhotw 在分支保護開啟「Require review from Code Owners」後，這幾行才會真正強制；在那之前只會自動請求審查。
+/CLAUDE.md                      @wenzhotw
+/AGENTS.md                      @wenzhotw
+/HANDOFF.md                     @wenzhotw
+/CONTRIBUTING.md                @wenzhotw
+/DESIGN.md                      @wenzhotw
+/PRODUCT.md                     @wenzhotw
+/.github/                       @wenzhotw
+/docs/art-style.md              @wenzhotw
+/docs/performance.md            @wenzhotw
+/docs/security.md               @wenzhotw
+/docs/architecture.md           @wenzhotw

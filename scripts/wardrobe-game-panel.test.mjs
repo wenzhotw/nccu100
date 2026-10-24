@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {mountGameWardrobePanel} from '../src/systems/wardrobe/panel.js';
 class Node {
  constructor(tag,doc){this.tag=tag;this.doc=doc;this.children=[];this.events={};this.attrs={};this.value='';this.open=false;}
@@ -27,10 +28,37 @@ test('native modal owns reading lock, resets controls and stops game key bubblin
 test('modal failure releases lock, malformed/mismatched JSON never applies, matching JSON is explicit',()=>{
  const s=setup(),dialog=s.id('game-wardrobe-panel'),button=s.id('game-wardrobe-open');dialog.showFailure=true;button.fire('click');assert.equal(s.state.bzBoothBrowsing,false);dialog.showFailure=false;button.fire('click');
  const input=s.id('game-wardrobe-json'),apply=s.text('套用並保存此角色');input.value='bad';apply.fire('click');input.value='{"actorId":"chiang"}';apply.fire('click');assert.equal(s.calls.some(c=>c[0]==='apply'),false);
- input.value=JSON.stringify({actorId:'player'});apply.fire('click');assert.equal(s.calls.filter(c=>c[0]==='apply').length,1);
+ input.value=JSON.stringify({schemaVersion:1,actorId:'player',slots:{headwear:'cap',outerwear:'default',leftHand:'default'}});apply.fire('click');assert.equal(s.calls.filter(c=>c[0]==='apply').length,1);
  s.panel.dispose();assert.equal(s.state.bzBoothBrowsing,false);assert.equal(s.doc.body.children.length,0);
 });
 test('corrupt settings stay visible as errors with explicit clear recovery',()=>{
  const s=setup();s.store.read=()=>{throw Error('corrupt');};s.id('game-wardrobe-open').fire('click');assert.equal(s.id('game-wardrobe-panel').open,true);assert.equal(s.id('game-wardrobe-json').value,'');
  s.text('清除所有換裝設定').fire('click');assert.equal(s.calls.some(c=>c[0]==='clear'),true);
+});
+
+test('modal validates raw JSON byte boundary before parsing and never applies oversized whitespace',()=>{
+ const s=setup();s.id('game-wardrobe-open').fire('click');
+ const input=s.id('game-wardrobe-json'),apply=s.text('套用並保存此角色');
+ const config={schemaVersion:1,actorId:'player',slots:{headwear:'cap',outerwear:'default',leftHand:'default'}};
+ const raw=JSON.stringify(config);
+ for(const bytes of [4095,4096]){
+  input.value=raw+' '.repeat(bytes-raw.length);apply.fire('click');
+ }
+ assert.equal(s.calls.filter(c=>c[0]==='apply').length,2);
+ for(const bytes of [4097,5109]){
+  input.value=raw+' '.repeat(bytes-raw.length);apply.fire('click');
+ }
+ assert.equal(s.calls.filter(c=>c[0]==='apply').length,2);
+ const status=s.id('game-wardrobe-panel').children.find(n=>n.attrs.role==='status');
+ assert.match(status.textContent,/JSON too large/);
+ assert.equal(s.state.bzBoothBrowsing,true);
+ s.id('game-wardrobe-panel').close();assert.equal(s.state.bzBoothBrowsing,false);
+});
+test('dialog and descendants include padding in viewport-constrained widths',()=>{
+ const css=readFileSync(new URL('../src/systems/wardrobe/panel.css',import.meta.url),'utf8');
+ assert.match(css,/#game-wardrobe-panel,#game-wardrobe-panel \*\{box-sizing:border-box\}/);
+ assert.match(css,/width:min\(560px,calc\(100vw - 28px\)\);max-width:calc\(100vw - 28px\)/);
+ assert.match(css,/max-height:calc\(100dvh - 32px\);overflow:auto/);
+ // Layout contract only, not a browser-rendering claim: at 390px the outer box is 362px.
+ assert.equal(Math.min(560,390-28),362);
 });

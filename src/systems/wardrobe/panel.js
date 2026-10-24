@@ -1,4 +1,4 @@
-import {WARDROBE_ACTOR_IDS} from '../../actors/wardrobe-config.js';
+import {WARDROBE_ACTOR_IDS,validateWardrobeConfig} from '../../actors/wardrobe-config.js';
 /** Native top-layer modal traps focus and pointer events without replacing global input. */
 export function mountGameWardrobePanel({controller,store,state,canOpen,resetInput,initialMessage='',document:doc=globalThis.document}){
  const make=(tag,text)=>{const n=doc.createElement(tag);if(text)n.textContent=text;return n;};
@@ -35,7 +35,7 @@ export function mountGameWardrobePanel({controller,store,state,canOpen,resetInpu
  close.addEventListener('click',()=>dialog.close());
  select.addEventListener('change',guard(selected));
  apply.addEventListener('click',guard(()=>{
-  const value=JSON.parse(json.value);if(value.actorId!==select.value)throw new Error('JSON 角色不符，請先選擇對應角色。');
+  const value=validateWardrobeConfig(json.value,select.value);
   controller.apply(value);selected();status.textContent='已套用並保存；下次進入遊戲會載入此角色設定。';
  }));
  reset.addEventListener('click',guard(()=>{controller.reset(select.value);selected();status.textContent='此角色已還原，其他角色和遊戲進度不變。';}));
