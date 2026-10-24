@@ -23,7 +23,7 @@ function shapes(){
  // 外套的胸、側腰與下襬輪廓連續，不使用橢圓軀幹套白色矩形。
  const torso=mapVertices(new THREE.CylinderGeometry(.145,.138,.36,16,6),(x,y,z)=>{
   const t=(y+.18)/.36,waist=1-.08*Math.exp(-(((t-.25)/.18)**2)),chest=1+.06*Math.exp(-(((t-.70)/.22)**2));
-  return [x*waist*chest,y-(y>.12?(y-.12)*Math.abs(x)/.145:0),z];
+  return [x*waist*chest,y-(y>.12?(y-.12)*Math.abs(x)/.145:0),z*(1-.45*Math.max(0,Math.min(1,(y-.06)/.12)))];
  });
  const forearm=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>{const wrist=Math.max(0,y);return [x*(1-.30*wrist),y,z*(1-.12*Math.max(0,-y))];});
  const sleeve=mapVertices(new THREE.CapsuleGeometry(.065,.22,6,12),(x,y,z)=>{const t=(y+.175)/.35,w=.72+.34*Math.sin(Math.min(1,t)*Math.PI*.75);return [x*w,y>.11?.11+(y-.11)*.5:y,z*w];});
@@ -50,11 +50,19 @@ function shapes(){
  // 鞋底中心 .055，保留原版含描邊局部最低界 .0325，不移動整個角色。
  const soleDepth=(.055-.0325)/(.016*1.035);
  const sole=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>[power(x,.65)*(1+.12*z),power(y,.4)*(y<0?soleDepth:1),power(z,.65)]);
- const inner=mapVertices(new THREE.PlaneGeometry(.08,.09,2,3),(x,y,z)=>[x*(y+.045)/.09,y,z]);
- geometry={torso,forearm,sleeve,leg,waist,skull,face,cap,bang,bag,shoe,sole,inner,
+ const inner=mapVertices(new THREE.PlaneGeometry(.08,.065,4,4),(x,y)=>{
+  const t=(y+.0325)/.065;x*=t;y-=.017*Math.abs(x)/.04*t;
+  const a=Math.min(.9,Math.abs(x)/.145),sourceY=(.9375+y-.79-.12*a)/(1-a),bodyT=(sourceY+.18)/.36,r=.138+.007*bodyT,wide=(1-.08*Math.exp(-(((bodyT-.25)/.18)**2)))*(1+.06*Math.exp(-(((bodyT-.70)/.22)**2)));
+  return [x,y,Math.sqrt(Math.max(0,r*r-(x/wide)**2))*.78*(1-.45*Math.max(0,Math.min(1,(sourceY-.06)/.12)))+.0015];
+ });
+ // 閉合膠囊彎成後領U形，避免開放半環兩端出現黑洞。
+ const hood=mapVertices(new THREE.CapsuleGeometry(.025,.28,6,16),(x,y,z)=>{const a=y/.28*Math.PI;return [(.09+x)*Math.sin(a),z,-(.09+x)*Math.cos(a)];});
+ const zip=mapVertices(new THREE.CylinderGeometry(.003,.003,.29,6,12),(x,y,z)=>{const sy=.755+y-.79,t=(sy+.18)/.36;return [x,y,z+(.138+.007*t)*.78*(1-.45*Math.max(0,Math.min(1,(sy-.06)/.12)))+.001];});
+ const flow=sign=>{const g=mapVertices(new THREE.PlaneGeometry(.12,.24,4,8),(x,y)=>{const t=1-(y+.12)/.24,theta=.25+1.65*t,phi=.15+1.9*t+(x/.06)*.22*Math.sin(Math.PI*(.08+.92*t));return [sign*.211*Math.sin(theta)*Math.sin(phi),.211*Math.cos(theta),.211*Math.sin(theta)*Math.cos(phi)];});return jaw(g,.211,false);};
+ geometry={flowL:flow(-1),flowR:flow(1),torso,forearm,sleeve,leg,waist,skull,face,cap,bang,bag,shoe,sole,inner,
   neck:new THREE.CylinderGeometry(.037,.048,.11,12),cuff:new THREE.CylinderGeometry(.047,.045,.05,12),
-  hem:new THREE.CylinderGeometry(.138,.139,.045,16),zip:new THREE.CylinderGeometry(.003,.003,.29,6),
-  hood:new THREE.TorusGeometry(.09,.025,6,16,Math.PI),ear:new THREE.SphereGeometry(.028,12,8),thumb:new THREE.CapsuleGeometry(.012,.022,4,8),
+  hem:new THREE.CylinderGeometry(.138,.139,.045,16),zip,
+  hood,ear:new THREE.SphereGeometry(.028,12,8),thumb:new THREE.CapsuleGeometry(.012,.022,4,8),
   strap:new THREE.CapsuleGeometry(.012,.20,4,8)};
  return geometry;
 }
@@ -74,10 +82,10 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  replaceShape(model.parts.bottom,G.waist);replaceShape(model.parts.torso,G.torso);replaceShape(model.parts.skull,G.skull);
  hc.scale.setScalar(.70);
  const neck=part(G.neck,C.skin,0,1.0,0,rig);appearance.body.push(neck);
- const inner=part(G.inner,C.shirt,0,.945,.117,rig);appearance.top.push(inner);
+ const inner=part(G.inner,C.shirt,0,.9375,0,rig);appearance.top.push(inner);
  const hem=part(G.hem,C.trim,0,.615,0,rig);hem.scale.z=.78;outlineU(hem,1.02);appearance.top.push(hem);
- const zip=part(G.zip,C.shirt,0,.755,.115,rig);appearance.top.push(zip);
- const hood=part(G.hood,C.jacket,0,.975,-.015,rig);hood.rotation.x=-Math.PI/2;hood.scale.x=1.18;outlineU(hood,1.025);appearance.top.push(hood);
+ const zip=part(G.zip,C.shirt,0,.755,0,rig);appearance.top.push(zip);
+ const hood=part(G.hood,C.jacket,0,.947,0,rig);hood.scale.x=1.18;outlineU(hood,1.025);appearance.top.push(hood);
  for(const sign of [-1,1]){const ear=part(G.ear,C.skin,sign*.17,-.025,.008,hc);ear.scale.set(.62,1,.55);appearance.body.push(ear);}
  for(const side of ['L','R']){
   replaceShape(limbParts[`arm${side}`].sleeve,G.sleeve);replaceShape(limbParts[`arm${side}`].forearm,G.forearm);replaceShape(limbParts[`leg${side}`].leg,G.leg);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
@@ -97,8 +105,10 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
   const lock=part(G.bang,hm,x,y,z,hairRoot);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
  }
  // 耳旁與後頸以五片貼頭大髮束接續短後帽，打破水平半球截面。
- for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,.015,-.07,hairRoot);lock.scale.set(.052,.095,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
- for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hairRoot);lock.scale.set(s===0?.085:.075,.145,.058);lock.rotation.set(.22,-s*.20,-s*.20);appearance.hair.push(lock);}
+ for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,.025,-.075,hairRoot);lock.scale.set(.052,.075,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
+ for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hairRoot);lock.scale.set(s===0?.085:.075,.12,.058);lock.rotation.set(.35,-s*.20,-s*.25);appearance.hair.push(lock);}
+ const flowMat=toon('#59402e',{side:THREE.DoubleSide});
+ for(const sign of [-1,1])for(const offset of [0,.28]){const flow=part(sign<0?G.flowL:G.flowR,flowMat,0,.006,-.005,hairRoot);flow.scale.copy(model.parts.skull.scale);flow.rotation.y=sign*offset;appearance.hair.push(flow);}
  g.userData.studentStyle='rpg-profile-v3';
  return {g,rig,P,limbParts,appearance,assembly:model};
 }
