@@ -17,11 +17,11 @@ async function start(){
   });
   const handles=pair.map(({entry})=>createActorPartsAdapter(entry));
   const camera=new THREE.PerspectiveCamera(35,1,.01,50);let viewName='front',time=0,paused=false,last=0,destroyed=false;
-  const views={front:[0,1.05,3.6],side:[3.6,1.05,0],left:[-3.6,1.05,0],back:[0,1.05,-3.6],game:[4.5,5.5,7.5]};
+  const views={front:[0,1.05,3.6],side:[3.6,1.05,0],left:[-3.6,1.05,0],back:[0,1.05,-3.6],game:[4.5,5.5,7.5],'face-front':[0,1.17,1.1],'face-quarter':[.778,1.17,.778],'face-side':[1.1,1.17,0]};
   let cameraFit=1;
-  const placeCamera=()=>{const [x,y,z]=views[viewName];camera.position.set(x*cameraFit,.78+(y-.78)*cameraFit,z*cameraFit);camera.lookAt(0,.78,0);camera.updateMatrixWorld();};
+  const placeCamera=()=>{const [x,y,z]=views[viewName],target=viewName.startsWith('face-')?1.17:.78;camera.position.set(x*cameraFit,target+(y-target)*cameraFit,z*cameraFit);camera.lookAt(0,target,0);camera.updateMatrixWorld();};
   const setCamera=name=>{viewName=name;cameraFit=1;placeCamera();};setCamera('front');
-  const projectedBounds=()=>pair.map(({actor})=>{const b={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity},v=new THREE.Vector3();actor.g.traverseVisible(n=>{if(!n.isMesh)return;const p=n.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(n.matrixWorld).project(camera);b.minX=Math.min(b.minX,v.x);b.maxX=Math.max(b.maxX,v.x);b.minY=Math.min(b.minY,v.y);b.maxY=Math.max(b.maxY,v.y);}});return b;});
+  const projectedBounds=()=>pair.map(({actor})=>{const b={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity},v=new THREE.Vector3();(viewName.startsWith('face-')?actor.P.head:actor.g).traverseVisible(n=>{if(!n.isMesh)return;const p=n.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(n.matrixWorld).project(camera);b.minX=Math.min(b.minX,v.x);b.maxX=Math.max(b.maxX,v.x);b.minY=Math.min(b.minY,v.y);b.maxY=Math.max(b.maxY,v.y);}});return b;});
   $('view').appendChild(renderer.domElement);
   function update(){
    $('status').textContent=pair.map(({variant,actor})=>`${variant}: ${JSON.stringify(studentStyleMetrics(actor.g))}`).join('\n');
@@ -45,7 +45,7 @@ async function start(){
     handles[i].refresh();
    }
    // 窄窗依兩版可見 mesh 的聯集退同一部相機，只向後、不隨動作反覆拉近。
-   if(camera.aspect<.52&&viewName!=='game'){
+   if(viewName.startsWith('face-')||(camera.aspect<.52&&viewName!=='game')){
     scenes.forEach(scene=>scene.updateMatrixWorld(true));
     for(let pass=0;pass<3;pass++){const extent=Math.max(...projectedBounds().flatMap(b=>[-b.minX,b.maxX,-b.minY,b.maxY]));if(extent<=.94)break;cameraFit*=Math.max(1.02,extent/.94);placeCamera();}
    }
@@ -57,7 +57,7 @@ async function start(){
    frame(performance.now());const gl=renderer.getContext(),width=gl.drawingBufferWidth,height=gl.drawingBufferHeight,pixels=new Uint8Array(width*height*4);
    gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);const visiblePixels=[0,0];
    for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=(y*width+x)*4;if(Math.abs(pixels[i]-pixels[0])+Math.abs(pixels[i+1]-pixels[1])+Math.abs(pixels[i+2]-pixels[2])>18)visiblePixels[x<width/2?0:1]++;}
-   return {contextLost:gl.isContextLost(),version:gl.getParameter(gl.VERSION),width,height,visiblePixels,projectedBounds:projectedBounds(),cameraPosition:camera.position.toArray(),actorScales:pair.map(({actor})=>actor.g.scale.toArray()),lastViewportCalls:renderer.info.render.calls,lastViewportTriangles:renderer.info.render.triangles};
+   return {contextLost:gl.isContextLost(),version:gl.getParameter(gl.VERSION),width,height,visiblePixels,boundsScope:viewName.startsWith('face-')?'head':'whole-model',projectedBounds:projectedBounds(),cameraPosition:camera.position.toArray(),actorScales:pair.map(({actor})=>actor.g.scale.toArray()),lastViewportCalls:renderer.info.render.calls,lastViewportTriangles:renderer.info.render.triangles};
   },freeze:(seconds=0)=>{if(!Number.isFinite(seconds)||seconds<0)throw Error('無效時間');time=seconds;paused=true;$('pause').textContent='播放';},metrics:()=>pair.map(({actor})=>studentStyleMetrics(actor.g)),snapshot:()=>({view:viewName,pose:$('pose').value,face:$('face').value,parts:$('parts').value,time})};
   renderer.setAnimationLoop(frame);update();document.documentElement.dataset.studentStyleReady='true';
   window.addEventListener('pagehide',e=>{renderer.setAnimationLoop(null);if(!e.persisted){destroyed=true;observer.disconnect();handles.forEach(h=>h.dispose());}});

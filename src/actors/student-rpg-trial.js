@@ -5,7 +5,19 @@ const C=Object.freeze({skin:'#e9b28e',jacket:'#4b8d8c',shirt:'#d7c9b0',pants:'#3
 let geometry;
 const power=(n,e)=>Math.sign(n)*Math.pow(Math.abs(n),e);
 function mapVertices(g,fn){const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,...fn(p.getX(i),p.getY(i),p.getZ(i)));g.computeVertexNormals();return g;}
-function jaw(g,r){return mapVertices(g,(x,y,z)=>{const lower=Math.max(0,-y/r),blend=lower*lower*(3-2*lower);return [x*(1-.15*blend),y*(1-.10*blend),z*(1-.06*blend)];});}
+// 共用標準化頭面映射：柔卵形頰頜、較平前臉與連續鼻樑鼻尖，臉片同步外偏移。
+function jaw(g,r){return mapVertices(g,(x,y,z)=>{
+ const nx=x/r,ny=y/r,nz=z/r,lower=Math.max(0,-ny),blend=lower*lower*(3-2*lower);
+ const px=x*(1-.10*blend),py=ny<-.65?r*(-.65+(ny+.65)*.72):y;
+ let pz=z;
+ if(nz>0){
+  pz=r*Math.pow(nz,.68)*.93;
+  const tip=.15*Math.exp(-((nx/.13)**2)-((ny+.36)/.14)**2);
+  const bridge=.045*Math.exp(-((nx/.08)**2)-((ny+.17)/.24)**2);
+  pz+=r*(tip+bridge)*Math.min(1,nz*4);
+ }
+ return [px,py,pz];
+});}
 function shapes(){
  if(geometry)return geometry;
  const torso=mapVertices(new THREE.CapsuleGeometry(.145,.09,6,14),(x,y,z)=>[x*(y>0?1.18:1.02),Math.max(-.12,y),z]);
@@ -14,7 +26,12 @@ function shapes(){
  const sleeve=mapVertices(new THREE.CapsuleGeometry(.052,.13,4,12),(x,y,z)=>[x,y>.065?.065+(y-.065)*.55:y,z]);
  const waist=mapVertices(new THREE.CylinderGeometry(.13,.135,.10,14,1),(x,y,z)=>[x*(y<0?.94:1),y+(y<0?.018*(1-Math.abs(x)/.135):0),z*.97]);
  const skull=jaw(new THREE.SphereGeometry(.19,28,20),.19);
- const face=jaw(new THREE.SphereGeometry(.1913,32,20,Math.PI/2-.8,1.6,Math.PI*.38,Math.PI*.42),.1913);
+ // 臉片直接沿頭殼同一三角拓撲取前臉，避免鼻樑區不同取樣互相穿透。
+ const face=skull.clone();face.scale(1.008,1.008,1.008);
+ const uv=face.attributes.uv,indices=[],source=skull.index.array;
+ for(let i=0;i<source.length;i+=3){const tri=[source[i],source[i+1],source[i+2]];if(tri.every(v=>uv.getX(v)>=3/28-1e-6&&uv.getX(v)<=11/28+1e-6&&uv.getY(v)>=.2-1e-6&&uv.getY(v)<=.65+1e-6))indices.push(...tri);}
+ face.setIndex(indices);
+ for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-3/28)/(8/28),(uv.getY(i)-.2)/.45);
  const cap=mapVertices(new THREE.SphereGeometry(.205,16,12,0,Math.PI*2,0,Math.PI*.53),(x,y,z)=>{
   const t=Math.acos(Math.min(1,Math.max(-1,y/.205))),front=Math.max(0,z/.205),next=t*(1-.34*front*front);
   const k=Math.sin(t)>1e-6?Math.sin(next)/Math.sin(t):1;return [x*k,.205*Math.cos(next),z*k];

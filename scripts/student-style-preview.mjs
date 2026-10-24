@@ -40,6 +40,7 @@ try{
     assert.equal(sample.webgl.contextLost,false);assert.ok(sample.webgl.lastViewportCalls>0);assert.ok(sample.webgl.lastViewportTriangles>0);
     assert.ok(sample.webgl.visiblePixels.every(n=>n>64),'both viewports contain rendered non-background pixels');
     assert.deepEqual(sample.webgl.actorScales,[[1.1,1.1,1.1],[1.1,1.1,1.1]],'same fixed world scale for both actors');
+    assert.equal(sample.webgl.boundsScope,camera.startsWith('face-')?'head':'whole-model','explicit close-up versus whole-model bounds scope');
     for(const b of sample.webgl.projectedBounds)assert.ok(b.minX>=-.98&&b.maxX<=.98&&b.minY>=-.98&&b.maxY<=.98,'whole visible model including raised hand fits its viewport');
     const filename=`${name}-${camera}-${pose}-${face}-${parts}-${stage}.png`;
     const png=await page.screenshot({path:path.join(out,filename),fullPage:true});
@@ -47,6 +48,8 @@ try{
    }
    for(const camera of ['front','side','back','left','game'])for(const pose of ['idle','walk','wave'])await capture(camera,pose);
    for(const face of ['closed','panic'])await capture('front','idle',face);
+   for(const camera of ['face-front','face-quarter','face-side'])await capture(camera);
+   for(const face of ['closed','panic'])await capture('face-front','idle',face);
    await capture('front','wave','open','native');
    assert.equal(await page.evaluate(()=>window.__styleOriginal.every(({sources})=>sources.every(n=>!n.visible&&n.parent.children.some(c=>c!==n&&c.name.startsWith('actor-parts.')&&c.geometry===n.geometry)))),true,'native clones replace source meshes');
    await page.click('#reset');
