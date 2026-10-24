@@ -56,12 +56,30 @@ function block(x,y,z,sx,sy,sz,mat,out,parent){
   if(out){ const o=outline(m,0); o.scale.set(1+2*out/sx,1+2*out/sy,1+2*out/sz); }
   return m;
 }
+/**
+ * 畫布貼圖。上傳到顯示卡之後，把畫布縮成 1×1 釋放記憶體（手機 Safari 畫布總量有上限，超過會閃退）。
+ * 之後若有東西要重新上傳（複本貼圖第一次出現、畫面環境重建、redraw），讀取圖片時會自動重畫回原尺寸。
+ */
+const CT={count:0,freed:0};
+/** 畫布貼圖統計：總數、目前已釋放的數量、仍佔用的畫布像素位元組（__game.canvasTexStats()） */
+const canvasTexStats=()=>({ count:CT.count, freed:CT.freed, liveMB:+(CT.live/1e6||0).toFixed(1) });
+CT.live=0;
 function canvasTex(w,h,draw,rep){
+  CT.count++; CT.live+=w*h*4;
   const c=document.createElement('canvas'); c.width=w; c.height=h;
   const g=c.getContext('2d'); draw(g,w,h);
   const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4;
   if(rep){ t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep[0],rep[1]); }
-  t.redraw=()=>{g.clearRect(0,0,w,h);draw(g,w,h);t.needsUpdate=true;}; return t;
+  let freed=false, timer=0;
+  const restore=()=>{ if(!freed) return; freed=false; CT.freed--; CT.live+=w*h*4; c.width=w; c.height=h; draw(g,w,h); };
+  const free=()=>{ if(freed) return; freed=true; CT.freed++; CT.live-=w*h*4; c.width=1; c.height=1; };
+  const src=t.source;
+  if(src&&typeof document!=='undefined'){
+    // 共用同一張畫布的複本貼圖（clone）也讀這裡，所以放在 source 上
+    Object.defineProperty(src,'data',{configurable:true,get(){ if(freed){ restore(); clearTimeout(timer); timer=setTimeout(free,1500); } return c; },set(){}});
+    t.onUpdate=free;
+  }
+  t.redraw=()=>{ if(freed) restore(); else { g.clearRect(0,0,w,h); draw(g,w,h); } t.needsUpdate=true; }; return t;
 }
 function plane(w,h,mat,x,y,z,rx,ry){
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);
@@ -78,4 +96,4 @@ function hText(txt,color,font,w,h,spacing){
     chars.forEach((c,i)=>{ const m=g.measureText(c).width; g.fillText(c,spacing+i*step-m/2,h/2+4); }); });
 }
 
-export { BOX, GRAD, OUT, SPH, basic, block, canvasTex, flat, gradTex, hText, mk, outline, plane, toon, vText };
+export { BOX, GRAD, OUT, SPH, basic, block, canvasTex, canvasTexStats, flat, gradTex, hText, mk, outline, plane, toon, vText };

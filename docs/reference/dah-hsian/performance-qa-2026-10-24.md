@@ -115,3 +115,13 @@ PR110 仍待擁有者審查。撤除 PR108 新增 AGENTS 與 CLAUDE 規則後，
 `scripts/dah-hsian-static-batch.test.mjs` 在一般 `npm test` 中驗幾何／材質／陰影／相機守恆，以及整個模型含所有實例不超過300000三角形／500個可見物件的預警。`scripts/dah-hsian-performance-smoke.mjs` 對三個固定合法站位檢查完整幀不超過900calls／700000triangles，附實際畫質與繪圖環境；12幀只供工作量守門，不用於幀率驗收。此腳本保留手動執行，PR108 已撤回對既有達賢夜間／手動 workflow 的新增步驟，由維護者另定排程，不變動原四支 gate；本機可沿用 `NCCU_BASE_URL` 與 `NCCU_BROWSER_METAL=1` 執行。預警門檻不是手機60幀的等價條件，不得為了過關任意放寬。
 
 組員另在 `fix/mobile-perf`／`535a3e9` 處理貼圖記憶體、預熱、DPR、手機陰影與遠處NPC；此輪不重複改其共用引擎，也不擅自合併未完成分支。
+
+## PR109 → PR107 → PR108 堆疊候選整合
+
+本地以已公開 PR108 7202e0d623e0059c4738eae2d9b17bd1d0cb3b42 為第一親代，合入 PR107 的 6f665be8c2c51d6bd061ea1b92518cea5883d18d（已包含 PR109 f7923b0）。合併無文字衝突；版本改為 v1.90，index.html、package.json、package-lock.json 同步。實際遠端提交親代由發布流程核對，本節不代表已推送、合併或部署。
+
+交互檢查直接執行生產 canvasTex 函式（僅替換 DOM／timer）與 batchDahStatic，確認合批沿用同一 material、map、texture source，traverseVisible 能找到貼圖，貼圖上傳釋放、再次讀取還原及 redraw 都通過，相機來源不變。另以實際達賢模型執行生產 mobile-shadows trim，379 個有效可見節點及519個相機來源前後一致；282個陰影旗標按 PR107 原策略修剪，包含不再繪製的來源，不能據此宣稱282次實際陰影提交減少。
+
+PR107 會調整手機陰影、DPR／Bloom及貼圖生命週期，因此先前 PR108 獨立分支的幀時間與繪製比較不直接代表本堆疊版本的裝置表現。本輪未取得新的瀏覽器或真機結果，不將 Node 交互檢查冒充視覺或 FPS 驗收。共用文件、規則及 nightly workflow 仍與 e98c341 一致，沒有重新加入本 PR 撤除的共享修改。
+
+v1.90 堆疊候選完整重跑：unit 366 通過／1 略過，portable 80，NPC 9，characters 273，stage2 45 通過／1 略過，合計773通過／2略過／0失敗。check、build 均 exit 0，三處版本同步測試通過。記錄在 /tmp/dah108-stacked-qa/；這是本地執行證據，遠端CI及Grok針對最終樹的複核另計。

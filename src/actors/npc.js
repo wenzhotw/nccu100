@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { registerTrialNpc } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
-import { scene } from '../core/engine.js';
+import { MOBILE, scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
 import { BOX, SPH, basic, canvasTex, outline, toon } from '../render/kit.js';
 import { resolve } from '../core/collision.js';
@@ -42,6 +42,7 @@ function npcFace(brow,mode){ return canvasTex(256,256,g=>{ g.save(); g.translate
   g.restore(); }); }
 function makePerson(o,where){
   const g=new THREE.Group(), rig=new THREE.Group(); g.add(rig); (where||scene).add(g); g.userData.noOcc=true;
+  const limbParts={};
   const P={}, top=o.top||'#5a7fb0', pants=o.pants||'#2f3446', skin=o.skin||'#ffe1cc';
   const tor=part(new THREE.CapsuleGeometry(0.18,0.16,6,14),top,0,0.52,0,rig,0.014); tor.scale.z=0.85;
   if(o.suit){ part(BOX,'#ffffff',0,0.6,0.148,rig).scale.set(0.09,0.16,0.01); part(BOX,o.tie||'#6b3f8f',0,0.57,0.156,rig).scale.set(0.035,0.15,0.01);
@@ -54,8 +55,9 @@ function makePerson(o,where){
   part(new THREE.CylinderGeometry(0.182,0.19,0.14,18),pants,0,0.38,0,rig,0.012).scale.z=0.85;
   const arm=s=>{ const sh=new THREE.Group(); sh.position.set(s*0.21,0.65,0); rig.add(sh);
     part(new THREE.CapsuleGeometry(0.052,0.08,4,10),top,0,-0.06,0,sh,0.012);
-    part(new THREE.CapsuleGeometry(0.046,0.06,4,10),o.shortSleeve?skin:top,0,-0.16,0,sh,0.01);
-    part(SPH,skin,0,-0.25,0,sh).scale.setScalar(0.046); return sh; };
+    const forearm=part(new THREE.CapsuleGeometry(0.046,0.06,4,10),o.shortSleeve?skin:top,0,-0.16,0,sh,0.01);
+    const hand=part(SPH,skin,0,-0.25,0,sh); hand.scale.setScalar(0.046);
+    limbParts[s<0?'armL':'armR']={forearm,hand}; return sh; };
   P.shL=arm(-1); P.shR=arm(1);
   if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; }
   if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); }
@@ -82,7 +84,7 @@ function makePerson(o,where){
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
   g.scale.setScalar(o.scale||1.2);
-  return {g,rig,P};
+  return {g,rig,P,limbParts};
 }
 /* 卡皮巴拉（npcs.json 寫 "kind": "capybara"）：圓滾滾的咖啡色身體、方方的大頭、頭上頂一顆柚子。
    回傳的格式跟 makePerson 一樣，四肢和頭共用同一套走路動畫 */
@@ -114,15 +116,18 @@ function addNPC(o){
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
-  registerTrialNpc(n);
+  registerTrialNpc(n,b.limbParts);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
+const NPC_FAR=50;
 function npcUpdate(n,dt){
   // 劇情角色可暫停，保留追逐與 onCatch，避免活動旗標與會場同步之間漏跑。
   if(n.pauseWhen?.()) return;
   // 不在主角所在的場景：不畫也不動（一般遊戲換場景後，其他場景的角色會暫停）
   if((n.room||null)!==(state.room||null)) return;
   const p=n.g.position, dP=Math.hypot(pos.x-p.x,pos.z-p.z), sameSide=true;
+  // 手機遠處只隱藏外觀，目的地、返回、劇情與互動座標仍照常更新。
+  if(MOBILE){ const far=!n.after&&dP>NPC_FAR&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'; n.rig.visible=!far; }
   let tx=null,tz=null,spd=0;
   if(state.driving&&!n.room&&n!==cop&&Math.abs(state.carSpeed)>1.5&&Math.hypot(police.position.x-p.x,police.position.z-p.z)<13){ if(n.fear<=0&&Math.random()<0.6) AU.sfx('scream'); n.fear=3.2; }
   if(n.fear>0){ n.fear-=dt; let ax=p.x-police.position.x, az=p.z-police.position.z; const l=Math.hypot(ax,az)||1; tx=p.x+ax/l*5; tz=p.z+az/l*5; spd=6.2; }

@@ -3,7 +3,7 @@
  */
 import * as THREE from 'three';
 import { renderer } from '../core/engine.js';
-import { createQualitySampler } from '../core/frame-timing.js';
+import { createQualityController } from './quality-controller.js';
 
 /* ---------- 畫面後製：MSAA、柔光 Bloom、色彩分級、暗角 ---------- */
 const POST=(()=>{
@@ -52,19 +52,22 @@ const POST=(()=>{
   size();
   return {render,size,set enabled(v){ enabled=v; },get enabled(){ return enabled; },set bloom(v){ bloomOn=v; },get bloom(){ return bloomOn; }};
 })();
-/* 自動畫質：掉幀時降低解析度，必要時關閉 Bloom */
-const QUAL={pr:Math.min(window.devicePixelRatio||1,1.5)};
-const qualitySampler=createQualitySampler();
-renderer.setPixelRatio(QUAL.pr);
+/* 自動畫質使用可獨立測試的控制器；柔光最後恢復。 */
+const quality=createQualityController({
+  dpr:window.devicePixelRatio||1,
+  bloom:!!POST,
+  onChange({pr,bloom}){
+    if(renderer.getPixelRatio()!==pr){
+      renderer.setPixelRatio(pr);
+      renderer.setSize(innerWidth,innerHeight);
+      if(POST) POST.size();
+    }
+    if(POST) POST.bloom=bloom;
+  },
+});
+renderer.setPixelRatio(quality.snapshot().pr);
 renderer.setSize(innerWidth,innerHeight);
 if(POST) POST.size();
-function qualityTick(dt){
-  if(qualitySampler.sample(dt)){
-    if(QUAL.pr>0.8){ QUAL.pr=Math.max(0.75,QUAL.pr-0.25); renderer.setPixelRatio(QUAL.pr); renderer.setSize(innerWidth,innerHeight); if(POST) POST.size(); qualitySampler.coolDown(); }
-    else if(POST&&POST.bloom){ POST.bloom=false; qualitySampler.coolDown(); }
-  }
-}
-
-function resetQualityMeasurement(){ qualitySampler.reset(); }
-
+function qualityTick(dt){ quality.tick(dt); }
+function resetQualityMeasurement(){ quality.reset(); }
 export { POST, qualityTick, resetQualityMeasurement };
