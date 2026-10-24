@@ -1,43 +1,33 @@
-# 普通學生造型對照
+# 普通學生與 RPG 少年隔離對照
 
-## 啟動
+## 啟動與範圍
 
-在此分支執行 `npm run dev`，開啟 `/dev/student-style-preview.html`。
-此頁只在開發伺服器提供，不加入正式遊戲或既有工作台的發布入口。
+執行 `npm run dev`，開啟 `/dev/student-style-preview.html`。不加入正式遊戲發布入口、不改版本、不讀寫 localStorage。
 
-固定以 `STUDENTS.colors[0]` 與第一位路人學生的側分髮、背包、1.1 倍比例建立左右兩版。正式學生、版本號、角色清冊、儲存格式均不變。左側是原版，右側透過明確的建構選項 `studentStyleTrial: 'soft-v1'` 選用候選。沒有網址參數自動改變正式遊戲。
+左側依原本 `STUDENTS.colors[0]` 建立第一位普通學生；右側透過明確的 `studentStyleTrial: 'soft-v1'` 建構選項建立全新 `rpg-profile-v3` 視覺 profile。選項名稱保留開發介面相容性，不代表仍是最初的小幅圓角版。沒有網址參數自動改變正式角色。
 
-## 候選範圍
+兩版 root scale 均為 1.1，使用同一相機、光源與世界尺度。候選不是放大角色：以較小頭型與長腿形成約 3.3 頭身，總高度仍接近原版。候選採棕色分束瀏海、收頜臉型、日系大眼、青綠外衫、暖白內搭／袖口、深藍長褲、運動鞋鞋底及薄矩形背包。
 
-- 保留頭骨、臉片曲率、軀幹、四肢與所有掛點的局部變換。
-- 既有 256×256 臉部畫布的三個表情調整眼距、眉弧、嘴寬，沒有增加每角貼圖數。
-- 手與側分髮束用 12×8 球，鞋楦用同分段球壓平下緣並降低鞋尖。鞋底與描邊最低界不變。
-- 頂髮與後髮採不超過 16×12 的球面片；頂髮沿原球面抬起前額帽緣，側分髮束壓成斜向寬髮片。背包以相同尺寸的球面受控映射成圓角矩形薄包，保留既有描邊。
-- 不新增來源節點，不改全域 BOX/SPH、材質、shader、physics 或動畫。
-- 幾何於試點首次建構時共用配置，在來源登記及 native clone 之前套用；不得把建構函式當成已完成角色的熱更新 API。
+## 技術隔離
 
-## 重現比較
+- `student-rpg-trial.js` 使用專用人形 profile，肩髖與頭部掛點只影響該試點實例，保留既有 joints 介面，供原 NPC 動畫與零件卡 adapter 使用。
+- 舊 default 建構流程、舊共享 BOX/SPH、舊角色、清冊與儲存 schema 不變。
+- 新增領口、袖口、鞋底與髮束等節點並登記對應來源；不再以零新增物件數限制造型。
+- 幾何仍是共享基本球、膠囊、圓柱、圓環及其受控頂點形變，使用 toon/basic、既有描邊。人臉例外分段沿原方式，其餘球面不超過16×12。
+- 收頜同時用在頭骨及貼臉球面，避免只縮頭而讓五官浮在舊曲面上。
+- 大眼白、虹膜平塗層次、高光、閉眼及驚慌都畫在既有三張256×256 canvas，沒有外部圖片或增加每角臉貼圖數。
+- 全部造型在來源登記與 native clone 之前建立，不熱換已登記角色，不改 shader／physics／全域動畫。
 
-前、側、背與遊玩距離切換共用同一部相機，左右各自渲染同樣的光源。動作選擇 idle、walk、wave；表情選擇 open、closed、panic。裝配可切 default/native，reset 還原原件、姿勢及鏡位。不讀寫 localStorage。
+## 可重現預覽
 
-自動驗收可等待 `document.documentElement.dataset.studentStyleReady === 'true'`，使用 `window.__studentStyleTrial.freeze(0.75)` 固定時間。透過頁面選單設定姿勢、表情與裝配，透過 `setCamera('front')`、`'side'`、`'back'`、`'game'` 設鏡位；每次至少等一個渲染幀再擷取。`snapshot()` 回傳鏡位、動作、表情、裝配及時間，`metrics()` 回傳兩版模型計數。不要以產生式圖片代替遊戲截圖。
+支援前、右、背、左、遊玩距離；idle、walk、wave；open、closed、panic；default、native與reset。
 
-動作展示沿用既有肩髖擺動公式，但不執行正式 NPC 尋路、碰撞與遊戲循環。遊玩距離只是工作台遠鏡位，並非校園實景或正式遊戲相機。此頁無後製，最終色調及場景一致性須在正式遊戲環境另外驗收。
+自動驗收等待 `document.documentElement.dataset.studentStyleReady === 'true'`，呼叫 `window.__studentStyleTrial.freeze(.75)` 固定時間。`setCamera()` 切鏡位；`snapshot()` 回傳固定狀態；`metrics()` 回傳模型資源；`renderEvidence()` 立即真實渲染並讀取左右非背景畫素。截圖後保留 results.json 的 checkout SHA/tree 與 PNG hash。
 
-## 模型資源數據
+專用 read-only CI `student-style-preview.yml` 透過 Vite 開發伺服器執行 `scripts/student-style-preview.mjs`。1280與390 CSS px各19張，驗證真WebGL、左右畫面、runtime/resource errors、native/reset、重整、storage與排版。既有build／smoke／全角色CI與部署流程不變。
 
-初始 default：兩版皆 39 Object3D、31 mesh、8 種 mesh 材質。含描邊三角形從 12,108 到 12,016；獨立 mesh geometry 從 11 到 13；幾何 typed-array 總容量從 152,040 到 143,552 bytes。計數不含隱藏對話 Sprite 的材質，不代表 GPU 記憶體、完整 renderer calls 或 FPS。native 模式保留隱藏原件並建立 clone，因此 resident objects/triangles 會增加，不能當作畫面實際繪製量。
+## 限制
 
-## 尚需視覺驗收
+預覽使用同步動作公式，不執行正式尋路／碰撞或遊戲後製。遊玩距離是工作台遠鏡位，不冒充校園實景。軟體WebGL與窄視窗不是手機實測，模型資源不是完整renderer calls或FPS。新增geometry／mesh／材質的實際成本須隨候選重新量測，不沿用早期版本的數字。
 
-需真實瀏覽器截圖確認髮型輪廓、側臉貼合、衣物接縫、背包形狀、動作遮擋與校園同框。Node 幾何與姿勢驗證、打包成功不能代替以上驗收；沒有宣稱手機 FPS、載入後操作或截圖已通過。此候選不是完成的全角色美術升級。
-
-## 隔離截圖 CI
-
-專用 `student-style-preview.yml` 只對本試驗分支的 PR 執行，讀取權限不含部署。透過 Vite 開發伺服器載入上方入口，不改既有 build、smoke 或全角色驗收。`scripts/student-style-preview.mjs` 在 Chromium 真實 WebGL 產生 1280 與 390 CSS px 兩組 PNG，固定時間 0.75 秒，涵蓋前、右、背、左及遊玩距離的三動作、閉眼／驚慌、native 與 reset。
-
-`results.json` 記錄實際 checkout SHA、tree、事件 SHA、各 PNG 的 SHA256、模型數據及左右視窗非背景畫素數，並驗證 WebGL 未遺失、資源及執行錯誤、native/reset 與重整。artifact 是實際軟體 WebGL 截圖，不是生成式圖片、實機效能量測或正式校園截圖。CI 成功只表示截圖及功能驗證完成，仍須人工審查造型。
-
-第二版回應真圖審查：背包不再是圓盤；鞋採寬圓鞋頭、收窄後跟與腳背輪廓，仍單一原材質，未增加 geometry groups 或 draw calls。所有新輪廓僅改試點私有共享幾何的頂點並重算法線，不修改原 BOX/SPH。
-
-使用者後續指定日系 RPG 大眼：在原有三張 256×256 canvas 中加入較大的眼白、虹膜平塗層次與兩點高光，調整眉弧與小鼻嘴；閉眼／驚慌同步設計。只在明確試點選項啟用，預設 npcFace 的原繪圖指令保留。這是繪圖變更，不增加貼圖張數、幾何分段或材質。
+真圖需人工確認比例、髮片穿插、貼臉、肩袖與衣襬、腳底及遠距辨識性。測試通過不等於美術完成，不使用生成圖片代替3D成果。

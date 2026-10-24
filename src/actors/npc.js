@@ -2,7 +2,8 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
-import { finishStudentStyleTrial, drawStudentStyleFace } from './student-style-trial.js';
+import { drawStudentStyleFace } from './student-style-trial.js';
+import { createRpgStudentTrial } from './student-rpg-trial.js';
 import { createHumanoid } from './humanoid-factory.js';
 import { createCapybara } from './capybara-factory.js';
 import { npcHumanoidProfile } from './humanoid-profiles.js';
@@ -46,6 +47,7 @@ function npcFace(brow,mode,soft=false){ return canvasTex(256,256,g=>{ if(soft){d
   else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
   g.restore(); }); }
 function makePerson(o,where,studentStyleTrial=false){
+  if(studentStyleTrial)return createRpgStudentTrial({parent:where||scene,part,outlineU,BOX,SPH,toon,basic,faceTexture:(brow,mode)=>npcFace(brow,mode,true)});
   const appearance={hair:[],headwear:[],accessory:[],body:[],protected:[]};
   const top=o.top||'#5a7fb0',pants=o.pants||'#2f3446',skin=o.skin||'#ffe1cc';
   function decorateTorso(rig){
@@ -84,7 +86,6 @@ function makePerson(o,where,studentStyleTrial=false){
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
   appearance.headwear.push(...hc.children.filter(node=>!beforeCap.has(node)));
-  if(studentStyleTrial)finishStudentStyleTrial(model,appearance,o);
   g.scale.setScalar(o.scale||1.2);
   return {g,rig,P,limbParts,appearance:{...appearance,hairTop},assembly:model};
 }

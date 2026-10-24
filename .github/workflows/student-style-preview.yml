@@ -4,6 +4,7 @@ on:
     paths:
       - 'dev/student-style-*'
       - 'src/actors/student-style-trial.js'
+      - 'src/actors/student-rpg-trial.js'
       - 'src/actors/npc.js'
       - 'scripts/student-style-preview.mjs'
       - '.github/workflows/student-style-preview.yml'
