@@ -1,14 +1,14 @@
 /** 明確選用的完整少年造型。專用 profile 與共享基本幾何，完全不改正式角色。 */
 import * as THREE from 'three';
 import { createHumanoid } from './humanoid-factory.js';
-const C=Object.freeze({skin:'#e9b28e',jacket:'#4b8d8c',shirt:'#d7c9b0',pants:'#34455e',shoe:'#d9d4c7',sole:'#80766b',hair:'#423127',bag:'#b2784e',strap:'#835636'});
+const C=Object.freeze({skin:'#e9b28e',jacket:'#4b8d8c',trim:'#377473',shirt:'#d7c9b0',pants:'#34455e',shoe:'#d9d4c7',sole:'#80766b',hair:'#423127',bag:'#b2784e',strap:'#835636'});
 let geometry;
 const power=(n,e)=>Math.sign(n)*Math.pow(Math.abs(n),e);
 function mapVertices(g,fn){const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,...fn(p.getX(i),p.getY(i),p.getZ(i)));g.computeVertexNormals();return g;}
 // 共用標準化頭面映射：柔卵形頰頜、較平前臉與連續鼻樑鼻尖，臉片同步外偏移。
 function jaw(g,r,head=true){return mapVertices(g,(x,y,z)=>{
  const nx=x/r,ny=y/r,nz=z/r,lower=Math.max(0,-ny),blend=lower*lower*(3-2*lower);
- const px=x*(1-.10*blend),py=ny<-.65?r*(-.65+(ny+.65)*.72):y;
+ const px=x*(1-.23*blend),py=ny<-.65?r*(-.65+(ny+.65)*.72):y;
  let pz=z;
  if(nz>0){
   pz=r*Math.pow(nz,.68)*.93;
@@ -16,15 +16,19 @@ function jaw(g,r,head=true){return mapVertices(g,(x,y,z)=>{
   const bridge=.045*Math.exp(-((nx/.08)**2)-((ny+.17)/.24)**2);
   if(head)pz+=r*(tip+bridge)*Math.min(1,nz*4);
  }
- return [px*(head?.90:1),py*(head?1.08:1),pz];
+ return [px*(head?.84:1),py*(head?1.08:1),pz];
 });}
 function shapes(){
  if(geometry)return geometry;
- const torso=mapVertices(new THREE.CapsuleGeometry(.145,.09,6,14),(x,y,z)=>[x*(y>0?1.18:1.02),Math.max(-.12,y),z]);
- // 一體前臂到手掌，避免腕部兩個描邊球相接；仍獨立於可拆上衣袖。
- const forearm=mapVertices(new THREE.CapsuleGeometry(.037,.18,6,12),(x,y,z)=>{const palm=Math.max(0,Math.min(1,(-y-.035)/.07));return [x*(1+.10*palm),y,z*(1-.12*palm)];});
- const sleeve=mapVertices(new THREE.CapsuleGeometry(.052,.13,4,12),(x,y,z)=>[x,y>.065?.065+(y-.065)*.55:y,z]);
- const waist=mapVertices(new THREE.CylinderGeometry(.13,.135,.10,14,1),(x,y,z)=>[x*(y<0?.94:1),y+(y<0?.018*(1-Math.abs(x)/.135):0),z*.97]);
+ // 外套的胸、側腰與下襬輪廓連續，不使用橢圓軀幹套白色矩形。
+ const torso=mapVertices(new THREE.CylinderGeometry(.145,.138,.36,16,6),(x,y,z)=>{
+  const t=(y+.18)/.36,waist=1-.08*Math.exp(-(((t-.25)/.18)**2)),chest=1+.06*Math.exp(-(((t-.70)/.22)**2));
+  return [x*waist*chest,y-(y>.12?(y-.12)*Math.abs(x)/.145:0),z];
+ });
+ const forearm=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>{const wrist=Math.max(0,y);return [x*(1-.30*wrist),y,z*(1-.12*Math.max(0,-y))];});
+ const sleeve=mapVertices(new THREE.CapsuleGeometry(.065,.22,6,12),(x,y,z)=>{const t=(y+.175)/.35,w=.72+.34*Math.sin(Math.min(1,t)*Math.PI*.75);return [x*w,y>.11?.11+(y-.11)*.5:y,z*w];});
+ const leg=mapVertices(new THREE.CylinderGeometry(.065,.043,.45,12,6),(x,y,z)=>{const knee=1-.06*Math.exp(-(((y+.015)/.06)**2));return [x*knee,y,z*knee];});
+ const waist=mapVertices(new THREE.CylinderGeometry(.125,.13,.10,14,1),(x,y,z)=>[x,y+(y<0?.018*(1-Math.abs(x)/.13):0),z*.97]);
  const skull=jaw(new THREE.SphereGeometry(.19,28,20),.19);
  // 臉片直接沿頭殼同一三角拓撲取前臉，避免鼻樑區不同取樣互相穿透。
  const face=skull.clone();face.scale(1.008,1.008,1.008);
@@ -35,7 +39,7 @@ function shapes(){
  // 額頭、耳旁到後頸採連續曲線邊界，不再留下水平半球帽簷。
  const cap=mapVertices(new THREE.SphereGeometry(.205,16,12,0,Math.PI*2,0,Math.PI*.72),(x,y,z)=>{
   const t=Math.acos(Math.min(1,Math.max(-1,y/.205))),h=Math.hypot(x,z),front=h>1e-6?z/h:0,az=Math.atan2(x,z);
-  const edge=Math.PI*(.62-.22*Math.max(0,front)**2+.08*Math.max(0,-front)+.018*Math.sin(az*5));
+  const edge=Math.PI*(.50-.10*Math.max(0,front)**2+.20*Math.max(0,-front)+.018*Math.sin(az*5));
   const next=t*edge/(Math.PI*.72),k=Math.sin(t)>1e-6?Math.sin(next)/Math.sin(t):1;
   return [x*k,.205*Math.cos(next),z*k];
  });
@@ -46,24 +50,21 @@ function shapes(){
  // 鞋底中心 .055，保留原版含描邊局部最低界 .0325，不移動整個角色。
  const soleDepth=(.055-.0325)/(.016*1.035);
  const sole=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>[power(x,.65)*(1+.12*z),power(y,.4)*(y<0?soleDepth:1),power(z,.65)]);
- const inner=mapVertices(new THREE.PlaneGeometry(.10,.24,4,10),(x,y)=>{
-  // 內搭沿外衫曲面貼合；頂部中央做小 V，不再使用向外鼓起的白膠囊。
-  if(y>.119&&Math.abs(x)<.001)y-=.018;
-  const shirtY=.765+y-.72,capY=Math.max(0,Math.abs(shirtY)-.045),wide=shirtY>0?1.18:1.02;
-  return [x,y,Math.sqrt(Math.max(0,.145*.145-capY*capY-(x/wide)**2))*.78+.002];
- });
- geometry={torso,forearm,sleeve,waist,skull,face,cap,bang,bag,shoe,sole,inner,
-  neck:new THREE.CylinderGeometry(.045,.055,.10,12),cuff:new THREE.TorusGeometry(.05,.006,6,18),
+ const inner=mapVertices(new THREE.PlaneGeometry(.08,.09,2,3),(x,y,z)=>[x*(y+.045)/.09,y,z]);
+ geometry={torso,forearm,sleeve,leg,waist,skull,face,cap,bang,bag,shoe,sole,inner,
+  neck:new THREE.CylinderGeometry(.037,.048,.11,12),cuff:new THREE.CylinderGeometry(.047,.045,.05,12),
+  hem:new THREE.CylinderGeometry(.138,.139,.045,16),zip:new THREE.CylinderGeometry(.003,.003,.29,6),
+  hood:new THREE.TorusGeometry(.09,.025,6,16,Math.PI),ear:new THREE.SphereGeometry(.028,12,8),thumb:new THREE.CapsuleGeometry(.012,.022,4,8),
   strap:new THREE.CapsuleGeometry(.012,.20,4,8)};
  return geometry;
 }
 const spec=(geometry,color,position,scale=null,outlineScale=null)=>({geometry,color,position,scale,outlineScale});
 function profile(){return {kind:'npc',scale:1.1,noOcc:true,
- torso:spec(['capsule',.145,.09,6,14],C.jacket,[0,.72,0],[1,1,.78],1.035),
- bottom:spec(['cylinder',.13,.135,.10,14],C.pants,[0,.565,0],[1,1,.78],1.03),
- arm:{pivot:[.145,.84,0],upper:spec(['capsule',.052,.13,4,12],C.jacket,[0,-.095,0],null,1.06),forearm:spec(['capsule',.037,.18,6,12],C.skin,[0,-.27,0],null,1.085),hand:null},
- leg:{pivot:[.075,.55,0],upper:spec(['capsule',.064,.29,4,12],C.pants,[0,-.22,0],null,1.04),shoe:spec(['sphere',1,12,8],C.shoe,[0,-.46,.04],[.075,.052,.135],1.04),sole:spec(['sphere',1,12,8],C.sole,[0,-.495,.04],[.078,.016,.14],1.035)},
- head:{pivot:[0,1.07,0],center:null,skull:spec(['sphere',.19,28,20],C.skin,[0,0,0],[1.02,1.05,1],1.035)}};
+ torso:spec(['cylinder',.145,.138,.36,16],C.jacket,[0,.79,0],[1,1,.78],1.035),
+ bottom:spec(['cylinder',.125,.13,.10,14],C.pants,[0,.58,0],[1,1,.78],1.03),
+ arm:{pivot:[.14,.91,0],upper:spec(['capsule',.065,.22,6,12],C.jacket,[0,-.155,0],null,1.045),forearm:spec(['sphere',1,12,8],C.skin,[0,-.405,0],[.034,.065,.023],1.06),hand:null},
+ leg:{pivot:[.073,.62,0],upper:spec(['cylinder',.065,.043,.45,12],C.pants,[0,-.275,0],null,1.04),shoe:spec(['sphere',1,12,8],C.shoe,[0,-.53,.04],[.07,.052,.125],1.04),sole:spec(['sphere',1,12,8],C.sole,[0,-.565,.04],[.073,.016,.13],1.035)},
+ head:{pivot:[0,1.15,0],center:null,skull:spec(['sphere',.19,28,20],C.skin,[0,0,0],[1.02,1.05,1],1.035)}};
 }
 function replaceShape(mesh,g){const old=mesh.geometry;mesh.geometry=g;for(const child of mesh.children)if(child.isMesh&&child.geometry===old)child.geometry=g;}
 export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,faceTexture}){
@@ -71,19 +72,24 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  const model=createHumanoid(profile(),{parent,part,outlineU,BOX,SPH});
  const {root:g,body:rig,joints:P,headCenter:hc,limbParts}=model;
  replaceShape(model.parts.bottom,G.waist);replaceShape(model.parts.torso,G.torso);replaceShape(model.parts.skull,G.skull);
- hc.scale.setScalar(.83);
- const neck=part(G.neck,C.skin,0,.925,0,rig);appearance.body.push(neck);
- const inner=part(G.inner,C.shirt,0,.765,0,rig);appearance.top.push(inner);
+ hc.scale.setScalar(.70);
+ const neck=part(G.neck,C.skin,0,1.0,0,rig);appearance.body.push(neck);
+ const inner=part(G.inner,C.shirt,0,.945,.117,rig);appearance.top.push(inner);
+ const hem=part(G.hem,C.trim,0,.615,0,rig);hem.scale.z=.78;outlineU(hem,1.02);appearance.top.push(hem);
+ const zip=part(G.zip,C.shirt,0,.755,.115,rig);appearance.top.push(zip);
+ const hood=part(G.hood,C.jacket,0,.975,-.015,rig);hood.rotation.x=-Math.PI/2;hood.scale.x=1.18;outlineU(hood,1.025);appearance.top.push(hood);
+ for(const sign of [-1,1]){const ear=part(G.ear,C.skin,sign*.17,-.025,.008,hc);ear.scale.set(.62,1,.55);appearance.body.push(ear);}
  for(const side of ['L','R']){
-  replaceShape(limbParts[`arm${side}`].sleeve,G.sleeve);replaceShape(limbParts[`arm${side}`].forearm,G.forearm);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
-  const cuff=part(G.cuff,C.shirt,0,-.19,0,P[`sh${side}`]);cuff.rotation.x=Math.PI/2;appearance.top.push(cuff);
+  replaceShape(limbParts[`arm${side}`].sleeve,G.sleeve);replaceShape(limbParts[`arm${side}`].forearm,G.forearm);replaceShape(limbParts[`leg${side}`].leg,G.leg);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
+  const cuff=part(G.cuff,C.trim,0,-.325,0,P[`sh${side}`]);outlineU(cuff,1.025);appearance.top.push(cuff);
+  const sign=side==='L'?-1:1,thumb=part(G.thumb,C.skin,-sign*.028,-.396,.015,P[`sh${side}`]);thumb.rotation.z=sign*.4;appearance.body.push(thumb);
  }
- const pack=part(G.bag,C.bag,0,.735,-.16,rig);pack.scale.set(.23,.29,.11);outlineU(pack,1.045);appearance.accessory.push(pack);
- for(const s of [-1,1]){const strap=part(G.strap,C.strap,s*.115,.755,-.105,rig);strap.rotation.z=-s*.10;appearance.accessory.push(strap);}
+ const pack=part(G.bag,C.bag,0,.80,-.16,rig);pack.scale.set(.23,.29,.11);outlineU(pack,1.045);appearance.accessory.push(pack);
+ for(const s of [-1,1]){const strap=part(G.strap,C.strap,s*.115,.82,-.105,rig);strap.rotation.z=-s*.10;appearance.accessory.push(strap);}
  P.fA=faceTexture(C.hair,'open');P.fB=faceTexture(C.hair,'closed');P.fC=faceTexture(C.hair,'panic');
  P.fm=basic({map:P.fA,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  const face=new THREE.Mesh(G.face,P.fm);face.scale.copy(model.parts.skull.scale);hc.add(face);appearance.protected.push(face);
- const hm=toon(C.hair,{side:THREE.DoubleSide}),hairRoot=new THREE.Group();hairRoot.scale.set(.90,1.08,1);hc.add(hairRoot);
+ const hm=toon(C.hair,{side:THREE.DoubleSide}),hairRoot=new THREE.Group();hairRoot.scale.set(.84,1.08,1);hc.add(hairRoot);
  const cap=part(G.cap,hm,0,.006,-.005,hairRoot);cap.scale.copy(model.parts.skull.scale);outlineU(cap,1.035);
  appearance.hair.push(cap);appearance.hairTop.push(cap);
  // 三片大瀏海而非一頂球帽。共用葉片式球面拓撲，輪廓由大小／角度構成。
@@ -91,7 +97,7 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
   const lock=part(G.bang,hm,x,y,z,hairRoot);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
  }
  // 耳旁與後頸以五片貼頭大髮束接續短後帽，打破水平半球截面。
- for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,-.015,.012,hairRoot);lock.scale.set(.058,.135,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
+ for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,.015,-.07,hairRoot);lock.scale.set(.052,.095,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
  for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hairRoot);lock.scale.set(s===0?.085:.075,.145,.058);lock.rotation.set(.22,-s*.20,-s*.20);appearance.hair.push(lock);}
  g.userData.studentStyle='rpg-profile-v3';
  return {g,rig,P,limbParts,appearance,assembly:model};
