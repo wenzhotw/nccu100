@@ -213,3 +213,26 @@ test('紅色禁停線沿路緣石內側鋪，坡道轉角兩段相接不交叉�
   }
   assert.equal(bad, 0, `紅色禁停線有 ${bad} 個頂點離路緣石超過 5 公分`);
 });
+
+test('山居塔樓一樓是騎樓：柱間可以走進去，騎樓後牆以北是實心，ABC 區不再擠出塔樓', async () => {
+  const { greyboxColliders, createGreybox } = await import('../greybox.js');
+  const { SHANJU } = await import('../layout.js');
+  const inBox = (c, x, z) => {
+    const dx = x - c.cx, dz = z - c.cz;
+    return Math.abs(dx * c.cs - dz * c.sn) <= c.hx && Math.abs(dx * c.sn + dz * c.cs) <= c.hz;
+  };
+  const cs = greyboxColliders();
+  const blocked = (x, z) => cs.some(c => c.obb && inBox(c, x, z));
+  for (const x of [1, 3.2, 5.4, 7.6]) {
+    assert(!blocked(x, SHANJU.z1 - 0.3), `騎樓入口 x=${x} 被擋住`);
+    assert(!blocked(x, SHANJU.arcade + 0.4), `騎樓內 x=${x} 被擋住`);
+    assert(blocked(x, SHANJU.arcade - 0.5), `騎樓後牆 x=${x} 沒有碰撞`);
+  }
+  const group = createGreybox(), mesh = group.getObjectByName('建築');
+  mesh.geometry.computeBoundingBox();
+  const p = mesh.geometry.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), z = p.getZ(i);
+    assert(!(x > SHANJU.x0 + 0.5 && x < SHANJU.x1 - 0.5 && z > -2 && z < SHANJU.z1 - 0.5), `灰盒建築仍蓋在山居塔樓位置 (${x},${z})`);
+  }
+});

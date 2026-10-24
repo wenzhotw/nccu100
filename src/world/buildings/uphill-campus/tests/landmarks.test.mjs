@@ -251,7 +251,8 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
     __landmarkScene.clear();colliders.length=0;
     buildMap();
     const root = __landmarkScene.getObjectByName('山上校區地標'); assert(root, 'buildMap 未接入地標');
-    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1);
+    const { shanjuColliderCount } = await import('./src/world/buildings/uphill-campus/shanju.js');
+    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1 + shanjuColliderCount());
     for (const c of landmarkColliders()) assert(colliders.some(v => v.obb && v.cx === c.cx && v.cz === c.cz && v.hx === c.hx && v.hz === c.hz && Math.abs(v.sn - Math.sin(c.th)) < 1e-9));
     for (const s of landmarkSigns()) {
       if(s.anchor==='九舍樓梯下') { for(const c of s.text.replace(/[ ・]/g,'')) assert(text.includes(c)); }

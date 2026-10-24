@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { state } from './state.js';
 import { $ } from './dom.js';
-import { camera, renderer, scene } from './engine.js';
+import { camera, contextRecovery, renderer, scene } from './engine.js';
 import { AU } from '../systems/audio.js';
 import { POST, qualityTick, resetQualityMeasurement } from '../render/post.js';
 import { createFrameTiming } from './frame-timing.js';
@@ -142,6 +142,11 @@ function update(dt){
 }
 // 畫目前所在的場景：戶外是校園，室內是那個房間自己的場景（core/rooms.js）
 function loop(){
+  // 3D 畫面不可用時不讓角色在看不見的狀態繼續移動；回復首幀不污染畫質量測。
+  if(contextRecovery.lost){
+    clock.getDelta(); frameTiming.resetMeasurement(); resetQualityMeasurement(); performanceMonitor.reset();
+    requestAnimationFrame(loop); return;
+  }
   const frame=frameTiming.sample(clock.getDelta(),document.hidden);
   performanceMonitor.beginFrame(frame.measurementDt);
   update(frame.simulationDt);

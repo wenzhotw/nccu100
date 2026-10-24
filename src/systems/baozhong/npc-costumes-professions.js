@@ -8,7 +8,7 @@ function changpao(ctx) {
   const robe = '#c9ad84', jacket = '#3a4667';
   cylinder(rig, 'changpao-long-robe', robe, [0, .44, 0], .19, .235, .60).scale.z = .84;
   cylinder(rig, 'changpao-hem', jacket, [0, .155, 0], .232, .235, .03).scale.z = .84;
-  box(rig, 'changpao-front-seam', jacket, [0, .34, .191], [.012, .35, .014], [.06, 0, 0]);
+  // 長袍是大襟右掩，正面沒有中縫（Grok 查核 GRK-002，依 1929《服制條例》），所以不畫中線。
   // 短馬褂與及踝長袍分成兩個清楚的輪廓。
   for (const side of [-1, 1]) {
     box(rig, `magua-panel-${side}`, jacket, [side * .102, .585, .008], [.188, .31, .335]);

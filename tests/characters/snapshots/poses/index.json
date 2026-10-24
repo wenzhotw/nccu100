@@ -1,0 +1,126 @@
+{
+  "format": 3,
+  "baseline": "a40a04e03e618be0515e98fa51bbd41df9bd0784",
+  "poses": [
+    {
+      "id": "player",
+      "pose": "walk-a",
+      "parts": 68
+    },
+    {
+      "id": "player",
+      "pose": "walk-b",
+      "parts": 68
+    },
+    {
+      "id": "player",
+      "pose": "raise-hand",
+      "parts": 68
+    },
+    {
+      "id": "player",
+      "pose": "wave",
+      "parts": 68
+    },
+    {
+      "id": "player",
+      "pose": "sit",
+      "parts": 68
+    },
+    {
+      "id": "player",
+      "pose": "panic",
+      "parts": 68
+    },
+    {
+      "id": "chiang",
+      "pose": "walk-a",
+      "parts": 34
+    },
+    {
+      "id": "chiang",
+      "pose": "walk-b",
+      "parts": 34
+    },
+    {
+      "id": "chiang",
+      "pose": "raise-hand",
+      "parts": 34
+    },
+    {
+      "id": "chiang",
+      "pose": "wave",
+      "parts": 34
+    },
+    {
+      "id": "chiang",
+      "pose": "sit",
+      "parts": 34
+    },
+    {
+      "id": "chiang",
+      "pose": "panic",
+      "parts": 34
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "walk-a",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "walk-b",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "raise-hand",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "wave",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "sit",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D12",
+      "pose": "panic",
+      "parts": 52
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "walk-a",
+      "parts": 75
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "walk-b",
+      "parts": 75
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "raise-hand",
+      "parts": 75
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "wave",
+      "parts": 75
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "sit",
+      "parts": 75
+    },
+    {
+      "id": "bz26-D23",
+      "pose": "panic",
+      "parts": 75
+    }
+  ]
+}

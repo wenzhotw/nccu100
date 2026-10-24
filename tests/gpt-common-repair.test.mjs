@@ -69,5 +69,5 @@ test('frozen content, API/state dependencies and all 40 decor source bytes prese
    const hash=override?override.after:oldHash;
    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/'+rel,import.meta.url))).digest('hex'),hash,rel);
  }
- assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/content/baozhong.json',import.meta.url))).digest('hex'),'a686d5565cd8d36319d58e20579a4b5b713c4bfbd5c8f67541345a1d9fc9ca72');
+ assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL('../src/content/baozhong.json',import.meta.url))).digest('hex'),'f951dd73ee1f60227f2785c6bfb4ad797ff51357a1266c932daaaadd59ddf736');
 });

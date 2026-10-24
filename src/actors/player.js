@@ -2,6 +2,9 @@
  * 主角：Q版小男生的模型與動畫。
  */
 import * as THREE from 'three';
+import { deactivateArticulatedArms } from './articulated-arms.js';
+import { deactivateWardrobe, refreshWardrobeForm } from './wardrobe-factory.js';
+import { registerTrialPlayer } from './actor-rig-identity.js';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
 import { BOX, OUT, SPH, basic, canvasTex, mk, outline, toon } from '../render/kit.js';
@@ -17,6 +20,8 @@ function part(geo,mat,x,y,z,parent,out){ return mk(geo,typeof mat==='string'?too
 function outlineU(m,k){ const o=new THREE.Mesh(m.geometry,OUT); o.scale.setScalar(k); m.add(o); return o; }
 function ring(r,tube,col,y,parent,sz){ const m=part(new THREE.TorusGeometry(r,tube,6,28),col,0,y,0,parent); m.rotation.x=Math.PI/2; m.scale.y=sz||1; m.castShadow=false; return m; }
 const H={};
+// 保留建構時引用，換裝不再依賴子節點順序。
+const limbParts={};
 /* 身體：T恤、短褲、書包 */
 H.torso=part(new THREE.CapsuleGeometry(0.17,0.12,6,16),HC.shirt,0,0.5,0,rig,0.014);
 H.torso.scale.z=0.85;
@@ -32,17 +37,19 @@ PACK.push(part(BOX,HC.bag2,0,0.45,-0.28,rig)); PACK[3].scale.set(0.2,0.12,0.04);
 [-1,1].forEach(s=>{ const st=part(BOX,HC.bag2,s*0.1,0.56,0,rig); st.scale.set(0.035,0.28,0.31); PACK.push(st); });
 function arm(s){
   const sh=new THREE.Group(); sh.position.set(s*0.19,0.63,0); rig.add(sh);
-  part(new THREE.CapsuleGeometry(0.055,0.06,4,10),HC.shirt,0,-0.05,0,sh,0.012);
-  part(new THREE.CapsuleGeometry(0.046,0.06,4,10),HC.skin,0,-0.14,0,sh,0.01);
+  const sleeve=part(new THREE.CapsuleGeometry(0.055,0.06,4,10),HC.shirt,0,-0.05,0,sh,0.012);
+  const forearm=part(new THREE.CapsuleGeometry(0.046,0.06,4,10),HC.skin,0,-0.14,0,sh,0.01);
+  limbParts[s<0?'armL':'armR']={sleeve,forearm};
   return sh;
 }
 H.shL=arm(-1);
 H.shR=arm(1);
 function leg(s){
   const hp=new THREE.Group(); hp.position.set(s*0.085,0.32,0); rig.add(hp);
-  part(new THREE.CapsuleGeometry(0.06,0.08,4,10),HC.skin,0,-0.1,0,hp,0.01);
+  const leg=part(new THREE.CapsuleGeometry(0.06,0.08,4,10),HC.skin,0,-0.1,0,hp,0.01);
   const sh=part(SPH,HC.shoe,0,-0.235,0.03,hp); sh.scale.set(0.075,0.055,0.11); outlineU(sh,1.15);
-  part(BOX,HC.sole,0,-0.275,0.03,hp).scale.set(0.13,0.022,0.2);
+  const sole=part(BOX,HC.sole,0,-0.275,0.03,hp); sole.scale.set(0.13,0.022,0.2);
+  limbParts[s<0?'legL':'legR']={leg,shoe:sh,sole};
   return hp;
 }
 H.hipL=leg(-1);
@@ -96,17 +103,18 @@ outlineU(back,1.04);
 const SPIKE=new THREE.ConeGeometry(0.075,0.15,5);
 SPIKE.translate(0,0.075,0);
 const up=new THREE.Vector3(0,1,0);
+const HAIR=[cap,back];
 [[0.55,Math.PI],[1.0,Math.PI*0.75],[1.0,Math.PI*1.25],[1.5,Math.PI*0.62],[1.5,Math.PI*1.38],[1.75,Math.PI],[0.7,0.5],[0.7,-0.5],[0.25,0.1]].forEach(([t,p],i)=>{
   const n=new THREE.Vector3(Math.sin(t)*Math.sin(p),Math.cos(t),Math.sin(t)*Math.cos(p));
   const m=part(SPIKE,i%2?hairM2:hairM,n.x*0.28*HS[0],n.y*0.28*HS[1],n.z*0.28*HS[2],hc,0.012);
-  m.quaternion.setFromUnitVectors(up,n);
+  m.quaternion.setFromUnitVectors(up,n); HAIR.push(m);
 });
 const BANG=new THREE.ConeGeometry(0.07,1,5);
 BANG.rotateX(Math.PI);
 BANG.translate(0,-0.5,0);
 [[-0.75,0.13],[-0.4,0.11],[-0.05,0.12],[0.3,0.1],[0.65,0.13]].forEach(([a,len],i)=>{
   const g=new THREE.Group(); g.position.set(Math.sin(a)*0.27,0.12,Math.cos(a)*0.27); g.rotation.y=a; hc.add(g);
-  const m=part(BANG,i%2?hairM2:hairM,0,0,0,g,0.012); m.scale.set(1,len,0.5); m.rotation.x=-0.35;
+  const m=part(BANG,i%2?hairM2:hairM,0,0,0,g,0.012); m.scale.set(1,len,0.5); m.rotation.x=-0.35; HAIR.push(g);
 });
 const shadowBlob=new THREE.Mesh(new THREE.CircleGeometry(0.3,20),basic({color:'#000',transparent:true,opacity:0.18,depthWrite:false}));
 shadowBlob.rotation.x=-Math.PI/2;
@@ -141,8 +149,7 @@ const swimGear=new THREE.Group(); swimGear.visible=false; hc.add(swimGear);
   [-1,1].forEach(s=>{ const g=part(new THREE.TorusGeometry(0.06,0.018,6,16),'#2a2c4a',s*0.085,0.02,0.285,swimGear); g.scale.y=0.8;
     part(new THREE.CircleGeometry(0.05,16),basic({color:'#7fc8e8',transparent:true,opacity:0.7}),s*0.085,0.02,0.29,swimGear); });
   part(BOX,'#2a2c4a',0,0.02,0.29,swimGear).scale.set(0.06,0.015,0.01); }
-const HAIR=[cap,back]; hc.children.forEach(m=>{ if(m.geometry===SPIKE||(m.isGroup&&m.children[0]&&m.children[0].geometry===BANG)) HAIR.push(m); });
-const SLEEVES=[H.shL.children[0],H.shR.children[0]];
+const SLEEVES=[limbParts.armL.sleeve,limbParts.armR.sleeve];
 /** 換裝：'swim' 泳衣（打赤膊、藍色泳褲、紅泳帽、蛙鏡），其他值換回一般衣服 */
 function setOutfit(kind){
   const swim=kind==='swim';
@@ -153,6 +160,7 @@ function setOutfit(kind){
   HAIR.forEach(m=>{ m.visible=!swim; });
   swimGear.visible=swim;
   state.outfit=swim?'swim':'normal';
+  refreshWardrobeForm(player);
 }
 state.outfit='normal';
 
@@ -191,18 +199,22 @@ const eagleFeet=[H.hipL,H.hipR].map(hp=>{ const foot=part(new THREE.ConeGeometry
 /** 永久變成雄鷹（校長的任務獎勵）：藏起人類的頭髮、臉、書包，換上雄鷹頭、翅膀、鳥爪 */
 function becomeEagle(){
   if(state.isEagle) return;
+  deactivateWardrobe(player);
+  deactivateArticulatedArms(player);
   state.isEagle=true; state.outfit='normal';
   HAIR.forEach(m=>{ m.visible=false; });
   skull.visible=false; face.visible=false; PACK.forEach(m=>{ m.visible=false; });
   eagleHead.visible=true; eagleChest.visible=true;
   H.torso.material=toon(EC.blue); shorts.visible=false;
   SLEEVES.forEach(m=>{ m.material=toon(EC.brown); });
-  H.shL.children[1].material=toon(EC.brown2); H.shR.children[1].material=toon(EC.brown2);
+  limbParts.armL.forearm.material=toon(EC.brown2); limbParts.armR.forearm.material=toon(EC.brown2);
   eagleWingL.visible=true; eagleWingR.visible=true;
-  H.hipL.children[0].material=toon(EC.brown2); H.hipR.children[0].material=toon(EC.brown2);
-  H.hipL.children[1].visible=false; H.hipR.children[1].visible=false;   // 原本的鞋子藏起來
-  H.hipL.children[2].visible=false; H.hipR.children[2].visible=false;   // 鞋底
+  limbParts.legL.leg.material=toon(EC.brown2); limbParts.legR.leg.material=toon(EC.brown2);
+  limbParts.legL.shoe.visible=false; limbParts.legR.shoe.visible=false;   // 原本的鞋子藏起來
+  limbParts.legL.sole.visible=false; limbParts.legR.sole.visible=false;   // 鞋底
   eagleFeet.forEach(m=>{ m.visible=true; });
 }
 
-export { H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };
+registerTrialPlayer(player,rig,H,hc,limbParts,()=>!state.isEagle,{hairTop:HAIR.filter(node=>node!==back),backpack:PACK});
+
+export { hc as headCenter, limbParts, H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };

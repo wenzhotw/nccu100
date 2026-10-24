@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { registerHooks } from 'node:module';
 import { resolve, setActiveColliders, setRoomClamp, colliders } from '../../../../core/collision.js';
-import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY, ZQ10, footprintOf } from '../layout.js';
+import { R, STAIRS, RAMPS, LAYOUT, FLOOR_H, LEVELS, ANCHORS, BUILDING_FLOORS, LOBBY, SHANJU, ZQ10, footprintOf } from '../layout.js';
 import { heightAt, platformLevel, wallSegments, rampHeight, projectToPath, landscapeAt } from '../terrain.js';
 import {isInsideLobby} from '../lobby.js';
 
@@ -308,7 +308,9 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
   const boxes = greyboxColliders().filter(c => c.kind === 'building');
   const buildings = LAYOUT.buildings.filter(b => b.pts.every(([x, z]) => x >= R.x0 && x <= R.x1 && z >= R.z0 && z <= R.z1))
     // 大廳建物只剩大廳以南（z ≥ LOBBY.bounds.z1）是實心，取該段輪廓驗收碰撞覆蓋。
-    .map(b=>b.osm===LOBBY.osm?{...b,pts:[[25.58,LOBBY.bounds.z1],[36.78,LOBBY.bounds.z1],[37,-10.4],[25.8,-10.1]]}:b);
+    .map(b=>b.osm===LOBBY.osm?{...b,pts:[[25.58,LOBBY.bounds.z1],[36.78,LOBBY.bounds.z1],[37,-10.4],[25.8,-10.1]]}:b)
+    // 山居塔樓另外建模（騎樓可走進去），ABC 區只驗收切掉塔樓後的輪廓。
+    .map(b=>b.osm===SHANJU.osm?{...b,pts:SHANJU.rest}:b);
   // A 棟凸出段挑高架空（照片 8988），只驗切線西側的實心段。
   for (const b of buildings.filter(b => !ZQ10.lifted.some(l => l.building === b.osm && l.fromX === undefined))
     .map(b => { const l = ZQ10.lifted.find(l => l.building === b.osm); return l ? { ...b, pts: clipBuildingX(footprintOf(b), l.fromX, false) } : b; })) {
@@ -320,7 +322,8 @@ test('D1 建築碰撞保留道路與外部錨點', async () => {
         if (inPoly(x, z, b.pts)) { total++; if (own.some(c => distance({ x, z }, c) < 1e-8)) covered++; }
     assert(covered / total >= 0.8, `${b.name} 覆蓋率 ${covered / total}`);
   }
-  const clear = (x, z, margin) => buildings.every(b => !inPoly(x, z, b.pts) && project(x, z, [...b.pts, b.pts[0]]) >= margin);
+  const tower = [[SHANJU.x0, SHANJU.z0], [SHANJU.x1, SHANJU.z0], [SHANJU.x1, SHANJU.z1], [SHANJU.x0, SHANJU.z1]];
+  const clear = (x, z, margin) => [...buildings, { pts: tower }].every(b => !inPoly(x, z, b.pts) && project(x, z, [...b.pts, b.pts[0]]) >= margin);
   const verify = (x, z, margin) => {
     if (!clear(x, z, margin)) return;
     setActiveColliders(boxes); setRoomClamp(() => {});

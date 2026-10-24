@@ -35,6 +35,7 @@ import './world/environment/grass.js';
 import './world/environment/particles.js';
 import './world/prefabs/flush.js'; // 全部建好後，把工具箱的東西合成一批一批畫（要在所有建築、地形之後）
 import './world/bake/flush.js'; // 再把剩下沒名字、純色的小方塊合併成幾個大網格（要在工具箱之後、鏡頭防穿模之前）
+import './render/mobile-shadows.js'; // 手機：很小的東西不投影，少畫一輪（要在烘焙之後）
 import './actors/player.js';
 import './actors/pangolin.js';
 import './systems/stories.js';
@@ -61,8 +62,10 @@ import './systems/baozhong/programs-partners.js'; // v1.70：跨域學程帳篷�
 import './systems/baozhong/stage2/index.js'; // 兩階段攤位（T074）：預設開啟，?bz26stage2=0 可暫時關閉
 import './systems/save.js'; // 存檔：進度存在玩家瀏覽器，要在所有任務系統之後載入
 import './systems/analytics.js'; // 遊玩人數統計（GoatCounter）：瀏覽、開始冒險、進室內、成就；本機與自動測試不送
+import './ui/install-hint.js'; // 手機開始畫面：「加到主畫面，全螢幕玩」按鈕與說明
 import './systems/police-drive.js';
 import './systems/camera-occlusion.js';
 import './systems/feel.js';
 import './core/loop.js';
 import './core/debug.js';
+import './render/warmup.js'; // 開始畫面時先編譯材質、上傳貼圖，進遊戲後轉頭比較不會頓（放最後，等所有東西都蓋好）

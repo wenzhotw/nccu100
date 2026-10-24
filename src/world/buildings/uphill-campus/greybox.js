@@ -1,7 +1,7 @@
 /** 山上灰盒的純建模與碰撞資料，供場景接線與 Node 幾何驗收共用。 */
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY, PLAZA, ZQ10, footprintOf } from './layout.js';
+import { R, LEVELS, STAIRS, RAMPS, LAYOUT, FLOOR_H, REGIONS, FILL_REGIONS, BRIDGES, BUILDING_FLOORS, LOBBY, PLAZA, SHANJU, ZQ10, footprintOf } from './layout.js';
 import { heightAt, platformLevel, wallSegments, projectToPath, rampHeight, landscapeAt } from './terrain.js';
 import { addRampDetails, rampDetailColliders } from './ramp-details.js';
 import { addLobbyExterior } from './lobby-exterior.js';
@@ -134,6 +134,20 @@ function liftedParts(b) {
     ...ground.parts.map(pts => ({ ...b, pts, height: ground.top - b.base })), east];
 }
 
+/** 山居塔樓由 shanju.js 另外建模，ABC 區只擠出切掉塔樓後的輪廓。 */
+function withoutShanju(b) {
+  return b.osm === SHANJU.osm ? { ...b, pts: SHANJU.rest } : b;
+}
+
+/** 塔樓一樓是騎樓：後段實心量體加前排柱子，柱間可以走進騎樓。 */
+export function shanjuColliders() {
+  const S = SHANJU, box = (x0, x1, z0, z1, kind) => ({ kind, building: 'shanju', obb: true,
+    cx: (x0 + x1) / 2, cz: (z0 + z1) / 2, hx: (x1 - x0) / 2, hz: (z1 - z0) / 2, th: 0, cs: 1, sn: 0 });
+  const p = S.pillar / 2, zc = S.z1 - p;
+  return [box(S.x0, S.x1, S.z0, S.arcade, 'building'),
+    ...S.pillars.map(x => box(x - p, x + p, zc - p, zc + p, 'pillar'))];
+}
+
 /** 沿核可切線保留原輪廓，不以包圍盒取代建築外形。 */
 function clipBuilding(pts, cutZ, north) {
   const result = [];
@@ -184,7 +198,7 @@ function rampWallGeometry(segments, outline = 0) {
 function addBuildingsAndWalls(group) {
   const shapes = [], edges = [];
   group.userData.buildings = buildings().map(b => ({ osm: b.osm, base: b.base, height: b.height }));
-  for (const b of buildings()) {
+  for (const b of buildings().map(withoutShanju)) {
     if(b.osm===LOBBY.osm)continue;
     const bridge = BRIDGES.find(v => v.building === b.osm);
     const parts = bridge ? [
@@ -401,7 +415,7 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...zq10Colliders(), ...buildings().flatMap(b => {
+  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...zq10Colliders(), ...shanjuColliders(), ...buildings().map(withoutShanju).flatMap(b => {
     // 架空層可以走，改由 zq10Colliders 的柱子與邊沿擋人；部分架空只留切線西側實心段。
     const lift = ZQ10.lifted.find(l => l.building === b.osm);
     if (lift && lift.fromX === undefined) return [];

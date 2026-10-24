@@ -15,17 +15,19 @@ import { getMiniMapCacheStats } from '../systems/items.js';
 import { world, heightAt } from '../world/registry.js';
 import { enterRoom, exitRoom, groundH, pos, spots, zoneOf } from './gameplay.js';
 import { rooms } from './rooms.js';
-import { scene } from './engine.js';
+import { camera, renderer, scene } from './engine.js';
 import { colliders, resolve } from './collision.js';
 import { bakeStats } from '../world/bake/index.js';
 import { becomeEagle } from '../actors/player.js';
+import { canvasTexStats } from '../render/kit.js';
+import { mobileShadowStats } from '../render/mobile-shadows.js';
 
 const on = import.meta.env.DEV || new URLSearchParams(location.search).has('debug') || new URLSearchParams(location.search).has('perf');
 if (on) {
   window.__game = {
     perf: performanceMonitor, miniMapCacheStats: getMiniMapCacheStats,
-    state, world, pos, spots, heightAt: groundH, zoneOf, scene, colliders, resolve,
-    rooms, enterRoom, exitRoom, bakeStats, becomeEagle,
+    state, world, pos, spots, heightAt: groundH, zoneOf, scene, camera, renderer, colliders, resolve,
+    rooms, enterRoom, exitRoom, bakeStats, becomeEagle, canvasTexStats, mobileShadowStats,
     teleport(x, z) { pos.set(x, groundH(x, z), z); },
     view(...v) { state.viewCam = v.length === 6 ? v : null; },
   };

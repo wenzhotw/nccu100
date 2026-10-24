@@ -1,21 +1,24 @@
 {
   "name": "nccu100",
   "private": true,
-  "version": "1.77.0",
+  "version": "1.93.0",
   "type": "module",
   "description": "蓋亞造界．政大百年慶版：政大山下校園 3D 冒險遊戲",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --mode wardrobe && node scripts/wardrobe-build-order-check.mjs",
     "preview": "vite preview",
     "check": "node scripts/check.mjs",
     "smoke": "node scripts/smoke.mjs && node scripts/baozhong-smoke.mjs",
     "new-building": "node scripts/new-building.mjs",
     "new-interior": "node scripts/new-interior.mjs",
-    "test": "node --test scripts/*.test.mjs && npm run test:baozhong && npm run test:npc-costumes && npm run test:stage2",
+    "test": "node scripts/run-tests.mjs",
+    "test:unit": "node --test scripts/*.test.mjs",
     "test:baozhong": "sh tests/run-portable.sh",
     "test:npc-costumes": "node --test tests/npc-costumes.test.mjs",
-    "test:stage2": "node --test tests/bz26-stage2.test.mjs tests/bz26-radio.test.mjs tests/bz26-programs.test.mjs src/systems/baozhong/matching.test.js"
+    "test:characters": "node --import ./tests/characters/register.mjs --test tests/characters/*.test.mjs",
+    "test:stage2": "node --test tests/bz26-stage2.test.mjs tests/bz26-radio.test.mjs tests/bz26-programs.test.mjs src/systems/baozhong/matching.test.js",
+    "test:rig-trial": "node --import ./tests/characters/register.mjs --test tests/characters/rig-trial.test.mjs"
   },
   "dependencies": {
     "three": "0.149.0"
