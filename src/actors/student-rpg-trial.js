@@ -7,16 +7,16 @@ const power=(n,e)=>Math.sign(n)*Math.pow(Math.abs(n),e);
 function mapVertices(g,fn){const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,...fn(p.getX(i),p.getY(i),p.getZ(i)));g.computeVertexNormals();return g;}
 // 共用標準化頭面映射：柔卵形頰頜、較平前臉與連續鼻樑鼻尖，臉片同步外偏移。
 function jaw(g,r,head=true){return mapVertices(g,(x,y,z)=>{
- const nx=x/r,ny=y/r,nz=z/r,lower=Math.max(0,-ny),blend=lower*lower*(3-2*lower);
- const px=x*(1-.40*blend),py=ny<-.82?r*(-.82+(ny+.82)*.85):y;
+ const nx=x/r,ny=y/r,nz=z/r,lower=Math.max(0,(-ny-.25)/.75),blend=lower*lower*(3-2*lower);
+ const px=x*(1-.34*blend),py=ny<-.88?r*(-.05-.83*.87+(ny+.88)*.35):ny<-.05?r*(-.05+(ny+.05)*.87):y;
  let pz=z;
  if(nz>0){
   pz=r*Math.pow(nz,.68)*.93;
-  const tip=.115*Math.exp(-((nx/.105)**2)-((ny+.34)/.10)**2);
-  const bridge=.035*Math.exp(-((nx/.075)**2)-((ny+.14)/.25)**2);
-  const sockets=-.045*(Math.exp(-(((nx-.34)/.20)**2)-((ny+.06)/.16)**2)+Math.exp(-(((nx+.34)/.20)**2)-((ny+.06)/.16)**2));
-  const brows=.04*Math.exp(-(((Math.abs(nx)-.34)/.25)**2)-((ny-.15)/.10)**2);
-  const muzzle=.038*Math.exp(-((nx/.25)**2)-((ny+.53)/.095)**2);
+  const tip=.08*Math.exp(-((nx/.105)**2)-((ny+.34)/.10)**2);
+  const bridge=.02*Math.exp(-((nx/.075)**2)-((ny+.14)/.25)**2);
+  const sockets=-.025*(Math.exp(-(((nx-.34)/.20)**2)-((ny+.06)/.16)**2)+Math.exp(-(((nx+.34)/.20)**2)-((ny+.06)/.16)**2));
+  const brows=.025*Math.exp(-(((Math.abs(nx)-.34)/.25)**2)-((ny-.15)/.10)**2);
+  const muzzle=.02*Math.exp(-((nx/.25)**2)-((ny+.53)/.095)**2);
   pz*=1-.15*blend;
   if(head)pz+=r*(tip+bridge+sockets+brows+muzzle)*Math.min(1,nz*4);
  }
@@ -34,6 +34,12 @@ function shapes(){
  const leg=mapVertices(new THREE.CylinderGeometry(.065,.043,.45,12,6),(x,y,z)=>{const knee=1-.06*Math.exp(-(((y+.015)/.06)**2));return [x*knee,y,z*knee];});
  const waist=mapVertices(new THREE.CylinderGeometry(.125,.13,.10,14,1),(x,y,z)=>[x,y+(y<0?.018*(1-Math.abs(x)/.13):0),z*.97]);
  const skull=jaw(new THREE.SphereGeometry(.19,40,32),.19);
+ // 臉部明暗以平順頭部代理法線混合，保留鼻頰輪廓但避免局部凹凸切出硬色塊。
+ const sp=skull.attributes.position,sn=skull.attributes.normal;
+ for(let i=0;i<sp.count;i++){
+  const smooth=new THREE.Vector3(sp.getX(i)/(.16*.16),sp.getY(i)/(.205*.205),sp.getZ(i)/(.19*.19)).normalize();
+  const n=new THREE.Vector3(sn.getX(i),sn.getY(i),sn.getZ(i)).lerp(smooth,.72).normalize();sn.setXYZ(i,n.x,n.y,n.z);
+ }
  // 臉片直接沿頭殼同一三角拓撲取前臉，避免鼻樑區不同取樣互相穿透。
  const face=skull.clone();face.scale(1.008,1.008,1.008);
  const uv=face.attributes.uv,indices=[],source=skull.index.array;
@@ -68,17 +74,17 @@ function shapes(){
   return mapVertices(new THREE.SphereGeometry(1,12,12),(x,y,z)=>{
    const t=(1-y)/2,c=curve.getPoint(t),tangent=curve.getTangent(t).normalize(),radial=c.clone().normalize();
    const across=new THREE.Vector3().crossVectors(tangent,radial).normalize(),out=new THREE.Vector3().crossVectors(across,tangent).normalize();
-   c.addScaledVector(across,x*width*(1-.28*t)).addScaledVector(out,z*depth);return c.toArray();
+   c.addScaledVector(across,-x*width*(1-.28*t)*Math.pow(Math.sin(Math.PI*t),.30)).addScaledVector(out,z*depth*Math.pow(Math.sin(Math.PI*t),.2));return c.toArray();
   });
  };
  const locks=[
-  sweep([[.045,.203,.035],[-.045,.183,.130],[-.135,.080,.178],[-.155,-.065,.160]],.072,.024),
-  sweep([[.060,.205,.025],[.032,.150,.183],[-.020,.045,.208],[-.045,-.065,.190]],.054,.021),
+  sweep([[.045,.203,.035],[-.045,.183,.130],[-.135,.080,.178],[-.165,-.025,.135]],.072,.024),
+  sweep([[.060,.205,.025],[.032,.150,.183],[.005,.095,.205],[.005,.030,.195]],.054,.021),
   sweep([[.075,.195,.015],[.135,.140,.135],[.172,.035,.145],[.178,-.045,.095]],.050,.019),
  ];
  for(const sign of [-1,1]){
   locks.push(sweep([[sign*.07,.190,-.035],[sign*.165,.105,-.065],[sign*.182,-.005,-.090],[sign*.150,-.110,-.075]],.062,.020));
-  locks.push(sweep([[sign*.07,.150,-.130],[sign*.13,.050,-.172],[sign*.13,-.080,-.160],[sign*.105,-.160,-.115]],.063,.021));
+  locks.push(sweep([[sign*.07,.150,-.130],[sign*.13,.050,-.172],[sign*.13,-.080,-.160],[sign*.105,-.160,-.115]],.080,.014));
  }
  geometry={locks,torso,forearm,sleeve,leg,waist,skull,face,cap,bang,bag,shoe,sole,inner,
   neck:new THREE.CylinderGeometry(.037,.048,.11,12),cuff:new THREE.CylinderGeometry(.047,.045,.05,12),
