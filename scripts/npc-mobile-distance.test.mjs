@@ -47,3 +47,24 @@ test('adding a story after hook to a previously hidden NPC restores its visual a
   update(n, 0.1);
   assert.equal(n.rig.visible, true); assert.equal(calls, 1);
 });
+test('paused NPC hidden far away becomes visible nearby without advancing paused behaviour', () => {
+  const { n, pos, update } = harness();
+  update(n, 0.1); assert.equal(n.rig.visible, false);
+  let afterCalls = 0;
+  n.pauseWhen = () => true; n.onCatch = () => assert.fail('paused catch must not execute');
+  const before = { x: n.g.position.x, z: n.g.position.z, ph: n.ph, sayT: n.sayT, pi: n.pi };
+  pos.x = n.g.position.x; update(n, 1);
+  assert.equal(n.rig.visible, true);
+  assert.deepEqual({ x: n.g.position.x, z: n.g.position.z, ph: n.ph, sayT: n.sayT, pi: n.pi }, before);
+  n.after = () => afterCalls++;
+  n.g.visible = false; update(n, 1);
+  assert.equal(n.g.visible, false, 'festival-hidden parent remains hidden');
+  assert.equal(afterCalls, 0, 'paused story callback remains stopped');
+});
+test('room mismatch remains stopped before mobile visibility and pause predicate', () => {
+  const { n, update } = harness();
+  n.room = 'another-room'; n.rig.visible = false;
+  n.pauseWhen = () => assert.fail('other-room NPC must be ignored');
+  update(n, 1);
+  assert.equal(n.rig.visible, false); assert.equal(n.g.position.x, 60);
+});

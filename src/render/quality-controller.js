@@ -2,13 +2,13 @@ import { createQualitySampler } from '../core/frame-timing.js';
 
 /**
  * 生產畫質控制器。先關柔光、再降解析度；連續四個快窗才升一級。
- * 只有試升後再次掉幀，才將該級暫停 60 秒可見遊戲時間。
+ * 只有試升後再次掉幀，才將該級暫停 60、120、240、最多 480 秒可見遊戲時間。
  * 中速窗會中斷連續快窗；背景時間不計入冷卻或重試時間。
  */
 export function createQualityController({ dpr = 1, bloom = true, onChange = () => {} } = {}) {
   const max = Math.min(dpr, 1.5), min = Math.min(dpr, 1);
   let pr = max, bloomOn = bloom, time = 0, fast = 0, trial = null;
-  const blocked = new Map(), sampler = createQualitySampler();
+  const blocked = new Map(), failures = new Map(), sampler = createQualitySampler();
   const key = () => bloomOn ? 'bloom' : String(pr);
   const snapshot = () => ({ pr, bloom: bloomOn, trial, fast });
   function changed() { fast = 0; sampler.coolDown(); onChange(snapshot()); }
@@ -23,7 +23,12 @@ export function createQualityController({ dpr = 1, bloom = true, onChange = () =
       if (window === null) return;
       if (window !== 'fast') fast = 0;
       if (window === 'slow') {
-        if (trial !== null) { blocked.set(trial, time + 60); trial = null; }
+        if (trial !== null) {
+          const count = Math.min(4, (failures.get(trial) ?? 0) + 1);
+          failures.set(trial, count);
+          blocked.set(trial, time + 60 * 2 ** (count - 1));
+          trial = null;
+        }
         if (bloomOn) { bloomOn = false; changed(); }
         else if (pr > min + 0.01) { pr = Math.max(min, pr - 0.25); changed(); }
         return;
@@ -31,7 +36,10 @@ export function createQualityController({ dpr = 1, bloom = true, onChange = () =
       if (window !== 'fast' || ++fast < 4) return;
       fast = 0;
       // 試升須再通過四個快窗才視為穩定，下一次恢復需重新累積。
-      if (trial !== null) { trial = null; return; }
+      if (trial !== null) {
+        // 只有該級穩定成功才清除失敗歷史，背景切回與中速窗不會重置退避。
+        failures.delete(trial); blocked.delete(trial); trial = null; return;
+      }
       const up = Math.min(max, pr + 0.25);
       const target = up > pr + 0.01 ? String(up) : bloom && !bloomOn ? 'bloom' : null;
       if (target === null || (blocked.get(target) ?? 0) > time) return;
