@@ -1,0 +1,10 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"><title>普通學生造型對照</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eef5f3;color:#243c3c;font:16px system-ui,sans-serif}header,nav,footer{padding:12px 24px}h1{font-size:24px;margin:5px 0}button,select{font:inherit;padding:8px 12px;margin:3px;border:1px solid #aac4ba;border-radius:8px;background:#fff;color:inherit}#view{height:65vh;min-height:340px}canvas{display:block;width:100%;height:100%}.labels{display:flex;text-align:center}.labels span{width:50%;font-weight:700}#status{white-space:pre-wrap;overflow-wrap:anywhere;font:13px ui-monospace,monospace}p{line-height:1.5;margin:6px 0}
+</style></head><body><header><h1>普通學生：減少拼裝感</h1><p>左：原版　右：候選。相同世界尺度、光線、動作與鏡頭；候選使用新造型比例。沒有寫入遊戲存檔。</p></header><nav aria-label="預覽控制">
+<button data-camera="front">前面</button><button data-camera="side">右側</button><button data-camera="left">左側</button><button data-camera="back">背面</button><button data-camera="game">遊玩距離</button>
+<button data-camera="face-front">臉正面</button><button data-camera="face-quarter">臉斜角</button><button data-camera="face-side">臉側面</button>
+<label>動作 <select id="pose"><option value="idle">idle</option><option value="walk">walk</option><option value="wave">wave</option></select></label>
+<label>表情 <select id="face"><option value="open">open</option><option value="closed">closed</option><option value="panic">panic</option></select></label>
+<label>裝配 <select id="parts"><option value="default">default</option><option value="native">native</option></select></label>
+<button id="pause">暫停</button><button id="reset">reset</button></nav>
+<div class="labels"><span>原版</span><span>候選：RPG 少年新造型</span></div><main id="view" aria-label="原版與候選並列三維預覽"></main><footer><p id="status" role="status">載入中……</p><p>這是同步動作展示，不執行 NPC 尋路或正式遊戲循環。遊玩距離是工作台遠鏡位，不是校園實景截圖。數據為模型資源計數，含描邊，不是 FPS 或完整渲染呼叫。</p></footer><script type="module" src="./student-style-preview.js"></script></body></html>
