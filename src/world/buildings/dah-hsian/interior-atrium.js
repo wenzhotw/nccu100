@@ -1,9 +1,10 @@
 /** 從2F可見的層退藏書中庭。依館方環景、建築方與2022實拍估算；公共迴廊可沿斜梯到達。 */
 import * as THREE from 'three';
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import {createDahFloorGeometry} from './floor-geometry.js';
 import {ATRIUM_PORTALS,portalParts} from './atrium-portals.js';
 import {ATRIUM_LEVELS,ATRIUM_STAIRS,ENTRY_STAIR_GUARDS,atriumDesks,atriumColumns} from './atrium-layout.js';
-import {ATRIUM_FLOOR_LEVELS,ENTRY_STAIR_LANDINGS,CORE_STAIR_FLIGHTS,CORE_STAIR_LANDINGS,MAIN_FLOORS,publicFloor,floorSurfacePolygons,floorBoundarySegments,floorContains} from './public-floor-layout.js';
+import {ATRIUM_FLOOR_LEVELS,ENTRY_STAIR_LANDINGS,CORE_STAIR_FLIGHTS,CORE_STAIR_LANDINGS,MAIN_FLOORS,publicFloor,floorBoundarySegments,floorContains} from './public-floor-layout.js';
 import {roomFrontAtBoundary} from './public-room-fronts.js';
 import {buildPublicRooms} from './interior-public-rooms.js';
 import {hStairGuardSegments,westStairGuardSegments} from './source-stair-layout.js';
@@ -24,10 +25,9 @@ export function buildAtrium(parent,mat){
  const box=(kind,x,y,z,w,h,d,name)=>{const m=new THREE.Mesh(BOX,mat(kind));m.position.set(x,y,z);m.scale.set(w,h,d);m.name=name;root.add(m);return m;};
  const batch=(kind,x,y,z,w,h,d,books=false,bookSide=null)=>{const key=kind+(books?':books:'+bookSide:'');if(!batches.has(key))batches.set(key,{kind,books,bookSide,items:[]});batches.get(key).items.push([x,y,z,w,h,d]);};
  for(const f of ATRIUM_FLOOR_LEVELS){
-  const shapes=floorSurfacePolygons(publicFloor(f.id)).map(p=>new THREE.Shape(p.map(([x,z])=>new THREE.Vector2(x,-z))));
-  const g=new THREE.ExtrudeGeometry(shapes,{depth:.32,bevelEnabled:false});g.rotateX(-Math.PI/2);
+  const g=createDahFloorGeometry(publicFloor(f.id),.32);
   const slabMaterial=cloneDahMaterial(mat('concrete'));slabMaterial.shadowSide=THREE.FrontSide;
-  const mesh=new THREE.Mesh(g,slabMaterial);mesh.position.y=f.y-.32;mesh.name='來源校準公共樓板';mesh.userData.floorId=f.id;root.add(mesh);
+  const mesh=new THREE.Mesh(g,slabMaterial);mesh.position.y=f.y-.32;mesh.name='來源校準公共樓板';mesh.userData.floorId=f.id;mesh.userData.cameraOccluder=true;root.add(mesh);
  }
  for(const f of ATRIUM_FLOOR_LEVELS)for(const e of floorBoundarySegments(publicFloor(f.id)).flatMap(e=>hStairGuardSegments(f.id,e)).flatMap(e=>westStairGuardSegments(f.id,e))){
   if(roomFrontAtBoundary(f.id,e))continue;
