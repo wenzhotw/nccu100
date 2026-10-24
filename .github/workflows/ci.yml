@@ -56,3 +56,30 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  # 經 wenzhotw 核可：新增全角色面板專項，不刪舊 gate、不改部署權限。
+  # 授權：Sentinel_1e88fbb3c1ac8191913f7eea33676102（2026-10-24）。
+  actor-parts-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 打包同一候選
+        run: npm run build
+      - name: 安裝無頭瀏覽器
+        run: npx playwright install --with-deps chromium
+      - name: 全角色面板桌機與窄螢幕驗收
+        run: node scripts/actor-parts-browser.mjs
+      - name: 保留面板結果與截圖
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actor-parts-browser
+          path: test-results/actor-parts/
+          if-no-files-found: warn
+          retention-days: 7
