@@ -6,7 +6,7 @@ let geometry;
 const power=(n,e)=>Math.sign(n)*Math.pow(Math.abs(n),e);
 function mapVertices(g,fn){const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,...fn(p.getX(i),p.getY(i),p.getZ(i)));g.computeVertexNormals();return g;}
 // 共用標準化頭面映射：柔卵形頰頜、較平前臉與連續鼻樑鼻尖，臉片同步外偏移。
-function jaw(g,r){return mapVertices(g,(x,y,z)=>{
+function jaw(g,r,head=true){return mapVertices(g,(x,y,z)=>{
  const nx=x/r,ny=y/r,nz=z/r,lower=Math.max(0,-ny),blend=lower*lower*(3-2*lower);
  const px=x*(1-.10*blend),py=ny<-.65?r*(-.65+(ny+.65)*.72):y;
  let pz=z;
@@ -14,9 +14,9 @@ function jaw(g,r){return mapVertices(g,(x,y,z)=>{
   pz=r*Math.pow(nz,.68)*.93;
   const tip=.15*Math.exp(-((nx/.13)**2)-((ny+.36)/.14)**2);
   const bridge=.045*Math.exp(-((nx/.08)**2)-((ny+.17)/.24)**2);
-  pz+=r*(tip+bridge)*Math.min(1,nz*4);
+  if(head)pz+=r*(tip+bridge)*Math.min(1,nz*4);
  }
- return [px*.90,py*1.08,pz];
+ return [px*(head?.90:1),py*(head?1.08:1),pz];
 });}
 function shapes(){
  if(geometry)return geometry;
@@ -39,6 +39,7 @@ function shapes(){
   const next=t*edge/(Math.PI*.72),k=Math.sin(t)>1e-6?Math.sin(next)/Math.sin(t):1;
   return [x*k,.205*Math.cos(next),z*k];
  });
+ jaw(cap,.205,false);
  const bang=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>[x*(.28+.72*(y+1)/2),y,z*(.55+.45*(y+1)/2)]);
  const bag=mapVertices(new THREE.SphereGeometry(.5,16,12),(x,y,z)=>[.5*power(x*2,.4),.5*power(y*2,.4),.5*power(z*2,.65)]);
  const shoe=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>[power(x,.7)*(1+.12*z),Math.max(-.65,y)*(1-.25*Math.max(0,z)),power(z,.7)]);
