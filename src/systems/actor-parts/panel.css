@@ -1,0 +1,21 @@
+#actor-parts-panel,#actor-parts-panel *{box-sizing:border-box}
+#actor-parts-open{font-size:12px;padding:7px 12px;align-self:flex-end}
+#actor-parts-panel{width:min(640px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;border:2px solid #779a91;border-radius:18px;padding:22px;background:#fbf8ee;color:#243c3c;box-shadow:0 12px 40px #142d3b55;font:15px system-ui,sans-serif;overscroll-behavior:contain}
+#actor-parts-panel::backdrop{background:#132d3b99}
+#actor-parts-panel h2{margin:0 72px 14px 0;font-size:1.35rem}
+#actor-parts-panel p{line-height:1.6;overflow-wrap:anywhere}
+#actor-parts-panel label{display:block;margin:14px 0 6px;font-weight:700}
+#actor-parts-panel select,#actor-parts-panel textarea,#actor-parts-panel input{width:100%;min-width:0;max-width:100%;font:inherit;border:1px solid #abc1b7;border-radius:8px;padding:9px;background:white;color:inherit}
+#actor-parts-panel select{min-height:42px}
+#actor-parts-panel textarea{height:200px;font:13px ui-monospace,monospace;resize:vertical}
+#actor-parts-panel button{font:inherit;border:1px solid #abc1b7;border-radius:9px;padding:10px;background:#e0efe8;color:inherit;cursor:pointer;min-height:44px}
+#actor-parts-panel button:disabled,#actor-parts-panel select:disabled,#actor-parts-panel textarea:disabled{opacity:.6;cursor:not-allowed}
+#actor-parts-panel :focus-visible{outline:3px solid #226a5c;outline-offset:2px}
+#actor-parts-panel .actor-parts-close{float:right}
+#actor-parts-panel .actor-parts-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#actor-parts-panel .actor-parts-restore{padding-top:12px;border-top:1px solid #c5d6cd}
+#actor-parts-panel .actor-parts-filters{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px}
+#actor-parts-panel .actor-parts-detail{font-size:13px;color:#456157;margin:8px 0}
+#actor-parts-owner{color:#725125}
+#actor-parts-status{min-height:1.6em;font-weight:700}
+@media(max-width:420px){#actor-parts-panel{padding:16px}#actor-parts-panel .actor-parts-filters{grid-template-columns:minmax(0,1fr);gap:0}#actor-parts-panel .actor-parts-actions>button{flex:1 1 140px}}

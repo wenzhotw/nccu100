@@ -153,6 +153,7 @@ function loop(){
   qualityTick(frame.measurementDt);
   const s=ROOMS.activeScene();
   performanceMonitor.beginRender(renderer);
+  late.actorPartsRefresh?.(); // 動作完成後同步已裝配原生部件，沒有設定時是空集合
   try { if(POST) POST.render(s,camera,state.time,indoor()); else renderer.render(s,camera); }
   finally { performanceMonitor.endFrame(); }
   requestAnimationFrame(loop);

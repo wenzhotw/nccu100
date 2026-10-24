@@ -1,6 +1,6 @@
 /** 外觀寫入互斥。不同裝配器不得同時修改同一個角色，租約只由建立者釋放。 */
 export function createAppearanceOwnership(){
- const leases=new Map(),owners=new Set(['wardrobe-v1','cards-preview']);
+ const leases=new Map(),owners=new Set(['wardrobe-v1','cards-preview','actor-parts']);
  return Object.freeze({
   ownerOf(id){return leases.get(id)?.owner??null;},
   acquire(id,owner){
