@@ -2,6 +2,7 @@
  * NPC 系統與角色名單。
  */
 import * as THREE from 'three';
+import { finishStudentStyleTrial } from './student-style-trial.js';
 import { createHumanoid } from './humanoid-factory.js';
 import { createCapybara } from './capybara-factory.js';
 import { npcHumanoidProfile } from './humanoid-profiles.js';
@@ -34,17 +35,17 @@ function speech(){ let text=''; const spr=textSprite(720,190,(g,w,h)=>{ if(!text
     g.beginPath(); g.moveTo(w/2-20,124); g.lineTo(w/2,170); g.lineTo(w/2+20,124); g.fill(); g.stroke(); g.fillRect(w/2-17,116,34,11);
     g.fillStyle='#2b2436'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,w/2,70); },3.6,0.95);
   spr.say=t=>{ if(t!==text){ text=t; spr.userData.tex.redraw(); } spr.visible=!!t; }; spr.visible=false; return spr; }
-function npcFace(brow,mode){ return canvasTex(256,256,g=>{ g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0); g.lineCap='round';
-  [84,172].forEach(cx=>{ const cy=110;
+function npcFace(brow,mode,soft=false){ return canvasTex(256,256,g=>{ g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0); g.lineCap='round';
+  (soft?[88,168]:[84,172]).forEach(cx=>{ const cy=soft?116:110;
     if(mode==='closed'){ g.strokeStyle='#2a1f2b'; g.lineWidth=5; g.beginPath(); g.moveTo(cx-11,cy+2); g.quadraticCurveTo(cx,cy+8,cx+11,cy+2); g.stroke(); }
     else if(mode==='panic'){ g.fillStyle='#ffffff'; g.beginPath(); g.arc(cx,cy,15,0,7); g.fill(); g.strokeStyle='#2a1f2b'; g.lineWidth=4; g.stroke(); g.fillStyle='#2a1f2b'; g.beginPath(); g.arc(cx,cy,5,0,7); g.fill(); }
-    else { g.fillStyle='#2a1f2b'; g.beginPath(); g.ellipse(cx,cy,9,13,0,0,7); g.fill(); g.fillStyle='#fff'; g.beginPath(); g.arc(cx-3,cy-5,3.5,0,7); g.fill(); }
-    g.strokeStyle=brow; g.lineWidth=5; g.beginPath(); if(mode==='panic'){ g.moveTo(cx-13,cy-24); g.lineTo(cx+13,cy-32); } else { g.moveTo(cx-12,cy-27); g.lineTo(cx+12,cy-28); } g.stroke(); });
+    else { g.fillStyle='#2a1f2b'; g.beginPath(); g.ellipse(cx,cy,soft?10:9,soft?14:13,0,0,7); g.fill(); g.fillStyle='#fff'; g.beginPath(); g.arc(cx-3,cy-5,3.5,0,7); g.fill(); }
+    g.strokeStyle=brow; g.lineWidth=5; g.beginPath(); if(mode==='panic'){ g.moveTo(cx-13,cy-24); g.lineTo(cx+13,cy-32); } else { g.moveTo(cx-12,cy-(soft?25:27)); if(soft)g.quadraticCurveTo(cx,cy-29,cx+12,cy-25); else g.lineTo(cx+12,cy-28); } g.stroke(); });
   g.fillStyle='rgba(255,130,130,.28)'; [62,194].forEach(x=>{ g.beginPath(); g.ellipse(x,148,14,7,0,0,7); g.fill(); });
   if(mode==='panic'){ g.fillStyle='#7a3238'; g.beginPath(); g.ellipse(128,182,13,18,0,0,7); g.fill(); }
-  else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
+  else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(soft?117:113,170); g.quadraticCurveTo(128,soft?178:182,soft?139:143,170); g.stroke(); }
   g.restore(); }); }
-function makePerson(o,where){
+function makePerson(o,where,studentStyleTrial=false){
   const appearance={hair:[],headwear:[],accessory:[],body:[],protected:[]};
   const top=o.top||'#5a7fb0',pants=o.pants||'#2f3446',skin=o.skin||'#ffe1cc';
   function decorateTorso(rig){
@@ -63,7 +64,7 @@ function makePerson(o,where){
   const model=createHumanoid(npcHumanoidProfile(o),{parent:where||scene,part,outlineU,BOX,SPH,afterTorso:context=>{const before=new Set(context.body.children);decorateTorso(context.body);context.parts.torsoDecorations=context.body.children.filter(node=>!before.has(node));},afterArms:({joints})=>decorateArms(joints)});
   const {root:g,body:rig,joints:P,limbParts,headCenter:hc}=model;
   const brow=o.brow||o.hair||'#2a2220';
-  P.fA=npcFace(brow,'open'); P.fB=npcFace(brow,'closed'); P.fC=npcFace(brow,'panic');
+  P.fA=npcFace(brow,'open',studentStyleTrial); P.fB=npcFace(brow,'closed',studentStyleTrial); P.fC=npcFace(brow,'panic',studentStyleTrial);
   P.fm=basic({map:P.fA,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
   const f=new THREE.Mesh(new THREE.SphereGeometry(0.2815,32,20,Math.PI/2-0.8,1.6,Math.PI*0.38,Math.PI*0.42),P.fm); f.scale.set(1.05,0.97,1); hc.add(f); appearance.protected.push(f);
   const hm=toon(o.hair||'#2a2220',{side:THREE.DoubleSide});
@@ -83,6 +84,7 @@ function makePerson(o,where){
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
   appearance.headwear.push(...hc.children.filter(node=>!beforeCap.has(node)));
+  if(studentStyleTrial)finishStudentStyleTrial(model,appearance,o);
   g.scale.setScalar(o.scale||1.2);
   return {g,rig,P,limbParts,appearance:{...appearance,hairTop},assembly:model};
 }
@@ -92,7 +94,7 @@ function addNPC(o){
   if(o.room===undefined) o={...o,room:o.indoorNPC?'siwei-hall':null};
   const where=o.room?roomScene(o.room):scene;
   const animal=o.kind==='capybara'?createCapybara(o.look||{},{parent:where,part,BOX,SPH}):null;
-  const b=animal?{g:animal.root,rig:animal.body,P:animal.joints,assembly:animal}:makePerson(o.look||{},where);
+  const b=animal?{g:animal.root,rig:animal.body,P:animal.joints,assembly:animal}:makePerson(o.look||{},where,o.studentStyleTrial==='soft-v1');
   const n=Object.assign({},o,{g:b.g,rig:b.rig,P:b.P,assembly:b.assembly,pi:0,fear:0,state:'idle',ph:Math.random()*6,blink:2+Math.random()*3,sayT:Math.random()*2,si:-1,chaseT:0});
   n.g.position.set(o.home.x,0,o.home.z); n.g.rotation.y=o.face||0;
   if(o.tag){ n.tag=nameTag(o.tag,o.tagCol||'#e6c47d'); n.tag.position.y=o.kind==='capybara'?1.2:1.62; n.g.add(n.tag); }

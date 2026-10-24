@@ -1,0 +1,37 @@
+name: 普通學生造型隔離截圖
+on:
+  pull_request:
+    paths:
+      - 'dev/student-style-*'
+      - 'src/actors/student-style-trial.js'
+      - 'src/actors/npc.js'
+      - 'scripts/student-style-preview.mjs'
+      - '.github/workflows/student-style-preview.yml'
+permissions:
+  contents: read
+jobs:
+  student-style-preview:
+    if: github.head_ref == 'trial/student-soft-silhouette'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - name: 真實桌機與窄視窗對照截圖
+        run: node scripts/student-style-preview.mjs
+      - name: 保留截圖與精確候選證據
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: student-style-preview
+          path: test-results/student-style/
+          if-no-files-found: warn
+          retention-days: 7
