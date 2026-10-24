@@ -1,3 +1,4 @@
+import { readyNpcCharacter } from '../../actors/character-part-sources.js';
 /**
  * 噴水池曝露狂：穿著泳衣走出游泳館之後的劇情。
  *
@@ -86,6 +87,7 @@ function makeCrowd() {
   crowd = F.crowd.people.map((look, i) => {
     const n = addNPC({ id: 'fountain-crowd-' + i, title: F.crowd.title, home: { x: 0, z: FZ + 30 }, look: { ...look, scale: 1.1 }, dialog: [{ lines: F.crowd.lines }] });
     n.crowd = true; n.g.visible = false; n.spot.ok = () => false;
+    readyNpcCharacter(n);
     return n;
   });
 }

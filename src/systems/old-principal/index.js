@@ -14,6 +14,7 @@ import { AU } from '../audio.js';
 import { SPH, toon } from '../../render/kit.js';
 import { resolve } from '../../core/collision.js';
 import { addNPC } from '../../actors/npc.js';
+import { readyNpcCharacter, registerNativeCharacter } from '../../actors/character-part-sources.js';
 import { outlineU, part } from '../../actors/player.js';
 import { lerpA, pos } from '../../core/gameplay.js';
 import { openDialog, toast } from '../../ui/dialog.js';
@@ -64,13 +65,14 @@ function makeHorse(c) {
   const tail = new THREE.Group(); tail.position.set(0, 0.92, -0.55); g.add(tail);
   const tl = part(new THREE.CapsuleGeometry(0.07, 0.35, 4, 10), c.dark, 0, -0.18, -0.08, tail, 0.012); tl.rotation.x = -0.45;
   // 馬鞍、韁繩
-  part(new THREE.CylinderGeometry(0.33, 0.33, 0.06, 18), c.saddle, 0, 1.08, -0.02, g, 0.01).scale.set(0.95, 1, 1.15);
+  const saddle = part(new THREE.CylinderGeometry(0.33, 0.33, 0.06, 18), c.saddle, 0, 1.08, -0.02, g, 0.01); saddle.scale.set(0.95, 1, 1.15);
   const strap = part(new THREE.TorusGeometry(0.31, 0.02, 6, 20), c.leather, 0, 0.8, 0.0, g); strap.rotation.y = Math.PI / 2;
   const rein = part(new THREE.TorusGeometry(0.2, 0.012, 4, 16, Math.PI), c.leather, 0, 1.12, 0.38, g); rein.rotation.x = -0.4;
-  return { g, legs, neck, tail };
+  return { g, legs, neck, tail, accessory: [saddle, strap, rein] };
 }
 const horse = makeHorse(D.horse);
 npc.g.add(horse.g);
+registerNativeCharacter({ id: 'old-principal.horse', label: '老校長的馬', kind: 'horse', root: horse.g, sources: { accessory: horse.accessory }, anchors: { neck: horse.neck, tail: horse.tail } });
 
 // 騎在馬上：人往上抬、腿跨開、手往前拉韁繩、白手套、黑馬靴、皮帶、白鬍子
 const RIDE_Y = 0.75;
@@ -79,6 +81,8 @@ const RIDE_Y = 0.75;
 part(new THREE.CylinderGeometry(0.19, 0.19, 0.05, 18), '#6b4a2a', 0, 0.44, 0, rig).scale.z = 0.88;
 { const belt = part(new THREE.BoxGeometry(0.035, 0.42, 0.012), '#6b4a2a', 0.02, 0.56, 0.155, rig); belt.rotation.z = 0.6; }
 { const m = part(SPH, '#e4e4e0', 0, -0.1, 0.268, P.head); m.scale.set(0.09, 0.025, 0.03); outlineU(m, 1.2); }
+
+readyNpcCharacter(npc);
 
 /* ---------- 騎馬的動作與路線 ---------- */
 let route = D.routes[0], wp = 1, dir = 1;

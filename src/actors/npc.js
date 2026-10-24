@@ -6,6 +6,7 @@ import { createHumanoid } from './humanoid-factory.js';
 import { createCapybara } from './capybara-factory.js';
 import { npcHumanoidProfile } from './humanoid-profiles.js';
 import { registerTrialNpc } from './actor-rig-identity.js';
+import { registerNpcCharacter, readyNpcCharacter } from './character-part-sources.js';
 import { state } from '../core/state.js';
 import { MOBILE, scene } from '../core/engine.js';
 import { AU } from '../systems/audio.js';
@@ -44,6 +45,7 @@ function npcFace(brow,mode){ return canvasTex(256,256,g=>{ g.save(); g.translate
   else { g.strokeStyle='#9a4a50'; g.lineWidth=4; g.beginPath(); g.moveTo(113,170); g.quadraticCurveTo(128,182,143,170); g.stroke(); }
   g.restore(); }); }
 function makePerson(o,where){
+  const appearance={hair:[],headwear:[],accessory:[],body:[],protected:[]};
   const top=o.top||'#5a7fb0',pants=o.pants||'#2f3446',skin=o.skin||'#ffe1cc';
   function decorateTorso(rig){
   if(o.suit){ part(BOX,'#ffffff',0,0.6,0.148,rig).scale.set(0.09,0.16,0.01); part(BOX,o.tie||'#6b3f8f',0,0.57,0.156,rig).scale.set(0.035,0.15,0.01);
@@ -52,33 +54,37 @@ function makePerson(o,where){
   if(o.buttons){ for(let i=0;i<3;i++) part(SPH,'#c9ced6',0,0.62-i*0.07,0.157,rig).scale.setScalar(0.012); }
   if(o.police){ part(BOX,'#e8c547',-0.08,0.62,0.154,rig).scale.set(0.05,0.06,0.01); part(BOX,'#e8c547',0.09,0.64,0.152,rig).scale.set(0.07,0.02,0.01); part(new THREE.CylinderGeometry(0.19,0.19,0.05,18),'#1a1d26',0,0.43,0,rig).scale.z=0.88; }
   if(o.hood) part(new THREE.TorusGeometry(0.13,0.05,8,16),top,0,0.68,-0.04,rig).rotation.x=Math.PI/2.2;
-  if(o.bag){ const b=part(BOX,o.bag,0,0.53,-0.19,rig); b.scale.set(0.24,0.28,0.12); outline(b,0).scale.set(1.12,1.1,1.2); }
+  if(o.bag){ const b=part(BOX,o.bag,0,0.53,-0.19,rig); b.scale.set(0.24,0.28,0.12); outline(b,0).scale.set(1.12,1.1,1.2); appearance.accessory.push(b); }
   }
   function decorateArms(P){
-  if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; }
-  if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); }
+  if(o.watch){ const w=part(new THREE.TorusGeometry(0.05,0.017,6,14),'#7f8a90',0,-0.21,0,P.shL); w.rotation.x=Math.PI/2; appearance.accessory.push(w); }
+  if(o.flyer){ const f=part(BOX,'#ffffff',0,-0.3,0.07,P.shR); f.scale.set(0.17,0.22,0.012); const t=part(BOX,'#e6c47d',0,-0.25,0.078,P.shR); t.scale.set(0.13,0.04,0.004); appearance.accessory.push(f,t); }
   }
   const model=createHumanoid(npcHumanoidProfile(o),{parent:where||scene,part,outlineU,BOX,SPH,afterTorso:context=>{const before=new Set(context.body.children);decorateTorso(context.body);context.parts.torsoDecorations=context.body.children.filter(node=>!before.has(node));},afterArms:({joints})=>decorateArms(joints)});
   const {root:g,body:rig,joints:P,limbParts,headCenter:hc}=model;
   const brow=o.brow||o.hair||'#2a2220';
   P.fA=npcFace(brow,'open'); P.fB=npcFace(brow,'closed'); P.fC=npcFace(brow,'panic');
   P.fm=basic({map:P.fA,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
-  const f=new THREE.Mesh(new THREE.SphereGeometry(0.2815,32,20,Math.PI/2-0.8,1.6,Math.PI*0.38,Math.PI*0.42),P.fm); f.scale.set(1.05,0.97,1); hc.add(f);
+  const f=new THREE.Mesh(new THREE.SphereGeometry(0.2815,32,20,Math.PI/2-0.8,1.6,Math.PI*0.38,Math.PI*0.42),P.fm); f.scale.set(1.05,0.97,1); hc.add(f); appearance.protected.push(f);
   const hm=toon(o.hair||'#2a2220',{side:THREE.DoubleSide});
   const capH=part(new THREE.SphereGeometry(0.296,28,14,0,Math.PI*2,0,Math.PI*(o.hairStyle==='bowl'?0.45:0.38)),hm,0,0.012,-0.006,hc); capH.scale.set(1.05,0.97,1); outlineU(capH,1.04);
   const back=part(new THREE.SphereGeometry(0.299,28,18,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*(o.hairStyle==='short'?0.58:0.66)),hm,0,0,-0.01,hc); back.scale.set(1.05,0.97,1);
-  const hairTop=[capH];
-  if(o.hairStyle==='bowl'){ const fr=part(new THREE.SphereGeometry(0.302,28,10,Math.PI/2-0.95,1.9,Math.PI*0.28,Math.PI*0.13),hm,0,0.005,0,hc); fr.scale.set(1.05,0.97,1); hairTop.push(fr); }
-  if(o.hairStyle==='side'){ const s1=part(SPH,hm,-0.06,0.22,0.12,hc); s1.scale.set(0.24,0.08,0.16); s1.rotation.z=0.25; hairTop.push(s1); }
+  const hairTop=[capH]; appearance.hair.push(capH,back);
+  if(o.hairStyle==='bowl'){ const fr=part(new THREE.SphereGeometry(0.302,28,10,Math.PI/2-0.95,1.9,Math.PI*0.28,Math.PI*0.13),hm,0,0.005,0,hc); fr.scale.set(1.05,0.97,1); hairTop.push(fr); appearance.hair.push(fr); }
+  if(o.hairStyle==='side'){ const s1=part(SPH,hm,-0.06,0.22,0.12,hc); s1.scale.set(0.24,0.08,0.16); s1.rotation.z=0.25; hairTop.push(s1); appearance.hair.push(s1); }
   if(o.hairStyle==='long'){   // 長髮：後面垂到肩膀下，兩側各一束
-    const lb=part(new THREE.CapsuleGeometry(0.25,0.3,6,16),hm,0,-0.2,-0.1,hc); lb.scale.set(1.08,1,0.55); outlineU(lb,1.03);
-    [-1,1].forEach(s=>{ const st=part(new THREE.CapsuleGeometry(0.075,0.32,4,10),hm,s*0.25,-0.17,0.04,hc); st.rotation.z=s*0.08; }); }
-  if(o.mole) part(SPH,'#3a2622',0.055,-0.198,0.188,hc).scale.setScalar(0.016);   // 下巴的痣
+    const lb=part(new THREE.CapsuleGeometry(0.25,0.3,6,16),hm,0,-0.2,-0.1,hc); lb.scale.set(1.08,1,0.55); outlineU(lb,1.03); appearance.hair.push(lb);
+    [-1,1].forEach(s=>{ const st=part(new THREE.CapsuleGeometry(0.075,0.32,4,10),hm,s*0.25,-0.17,0.04,hc); st.rotation.z=s*0.08; appearance.hair.push(st); }); }
+  if(o.mole){ const mole=part(SPH,'#3a2622',0.055,-0.198,0.188,hc); mole.scale.setScalar(0.016); appearance.body.push(mole); }   // 下巴的痣
+  const beforeGlasses=new Set(hc.children);
   if(o.glasses){ const gm=toon(o.glasses); [-0.078,0.078].forEach(x=>{ const r=part(new THREE.TorusGeometry(0.056,0.009,6,18),gm,x,-0.045,0.272,hc); if(o.rect) r.scale.set(1.15,0.78,1); }); part(BOX,gm,0,-0.04,0.282,hc).scale.set(0.05,0.01,0.01); }
+  appearance.accessory.push(...hc.children.filter(node=>!beforeGlasses.has(node)));
+  const beforeCap=new Set(hc.children);
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
+  appearance.headwear.push(...hc.children.filter(node=>!beforeCap.has(node)));
   g.scale.setScalar(o.scale||1.2);
-  return {g,rig,P,limbParts,appearance:{hairTop},assembly:model};
+  return {g,rig,P,limbParts,appearance:{...appearance,hairTop},assembly:model};
 }
 const PANIC=PANIC_LINES;
 function addNPC(o){
@@ -95,6 +101,7 @@ function addNPC(o){
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
   registerTrialNpc(n,b.limbParts,b.appearance);
+  registerNpcCharacter(n,b.appearance);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 const NPC_FAR=50;
@@ -145,6 +152,6 @@ function npcUpdate(n,dt){
 NPC_LIST.forEach(o=>addNPC({...o, indoorNPC:!!o.indoor, home:{x:num(o.home.x),z:num(o.home.z)}, face:o.face===undefined?undefined:num(o.face)}));
 const cop=NPCS.find(n=>n.id==='cop');
 STUDENTS.paths.forEach((path,i)=>{
-  const c=STUDENTS.colors[i]; addNPC({title:STUDENTS.title,home:{x:path[0][0],z:path[0][1]},path,speed:1.1+Math.random()*0.5,look:{top:c[0],pants:c[1],hair:c[2],bag:c[3],hairStyle:i%2?'short':'side',scale:1.1},dialog:[{lines:STUDENTS.lines[i%STUDENTS.lines.length]}]}); });
+  const c=STUDENTS.colors[i]; addNPC({appearanceId:`students-${i}`,title:STUDENTS.title,home:{x:path[0][0],z:path[0][1]},path,speed:1.1+Math.random()*0.5,look:{top:c[0],pants:c[1],hair:c[2],bag:c[3],hairStyle:i%2?'short':'side',scale:1.1},dialog:[{lines:STUDENTS.lines[i%STUDENTS.lines.length]}]}); });
 
-export { NPCS, addNPC, cop, npcUpdate };
+export { NPCS, addNPC, cop, npcUpdate, readyNpcCharacter };

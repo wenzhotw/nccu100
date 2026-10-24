@@ -1,3 +1,4 @@
+import { readyNpcCharacter } from '../../actors/character-part-sources.js';
 // src/systems/baozhong/entry-radio.js（v1.69，Claude，依 Wenzel 2026-10-22 指示）：包種茶節入口與政大之聲電台棚的整合層。
 // 1. 邀請人頭上的泡泡：玩家走到 15 公尺內、還沒參加活動時顯示（文字沿用 festival-arch-logic 的 INVITE_BUBBLE，Wenzel 指定原文）。
 // 2. 開始畫面「參加包種茶節」：開始遊戲、自動參加、領護照，直接站在噴水池旁活動看板前。
@@ -95,6 +96,7 @@ function createDjs() {
     djs.push(n);
   }
   djs[0].after = broadcastTick;
+  djs.forEach(readyNpcCharacter);
 }
 function setRadioActive(on) {
   on = !!on;
