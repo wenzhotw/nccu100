@@ -7,7 +7,8 @@ import { R } from '../layout.js';
 test('三個地標回傳核可的平台高度', () => {
   assert.equal(heightAt(-90.6, -31.4), 0);
   assert.equal(heightAt(-40, 0), 12);
-  assert.equal(heightAt(73, -36), 15);
+  // 2026-10-23 使用者說明：服務中心前是抬高的十舍磚地中庭。
+  assert.equal(heightAt(73, -36), 17.7);
 });
 
 test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維持平台層高', async () => {
@@ -23,10 +24,13 @@ test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維�
         : Math.abs((x - ax) * dz - (z - az) * dx) / length;
     return distance <= passage.width / 2;
   }));
+  const { ZQ10 } = await import('../layout.js');
   const checkSample = (x, z) => {
     const height = heightAt(x, z);
+    // 十舍磚地中庭是唯一高於第三層的平台（照片 8992、8998）。
+    if (pointInPoly(x, z, ZQ10.raised) && !inPassage(x, z)) { assert.equal(height, ZQ10.deck, `中庭（${x}，${z}）`); return; }
     // 坡頂人行道高出路面一個路緣石，最高 15.12 公尺。
-    assert.ok(Number.isFinite(height) && height >= 0 && height <= 15.12 + 1e-9, `地面（${x}，${z}）`);
+    assert.ok(Number.isFinite(height) && height >= 0 && height <= Math.max(15.12, ZQ10.deck) + 1e-9, `地面（${x}，${z}）`);
     const inLandscape = RAMPS.some(r=>r.path.slice(1).some((b,i)=>{
       const a=r.path[i],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);
       const along=((x-a[0])*dx+(z-a[1])*dz)/l,side=((x-a[0])*-dz+(z-a[1])*dx)/l;

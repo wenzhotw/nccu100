@@ -1,5 +1,5 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
-import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT, PLAZA } from './layout.js';
+import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT, PLAZA, ZQ10 } from './layout.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 export function projectToPath(x, z, path) {
@@ -237,6 +237,8 @@ export function heightAt(x, z) {
     return rampHeight(nearestRamp, nearestProjection.s);
   }
 
+  // 十舍磚地中庭與架空層地板是同一片抬高平台。
+  if (pointInPoly(x, z, ZQ10.raised)) return ZQ10.deck;
   return landscapeAt(x, z)?.h ?? LEVELS[platformLevel(x, z)];
 }
 
@@ -338,7 +340,8 @@ export function wallSegments() {
     region.poly.forEach((a, i) => sampleLine(a, region.poly[(i + 1) % region.poly.length], 'region'));
   }
   for (const passage of passages) for (const sign of [-1, 1]) {
-    if(passage.id === 'jiu-plaza') continue;
+    // 九舍樓梯與十舍兩座樓梯的擋牆各自建模，碰撞由各自模組提供。
+    if(passage.id === 'jiu-plaza' || passage.id.startsWith('zq10')) continue;
     const normals = passage.path.slice(1).map((b, i) => {
       const a = passage.path[i], length = Math.hypot(b[0] - a[0], b[1] - a[1]);
       return [-(b[1] - a[1]) / length, (b[0] - a[0]) / length];
