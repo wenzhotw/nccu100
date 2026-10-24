@@ -7,10 +7,12 @@ export default defineConfig(({ mode }) => ({
   base: './',
   build: {
     target: 'es2020', chunkSizeWarningLimit: 1500,
-    emptyOutDir: mode !== 'wardrobe',
-    copyPublicDir: mode !== 'wardrobe',
-    assetsDir: mode === 'wardrobe' ? 'wardrobe/assets' : 'assets',
-    rollupOptions: { input: mode === 'wardrobe'
+    emptyOutDir: !['wardrobe','cards'].includes(mode),
+    copyPublicDir: !['wardrobe','cards'].includes(mode),
+    assetsDir: mode === 'cards' ? 'cards/assets' : mode === 'wardrobe' ? 'wardrobe/assets' : 'assets',
+    rollupOptions: { input: mode === 'cards'
+      ? fileURLToPath(new URL('./cards/index.html', import.meta.url))
+      : mode === 'wardrobe'
       ? fileURLToPath(new URL('./wardrobe/index.html', import.meta.url))
       : fileURLToPath(new URL('./index.html', import.meta.url)),
     },

@@ -10,10 +10,10 @@ test('換裝發布頁沿用驗收工作台，保留根頁與子路徑相對位�
  assert.match(vite,/new URL\('\.\/index\.html', import\.meta\.url\)/);
  assert.match(vite,/new URL\('\.\/wardrobe\/index\.html', import\.meta\.url\)/);
  assert.match(vite,/base: '\.\/'/);
- assert.match(vite,/emptyOutDir: mode !== 'wardrobe'/);
- assert.match(vite,/copyPublicDir: mode !== 'wardrobe'/);
- assert.match(vite,/assetsDir: mode === 'wardrobe' \? 'wardrobe\/assets' : 'assets'/);
- assert.equal(JSON.parse(read('package.json')).scripts.build,'vite build && vite build --mode wardrobe && node scripts/wardrobe-build-order-check.mjs');
+ assert.match(vite,/emptyOutDir: !\['wardrobe','cards'\]\.includes\(mode\)/);
+ assert.match(vite,/copyPublicDir: !\['wardrobe','cards'\]\.includes\(mode\)/);
+ assert.match(vite,/assetsDir: mode === 'cards' \? 'cards\/assets' : mode === 'wardrobe' \? 'wardrobe\/assets' : 'assets'/);
+ assert.equal(JSON.parse(read('package.json')).scripts.build,'vite build && vite build --mode wardrobe && vite build --mode cards && node scripts/wardrobe-build-order-check.mjs');
 });
 test('工作台不匯入正式啟動或存檔，保存鍵不共用正式遊戲',()=>{
  const ui=read('dev/wardrobe-preview.js');
