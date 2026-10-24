@@ -39,6 +39,8 @@ try{
     assert.deepEqual(sample.state,{view:camera,pose,face,parts,time:.75},'exact requested capture state');
     assert.equal(sample.webgl.contextLost,false);assert.ok(sample.webgl.lastViewportCalls>0);assert.ok(sample.webgl.lastViewportTriangles>0);
     assert.ok(sample.webgl.visiblePixels.every(n=>n>64),'both viewports contain rendered non-background pixels');
+    assert.deepEqual(sample.webgl.actorScales,[[1.1,1.1,1.1],[1.1,1.1,1.1]],'same fixed world scale for both actors');
+    for(const b of sample.webgl.projectedBounds)assert.ok(b.minX>=-.98&&b.maxX<=.98&&b.minY>=-.98&&b.maxY<=.98,'whole visible model including raised hand fits its viewport');
     const filename=`${name}-${camera}-${pose}-${face}-${parts}-${stage}.png`;
     const png=await page.screenshot({path:path.join(out,filename),fullPage:true});
     result.captures.push({filename,sha256:createHash('sha256').update(png).digest('hex'),...sample});save();
