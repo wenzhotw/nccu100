@@ -5,16 +5,16 @@ export function drawStudentStyleFace(g,brow,mode){
   const cy=96;
   if(mode==='closed'){
    g.strokeStyle='#2a2c4a';g.lineWidth=5;g.beginPath();g.moveTo(cx-33,cy+1);g.quadraticCurveTo(cx,cy+19,cx+33,cy+1);g.stroke();
-   g.lineWidth=3;g.beginPath();g.moveTo(cx-17,cy+6);g.lineTo(cx-36,cy+3);g.moveTo(cx+17,cy+6);g.lineTo(cx+36,cy+3);g.stroke();
+   g.lineWidth=3;g.beginPath();g.moveTo(cx-17,cy+6);g.lineTo(cx-32,cy+3);g.moveTo(cx+17,cy+6);g.lineTo(cx+32,cy+3);g.stroke();
   }else{
-   g.beginPath();g.moveTo(cx-36,cy-4);g.bezierCurveTo(cx-31,cy-40,cx+31,cy-40,cx+36,cy-4);g.bezierCurveTo(cx+38,cy+31,cx-34,cy+31,cx-36,cy-4);g.closePath();
+   g.beginPath();g.moveTo(cx-32,cy-4);g.bezierCurveTo(cx-28,cy-48,cx+28,cy-48,cx+32,cy-4);g.bezierCurveTo(cx+34,cy+39,cx-30,cy+39,cx-32,cy-4);g.closePath();
    g.fillStyle='#fff8ee';g.fill();g.save();g.clip();
-   const panic=mode==='panic',rx=panic?18:26,ry=panic?23:33;
+   const panic=mode==='panic',rx=panic?16:22,ry=panic?27:38;
    g.fillStyle='#657078';g.beginPath();g.ellipse(cx,cy+1,rx,ry,0,0,Math.PI*2);g.fill();
    g.fillStyle='#a3b5b8';g.beginPath();g.ellipse(cx,cy+10,rx-2,ry*.5,0,0,Math.PI*2);g.fill();
    g.fillStyle='#2a2c4a';g.beginPath();g.ellipse(cx,cy-2,panic?7:11,panic?13:21,0,0,Math.PI*2);g.fill();
    g.fillStyle='#ffffff';g.beginPath();g.arc(cx-5,cy-10,5,0,Math.PI*2);g.arc(cx+6,cy+8,2.5,0,Math.PI*2);g.fill();g.restore();
-   g.strokeStyle='#2a2c4a';g.lineWidth=6;g.beginPath();g.moveTo(cx-36,cy-4);g.bezierCurveTo(cx-31,cy-40,cx+31,cy-40,cx+36,cy-4);g.stroke();
+   g.strokeStyle='#2a2c4a';g.lineWidth=6;g.beginPath();g.moveTo(cx-32,cy-4);g.bezierCurveTo(cx-28,cy-48,cx+28,cy-48,cx+32,cy-4);g.stroke();
   }
   g.strokeStyle=brow;g.lineWidth=4;g.beginPath();
   if(mode==='panic'){g.moveTo(cx-28,cy-48);g.quadraticCurveTo(cx,cy-56,cx+28,cy-50);}

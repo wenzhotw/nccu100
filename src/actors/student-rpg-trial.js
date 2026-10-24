@@ -16,7 +16,7 @@ function jaw(g,r){return mapVertices(g,(x,y,z)=>{
   const bridge=.045*Math.exp(-((nx/.08)**2)-((ny+.17)/.24)**2);
   pz+=r*(tip+bridge)*Math.min(1,nz*4);
  }
- return [px,py,pz];
+ return [px*.90,py*1.08,pz];
 });}
 function shapes(){
  if(geometry)return geometry;
@@ -32,9 +32,12 @@ function shapes(){
  for(let i=0;i<source.length;i+=3){const tri=[source[i],source[i+1],source[i+2]];if(tri.every(v=>uv.getX(v)>=3/28-1e-6&&uv.getX(v)<=11/28+1e-6&&uv.getY(v)>=.2-1e-6&&uv.getY(v)<=.65+1e-6))indices.push(...tri);}
  face.setIndex(indices);
  for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-3/28)/(8/28),(uv.getY(i)-.2)/.45);
- const cap=mapVertices(new THREE.SphereGeometry(.205,16,12,0,Math.PI*2,0,Math.PI*.53),(x,y,z)=>{
-  const t=Math.acos(Math.min(1,Math.max(-1,y/.205))),front=Math.max(0,z/.205),next=t*(1-.34*front*front);
-  const k=Math.sin(t)>1e-6?Math.sin(next)/Math.sin(t):1;return [x*k,.205*Math.cos(next),z*k];
+ // 額頭、耳旁到後頸採連續曲線邊界，不再留下水平半球帽簷。
+ const cap=mapVertices(new THREE.SphereGeometry(.205,16,12,0,Math.PI*2,0,Math.PI*.72),(x,y,z)=>{
+  const t=Math.acos(Math.min(1,Math.max(-1,y/.205))),h=Math.hypot(x,z),front=h>1e-6?z/h:0,az=Math.atan2(x,z);
+  const edge=Math.PI*(.62-.22*Math.max(0,front)**2+.08*Math.max(0,-front)+.018*Math.sin(az*5));
+  const next=t*edge/(Math.PI*.72),k=Math.sin(t)>1e-6?Math.sin(next)/Math.sin(t):1;
+  return [x*k,.205*Math.cos(next),z*k];
  });
  const bang=mapVertices(new THREE.SphereGeometry(1,12,8),(x,y,z)=>[x*(.28+.72*(y+1)/2),y,z*(.55+.45*(y+1)/2)]);
  const bag=mapVertices(new THREE.SphereGeometry(.5,16,12),(x,y,z)=>[.5*power(x*2,.4),.5*power(y*2,.4),.5*power(z*2,.65)]);
@@ -49,7 +52,6 @@ function shapes(){
   return [x,y,Math.sqrt(Math.max(0,.145*.145-capY*capY-(x/wide)**2))*.78+.002];
  });
  geometry={torso,forearm,sleeve,waist,skull,face,cap,bang,bag,shoe,sole,inner,
-  back:new THREE.SphereGeometry(.207,16,12,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*.56),
   neck:new THREE.CylinderGeometry(.045,.055,.10,12),cuff:new THREE.TorusGeometry(.05,.006,6,18),
   strap:new THREE.CapsuleGeometry(.012,.20,4,8)};
  return geometry;
@@ -80,16 +82,16 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  P.fA=faceTexture(C.hair,'open');P.fB=faceTexture(C.hair,'closed');P.fC=faceTexture(C.hair,'panic');
  P.fm=basic({map:P.fA,transparent:true,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  const face=new THREE.Mesh(G.face,P.fm);face.scale.copy(model.parts.skull.scale);hc.add(face);appearance.protected.push(face);
- const hm=toon(C.hair,{side:THREE.DoubleSide});
- const cap=part(G.cap,hm,0,.006,-.005,hc);cap.scale.copy(model.parts.skull.scale);outlineU(cap,1.035);
- const back=part(G.back,hm,0,0,-.008,hc);back.scale.copy(model.parts.skull.scale);appearance.hair.push(cap,back);appearance.hairTop.push(cap);
+ const hm=toon(C.hair,{side:THREE.DoubleSide}),hairRoot=new THREE.Group();hairRoot.scale.set(.90,1.08,1);hc.add(hairRoot);
+ const cap=part(G.cap,hm,0,.006,-.005,hairRoot);cap.scale.copy(model.parts.skull.scale);outlineU(cap,1.035);
+ appearance.hair.push(cap);appearance.hairTop.push(cap);
  // 三片大瀏海而非一頂球帽。共用葉片式球面拓撲，輪廓由大小／角度構成。
  for(const [x,y,z,sx,sy,sz,rx,rz]of [[-.105,.035,.15,.058,.13,.035,-.45,-.38],[-.025,.10,.165,.080,.13,.032,-.60,-.62],[.095,.11,.13,.052,.09,.033,-.55,-.50]]){
-  const lock=part(G.bang,hm,x,y,z,hc);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
+  const lock=part(G.bang,hm,x,y,z,hairRoot);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
  }
  // 耳旁與後頸以五片貼頭大髮束接續短後帽，打破水平半球截面。
- for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,-.015,.012,hc);lock.scale.set(.058,.135,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
- for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hc);lock.scale.set(s===0?.085:.075,.145,.058);lock.rotation.set(.22,-s*.20,-s*.20);appearance.hair.push(lock);}
+ for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,-.015,.012,hairRoot);lock.scale.set(.058,.135,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
+ for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hairRoot);lock.scale.set(s===0?.085:.075,.145,.058);lock.rotation.set(.22,-s*.20,-s*.20);appearance.hair.push(lock);}
  g.userData.studentStyle='rpg-profile-v3';
  return {g,rig,P,limbParts,appearance,assembly:model};
 }
