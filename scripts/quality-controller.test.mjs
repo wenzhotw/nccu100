@@ -105,3 +105,32 @@ test('low-DPR and WebGL1 keep their limits and never invent Bloom support', () =
   assert.equal(q.snapshot().pr, 0.75);
   assert.equal(q.snapshot().bloom, false);
 });
+test('repeated failed trials back off 60, 120, 240, 480 seconds with a 480-second cap', () => {
+  const q = createQualityController({ dpr: 2, bloom: false });
+  feed(q, 3, 20);
+  until(q, s => s.pr === 1.5);
+  for (const delay of [60, 120, 240, 480, 480]) {
+    until(q, s => s.pr === 1.25, 20);
+    feed(q, delay - 15);
+    assert.equal(q.snapshot().pr, 1.25, 'cannot retry before backoff expires');
+    until(q, s => s.pr === 1.5, 60, 40);
+    assert.equal(q.snapshot().trial, '1.5');
+  }
+  // A stable successful trial clears failure history; a later failure restarts at 60 seconds.
+  feed(q, 30); assert.equal(q.snapshot().trial, null);
+  until(q, s => s.pr === 1.25, 20);
+  until(q, s => s.pr === 1.5);
+  until(q, s => s.pr === 1.25, 20);
+  feed(q, 45); assert.equal(q.snapshot().pr, 1.25);
+  until(q, s => s.pr === 1.5, 60, 40);
+});
+test('background reset does not shorten the second failure backoff', () => {
+  const q = createQualityController({ dpr: 2, bloom: false });
+  feed(q, 3, 20); until(q, s => s.pr === 1.5);
+  until(q, s => s.pr === 1.25, 20); until(q, s => s.pr === 1.5);
+  until(q, s => s.pr === 1.25, 20);
+  q.reset();
+  for (let i = 0; i < 100000; i++) q.tick(null);
+  feed(q, 100); assert.equal(q.snapshot().pr, 1.25);
+  until(q, s => s.pr === 1.5, 60, 40);
+});
