@@ -1,43 +1,43 @@
 import {chromium} from 'playwright';
+import {ALL_PUBLIC_STAIRS,ATRIUM_FLOOR_LEVELS} from '../src/world/buildings/dah-hsian/public-floor-layout.js';
+import {observeNativeWalk} from './lib/dah-smoke-walk.mjs';
 async function verifyUpper(page,base){
  await page.goto(base+'?debug&area=dah-hsian',{timeout:120000});await page.locator('#go').click({timeout:120000});await page.waitForFunction(()=>__game.state.room==='dah-hsian'&&!__game.state.busy,null,{timeout:120000});
  await page.evaluate(()=>__game.enterRoom('dah-hsian-2f'));await page.waitForFunction(()=>__game.state.room==='dah-hsian-2f'&&!__game.state.busy,null,{timeout:120000});
- await page.locator('#dah-time').click();await page.evaluate(()=>{__game.pos.set(-19,0,17.1);__game.state.vy=0;__game.state.pitch=.2;});
- // 軟體繪圖下中庭每幀可能要好幾秒，遊戲步進又以50毫秒為上限，所以「卡住」改用遊戲時間判斷：
- // 連續3遊戲秒沒有再靠近目標5公分才算被擋住；牆鐘時間只留寬鬆上限，避免畫面整個停住時無限等待。
+ await page.locator('#dah-time').click();await page.evaluate(()=>{__game.pos.set(-14,0,13.1);__game.state.vy=0;__game.state.pitch=.12;});
+ // Preserve PR99's simulation-time progress guard when adapting the route to
+ // the reconstructed floors. A slow software renderer must not look like a wall.
  const WALL_CLOCK_LIMIT=1800000;
  const walk=async(x,z)=>{try{
   await page.keyboard.down('w');
   let result;
-  try{result=await(await page.waitForFunction(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z,d=Math.hypot(dx,dz),t=__game.state.time;__game.state.yaw=Math.atan2(-dx,-dz);if(d<.22)return 'arrived';
-   const g=window.__smokeWalk;if(!g||g.x!==x||g.z!==z){window.__smokeWalk={x,z,best:d,at:t};return false;}
-   if(d<g.best-.05){g.best=d;g.at=t;return false;}
-   return t-g.at>3?'stalled':false;},{x,z},{timeout:WALL_CLOCK_LIMIT})).jsonValue();}
-  finally{await page.keyboard.up('w');await page.evaluate(()=>{window.__smokeWalk=null;});}
+  try{result=await(await page.waitForFunction(observeNativeWalk,{x,z},{timeout:WALL_CLOCK_LIMIT})).jsonValue();}
+  finally{await page.keyboard.up('w');await page.evaluate(()=>{delete window.__dahSmokeWalk;});}
   if(result!=='arrived')throw Error('連續3遊戲秒沒有靠近目標');
-  const start=await page.evaluate(()=>__game.state.time);
-  await page.waitForFunction(t=>__game.state.time>=t+.5,start,{timeout:WALL_CLOCK_LIMIT});
+  const start=await page.evaluate(()=>__game.state.time);await page.waitForFunction(t=>__game.state.time>=t+.5,start,{timeout:WALL_CLOCK_LIMIT});
  }catch(e){throw Error('goal '+x+','+z+' actual '+JSON.stringify(await page.evaluate(()=>__game.pos.toArray()))+' '+e.message);}};
- await walk(-19,23.5);await walk(-16,23.5);await walk(-16,22.6);console.log('3F first stair',await page.evaluate(()=>__game.pos.toArray()));
- const levels=['3F','3MF','4F','4MF','5F','6F','7F','8F'];
- for(let i=0;i<7;i++){
-  const east=.15+i*1.5;
-  if(i===0)await walk(east+3.1,22.6);await walk(east+3.1,8.8);await walk(east+.85,8.8);await walk(east+.85,9.4);await walk(east+2.35,15.6);await walk(east+2.35,16.15);await walk(east+4.6,16.15);
-  const result=await page.evaluate(()=>({p:__game.pos.toArray(),zone:document.querySelector('#loc')?.textContent}));console.log(levels[i+1],result);
-  const expected=4.5+(i+1)*3.1;if(Math.abs(result.p[1]-expected)>.2)throw Error('wrong floor '+JSON.stringify(result));
+ const levelAt=y=>ATRIUM_FLOOR_LEVELS.find(l=>l.y===y);
+ const assertY=async y=>{const p=await page.evaluate(()=>__game.pos.toArray());if(Math.abs(p[1]-y)>.15)throw Error('wrong floor '+JSON.stringify({expected:y,p}));console.log('floor verified',y,p);};
+ await walk(-14,18.5);await walk(-8.5,18.5);await assertY(4.5);
+ const first=ATRIUM_FLOOR_LEVELS[0];await walk(-8.5,14.2);await walk(first.east+2.45,14.2);
+ const stairs=ALL_PUBLIC_STAIRS.filter(s=>!s.entry);
+ for(const s of stairs){
+  const lower=levelAt(s.a.y),upper=levelAt(s.b.y),len=Math.hypot(s.b.x-s.a.x,s.b.z-s.a.z),ux=(s.b.x-s.a.x)/len,uz=(s.b.z-s.a.z)/len;
+  await walk(lower.east+2.45,4);await walk(s.a.x-ux*.8,s.a.z-uz*.8);await walk(s.a.x,s.a.z);await walk(s.b.x,s.b.z);await walk(s.b.x+ux*.65,s.b.z+uz*.65);await assertY(upper.y);await walk(upper.east+2.45,11.9);
  }
- await walk(.15+7*1.5+3.1,22.6);await walk(-18,22.6);await walk(-18,17.4);
- await walk(-18,22.6);
- for(let i=6;i>=0;i--){
-  const east=.15+i*1.5,upper=east+1.5;
-  if(i===6)await walk(upper+3.1,22.6);await walk(upper+3.1,16.3);await walk(upper+.85,16.3);await walk(upper+.85,15.6);await walk(east+.85,9.4);await walk(east+.85,8.8);await walk(east+3.1,8.8);if(i===0)await walk(east+3.1,22.6);
-  if(i===6){await walk(east+3.1,-10.3);await walk(east+3.35,-10.3);await walk(east+3.35,-15.7);await walk(east+1,-15.2);await walk(east+3.35,-15.2);await walk(east+3.35,-10.3);await walk(east+3.1,8.8);console.log('PASS 7F轉角由閱讀平台穿過書牆開口進出後方公共走廊');}
-  const y=await page.evaluate(()=>__game.pos.y);if(Math.abs(y-(4.5+i*3.1))>.2)throw Error('downstairs height '+y);
+ const top=ATRIUM_FLOOR_LEVELS.find(l=>l.label==='7F'),north=top.north-2.45;
+ await walk(top.east+2.45,north);await walk(-13.8,north);await walk(-13.8,-15.7);await walk(-13.8,north);await walk(-14.1,north);await walk(-14.1,6.4);await walk(-18.25,6.4);await walk(-18.25,2.3);
+ const lift=async(id,key)=>{await page.waitForFunction(()=>__game.state.near?.id?.startsWith('dah-elevator-'));await page.keyboard.press('e');await page.waitForSelector('.dah-elevator-menu[open]');const button=page.locator('[data-floor="'+id+'"]');await button.focus();await page.keyboard.press('Tab');if(!await page.locator('.dah-elevator-menu button:focus').count())throw Error('Tab left native floor picker');await button.focus();await page.keyboard.press(key);const y=id==='8F'?26.2:23.1;await page.waitForFunction(y=>!__game.state.busy&&Math.abs(__game.pos.y-y)<.03,y);};
+ await lift('8F','Enter');
+ const route=[[-18.25,6.36],[-16.8,6.36],[-14,9],[-10.5,12.5],[-8.9,15.6],[-6,15.85],[14,15.85],[14,-15.5],[0,-15.5]];
+ for(const p of route)await walk(...p);for(const p of [...route].reverse())await walk(...p);await walk(-18.25,2.3);await assertY(26.2);await lift('7F','Space');
+ await walk(-18.25,6.4);await walk(-14.1,6.4);await walk(-14.1,north);await walk(top.east+2.45,north);await walk(top.east+2.45,11.9);
+ for(const s of [...stairs].reverse()){
+  const lower=levelAt(s.a.y),upper=levelAt(s.b.y),len=Math.hypot(s.b.x-s.a.x,s.b.z-s.a.z),ux=(s.b.x-s.a.x)/len,uz=(s.b.z-s.a.z)/len;
+  await walk(upper.east+2.45,11.9);await walk(s.b.x+ux*.65,s.b.z+uz*.65);await walk(s.b.x,s.b.z);await walk(s.a.x,s.a.z);await walk(s.a.x-ux*.8,s.a.z-uz*.8);await assertY(lower.y);await walk(lower.east+2.45,4);
  }
- // 由洞口上端繞入，不能沿舊直線穿過新側護欄。
- await walk(-16,22.6);await walk(-16,23.5);await walk(-19,23.5);await walk(-19,17.1);
- const y=await page.evaluate(()=>__game.pos.y);if(Math.abs(y)>.02)throw Error('not returned to2F '+y);
- console.log('PASS 真鍵盤由2F連續走到8F中庭迴廊，逐層原路下降回2F');
+ await walk(first.east+2.45,14.2);await walk(-8.5,14.2);await walk(-8.5,18.5);await walk(-14,18.5);await walk(-14,13.1);await assertY(0);
+ console.log('PASS real keyboard 2F L-stair ->7F terraces/rear ->native Enter lift8F complete public loop ->Space lift7F ->stairs2F');
  return await page.evaluate(()=>({position:__game.pos.toArray(),room:__game.state.room}));
 }
 

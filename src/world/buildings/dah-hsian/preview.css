@@ -14,3 +14,12 @@
   #dah-time:hover {background:var(--paper2);}
 }
 @media (max-width:520px) {#dah-time {min-height:40px;}}
+/* 原生模態選單保留遊戲紙色，鍵盤焦點與觸控按鈕共用。 */
+.dah-elevator-menu {width:min(320px,calc(100vw - 32px));box-sizing:border-box;border:2px solid var(--ink);border-radius:18px;padding:24px;background:var(--paper);color:var(--ink);font:inherit;}
+.dah-elevator-menu::backdrop {background:rgb(20 30 40 / 45%);}
+.dah-elevator-menu h2 {font-size:20px;margin:0 0 20px;}
+.dah-elevator-floors {display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.dah-elevator-menu button {min-height:48px;font:inherit;font-weight:700;color:inherit;background:var(--paper2);border:2px solid currentColor;border-radius:10px;cursor:pointer;touch-action:manipulation;}
+.dah-elevator-menu button:focus-visible {outline:3px solid #28796b;outline-offset:3px;}
+.dah-elevator-menu button:disabled {opacity:.45;cursor:default;}
+.dah-elevator-cancel {width:100%;margin-top:20px;}

@@ -27,11 +27,20 @@ test('小屋一樓入口露台的腳底與可見樓板一致', () => {
   }finally{setActiveColliders([]);setRoomClamp(null);}
 });
 
-test('小屋下層臨池欄杆也會擋人，不只處理二樓', () => {
+test('小屋來源草地側一樓沒有長欄杆，二樓同側的真護欄仍可見且擋人', () => {
+  // house-ground2020 panorama station(-.5,-40.27) maps to local z+18.55:
+  // its lawn-facing glazed facade is +z, not the opposite long side.
+  const source=site.houseLocal(-.5,-40.27);assert.ok(source.z>site.HOUSE.depth/2+5);
+  const model=createOutdoorModel();model.updateMatrixWorld(true);const house=model.getObjectByName('湖濱悅讀小屋');
+  const start=site.housePoint(-11.3,9.5),dir=new THREE.Vector3(-Math.sin(site.HOUSE.angle),0,-Math.cos(site.HOUSE.angle));
+  const cast=y=>new THREE.Raycaster(new THREE.Vector3(start.x,y,start.z),dir,0,1.2).intersectObject(house,true);
+  assert.ok(cast(4.88).length,'calibrate actual upper horizontal rail, before the glazing behind it');
+  assert.equal(cast(1.28).length,0,'source lawn apron has no lower rail');
   setActiveColliders(site.buildingColliders());setRoomClamp(site.keepOnLand);
   try {
     const q=site.housePoint(-11.3,8.75),p={...q,y:.4};resolve(p);
-    assert.ok(Math.hypot(p.x-q.x,p.z-q.z)>.1,'下層欄杆會擋人');
+    assert.ok(Math.hypot(p.x-q.x,p.z-q.z)<1e-6,'no invented ground-level blocker on the source lawn face');
+    p.x=q.x;p.z=q.z;p.y=4;resolve(p);assert.ok(Math.hypot(p.x-q.x,p.z-q.z)>.1,'upper rail still blocks');
   }finally{setActiveColliders([]);setRoomClamp(null);}
 });
 
@@ -43,7 +52,10 @@ test('小屋入口兩端框柱在上下層都阻擋，入口中央保持暢通',
       const local=site.houseLocal(p.x,p.z);
       const dx=Math.max(0,Math.abs(local.x+site.HOUSE.width/2)-.3),dz=Math.max(0,Math.abs(local.z-z)-.275);
       assert.ok(Math.hypot(dx,dz)>=.3999,'解完不能仍重疊端框柱');
-      assert.ok(Math.abs(local.z)<=8.26001,'推開柱子後不能卡入相鄰欄杆');
+      // Ground +z now matches the open lawn-side photo: no adjacent rail.
+      // Keep the old clearance assertion at every actual remaining rail.
+      if(y>=4||z<0)assert.ok(Math.abs(local.z)<=8.26001,'推開柱子後不能卡入相鄰欄杆');
+      else assert.ok(local.z>=8.27,'ground lawn-side escape clears the pillar onto the open apron');
     }
     for(const y of [.4,4]){
       const p={...site.housePoint(-12.125,2.2),y},before={...p};resolve(p);

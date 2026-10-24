@@ -20,6 +20,10 @@ export const LAKESIDE_SHOPS=[
  {id:'A2',name:'A2小尚品',label:'小尚品精緻鍋物',x:-5.75,z:-19.8,w:9.5,d:9.4},
  {id:'A3',name:'A3廢墟咖啡',label:'RUINS',x:4.55,z:-17.2,w:11.1,d:14.6},
 ];
+// Ground-eye panorama lakewalk000/bridge approach090: slender planted trees
+// with triangular timber braces. Locations/heights are photo estimates.
+export const LAKESIDE_SAPLINGS=[[18,-42],[19,-52],[20,-62],[23,-73],[24,-84]].map(([x,z],i)=>({x,z,height:5.7+(i%3)*.3,angle:i*.53}));
+export const SAPLING_BRACE_RADIUS=.85;
 export const LOWER_WC={x:-24,z:-19.6,w:3,d:9.8,frontX:-22.47};
 export const LOWER_WC_ENTRIES=[{name:'1F無障礙滑門',z:-23.3,w:1.4},{name:'1F男廁入口',z:-20.6,w:1.2},{name:'1F女廁入口',z:-16.5,w:1.2}];
 export const LOWER_WC_FRONT_WALLS=[[-24.5,-24.05],[-22.55,-21.25],[-19.95,-17.15],[-15.85,-14.7]];
@@ -46,6 +50,13 @@ export function lakesideHeight(x,z){
  return 0;
 }
 export const TREE_PLAZA={x:43,z:62,inner:4,radius:14,base:.4,tread:.8,rise:.2};
+export const PLAZA_SEGMENTS=64;
+// 與可見踏面相同的Float32邊界，避免理想圓／浮點捨入在接縫選到另一階。
+const plazaTreads=Array.from({length:Math.ceil((TREE_PLAZA.radius-TREE_PLAZA.inner)/TREE_PLAZA.tread)},(_,i)=>{
+  const r=Math.min(TREE_PLAZA.radius,TREE_PLAZA.inner+(i+1)*TREE_PLAZA.tread);
+  const points=Array.from({length:PLAZA_SEGMENTS+1},(_,k)=>[Math.fround(TREE_PLAZA.x+r*Math.cos(k/PLAZA_SEGMENTS*Math.PI)),Math.fround(TREE_PLAZA.z+r*Math.sin(k/PLAZA_SEGMENTS*Math.PI))]);
+  return {y:TREE_PLAZA.base+i*TREE_PLAZA.rise,points};
+});
 export const PLAZA_WALL={x:43,z:61.88,w:28,d:.3,bottom:.4,top:2.8};
 export const BENCHES=[[33,40,0],[-34,-43,1.7],[28,-78,0],[-12,-97,1.4]];
 export const LAMPS=[[30,68],[32,43],[38,10],[38,-23],[27,-38],[-31,-39],[-39,-68],[23,-96]];
@@ -65,6 +76,15 @@ export const OUTDOOR_STEPS=[
   ...Array.from({length:10},(_,i)=>({x:-28,z:-32.75+i*.55,y:2+(i+1)*.2,w:2.5,d:.56})),
   {x:-25.2,z:-27.8,y:4,w:5.8,d:2.2},
 ];
+// Shared tread groups keep actual sloping rails/undersides and body guards in
+// the same estimated coordinate system; source ground-eye bridge approach000.
+export const OUTDOOR_STAIR_FLIGHTS=[OUTDOOR_STEPS.slice(0,10),OUTDOOR_STEPS.slice(11,21)];
+export const OUTDOOR_STAIR_TURN_RAILS=[
+ [[-32.35,-34.4],[-26.75,-34.4]],
+ [[-32.35,-34.4],[-32.35,-32.75]],
+ [[-26.75,-34.4],[-26.75,-32.75]],
+ [[-29.85,-32.8],[-29.25,-32.8]],
+];
 export function onBridge(x,z,margin=0) {
   const a=BRIDGE.start,b=BRIDGE.end,dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
   const t=((x-a.x)*dx+(z-a.z)*dz)/(len*len);
@@ -74,7 +94,22 @@ export const TERRACE_RAILS=[[[29.5,25],[29.5,3]],[[29.5,3],[24,-6]],[[24,-6],[23
 export const HOUSE_RAILS=[
   [[-13,-8.75],[13,-8.75]], [[-13,8.75],[13,8.75]],
   [[-13,-8.7],[-13,.5]], [[-13,3.9],[-13,8.7]],
+  [[13,-8.75],[13,8.75]],
 ];
+// house-ground2020 000/090: the +local-z lawn/glazing face has no lower
+// balcony rail. Preserve the opposite side until its shoreline view is fitted.
+export const HOUSE_LOWER_RAILS=[HOUSE_RAILS[0],HOUSE_RAILS.at(-1)];
+// lakewalk2020 090/180/270: the railing follows the woodland edge, outside
+// the walk and paving islands, not the water edge. Bends are fitted to the
+// existing pond/path anchors; exact site offsets and height remain estimates.
+const forestEdge=[[31.5,-85],[30.5,-57],[29.5,-35],[38.5,-24]];
+export const LAKE_FOREST_RAILS=forestEdge.slice(1).map((b,i)=>[forestEdge[i],b]);
+// Historical lakewalk views establish a dense woodland mass behind the fence.
+// These stable staggered positions recreate that mass, not individual trees.
+export const LAKE_FOREST_TREES=Array.from({length:12},(_,row)=>{
+ const z=-92+row*6,edge=z< -57?30.5+(-57-z)/28:z< -35?29.5+(-35-z)/22:29.5+(z+35)*9/11;
+ return Array.from({length:4},(_,depth)=>({x:edge+3.8+depth*6.3+(row%2)*1.1,z:z+(depth%2)*1.7,height:8.8+((row*3+depth*5)%8)*.5}));
+}).flat();
 
 function railBox(a,b,base=4) {
   const dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);
@@ -82,15 +117,18 @@ function railBox(a,b,base=4) {
 }
 export function raisedColliders() {
   const {start:a,end:b,width}=BRIDGE,dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
+  const stairRails=OUTDOOR_STAIR_FLIGHTS.flatMap(flight=>flight.flatMap(s=>[-1,1].map(side=>({x0:s.x+side*s.w/2-.035,x1:s.x+side*s.w/2+.035,z0:s.z-s.d/2,z1:s.z+s.d/2,bottom:s.y-.3,top:s.y+1.1}))));
+  stairRails.push(...OUTDOOR_STAIR_TURN_RAILS.map(([a,b])=>railBox(a,b,2)));
   const rails=TERRACE_RAILS.map(([a,b])=>railBox(a,b));
+  for(const [a,b]of LAKE_FOREST_RAILS)rails.push(railBox(a,b,groundHeight((a[0]+b[0])/2,(a[1]+b[1])/2)));
   for(const [a,b]of HOUSE_RAILS){const p=housePoint(...a),q=housePoint(...b);rails.push(railBox([p.x,p.z],[q.x,q.z]));}
-  for(const [a,b]of HOUSE_RAILS.slice(0,2)){const p=housePoint(...a),q=housePoint(...b);rails.push(railBox([p.x,p.z],[q.x,q.z],.4));}
+  for(const [a,b]of HOUSE_LOWER_RAILS){const p=housePoint(...a),q=housePoint(...b);rails.push(railBox([p.x,p.z],[q.x,q.z],.4));}
   for(const z of [24,16,8,0,-8])rails.push({x0:20.77,x1:21.43,z0:z-1.85,z1:z+1.85,bottom:3.9,top:4.52});
   for(const side of [-1,1]){
     const nx=dz/len*(width/2-.1)*side,nz=-dx/len*(width/2-.1)*side;
     rails.push(railBox([a.x+nx,a.z+nz],[b.x+nx,b.z+nz]));
   }
-  return rails;
+  return [...rails,...stairRails];
 }
 
 /** 本區局部反覆解相鄰箱，避免後處理把角色推回先前的牆。 */
@@ -127,8 +165,24 @@ export function walkHeight(x,z,footY=0) {
 /** 前草坡接二樓，兩側坡道降到一樓；平台下方另保留低處地面。 */
 export function groundHeight(x, z) {
   const plaza=TREE_PLAZA,r=Math.hypot(x-plaza.x,z-plaza.z);
-  if(z>=plaza.z&&r<plaza.radius)return plaza.base+Math.max(0,Math.floor((r-plaza.inner)/plaza.tread))*plaza.rise;
+  if(z>=plaza.z&&r<plaza.radius){
+    const k=Math.min(PLAZA_SEGMENTS-1,Math.floor(Math.atan2(z-plaza.z,x-plaza.x)/Math.PI*PLAZA_SEGMENTS));
+    for(const tread of plazaTreads){
+      let within=true;
+      for(let j=Math.max(0,k-1);j<=Math.min(PLAZA_SEGMENTS-1,k+1);j++){
+        const [a,b]=[tread.points[j],tread.points[j+1]];
+        if((b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0])<=0){within=false;break;}
+      }
+      if(within)return tread.y;
+    }
+    return plazaTreads.at(-1).y;
+  }
   if(z>=plaza.z&&r<plaza.radius+4){const natural=z>=90?0:z>36?4*(90-z)/54:4;return 2.8+(natural-2.8)*(r-plaza.radius)/4;}
+  if(z<plaza.z&&z>plaza.z-2&&r<plaza.radius+4){
+    const natural=4*(90-z)/54,t=(z-plaza.z+2)/2;
+    const blend=t*t*(3-2*t)*Math.min(1,(plaza.radius+4-r)/4);
+    return natural+(2.8-natural)*blend;
+  }
   if (z >= 90) return 0;
   if (z > 36) return 4 * (90 - z) / 54;
   if (z >= 28) return 4;
@@ -182,6 +236,7 @@ export function keepOnLand(p) {
 export function buildingColliders() {
   const cs=Math.cos(HOUSE.angle),sn=Math.sin(HOUSE.angle);
   return [
+    ...LAKE_FOREST_TREES.map(t=>({x0:t.x-.14,x1:t.x+.14,z0:t.z-.14,z1:t.z+.14,bottom:groundHeight(t.x,t.z),top:groundHeight(t.x,t.z)+t.height*.67})),
     {x0:PLAZA_WALL.x-PLAZA_WALL.w/2,x1:PLAZA_WALL.x+PLAZA_WALL.w/2,z0:PLAZA_WALL.z-PLAZA_WALL.d/2,z1:PLAZA_WALL.z+PLAZA_WALL.d/2,bottom:PLAZA_WALL.bottom,top:PLAZA_WALL.top},
     { x0:-26.7,x1:10.15,z0:-24.8,z1:28.05,bottom:3.6,top:25.4 },
     { x0:-26.7,x1:10.15,z0:-9.9,z1:28.05,top:3.6 },
@@ -202,6 +257,10 @@ export function buildingColliders() {
     { obb:true,cx:housePoint(1.05,0).x,cz:housePoint(1.05,0).z,hx:HOUSE.width/2-1.05,hz:HOUSE.depth/2-.15,cs,sn,top:7.5 },
     ...[-1,1].map(side=>({obb:true,cx:housePoint(-HOUSE.width/2,side*(HOUSE.depth/2-.12)).x,cz:housePoint(-HOUSE.width/2,side*(HOUSE.depth/2-.12)).z,hx:.3,hz:.275,cs,sn,bottom:.3,top:7.4})),
     ...BENCHES.map(([x,z,a])=>({obb:true,cx:x,cz:z,hx:1.25,hz:.36,cs:Math.cos(a),sn:Math.sin(a),top:groundHeight(x,z)+.56})),
+    ...LAKESIDE_SAPLINGS.flatMap(t=>[
+      {x0:t.x-.09,x1:t.x+.09,z0:t.z-.09,z1:t.z+.09,top:groundHeight(t.x,t.z)+4.5},
+      ...Array.from({length:3},(_,i)=>{const a=t.angle+i*Math.PI*2/3,dx=Math.cos(a),dz=Math.sin(a);return{obb:true,cx:t.x+dx*SAPLING_BRACE_RADIUS/2,cz:t.z+dz*SAPLING_BRACE_RADIUS/2,hx:SAPLING_BRACE_RADIUS/2,hz:.035,cs:dx,sn:-dz,top:groundHeight(t.x,t.z)+2.4};}),
+    ]),
     ...LAMPS.map(([x,z])=>({x0:x-.06,x1:x+.06,z0:z-.06,z1:z+.06,top:groundHeight(x,z)+3.8})),
   ];
 }

@@ -26,7 +26,7 @@ const keys = [
   [.20, 1, .06, .30, 1, '#182940','#344457','#27374a','#b5c8f0','#8cabc7','#52616a'],
   [.30, .35, .42, .60, .45, '#849bad','#e7b796','#a2adb2','#ffd0a3','#cbd4e7','#727b72'],
   [.50, 0, .90, .85, .04, '#9dc9e8','#d4e5e9','#b4d6e2','#fff8e7','#e5efff','#667f75'],
-  [.62, 0, .85, .80, .06, '#a8cee8','#e8ded0','#b9cfda','#ffe7c1','#dce8fa','#6d8176'],
+  [.62, 0, .85, .80, .06, '#a8cee8','#d1e4ed','#b9cfda','#ffe7c1','#dce8fa','#6d8176'],
   [.78, .58, .38, .48, .72, '#667e9e','#e6a785','#a397a2','#ffc28f','#b5bbda','#626577'],
   [.92, 1, .07, .30, 1, '#182940','#344457','#27374a','#b5c8f0','#8cabc7','#52616a'],
 ];
@@ -67,7 +67,7 @@ export function createDahLighting(scene, { interior = false, mobile = false } = 
   sun.shadow.bias = -.00025; sun.shadow.normalBias = .045;
   scene.add(hemi,sun,sun.target);
   // Positions correspond to existing entrance, café and path fixtures in layout.js.
-  const fixtures = (interior ? [[-12,3.8,0],[-13,3.8,16],[-18,3.4,-13],[-3,4,9]] :
+  const fixtures = (interior ? [] :
     [[10.16,6.6,7.6],[4.55,3.2,-24],[30,3.8,68],[32,3.8,43],[38,3.8,10],[38,3.8,-23],[27,3.8,-38],[-31,3.8,-39],[-39,3.8,-68],[23,3.8,-96]])
     .map(p=>new THREE.Vector3(...p));
   // Read actual lamp positions, including batched upper reading lamps.
@@ -75,11 +75,30 @@ export function createDahLighting(scene, { interior = false, mobile = false } = 
   const lampMatrix=new THREE.Matrix4(),worldMatrix=new THREE.Matrix4();
   scene.traverse(o=>{
    if(!o.isMesh||!['lamp','light'].includes(o.material?.userData?.dahKind))return;
-   if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,lampMatrix);worldMatrix.multiplyMatrices(o.matrixWorld,lampMatrix);fixtures.push(new THREE.Vector3().setFromMatrixPosition(worldMatrix));}}
-   else fixtures.push(o.getWorldPosition(new THREE.Vector3()));
+   if(o.userData.dahFixtureParts){
+    for(const p of o.userData.dahFixtureParts)fixtures.push(new THREE.Vector3(...p).applyMatrix4(o.matrixWorld));
+    return;
+   }
+   const addFixture=matrix=>{
+    const position=new THREE.Vector3().setFromMatrixPosition(matrix);
+    if(interior){
+      // Place the emitter outside the underside, so its own opaque shade cannot occlude it.
+      if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
+      const bounds=o.geometry.boundingBox.clone().applyMatrix4(matrix);position.y=bounds.min.y-.035;
+    }
+    fixtures.push(position);
+   };
+   if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,lampMatrix);worldMatrix.multiplyMatrices(o.matrixWorld,lampMatrix);addFixture(worldMatrix);}}
+   else addFixture(o.matrixWorld);
   });
   const localLights = Array.from({length:mobile?2:4},()=>{
-    const light=new THREE.PointLight('#ffcf91',0,interior?24:19,2);scene.add(light);return light;
+    const light=interior?new THREE.SpotLight('#ffe4c4',0,11,Math.PI/3,.55,2):new THREE.PointLight('#ffcf91',0,19,2);
+    if(interior){
+      light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.autoUpdate=false;light.shadow.needsUpdate=true;
+      light.shadow.camera.near=.05;light.shadow.bias=-.0003;light.shadow.normalBias=.025;
+      scene.add(light.target);
+    }
+    scene.add(light);return light;
   });
   const lastFixturePosition=new THREE.Vector3(Infinity,Infinity,Infinity);let nearest=[];
   function update(profile, playerPosition = new THREE.Vector3()) {
@@ -87,10 +106,12 @@ export function createDahLighting(scene, { interior = false, mobile = false } = 
     sky.material.uniforms.topColor.value.copy(profile.sky);
     sky.material.uniforms.bottomColor.value.copy(profile.horizon);
     scene.background = profile.sky.clone(); scene.fog.color.copy(profile.fog);
-    hemi.color.copy(profile.ambient);if(interior)hemi.color.lerp(new THREE.Color('#c7c4b9'),.72);hemi.groundColor.copy(profile.ground);
-    hemi.intensity = profile.hemiIntensity * (interior ? .72 : .85);
+    hemi.color.copy(profile.ambient);hemi.groundColor.copy(profile.ground);
+    // Indirect indoor bounce stays neutral; warm color belongs to the real fixtures.
+    if(interior){hemi.color.lerp(new THREE.Color('#d8dfdf'),.8);hemi.groundColor.lerp(new THREE.Color('#9da7a1'),.8);}
+    hemi.intensity = profile.hemiIntensity * (interior ? 1.05 : .85);
     sun.color.copy(profile.sun);sun.intensity=profile.sunIntensity*(interior?1.12:1);
-    const direction=profile.sunDirection.clone();if(interior){direction.x*=-1;direction.z*=-1;}
+    const direction=profile.sunDirection.clone();
     // Quantize the light-space horizontal basis, not world X/Z, to prevent crawling shadows.
     const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),direction).normalize();
     const up=new THREE.Vector3().crossVectors(direction,right).normalize();
@@ -98,12 +119,29 @@ export function createDahLighting(scene, { interior = false, mobile = false } = 
     for(const axis of [right,up]){const v=target.dot(axis);target.addScaledVector(axis,Math.round(v/texel)*texel-v);}
     sun.target.position.copy(target);sun.position.copy(target).addScaledVector(direction,100);
     sun.target.updateMatrixWorld();sun.updateMatrixWorld();sun.shadow.updateMatrices(sun);
-    if(lastFixturePosition.distanceToSquared(playerPosition)>.25){nearest=fixtures.slice().sort((a,b)=>a.distanceToSquared(playerPosition)-b.distanceToSquared(playerPosition));lastFixturePosition.copy(playerPosition);}
+    if(lastFixturePosition.distanceToSquared(playerPosition)>.25){const candidates=fixtures.filter(p=>!interior||(p.y>playerPosition.y+.1&&p.y<playerPosition.y+4.2));
+      const ranked=candidates.sort((a,b)=>a.distanceToSquared(playerPosition)-b.distanceToSquared(playerPosition));
+      const chosen=ranked.slice(0,localLights.length);
+      // Keep pool slots stable while the nearest set is unchanged.
+      nearest=localLights.map(light=>chosen.find(p=>p.equals(light.position)));
+      const remaining=chosen.filter(p=>!nearest.includes(p));
+      nearest=nearest.map(p=>p||remaining.shift());lastFixturePosition.copy(playerPosition);}
     localLights.forEach((light,index)=>{
-      light.position.copy(nearest[index]);
-      const upper=interior&&playerPosition.y>=3.9;
-      light.distance=interior?(upper?24:11):19;
-      light.intensity=profile.localIntensity*(interior?(upper?3.4:1.55):2.2);
+      const fixture=nearest[index];
+      light.visible=Boolean(fixture);
+      light.userData.dahFixturePosition=fixture?fixture.toArray():null;
+      if(!fixture){light.intensity=0;return;}
+      if(!light.position.equals(fixture)){
+        light.position.copy(fixture);
+        if(interior){
+          light.target.position.copy(fixture).add(new THREE.Vector3(0,-1,0));light.target.updateMatrixWorld();
+          light.shadow.needsUpdate=true;
+        }
+      }
+      light.distance=interior?8:19;
+      // The library's working lamps stay on in daytime (official commons/AV
+      // photos). Outdoor path lights still fade with daylight as before.
+      light.intensity=interior?Math.max(.65,profile.localIntensity)*1.55:profile.localIntensity*2.2;
     });
   }
   update(sampleDahLight(.62));

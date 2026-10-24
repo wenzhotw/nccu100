@@ -20,6 +20,7 @@ try{
   const {mountNpcCostume}=await import('../src/systems/baozhong/npc-costumes.js');
   const {activateArticulatedArms}=await import('../src/actors/articulated-arms.js');
   const {WARDROBE_CATALOG,createWardrobeActor}=await import('../src/actors/wardrobe-factory.js');
+  const {createGameWardrobeStore}=await import('../src/actors/wardrobe-config.js');
   const {default:bz}=await import('../src/content/baozhong.json');
   const inputs=new Map();
   const addInput=n=>inputs.set(n.id,{id:n.id,root:n.g,body:n.rig,joints:n.P,headCenter:n.P.head});
@@ -93,6 +94,11 @@ try{
     const actorId=current.id,text=await file.text();
     if(serial!==importSerial||current.id!==actorId)return;
     loadText(text);$('wardrobe-json').value=JSON.stringify(wardrobe.exportConfig(),null,2);$('wardrobe-file').value='';
+  }));
+  $('wardrobe-apply-game').addEventListener('click',guard(()=>{
+    wardrobe.validate();const config=wardrobe.exportConfig();
+    createGameWardrobeStore(localStorage).writeActor(config);
+    update('此角色設定已另存供遊戲下次載入；請點返回遊戲。其他已開啟遊戲頁不會被自動變更。');
   }));
   $('wardrobe-export').addEventListener('click',guard(()=>{
     wardrobe.validate();const text=JSON.stringify(wardrobe.exportConfig(),null,2);$('wardrobe-json').value=text;
