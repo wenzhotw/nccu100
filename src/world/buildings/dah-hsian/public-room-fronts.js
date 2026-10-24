@@ -1,3 +1,4 @@
+import {ATRIUM_PORTALS} from './atrium-portals.js';
 import {publicFloor} from './public-floor-layout.js';
 import {SOURCE_REAR_LAYOUT} from './rear-public-layout.js';
 /** Closed room fronts traced from the official column-registered plans.
@@ -5,10 +6,12 @@ import {SOURCE_REAR_LAYOUT} from './rear-public-layout.js';
  * We model public-facing partitions, not invented accessible room interiors.
  */
 export const PUBLIC_ROOM_FRONTS=Object.freeze([
- ...Object.entries(SOURCE_REAR_LAYOUT).flatMap(([floor,f])=>f.fronts.map(w=>({
-  ...w,floor,doors:w.doorCenters,source:f.source,
-  openPassages:w.id.includes('wc')?[{lo:f.wc.opening[0][0],hi:f.wc.opening[1][0]}]:[],
- }))),
+ ...Object.entries(SOURCE_REAR_LAYOUT).flatMap(([floor,f])=>f.fronts.map(w=>{
+  const portal=ATRIUM_PORTALS.find(p=>p.floor===floor&&p.frontId===w.id);
+  return {...w,floor,doors:portal?[]:w.doorCenters,source:f.source,doorHeight:portal?.height,
+   openPassages:portal?[{lo:portal.lo,hi:portal.hi}]:w.id.includes('wc')?[{lo:f.wc.opening[0][0],hi:f.wc.opening[1][0]}]:[],
+  };
+ })),
  {id:'commons_wc_east',floor:'3F',axis:'z',fixed:-15.126,lo:-22,hi:-14.623,face:1,doors:[],source:'official dhl3f WC east side, 3Fcommons1 writing wall'},
  {id:'commons_east_partition',floor:'3F',axis:'z',fixed:-8.211,lo:-23.677,hi:-14.4,face:-1,doors:[],source:'official dhl3f continuous east partition between north column bays'},
  {id:'commons_wc_north_return',floor:'3F',axis:'z',fixed:-14.958,lo:-23.677,hi:-22,face:1,doors:[],source:'official dhl3f WC wall meets north sawtooth exterior'},

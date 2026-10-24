@@ -3,7 +3,7 @@ import { defineBuilding } from '../../registry.js';
 import { BOUNDS, SPAWN, walkHeight, keepOnLand, zoneName, isSwimming } from './layout.js';
 import { state } from '../../../core/state.js';
 import {camera} from '../../../core/engine.js';
-import {createDahInteriorCamera} from './interior-camera.js';
+import {createDahInteriorCamera,createDahAvatarVisibility,createDahInteriorLens} from './interior-camera.js';
 import { late } from '../../../core/late.js';
 import { buildMap, mapLight, updateMap } from './map.js';
 import './preview.css';
@@ -23,17 +23,19 @@ import {buildInterior,interiorLight,updateInterior} from './interior-map.js';
 import {ROOM_ID,INTERIOR_BOUNDS,INTERIOR_CAMERA,OUTDOOR_DOOR,INTERIOR_SPAWN,INTERIOR_EXIT,OUTDOOR_RETURN,interiorZone} from './interior-layout.js';
 import {DAH_ELEVATOR_STOPS} from './public-floor-layout.js';
 import {mountDahElevator} from './elevator-runtime.js';
-let elevatorRuntime,interiorVisit=0;
+let elevatorRuntime,avatarView,interiorLens,interiorVisit=0;
 function enterInterior(){
  const visit=++interiorVisit;enterVisual();updateInterior(state.time,late.pos);
- Promise.all([import('../../../core/gameplay.js'),import('../../../core/input.js')]).then(([{spots,transition,vel},{resetHeldInput}])=>{
+ Promise.all([import('../../../core/gameplay.js'),import('../../../core/input.js'),import('../../../actors/player.js')]).then(([{spots,transition,vel},{resetHeldInput},{player}])=>{
   if(visit!==interiorVisit||state.room!==ROOM_ID)return;
   const exit=spots.find(s=>s.id===ROOM_ID+'-exit');if(exit)exit.ok=()=>canUseDahExit(late.pos?.y);
+  interiorLens?.dispose();interiorLens=createDahInteriorLens({camera,state});
+  avatarView?.dispose();avatarView=createDahAvatarVisibility({avatar:player,camera,state,getPosition:()=>late.pos});
   elevatorRuntime?.dispose();
   elevatorRuntime=mountDahElevator({state,pos:late.pos,spots,stops:DAH_ELEVATOR_STOPS,transition,resetInput:resetHeldInput,stopMotion:()=>vel.set(0,0,0)});
  });
 }
-function exitInterior(){interiorVisit++;elevatorRuntime?.dispose();elevatorRuntime=null;exitVisual();}
+function exitInterior(){interiorVisit++;interiorLens?.dispose();interiorLens=null;avatarView?.dispose();avatarView=null;elevatorRuntime?.dispose();elevatorRuntime=null;exitVisual();}
 
 export default defineBuilding({
   id: 'dah-hsian',
@@ -56,7 +58,7 @@ export default defineBuilding({
     miniSub:'大廳・挑空展示・閱覽',
     onEnter:enterInterior,onExit:exitInterior,
     update(){updateInterior(state.time,late.pos);},
-    camera:createDahInteriorCamera({state,camera,getFeetY:()=>late.pos?.y??0,getTargetY:()=>(late.pos?.y??0)+.9}),
+    camera:createDahInteriorCamera({state,camera,getFeetY:()=>late.pos?.y??0,getTargetY:()=>(late.pos?.y??0)+.9,onFrame:()=>{interiorLens?.update();avatarView?.update();}}),
   }],
 });
 

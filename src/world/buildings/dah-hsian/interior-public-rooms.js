@@ -8,7 +8,7 @@ import {cloneDahMaterial} from './materials.js';
 const BOX=new THREE.BoxGeometry(1,1,1);
 export function buildPublicRooms(root,mat){
  const box=(kind,x,y,z,w,h,d,name)=>{const mesh=new THREE.Mesh(BOX,mat(kind));mesh.position.set(x,y,z);mesh.scale.set(w,h,d);mesh.name=name;mesh.userData.cameraOccluder=kind!=='clear';root.add(mesh);return mesh;};
- const buildFront=(w,put)=>{const height=w.floor==='3F'?3.3:2.95;
+ const buildFront=(w,put)=>{const height=w.floor==='3F'?3.3:2.95,doorHeight=w.doorHeight||2.25;
   // Door apertures are cut out of the wall, with closed timber leaves and a
   // transom/header. They are not decals pasted over an uninterrupted slab.
   let from=w.lo;
@@ -17,7 +17,7 @@ export function buildPublicRooms(root,mat){
    const lo=Math.max(w.lo,cut.lo),hi=Math.min(w.hi,cut.hi),center=(lo+hi)/2,width=hi-lo;
    if(lo>from)put('wall',(from+lo)/2,height/2,lo-from,height,.12,'來源房間隔牆');
    if(width>0){
-    put('wall',center,(2.25+height)/2,width,height-2.25,.12,'房間門上橫牆');
+    put('wall',center,(doorHeight+height)/2,width,height-doorHeight,.12,'房間門上橫牆');
    }
    if(cut.door&&width>0){
     const leaves=width>1.2?2:1,leafWidth=width/leaves;

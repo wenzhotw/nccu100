@@ -1,3 +1,4 @@
+import {ATRIUM_PORTALS,portalParts} from './atrium-portals.js';
 import {FURNITURE,interiorColliders,SOUTHWEST_STEP} from './interior-layout.js';
 import {rearFurniture} from './rear-furniture-layout.js';
 import {roomFrontAtBoundary} from './public-room-fronts.js';
@@ -30,6 +31,7 @@ export function atriumHeight(x,z,currentY=0){
 /** Registered west-corner connection; intermediate terraces have no invented rear rooms. */
 export function atriumRearExit(l){
  if(l.estimatedTerraceOnly||l.label==='8F')return null;
+ const portal=ATRIUM_PORTALS.find(p=>p.floor===l.label);if(portal)return {...portal,width:portal.hi-portal.lo};
  const f=publicFloor(l.label);return{x:-13.8,z:Math.min(...f.regions[0].map(p=>p[1])),width:2.2};
 }
 // A single sequential push can put a landing player back inside another
@@ -136,7 +138,8 @@ function avoidFurniture(p,l){
   {x0:l.east+2.9,x1:l.east+3.65,z0:l.north+1.8,z1:l.south-1.2},
   {x0:-12.6,x1:l.east+3.25,z0:l.north-3.65,z1:l.north-2.9},
  ]:[];
- for(const r of [...atriumFurniture(l),...bookWalls,...atriumColumns(l).map(c=>({x0:c.x-c.w/2,x1:c.x+c.w/2,z0:c.z-c.d/2,z1:c.z+c.d/2}))]){
+ const solids=[...ATRIUM_PORTALS.filter(p=>p.floor===l.label).flatMap(p=>portalParts(p).filter(r=>r.part!=='lintel').map(r=>({x0:r.x-r.w/2,x1:r.x+r.w/2,z0:r.z-r.d/2,z1:r.z+r.d/2}))),...atriumFurniture(l),...bookWalls,...atriumColumns(l).map(c=>({x0:c.x-c.w/2,x1:c.x+c.w/2,z0:c.z-c.d/2,z1:c.z+c.d/2}))];
+ for(const r of solids){
   const x0=r.x0-.4,x1=r.x1+.4,z0=r.z0-.4,z1=r.z1+.4;
   if(p.x>x0&&p.x<x1&&p.z>z0&&p.z<z1){
    const candidates=[{x:x0,z:p.z},{x:x1,z:p.z},{x:p.x,z:z0},{x:p.x,z:z1}];
@@ -177,6 +180,25 @@ function avoidFurniture(p,l){
    if(world[0]){p.x=world[0].x;p.z=world[0].z;}
   }
  }
+ recoverFurnitureOverlap(p,l,solids);
+}
+
+// 只在順序解碰撞後仍陷入相鄰桌椅時恢復；正常行走不進入搜尋。
+// 各物件各推一次可能把角色推回先前處理的桌子，候選點需同時避開整組。
+function recoverFurnitureOverlap(p,l,solids){
+ const overlaps=(q,b,r=.4)=>Math.hypot(q.x-Math.max(b.x0,Math.min(q.x,b.x1)),q.z-Math.max(b.z0,Math.min(q.z,b.z1)))<r-1e-6;
+ if(!solids.some(b=>overlaps(p,b)))return;
+ const nearby=solids.filter(b=>Math.hypot(p.x-Math.max(b.x0,Math.min(p.x,b.x1)),p.z-Math.max(b.z0,Math.min(p.z,b.z1)))<3);
+ const xs=new Set([p.x]),zs=new Set([p.z]);for(const b of nearby){xs.add(b.x0-.405);xs.add(b.x1+.405);zs.add(b.z0-.405);zs.add(b.z1+.405);}
+ const rear=rearFurniture(l.label),floor=PUBLIC_NAV_FLOORS.find(f=>f.id===l.label);
+ const valid=q=>{
+  if(solids.some(b=>overlaps(q,b))||!walkSafe(l,q.x,q.z)||Math.abs(atriumHeight(q.x,q.z,p.y)-l.y)>.02)return false;
+  for(const e of floor.boundaries){const dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],t=Math.max(0,Math.min(1,((q.x-e.a[0])*dx+(q.z-e.a[1])*dz)/(dx*dx+dz*dz)));if(Math.hypot(q.x-e.a[0]-t*dx,q.z-e.a[1]-t*dz)<e.clearance-1e-5)return false;}
+  return !rear.some(o=>o.type==='round'?Math.hypot(q.x-o.x,q.z-o.z)<o.w/2+.4:o.bounds.some(b=>overlaps(q,b)));
+ };
+ const candidates=[];for(const x of xs)for(const z of zs){const distance=Math.hypot(x-p.x,z-p.z);if(distance<=3)candidates.push({x,z,distance});}
+ candidates.sort((a,b)=>a.distance-b.distance);
+ const q=candidates.find(valid);if(q){p.x=q.x;p.z=q.z;}
 }
 
 function walkSafe(l,x,z){const f=publicFloor(l.label);for(let i=0;i<16;i++){const a=i/16*Math.PI*2;if(!floorContains(f,x+Math.cos(a)*.4,z+Math.sin(a)*.4))return false;}return true;}

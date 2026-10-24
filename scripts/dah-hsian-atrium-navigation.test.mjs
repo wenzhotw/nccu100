@@ -134,10 +134,10 @@ test('主樓層轉角出口可穿過書牆到後方公共走廊，夾層不憑�
  for(const l of nav.ATRIUM_LEVELS){const f=nav.PUBLIC_NAV_FLOORS.find(f=>f.id===l.id);
  if(l.estimatedTerraceOnly){assert.equal(nav.atriumRearExit(l),null);continue;}
  // Official west-column doorway connects the terrace to long north circulation; 8F has no inner terrace.
- if(l.label==='8F')continue;const north=Math.min(...f.regions[0].map(p=>p[1]));
- for(let i=0;i<=35;i++){const p={x:-13.8,y:l.y,z:north+.9-i*.05},wanted={...p};nav.clampAtrium(p);assert.deepEqual(p,wanted,'來源西端出口全段可走 '+l.label);
+ if(l.label==='8F')continue;const north=Math.min(...f.regions[0].map(p=>p[1])),exit=nav.atriumRearExit(l),west=exit.axis==='z';
+ for(let i=0;i<=35;i++){const p=west?{x:exit.x+.9-i*.05,y:l.y,z:exit.z}:{x:-13.8,y:l.y,z:north+.9-i*.05},wanted={...p};nav.clampAtrium(p);assert.deepEqual(p,wanted,'來源西端出口全段可走 '+l.label);
  const down=new THREE.Raycaster(new THREE.Vector3(p.x,l.y+.2,p.z),new THREE.Vector3(0,-1,0),0,.5).intersectObject(m,true).find(h=>h.object.name==='來源校準公共樓板');assert.ok(down&&Math.abs(down.point.y-l.y)<.03,'開口後方實體地板');}
- const ray=new THREE.Raycaster(new THREE.Vector3(-13.8,l.y+1.6,north+.9),new THREE.Vector3(0,0,-1),0,1.75);assert.equal(ray.intersectObject(m,true).filter(h=>h.object.material.side!==THREE.BackSide&&!h.object.material.transparent).length,0,'人眼高開口不能被書牆封住');
+ const ray=new THREE.Raycaster(west?new THREE.Vector3(exit.x+.9,l.y+1.6,exit.z):new THREE.Vector3(-13.8,l.y+1.6,north+.9),west?new THREE.Vector3(-1,0,0):new THREE.Vector3(0,0,-1),0,1.75);assert.equal(ray.intersectObject(m,true).filter(h=>h.object.material.side!==THREE.BackSide&&!h.object.material.transparent).length,0,'人眼高開口不能被書牆封住');
  }
 });
 
@@ -164,7 +164,7 @@ test('來源西端轉角出口保持暢通，相鄰挑空邊界仍阻擋角色�
  // Its neighboring physical boundary still stops a body while its center stays open.
  for(const l of nav.ATRIUM_LEVELS.filter(l=>!l.estimatedTerraceOnly&&l.label!=='8F')){
  const f=nav.PUBLIC_NAV_FLOORS.find(f=>f.id===l.id),north=Math.min(...f.regions[0].map(p=>p[1]));
- const center={x:-13.8,y:l.y,z:north},wanted={...center};nav.clampAtrium(center);assert.deepEqual(center,wanted);
+ const exit=nav.atriumRearExit(l),center=exit.axis==='z'?{x:exit.x,y:l.y,z:exit.z}:{x:-13.8,y:l.y,z:north},wanted={...center};nav.clampAtrium(center);assert.deepEqual(center,wanted);
  const edge={x:l.east-.1,y:l.y,z:3};nav.clampAtrium(edge);assert.ok(edge.x>=l.east+.4,'相鄰真邊界不能穿入');
  }
 });

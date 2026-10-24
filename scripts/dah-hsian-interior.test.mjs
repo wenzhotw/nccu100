@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {resolve,setActiveColliders,setRoomClamp} from '../src/core/collision.js';
-import {createDahInteriorCamera} from '../src/world/buildings/dah-hsian/interior-camera.js';
+import {createDahInteriorCamera,createDahInteriorLens} from '../src/world/buildings/dah-hsian/interior-camera.js';
 const layout=await import('../src/world/buildings/dah-hsian/interior-layout.js').catch(()=>({}));
 function meshTriangles(mesh){
  const pos=mesh.geometry.attributes.position,index=mesh.geometry.index,out=[];
@@ -303,12 +303,14 @@ test('中庭屋頂以灰色折板長帶為主，採光限在狹長線窗而非�
  const ray=new THREE.Raycaster(new THREE.Vector3(-10,1.6,-9),new THREE.Vector3(0,1,0),0,40);
  assert.ok(ray.intersectObjects(opaque).length,'站在2F向上可見實際有面的折板');
 });
-test('上層普通鏡頭採近身站立視角，保留中庭天冠，其他房間不受影響',async()=>{
+test('上層放寬後的普通鏡頭保持站立眼高與中庭天冠，其他房間不受影響',async()=>{
  const view=await import('../src/systems/room-view.js');assert.equal(typeof view.roomCameraAtHeight,'function');
  const base=layout.INTERIOR_CAMERA;
  assert.equal(view.roomCameraAtHeight(base,0),base);assert.equal(view.roomCameraAtHeight(null,23),null);
- const config=view.roomCameraAtHeight(base,23.1),target=new THREE.Vector3(0,24,17.4),dir=new THREE.Vector3(),camera=new THREE.PerspectiveCamera(55,1.6,.25,1200);
- view.roomOrbitDirection(dir,0,.28,target,config.maxDist,config);camera.position.copy(target).addScaledVector(dir,config.maxDist);view.frameRoomCamera(camera,target,.28,config);camera.updateMatrixWorld();
+ const target=new THREE.Vector3(0,24,17.4),dir=new THREE.Vector3(),camera=new THREE.PerspectiveCamera(55,1.6,.25,1200),state={room:'dah-hsian-2f',pitch:.12};
+ // 正式達賢入口使用本區動態設定及既定普通pitch；不再用舊固定近身設定模擬新鏡頭。
+ const config=createDahInteriorCamera({state,camera,getFeetY:()=>23.1,getTargetY:()=>target.y}),lens=createDahInteriorLens({camera,state});lens.update();
+ view.roomOrbitDirection(dir,0,state.pitch,target,config.maxDist,config);camera.position.copy(target).addScaledVector(dir,config.maxDist);view.frameRoomCamera(camera,target,state.pitch,config);camera.updateMatrixWorld();
  assert.ok(camera.position.y>=24.75&&camera.position.y<25,'真實站立眼高，不逼近樓上板底');const crown=new THREE.Vector3(0,28.8,-6).project(camera);assert.ok(crown.y<1&&crown.y>-1,'天冠在一般視野內');
 });
 test('上層普通取景靠牆退讓後仍平視，不能因鏡頭縮短而突然朝天花仰看；主動仰視仍有效',async()=>{

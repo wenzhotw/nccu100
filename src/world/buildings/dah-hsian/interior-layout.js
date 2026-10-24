@@ -7,7 +7,7 @@ export const INTERIOR_BOUNDS={x0:-41.3,x1:20.2,z0:-24.1,z1:20.2};
 // 館方2F圖H柱線西側收口，D梯旁外牆向東退縮；不是滿版矩形樓板。
 export const SOUTHWEST_STEP={x:-15.45,z:13.1};
 export const INTERIOR_FOOTPRINT=[[-23,-22.5],[20.35,-22.5],[20.35,20.35],[SOUTHWEST_STEP.x,20.35],[SOUTHWEST_STEP.x,SOUTHWEST_STEP.z],[-23,SOUTHWEST_STEP.z]];
-export const INTERIOR_CAMERA={...INTERIOR_BOUNDS,ceil:34,maxDist:6,lookUpHeight:6.5,eyeFloor:1.4,levelAim:true,upper:{fromY:3.9,maxDist:3.2,eyeOffset:1.65,aimOffset:.5,lookUpHeight:1.8,levelAim:true}};
+export const INTERIOR_CAMERA={...INTERIOR_BOUNDS,ceil:34,maxDist:6,lookUpHeight:6.5,eyeFloor:1.4,levelAim:true,upper:{fromY:3.9,maxDist:4.2,eyeOffset:1.65,aimOffset:.5,lookUpHeight:1.8,levelAim:true}};
 export const OUTDOOR_DOOR={x:MAIN_ENTRANCE.approachX,z:MAIN_ENTRANCE.z,r:2.8,room:'dah-hsian',label:'進入達賢圖書館2樓'};
 export const INTERIOR_SPAWN={x:-20.5,z:-12,yaw:-Math.PI/2,pitch:.12,face:Math.PI/2};
 export const INTERIOR_EXIT={x:-22,z:-12,r:1.6,label:'回達賢戶外'};
