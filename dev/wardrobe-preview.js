@@ -60,7 +60,11 @@ try{
     save();wardrobe?.dispose();wardrobe=null;arms?.dispose();arms=null;
     if(current)scene.remove(current.root);
     current=inputs.get($('wardrobe-actor').value);current.root.position.set(0,0,0);current.root.rotation.set(0,0,0);scene.add(current.root);
-    arms=activateArticulatedArms(current);wardrobe=createWardrobeActor(current);
+    try{arms=activateArticulatedArms(current);wardrobe=createWardrobeActor(current);}
+    catch(error){
+      try{wardrobe?.dispose();}finally{wardrobe=null;try{arms?.dispose();}finally{arms=null;scene.remove(current.root);}}
+      throw error;
+    }
     let message='已載入原始服裝。';
     try{const saved=localStorage.getItem(storageKey(current.id));if(saved){wardrobe.loadConfig(saved);message='已載回本機換裝設定。';}}
     catch(error){message=`本機設定未載入：${error.message}`;}
@@ -112,7 +116,7 @@ try{
   });
   document.documentElement.dataset.wardrobeReady='true';
 }catch(error){
-  status.textContent=`工作台未啟動：${error.message}\n請使用開發伺服器並確認瀏覽器支援 WebGL。`;
+  status.textContent=`工作台未啟動：${error.message}\n請重新整理、確認網路連線與瀏覽器支援 WebGL；若仍失敗，請回報上方錯誤。`;
   document.documentElement.dataset.wardrobeReady='error';console.error(error);
 }
 }

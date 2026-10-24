@@ -36,6 +36,7 @@ function build(slot,id){
     const color=id==='teal-vest'?'#6db8cc':'#e8bc59';
     for(const sign of [-1,1])part(g,`wardrobe.vest.panel.${sign}`,'box',color,[sign*.115,.54,.18],[.15,.30,.035]);
     part(g,'wardrobe.vest.back','box',color,[0,.54,-.17],[.35,.30,.035]);
+    for(const sign of [-1,1])part(g,`wardrobe.vest.side.${sign}`,'box',color,[sign*.19,.54,.005],[.035,.30,.36]);
   }else{
     // 書與平板向左手外側延伸，避免覆蓋身體中央；姿勢由手部掛點控制。
     const color=id==='book'?'#62a8a0':'#e8bc59';
@@ -59,15 +60,38 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
   if(!TRIAL_IDS.includes(id)||!identity||identity.id!==id||identity.body!==body||identity.joints!==joints||identity.headCenter!==headCenter)throw new Error('Wardrobe actor provenance mismatch');
   if(active.has(root)){active.get(root).validate();return active.get(root);}
   let disposed=false,selection=defaults(),nodes={};
-  const suppressed=new Map();
-  function refreshForm(){
-    const node=nodes.headwear;if(!node)return;
-    if(id==='player'&&state.outfit==='swim'){if(!suppressed.has(node))suppressed.set(node,node.visible);node.visible=false;}
-    else if(suppressed.has(node)){node.visible=suppressed.get(node);suppressed.delete(node);}
+  const suppressed=new Map(),visibilityLeases=new Map();
+  // 第一次實際遮蔽時才借用可見狀態，不用 controller 建立時的過期快照。
+  function hideOriginal(node){
+    if(!visibilityLeases.has(node))visibilityLeases.set(node,{before:node.visible,written:false});
+    else if(node.visible!==visibilityLeases.get(node).written)visibilityLeases.get(node).before=node.visible;
+    node.visible=false;
+  }
+  function releaseOriginal(node,restore=true){
+    const lease=visibilityLeases.get(node);if(!lease)return;
+    if(restore&&node.visible===lease.written)node.visible=lease.before;
+    visibilityLeases.delete(node);
   }
   const originalTablet=id==='bz26-D12'?root.getObjectByName('bz26-costume-finance-market-tablet'):null;
   if(id==='bz26-D12'&&!originalTablet)throw new Error('D12 custom tablet must be mounted first');
-  const tabletVisible=originalTablet?.visible,headParent=identity.profileId==='player'?joints.head:body;
+  const headParent=identity.profileId==='player'?joints.head:body;
+  function refreshForm(){
+    if(disposed)throw new Error('Wardrobe disposed');
+    const swim=id==='player'&&state.outfit==='swim';
+    for(const node of Object.values(nodes)){
+      if(!node)continue;
+      if(swim){if(!suppressed.has(node))suppressed.set(node,node.visible);node.visible=false;}
+      else if(suppressed.has(node)){node.visible=suppressed.get(node);suppressed.delete(node);}
+    }
+    for(const [slot,originals] of [['headwear',identity.appearance.hairTop],['outerwear',identity.appearance.backpack]]){
+      for(const node of originals){
+        // setOutfit 已套用泳裝本身的隱藏規則，不把舊一般服裝狀態寫回。
+        if(swim)releaseOriginal(node,false);
+        else if(selection[slot]!=='default')hideOriginal(node);
+        else releaseOriginal(node);
+      }
+    }
+  }
   const anchors={headwear:headCenter,outerwear:body,leftHand:joints.shL};
   const elbow=identity.arms.L.forearm.parent;
   const hand=elbow?.name==='trial.elbow.L'&&elbow.parent===joints.shL?elbow.children.find(n=>n.name==='trial.hand.L'):null;
@@ -105,7 +129,7 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
       root.updateWorldMatrix(true,true);throw error;
     }
     nodes={...nodes,...staged};selection=next.slots;
-    if(originalTablet&&changed.includes('leftHand'))originalTablet.visible=selection.leftHand==='default'?tabletVisible:false;
+    if(originalTablet&&changed.includes('leftHand')){if(selection.leftHand==='default')releaseOriginal(originalTablet);else hideOriginal(originalTablet);}
     for(const saved of old)suppressed.delete(saved.node);refreshForm();
     root.updateWorldMatrix(true,true);
     return result.exportConfig();
@@ -116,7 +140,7 @@ export function createWardrobeActor({id,root,body,joints,headCenter}){
     exportConfig(){validate();return {schemaVersion:1,actorId:id,slots:{...selection}};},
     loadConfig(value){return apply(parseConfig(value,id));},
     reset(){return apply({schemaVersion:1,actorId:id,slots:defaults()});},
-    dispose(){if(disposed)return;disposed=true;for(const node of Object.values(nodes)){try{node?.removeFromParent();}catch{detachOwned(node);}}if(originalTablet)originalTablet.visible=tabletVisible;nodes={};suppressed.clear();active.delete(root);root.updateWorldMatrix(true,true);},
+    dispose(){if(disposed)return;disposed=true;for(const node of Object.values(nodes)){try{node?.removeFromParent();}catch{detachOwned(node);}}for(const node of [...visibilityLeases.keys()])releaseOriginal(node);nodes={};suppressed.clear();active.delete(root);root.updateWorldMatrix(true,true);},
   });
   active.set(root,result);return result;
 }

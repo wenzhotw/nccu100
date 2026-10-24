@@ -6,7 +6,7 @@
 
 以 `createWardrobeActor({id,root,body,joints,headCenter})` 作為共同的舊角色裝配入口。僅支援 chiang、player、bz26-D12、bz26-D23。這不是全新的共同人體建模工廠，不代表全 105 角色已遷移。
 
-原規格書 B3 要求共同人體工廠，B6 列出 body/hair/headwear/face/top/bottom/dress/shoes/back/hand.L/hand.R/custom，B7 定義隱藏規則，B8 三色，B9 body/parts/custom 資料。此次依 B14 小批遷移，只落最小子集：headwear 對應頭飾、outerwear 是 top 的外搭子集、leftHand 對應 hand.L。試點 schemaVersion 1 不是最終共用資料規格。三色調色、尺寸、dress/hair 隱藏規則及泳裝／雄鷹資料化尚未完成。
+原規格書 B3 要求共同人體工廠，B6 列出 body/hair/headwear/face/top/bottom/dress/shoes/back/hand.L/hand.R/custom，B7 定義隱藏規則，B8 三色，B9 body/parts/custom 資料。此次依 B14 小批遷移，只落最小子集：headwear 對應頭飾、outerwear 是 top 的外搭子集、leftHand 對應 hand.L。試點 schemaVersion 1 不是最終共用資料規格。三色調色、尺寸、完整 dress/hair 隱藏規則及泳裝／雄鷹資料化尚未完成。
 
 三個資料化槽位：
 
@@ -28,7 +28,7 @@ API：equip(slot,itemId)、exportConfig()、loadConfig(object 或 JSON 字串)�
 
 執行 npm run dev，開啟 /dev/wardrobe-preview.html。可選四角色、三槽位、六種上肢姿勢、前側後視角與重設。每個角色各有本機瀏覽器保存，可匯出 JSON 檔或貼入／選取檔案載回。這不是正式遊戲存檔，清除網站資料即失去本機保存，建議另外匯出。
 
-先啟用 articulated arms，再建立 wardrobe，停止時反向處理。沒有真手肘時使用舊肩部下的手位置；有真手肘時直接掛於現有 hand 節點。主角泳裝與一般服裝可切換，泳裝時只暫時隱藏新增頭飾、保留泳帽，回一般服裝恢復原頭飾可見狀態與配置，避免兩頂帽疊戴；這不是完整遮髮系統；變成雄鷹前先卸下 wardrobe，再停用人類手肘，不把人類道具綁到雄鷹翅膀。
+先啟用 articulated arms，再建立 wardrobe，停止時反向處理。沒有真手肘時使用舊肩部下的手位置；有真手肘時直接掛於現有 hand 節點。主角泳裝與一般服裝可切換，泳裝時暫時隱藏全部新增配件、保留泳裝，回一般服裝恢復各配件原可見狀態與配置；這不是完整換裝規則系統；變成雄鷹前先卸下 wardrobe，再停用人類手肘，不把人類道具綁到雄鷹翅膀。
 
 此頁不跑正式遊戲迴圈。沿用六個關鍵上肢姿勢，不新增膝、腳、碰撞、NPC 更新流程；D12 新書本／新平板的所有姿勢仍須實機看圖，不把舊平板碰撞測試套用到新道具宣稱通過。
 
@@ -56,3 +56,29 @@ API：equip(slot,itemId)、exportConfig()、loadConfig(object 或 JSON 字串)�
 10. 測試依本次交付報告列結果，待最終候選版本核對。
 
 本地候選驗證：完整 npm test 五組全部 exit 0，共 749 通過、2 個既有略過；角色組 274 全通過。正式 build、check、獨立工作台 Vite build、JS syntax 與 diff-check 通過。版號依整合要求恢復 v1.88 後，另跑版本／效能契約 9 測通過。獨立審查重現的無關槽位隱藏狀態與卸下事件例外已修復並覆驗。實際瀏覽器、兩張截圖與手機效能仍未驗，不把編譯當作可見驗收。
+
+## 發布入口補充
+
+新增 `wardrobe/index.html`，與既有 `dev/wardrobe-preview.html` 共用工作台 JS，保留舊開發 URL 供原驗收流程使用。兩份 HTML 除模組相對路徑外相同，測試會阻止它們悄悄分岔。新增返回遊戲連結。Vite 以 main 與 wardrobe 兩個 HTML 作多頁輸入，正式 dist 現在包含可發布工作台，既有 Pages 部署流程可原樣上傳；這不表示本提交已合併或上線。
+
+仍不把工作台啟用程式匯入 main.js。為保留舊 actor/UI 模組的 DOM 契約，本次沿用從 index.html 讀取 scaffold，移除 script/style/link/iframe 後才插入隱藏容器，不執行正式遊戲入口。MPA 同時提供真正的 index.html，解決先前獨立 preview build 缺少 scaffold 的問題，不趁此次重構共用 DOM。
+
+`node scripts/wardrobe-built-check.mjs` 必須在 `npm run build` 後執行。它檢查 dist 真正檔案，再用不提供 SPA fallback 的本機 HTTP 伺服器驗證 `/wardrobe/index.html` 與 `/nccu100/wardrobe/index.html`，包括全部 14 個工作台 JS 依賴、scaffold 與不存在路徑的 404。工作台依賴遞迴靜態檢查不得包含正式存檔鍵、saveGame 或達賢。這不是瀏覽器互動或 WebGL 渲染測試；正式存檔的執行期不變、手機和視覺仍待驗收。
+
+未改版本、全域規範、main.js、遊戲 loop、達賢建築或 workflow。公開網址須部署後重新確認，不把本地 dist/HTTP 成功當成已上線。
+
+發布入口補充驗證：完整 npm test 五組 exit 0，共 751 通過、2 個既有略過；新增 2 個發布隔離契約測試。正式 MPA build、check、diff-check 與根／子路徑 built HTTP 檢查通過。沒有執行新的瀏覽器或達賢工作流程，尚未對外發布。
+
+## GRK035 收斂修正
+
+來源為協作看板第 114 列的 Grok 非作者驗收文字，原 head 10a5fdeb 為 approve-with-notes。未取得其本機圖片，以下修正需新版畫面覆驗。
+
+1. 帽髮：舊工廠只增加明確建構引用，不改造型或節點順序。新增帽會暫藏 hairTop，主角包含頂髮、尖刺、瀏海，NPC 包含帽形頂髮與前髮；保留後髮。沒有用材質顏色或 children 索引猜哪些是頭髮。重設還原各節點先前可見值。
+2. 背心：補左右側片閉合原三片平板側邊；主角穿外搭時以已保存 PACK 引用暫藏背包相關配件，卸下後還原。仍是有限外搭，不重構服裝／體型，也不宣稱全部姿勢沒有穿模。
+3. 泳裝：暫藏全部新增槽位，不只帽子。回一般服裝還原每件原 visible，包括使用者本來就隱藏的道具。泳裝原有頭髮／背包狀態由 setOutfit 決定，不被一般服裝快照覆寫。
+4. D12 平板：不再用控制器建立時的快照。只有開始實際覆蓋左手道具才借用當下 visible，解除覆蓋或 dispose 才釋放；從未覆蓋的 default 不寫回。若外部已把值改成與本控制器最後寫入不同的值，釋放時尊重外部值。限制：若外部在已經 false 時再次寫入 false，普通布林欄位無法辨別另一個寫入者意圖，不宣稱此機制是多寫入者的完整仲裁系統。
+5. 工作台：建立 wardrobe 失敗後，在 finally 卸除先建立的 arms 並移出候選場景，另有注入失敗的生命週期測試。發布頁錯誤文案改為網路／WebGL／重新整理，不要求一般使用者開發伺服器。
+
+新增驗證包含頂髮／背包隱藏與還原、背心側片存在、全部新增配件跨 swim/normal 的 hidden 保留、D12 default 外部隱藏／覆蓋前最新狀態／外部新值優先及工作台建立失敗清理。原有角色結構與世界基準仍不改 goldens。這些是程式與數值證據，最後仍需新版可見驗收。
+
+GRK035 修正候選的完整 npm test：752 通過、2 個既有略過、0 失敗，五組皆 exit 0；角色組 274 通過。check、正式 MPA build、root／子路徑的 14 依賴與真 404 檢查通過。獨立程式審查覆驗通過；帽髮、背心、新入口與新版泳裝狀態仍需 Grok 可見確認。仍未合併或部署，版本保留 1.88 待整合順序決定。

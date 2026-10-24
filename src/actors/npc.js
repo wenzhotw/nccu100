@@ -74,8 +74,9 @@ function makePerson(o,where){
   const hm=toon(o.hair||'#2a2220',{side:THREE.DoubleSide});
   const capH=part(new THREE.SphereGeometry(0.296,28,14,0,Math.PI*2,0,Math.PI*(o.hairStyle==='bowl'?0.45:0.38)),hm,0,0.012,-0.006,hc); capH.scale.set(1.05,0.97,1); outlineU(capH,1.04);
   const back=part(new THREE.SphereGeometry(0.299,28,18,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*(o.hairStyle==='short'?0.58:0.66)),hm,0,0,-0.01,hc); back.scale.set(1.05,0.97,1);
-  if(o.hairStyle==='bowl'){ const fr=part(new THREE.SphereGeometry(0.302,28,10,Math.PI/2-0.95,1.9,Math.PI*0.28,Math.PI*0.13),hm,0,0.005,0,hc); fr.scale.set(1.05,0.97,1); }
-  if(o.hairStyle==='side'){ const s1=part(SPH,hm,-0.06,0.22,0.12,hc); s1.scale.set(0.24,0.08,0.16); s1.rotation.z=0.25; }
+  const hairTop=[capH];
+  if(o.hairStyle==='bowl'){ const fr=part(new THREE.SphereGeometry(0.302,28,10,Math.PI/2-0.95,1.9,Math.PI*0.28,Math.PI*0.13),hm,0,0.005,0,hc); fr.scale.set(1.05,0.97,1); hairTop.push(fr); }
+  if(o.hairStyle==='side'){ const s1=part(SPH,hm,-0.06,0.22,0.12,hc); s1.scale.set(0.24,0.08,0.16); s1.rotation.z=0.25; hairTop.push(s1); }
   if(o.hairStyle==='long'){   // 長髮：後面垂到肩膀下，兩側各一束
     const lb=part(new THREE.CapsuleGeometry(0.25,0.3,6,16),hm,0,-0.2,-0.1,hc); lb.scale.set(1.08,1,0.55); outlineU(lb,1.03);
     [-1,1].forEach(s=>{ const st=part(new THREE.CapsuleGeometry(0.075,0.32,4,10),hm,s*0.25,-0.17,0.04,hc); st.rotation.z=s*0.08; }); }
@@ -84,7 +85,7 @@ function makePerson(o,where){
   if(o.cap){ part(new THREE.CylinderGeometry(0.3,0.3,0.12,20),o.cap,0,0.19,0,hc,0.012); part(new THREE.CylinderGeometry(0.33,0.31,0.07,20),o.cap,0,0.28,0.01,hc);
     const v=part(BOX,'#14171f',0,0.15,0.27,hc); v.scale.set(0.32,0.03,0.18); part(BOX,'#e8c547',0,0.24,0.31,hc).scale.set(0.08,0.07,0.01); }
   g.scale.setScalar(o.scale||1.2);
-  return {g,rig,P,limbParts};
+  return {g,rig,P,limbParts,appearance:{hairTop}};
 }
 /* 卡皮巴拉（npcs.json 寫 "kind": "capybara"）：圓滾滾的咖啡色身體、方方的大頭、頭上頂一顆柚子。
    回傳的格式跟 makePerson 一樣，四肢和頭共用同一套走路動畫 */
@@ -116,7 +117,7 @@ function addNPC(o){
   if(o.bubble){ n.sp.material.depthTest=false; n.sp.renderOrder=10; }   // 警告泡泡不被樹擋住
   n.spot={x:o.home.x,z:o.home.z,r:2.4,label:'交談',ok:()=>!state.driving&&!state.holdPang&&n.fear<=0&&n.state!=='chase'&&n.state!=='chaseCar'&&(o.room||null)===(state.room||null),
     fn:()=>{ const d=pickDialog(o.dialog); openDialog(o.title||o.tag||'同學',d.lines,()=>runAction(d.then)); }};
-  registerTrialNpc(n,b.limbParts);
+  registerTrialNpc(n,b.limbParts,b.appearance);
   n.spot.room=o.room||null; spots.push(n.spot); NPCS.push(n); return n;
 }
 function npcUpdate(n,dt){

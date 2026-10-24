@@ -215,6 +215,6 @@ function becomeEagle(){
   eagleFeet.forEach(m=>{ m.visible=true; });
 }
 
-registerTrialPlayer(player,rig,H,hc,limbParts,()=>!state.isEagle);
+registerTrialPlayer(player,rig,H,hc,limbParts,()=>!state.isEagle,{hairTop:HAIR.filter(node=>node!==back),backpack:PACK});
 
 export { hc as headCenter, limbParts, H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };

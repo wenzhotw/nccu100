@@ -27,6 +27,9 @@ globalThis[hook]=(id,root,serialize,worldList,context)=>{
     for(const pose of ARM_POSES){arms?.setPose(pose);root.updateWorldMatrix(true,true);root.traverse(n=>assert.ok(n.matrixWorld.elements.every(Number.isFinite)));}
    }
    wardrobe.equip('headwear','beret');wardrobe.equip('outerwear','teal-vest');wardrobe.equip('leftHand','book');
+   assert.ok(identity.appearance.hairTop.length);for(const node of identity.appearance.hairTop)assert.equal(node.visible,false,'hat hides explicit top hair');
+   if(id==='player')for(const node of identity.appearance.backpack)assert.equal(node.visible,false,'vest hides backpack');
+   assert.ok(root.getObjectByName('wardrobe.vest.side.-1'));assert.ok(root.getObjectByName('wardrobe.vest.side.1'));
    const saved=JSON.stringify(wardrobe.exportConfig());wardrobe.reset();wardrobe.loadConfig(saved);assert.equal(JSON.stringify(wardrobe.exportConfig()),saved);
    const book=root.getObjectByName('wardrobe.leftHand.book');book.visible=false;
    wardrobe.equip('headwear','cap');assert.equal(root.getObjectByName('wardrobe.leftHand.book'),book);assert.equal(book.visible,false);
@@ -46,15 +49,23 @@ globalThis[hook]=(id,root,serialize,worldList,context)=>{
    const removalFailure=()=>{throw new Error('injected removal failure');};originalHat.addEventListener('removed',removalFailure);
    assert.throws(()=>wardrobe.equip('headwear','cap'),/injected removal failure/);originalHat.removeEventListener('removed',removalFailure);
    wardrobe.validate();assert.deepEqual(serialize(root),stable);assert.equal(JSON.stringify(wardrobe.exportConfig()),saved);
-   if(id==='player'){context.setOutfit('swim');wardrobe.validate();assert.equal(originalHat.visible,false);context.setOutfit('normal');assert.equal(originalHat.visible,true);}
+   if(id==='player'){const vest=root.getObjectByName('wardrobe.outerwear.teal-vest');book.visible=false;context.setOutfit('swim');wardrobe.validate();for(const n of [originalHat,vest,book])assert.equal(n.visible,false);context.setOutfit('normal');assert.equal(originalHat.visible,true);assert.equal(vest.visible,true);assert.equal(book.visible,false);book.visible=true;}
 
    const foreign=new Group(),owned=root.getObjectByName('wardrobe.headwear.beret');foreign.add(owned);assert.throws(()=>wardrobe.validate(),/reparented/);
    owned.addEventListener('removed',()=>{throw new Error('dispose listener');});
    wardrobe.dispose();wardrobe.dispose();assert.equal(owned.parent,null);assert.equal(foreign.children.length,0);
+   if(id==='bz26-D12'){const tablet=root.getObjectByName('bz26-costume-finance-market-tablet');assert.equal(tablet.visible,false,'restore visibility captured at actual override, not creation');tablet.visible=true;}
    arms?.setPose('neutral');assert.deepEqual(serialize(root),initial);assert.deepEqual(worldList(root),world);
-   assert.throws(()=>wardrobe.exportConfig(),/disposed/);
+   assert.throws(()=>wardrobe.exportConfig(),/disposed/);assert.throws(()=>wardrobe.refreshForm(),/disposed/);
   }
   arms?.dispose();assert.deepEqual(serialize(root),before);assert.deepEqual(worldList(root),worldBefore);
+ }
+ {const hair=identity.appearance.hairTop[0],prior=hair.visible,w=createWardrobeActor(input);hair.visible=false;w.equip('headwear','cap');w.reset();assert.equal(hair.visible,false);w.dispose();assert.equal(hair.visible,false);hair.visible=prior;}
+ if(id==='bz26-D12'){
+  const tablet=root.getObjectByName('bz26-costume-finance-market-tablet');
+  let w=createWardrobeActor(input);tablet.visible=false;w.dispose();assert.equal(tablet.visible,false,'untouched default must preserve external hide');
+  tablet.visible=true;w=createWardrobeActor(input);tablet.visible=false;w.equip('leftHand','book');w.equip('leftHand','default');assert.equal(tablet.visible,false,'load default restores latest pre-override visibility');w.dispose();assert.equal(tablet.visible,false);
+  tablet.visible=true;w=createWardrobeActor(input);w.equip('leftHand','book');tablet.visible=true;w.dispose();assert.equal(tablet.visible,true,'external changed value wins');
  }
  seen.push(id);
 };
