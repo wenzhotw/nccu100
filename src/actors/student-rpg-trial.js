@@ -32,7 +32,7 @@ function shapes(){
   return [x,y,Math.sqrt(Math.max(0,.145*.145-capY*capY-(x/wide)**2))*.78+.002];
  });
  geometry={torso,forearm,sleeve,waist,skull,face,cap,bang,bag,shoe,sole,inner,
-  back:new THREE.SphereGeometry(.207,16,12,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*.72),
+  back:new THREE.SphereGeometry(.207,16,12,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*.56),
   neck:new THREE.CylinderGeometry(.045,.055,.10,12),cuff:new THREE.TorusGeometry(.05,.006,6,18),
   strap:new THREE.CapsuleGeometry(.012,.20,4,8)};
  return geometry;
@@ -70,7 +70,9 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  for(const [x,y,z,sx,sy,sz,rx,rz]of [[-.105,.035,.15,.058,.13,.035,-.45,-.38],[-.025,.10,.165,.080,.13,.032,-.60,-.62],[.095,.11,.13,.052,.09,.033,-.55,-.50]]){
   const lock=part(G.bang,hm,x,y,z,hc);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
  }
- for(const s of [-1,1]){const lock=part(G.bang,hm,s*.177,-.035,.025,hc);lock.scale.set(.038,.105,.055);lock.rotation.z=s*.12;appearance.hair.push(lock);}
+ // 耳旁與後頸以五片貼頭大髮束接續短後帽，打破水平半球截面。
+ for(const s of [-1,1]){const lock=part(G.bang,hm,s*.166,-.015,.012,hc);lock.scale.set(.058,.135,.063);lock.rotation.set(-.18,0,s*.22);appearance.hair.push(lock);}
+ for(const s of [-1,0,1]){const lock=part(G.bang,hm,s*.10,-.005,s===0?-.175:-.14,hc);lock.scale.set(s===0?.085:.075,.145,.058);lock.rotation.set(.22,-s*.20,-s*.20);appearance.hair.push(lock);}
  g.userData.studentStyle='rpg-profile-v3';
  return {g,rig,P,limbParts,appearance,assembly:model};
 }
