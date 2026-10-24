@@ -11,12 +11,14 @@ import {playerHumanoidProfile,npcHumanoidProfile} from '../../src/actors/humanoi
 import {getActorRigIdentity,TRIAL_IDS} from '../../src/actors/actor-rig-identity.js';
 
 // 先以原本的亂數順序建完真實角色，再執行純工廠測試，避免測試零件改變既有外觀基準。
-const seen=[],legacy=[],forms=[];
+const seen=[],humanoids=[],nonHumanoids=[],forms=[];
 const hook=Symbol.for('nccu100.humanoid-factory-test');
 globalThis[hook]=(id,root)=>{
  const assembly=getHumanoidAssembly(root);
  if(id.startsWith('player#')){assert.ok(assembly);forms.push(id);return;}
- if(!TRIAL_IDS.includes(id)){assert.equal(assembly,undefined,`${id} 不可偷偷遷移`);legacy.push(id);return;}
+ if(id==='biz-tsai'){assert.equal(assembly,undefined,'水豚不可硬套人形');nonHumanoids.push(id);return;}
+ assert.ok(assembly,`${id} 必須走共用人形工廠`);humanoids.push(id);
+ if(!TRIAL_IDS.includes(id))return;
  assert.ok(assembly,`${id} 必須由共用組裝器實際建立`);
  const identity=getActorRigIdentity(root);
  assert.ok(identity);assert.ok(Object.isFrozen(assembly));
@@ -58,11 +60,11 @@ try{
  fs.writeFileSync(path.join(dir,'build.mjs'),relocated);await import(pathToFileURL(path.join(dir,'build.mjs')).href);
 }finally{fs.rmSync(dir,{recursive:true,force:true});delete globalThis[hook];}
 
-test('只有四個正式角色走共用幾何，頭部語意、既有引用及其餘角色路徑不變',()=>{
+test('全人形角色走共用幾何，四代表頭部語意與既有引用不變，水豚保留專用形體',()=>{
  assert.deepEqual(seen.sort(),[...TRIAL_IDS].sort());
  assert.deepEqual(forms,['player#swim','player#eagle']);
- assert.equal(legacy.length,106);
- for(const id of ['old-principal','dean','students-0','bz26-D11','bz26-D24'])assert.ok(legacy.includes(id));
+ assert.equal(humanoids.length,109);assert.deepEqual(nonHumanoids,['biz-tsai']);
+ for(const id of ['old-principal','dean','students-0','bz26-D11','bz26-D24'])assert.ok(humanoids.includes(id));
  assert.equal(fs.existsSync(dir),false);
 });
 

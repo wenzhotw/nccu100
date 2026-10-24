@@ -5,6 +5,17 @@ import * as THREE from 'three';
  * head.center=null 表示中心與旋轉點共用同一節點，並非補造新頸關節。
  */
 const factories={capsule:THREE.CapsuleGeometry,cylinder:THREE.CylinderGeometry,sphere:THREE.SphereGeometry};
+// 有界的不可變幾何池，保留每次 constructor 的亂數消耗與建構順序。
+// 命中後丟棄尚未交給 renderer 的臨時幾何，僅降低常駐資源，不聲稱降低建構 CPU。
+const geometryPool=new Map(),POOL_LIMIT=64;
+let geometryRequests=0,geometryReuses=0;
+export function getHumanoidGeometryStats(){return Object.freeze({requests:geometryRequests,reuses:geometryReuses,entries:geometryPool.size,limit:POOL_LIMIT});}
+function pooledGeometry(kind,args){
+ const fresh=new factories[kind](...args),key=JSON.stringify([kind,...args]);geometryRequests++;
+ if(geometryPool.has(key)){geometryReuses++;return geometryPool.get(key);}
+ if(geometryPool.size<POOL_LIMIT)geometryPool.set(key,fresh);
+ return fresh;
+}
 const assemblies=new WeakMap();
 export function getHumanoidAssembly(root){return assemblies.get(root);}
 function plainCopy(value){
@@ -48,10 +59,10 @@ export function createHumanoid(profile,{parent,part,outlineU,BOX,SPH,afterTorso,
  for(const hook of [afterTorso,afterBottom,afterArms])if(hook!==undefined&&typeof hook!=='function')throw new TypeError('Invalid decoration hook');
  if(parent!==undefined&&!parent?.isObject3D)throw new TypeError('Invalid model parent');
  const root=new THREE.Group(),body=new THREE.Group(),joints={},limbParts={},parts={};root.add(body);
- const context={root,body,joints,limbParts,parts,headCenter:null};
+ const context={root,body,joints,limbParts,parts,headCenter:null,kind:'humanoid'};
  function mesh(spec,where){
   const [kind,...args]=spec.geometry;
-  const geometry=kind==='box-unit'?BOX:kind==='sphere-unit'?SPH:new factories[kind](...args);
+  const geometry=kind==='box-unit'?BOX:kind==='sphere-unit'?SPH:pooledGeometry(kind,args);
   const node=part(geometry,spec.color,...spec.position,where,spec.out??undefined);
   if(spec.scale)node.scale.set(...spec.scale);
   if(spec.outlineScale)outlineU(node,spec.outlineScale);
