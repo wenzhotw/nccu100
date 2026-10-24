@@ -140,9 +140,9 @@ test('source-facing book walls stop the player body and the west corner doorway 
  const m=model();
  for(const id of ['3F','4F','5F','7F']){
   const l=nav.ATRIUM_LEVELS.find(l=>l.label===id),f=nav.PUBLIC_NAV_FLOORS.find(f=>f.id===id),north=Math.min(...f.regions[0].map(p=>p[1]));
-  const z0=north+.9;
+  const z0=north+.9,exit=nav.atriumRearExit(l),west=exit.axis==='z';
   for(let n=0;n<35;n++){
-   const p={x:-13.8,y:l.y,z:z0-n*.05},before={...p};nav.clampAtrium(p);assert.ok(Math.hypot(p.x-before.x,p.z-before.z)<.001,`source west doorway ${id}`);
+   const p=west?{x:exit.x+.9-n*.05,y:l.y,z:exit.z}:{x:-13.8,y:l.y,z:z0-n*.05},before={...p};nav.clampAtrium(p);assert.ok(Math.hypot(p.x-before.x,p.z-before.z)<.001,`source west doorway ${id}`);
    assert.ok(ray(m,p.x,l.y+.2,p.z,0,-1,0,.5).length,`doorway visible floor ${id}`);
   }
  }

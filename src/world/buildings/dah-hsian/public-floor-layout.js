@@ -4,6 +4,7 @@
  * All elevations remain game estimates; these are constructed game stops, not a claim
  * about actual elevator service, surveyed heights, 6F or undocumented mezzanine plans.
  */
+import {ATRIUM_PORTALS} from './atrium-portals.js';
 import {SOURCE_REAR_LAYOUT} from './rear-public-layout.js';
 import {SOURCE_H_STAIRS,H_STAIR_ROUTE,WEST_STAIR_ROUTES,G_STAIR_ROUTE} from './source-stair-layout.js';
 export const ATRIUM_FLOOR_LEVELS=[
@@ -101,7 +102,8 @@ export function publicFloor(id){
   // Same-level public corner joints across wall-line tracing uncertainty. These are
   // local doorway bands, not full generic rear platforms or invented room interiors.
   const north=zones.terrace_outer_edge?.[0]?.[1];
-  if(north!==undefined)regions.push(rectPolygon(-15,-12.8,north-1,north+.65));
+  if(north!==undefined&&id!=='5F')regions.push(rectPolygon(-15,-12.8,north-1,north+.65));
+  for(const portal of ATRIUM_PORTALS.filter(p=>p.floor===id))regions.push(rectPolygon(portal.x-.65,-14,portal.lo,portal.hi));
   const south=zones.south_public_reading||zones.south_corridor_before_rooms;
   if(zones.terrace_outer_edge&&south)regions.push(rectPolygon(-8,12.9,12.7,13.7));
   if(id==='3F')regions.push(rectPolygon(-15.1,-13.5,5.7,8));

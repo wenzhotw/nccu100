@@ -1,6 +1,7 @@
 /** 從2F可見的層退藏書中庭。依館方環景、建築方與2022實拍估算；公共迴廊可沿斜梯到達。 */
 import * as THREE from 'three';
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import {ATRIUM_PORTALS,portalParts} from './atrium-portals.js';
 import {ATRIUM_LEVELS,ATRIUM_STAIRS,ENTRY_STAIR_GUARDS,atriumDesks,atriumColumns} from './atrium-layout.js';
 import {ATRIUM_FLOOR_LEVELS,ENTRY_STAIR_LANDINGS,CORE_STAIR_FLIGHTS,CORE_STAIR_LANDINGS,MAIN_FLOORS,publicFloor,floorSurfacePolygons,floorBoundarySegments,floorContains} from './public-floor-layout.js';
 import {roomFrontAtBoundary} from './public-room-fronts.js';
@@ -33,6 +34,12 @@ export function buildAtrium(parent,mat){
   const dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],len=Math.hypot(dx,dz);
   const guard=box('clear',(e.a[0]+e.b[0])/2,f.y+.575,(e.a[1]+e.b[1])/2,len,1.15,.055,'公共邊界玻璃護欄');guard.rotation.y=-Math.atan2(dz,dx);guard.userData.floorId=f.id;
   const rail=box('metal',(e.a[0]+e.b[0])/2,f.y+1.17,(e.a[1]+e.b[1])/2,len,.055,.065,'公共邊界扶手');rail.rotation.y=guard.rotation.y;
+ }
+ for(const portal of ATRIUM_PORTALS){
+  const level=ATRIUM_LEVELS.find(l=>l.label===portal.floor);
+  for(const [piece,p] of portalParts(portal).entries()){
+   const m=box(p.part==='leaf'?'wall':'metal',p.x,level.y+(p.y??p.h/2),p.z,p.w,p.h,p.d,p.part==='leaf'?'5F西側開啟雙門':'5F西側雙門框');m.userData.sourcePortal=portal.id;m.userData.portalPiece=piece;m.userData.portalPart=p.part==='lintel'?'frame':p.part;
+  }
  }
  buildPublicRooms(root,mat);
  buildRearFurniture(root,mat);
