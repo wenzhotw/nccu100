@@ -35,7 +35,7 @@ export function buildInterior(){
  const displayMat=basic({map:display});
  const materialFor=kind=>kind==='display'?displayMat:materialFactory(kind);
  const model=createInteriorModel(materialFor);scene.add(model);colliders.push(...interiorColliders());
- const carpetArt=new THREE.Mesh(new THREE.PlaneGeometry(7,7),basic({map:glyph,transparent:true,depthWrite:false}));carpetArt.name='自畫藍毯金色圖樣';carpetArt.rotation.x=-Math.PI/2;carpetArt.position.set(-11.5,.026,8);model.add(carpetArt);
+ const carpetArt=new THREE.Mesh(new THREE.PlaneGeometry(7,7),basic({map:glyph,transparent:true,depthWrite:false}));carpetArt.name='自畫藍毯金色圖樣';carpetArt.rotation.x=-Math.PI/2;carpetArt.position.set(-8,.026,6);model.add(carpetArt);
  const gratitude=model.getObjectByName('大廳側面感恩牆');
  sign(gratitude,'國立政治大學',2,2.4,.2,2.8,.35);
  sign(gratitude,'達賢圖書館',2,1.95,.2,3.1,.5);
@@ -48,11 +48,11 @@ export function buildInterior(){
  for(const o of [...RESTROOM_DOORS,UTILITY_DOOR]){const a=o.angle||0;sign(model,o.label,o.x+Math.sin(a)*.1,2.65,o.z+Math.cos(a)*.1,1.35,.32,a,'#35495a');}
  sign(model,'廁所 ←',-14.9,2.8,-17.8,1.5,.35,Math.PI/2,'#35495a');
  sign(model,'預約取書',-5.5,3.1,-1.55,2,.3,-Math.PI/2,'#35495a');
- sign(model,'2F　特藏中心',-.31,2.8,7,4,.5,-Math.PI/2,'#35495a');
- sign(model,'新書・期刊閱覽',-3,3.1,23.7,5,.45,Math.PI,'#35495a');
+ sign(model,'2F　特藏中心',-1.7,2.8,7,4,.5,-Math.PI/2,'#35495a');
+ sign(model,'新書・期刊閱覽',-3,3.1,20.2,5,.45,Math.PI,'#35495a');
  sign(gratitude,'感恩牆',-3.1,1.02,.36,1.8,.28);
  contacts=addDahContactShadows(model,{interior:true});
- for(const z of [-17,-11,-6])sign(model,'作業區',-.32,2.7,z,1.3,.3,-Math.PI/2,null,'#35495a');
+ for(const z of [-17,-11,-6])sign(model,'作業區',-1.73,2.7,z,1.3,.3,-Math.PI/2,null,'#35495a');
  model.userData.dahStaticBatches=batchDahStatic(model);
 }
 export function interiorLight(s){

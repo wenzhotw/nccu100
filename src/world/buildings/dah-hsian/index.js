@@ -2,6 +2,8 @@
 import { defineBuilding } from '../../registry.js';
 import { BOUNDS, SPAWN, walkHeight, keepOnLand, zoneName, isSwimming } from './layout.js';
 import { state } from '../../../core/state.js';
+import {camera} from '../../../core/engine.js';
+import {createDahInteriorCamera} from './interior-camera.js';
 import { late } from '../../../core/late.js';
 import { buildMap, mapLight, updateMap } from './map.js';
 import './preview.css';
@@ -18,7 +20,20 @@ function enterVisual(){
 function exitVisual(){document.body.classList.remove('dah-hsian-mode');if(timeButton)timeButton.hidden=true;}
 
 import {buildInterior,interiorLight,updateInterior} from './interior-map.js';
-import {ROOM_ID,INTERIOR_BOUNDS,OUTDOOR_DOOR,INTERIOR_SPAWN,INTERIOR_EXIT,OUTDOOR_RETURN,interiorZone} from './interior-layout.js';
+import {ROOM_ID,INTERIOR_BOUNDS,INTERIOR_CAMERA,OUTDOOR_DOOR,INTERIOR_SPAWN,INTERIOR_EXIT,OUTDOOR_RETURN,interiorZone} from './interior-layout.js';
+import {DAH_ELEVATOR_STOPS} from './public-floor-layout.js';
+import {mountDahElevator} from './elevator-runtime.js';
+let elevatorRuntime,interiorVisit=0;
+function enterInterior(){
+ const visit=++interiorVisit;enterVisual();updateInterior(state.time,late.pos);
+ Promise.all([import('../../../core/gameplay.js'),import('../../../core/input.js')]).then(([{spots,transition,vel},{resetHeldInput}])=>{
+  if(visit!==interiorVisit||state.room!==ROOM_ID)return;
+  const exit=spots.find(s=>s.id===ROOM_ID+'-exit');if(exit)exit.ok=()=>canUseDahExit(late.pos?.y);
+  elevatorRuntime?.dispose();
+  elevatorRuntime=mountDahElevator({state,pos:late.pos,spots,stops:DAH_ELEVATOR_STOPS,transition,resetInput:resetHeldInput,stopMotion:()=>vel.set(0,0,0)});
+ });
+}
+function exitInterior(){interiorVisit++;elevatorRuntime?.dispose();elevatorRuntime=null;exitVisual();}
 
 export default defineBuilding({
   id: 'dah-hsian',
@@ -39,9 +54,9 @@ export default defineBuilding({
     entrance:OUTDOOR_DOOR,spawn:INTERIOR_SPAWN,exit:INTERIOR_EXIT,
     returnRoom:'dah-hsian',returnTo:OUTDOOR_RETURN,bounds:INTERIOR_BOUNDS,zone:p=>p.y>3.9?'達賢'+ATRIUM_LEVELS.reduce((a,b)=>Math.abs(a.y-p.y)<Math.abs(b.y-p.y)?a:b).label+'・層退書牆':interiorZone(p),
     miniSub:'大廳・挑空展示・閱覽',
-    onEnter(){enterVisual();updateInterior(state.time,late.pos);import('../../../core/gameplay.js').then(({spots})=>{const exit=spots.find(s=>s.id===ROOM_ID+'-exit');if(exit)exit.ok=()=>canUseDahExit(late.pos?.y);});},onExit:exitVisual,
+    onEnter:enterInterior,onExit:exitInterior,
     update(){updateInterior(state.time,late.pos);},
-    camera:{...INTERIOR_BOUNDS,ceil:34,maxDist:6,lookUpHeight:6.5,eyeFloor:1.4,upper:{fromY:3.9,maxDist:3.2,eyeOffset:1.65,aimOffset:.5,lookUpHeight:1.8}},
+    camera:createDahInteriorCamera({state,camera,getFeetY:()=>late.pos?.y??0,getTargetY:()=>(late.pos?.y??0)+.9}),
   }],
 });
 

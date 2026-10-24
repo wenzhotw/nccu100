@@ -22,13 +22,20 @@ try{
  const progress=await page.evaluate(()=>({found:__game.state.found,haveMap:__game.state.haveMap}));
  const modelId=await page.evaluate(()=>__game.rooms['dah-hsian-2f'].scene.getObjectByName('達賢2樓公開空間').uuid);
  const waitTime=async(seconds)=>{const t=await page.evaluate(()=>__game.state.time);await page.waitForFunction(({t,seconds})=>__game.state.time>t+seconds,{t,seconds},{timeout:90000});};
- for(const [x,z]of [[-16,-12],[-14,-16.1],[-20,-16.1],[-14,-16.1],[-6,-13],[-14,-10],[-12.6,-9],[-12.6,-3],[-12,3],[-9,8],[-9,18],[4,20]]){
+ for(const [x,z]of [[-16,-12],[-14,-16.1],[-20,-16.1],[-14,-16.1],[-6,-13],[-14,-10],[-12.6,-9],[-12.6,-3],[-12,3],[-9,8],[-9,18],[-9,19.75],[4,19.75]]){
   await page.evaluate(({x,z})=>{const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);},{x,z});
   await page.keyboard.down('w');
-  try{await page.waitForFunction(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<.6,{x,z},{timeout:90000});}
+  try{await page.waitForFunction(({x,z})=>{
+   const dx=x-__game.pos.x,dz=z-__game.pos.z;__game.state.yaw=Math.atan2(-dx,-dz);
+   if(Math.hypot(dx,dz)>=.12)return false;
+   // Release through the normal input handler in this same animation frame.
+   // Waiting for a slow browser RPC reply otherwise keeps W held past the goal.
+   dispatchEvent(new KeyboardEvent('keyup',{code:'KeyW',key:'w',bubbles:true}));return true;
+  },{x,z},{timeout:90000});}
+  catch(e){throw Error('goal '+JSON.stringify({x,z,p:await page.evaluate(()=>__game.pos.toArray())})+' '+e.message);}
   finally{await page.keyboard.up('w');}
-  await waitTime(.15);
-  assert.ok(await page.evaluate(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<1.3&&Math.abs(__game.pos.y)<.02,{x,z}),'真鍵盤沿公開動線走到 '+x+','+z);
+  await waitTime(.5);
+  assert.ok(await page.evaluate(({x,z})=>Math.hypot(__game.pos.x-x,__game.pos.z-z)<1.3&&Math.abs(__game.pos.y)<.02,{x,z}),'真鍵盤沿公開動線走到 '+x+','+z+' actual '+JSON.stringify(await page.evaluate(()=>({p:__game.pos.toArray(),room:__game.state.room,busy:__game.state.busy}))));
  }
  console.log('PASS 實際鍵盤：兩道門→廁所前廊→感恩牆前→閘門→挑空→窗邊閱覽');
  await page.evaluate(()=>{__game.pos.set(-14,0,8);__game.state.yaw=-Math.PI/2;__game.state.pitch=.12;});
