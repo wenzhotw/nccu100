@@ -7,6 +7,8 @@ import { playerHumanoidProfile } from './humanoid-profiles.js';
 import { deactivateArticulatedArms } from './articulated-arms.js';
 import { deactivateWardrobe, refreshWardrobeForm } from './wardrobe-factory.js';
 import { registerTrialPlayer } from './actor-rig-identity.js';
+import { characterRegistry } from './character-registry.js';
+import { registerPlayerCharacter } from './character-part-sources.js';
 import { state } from '../core/state.js';
 import { scene } from '../core/engine.js';
 import { BOX, OUT, SPH, basic, canvasTex, mk, outline, toon } from '../render/kit.js';
@@ -31,8 +33,8 @@ PACK.push(part(BOX,HC.bag2,0,0.45,-0.28,rig)); PACK[3].scale.set(0.2,0.12,0.04);
 const {root:player,body:rig,joints:H,limbParts,headCenter:hc}=model;
 const shorts=model.parts.bottom,skull=model.parts.skull;
 H.torso=model.parts.torso;
-const HS=[1.05,0.95,1];
-[-1,1].forEach(s=>{ const e=part(SPH,HC.skin,s*0.31,-0.02,0,hc); e.scale.set(0.05,0.07,0.04); outlineU(e,1.2); });
+const HS=[1.05,0.95,1], EARS=[];
+[-1,1].forEach(s=>{ const e=part(SPH,HC.skin,s*0.31,-0.02,0,hc); e.scale.set(0.05,0.07,0.04); outlineU(e,1.2); EARS.push(e); });
 function drawFace(g,closed){
   g.clearRect(0,0,256,256);
   g.save(); g.translate(128,0); g.scale(0.78,1); g.translate(-128,0);
@@ -118,6 +120,7 @@ const swimGear=new THREE.Group(); swimGear.visible=false; hc.add(swimGear);
 const SLEEVES=[limbParts.armL.sleeve,limbParts.armR.sleeve];
 /** 換裝：'swim' 泳衣（打赤膊、藍色泳褲、紅泳帽、蛙鏡），其他值換回一般衣服 */
 function setOutfit(kind){
+  characterRegistry.beginForm('player',player);
   const swim=kind==='swim';
   H.torso.material=toon(swim?HC.skin:HC.shirt);
   SLEEVES.forEach(m=>{ m.material=toon(swim?HC.skin:HC.shirt); });
@@ -127,6 +130,7 @@ function setOutfit(kind){
   swimGear.visible=swim;
   state.outfit=swim?'swim':'normal';
   refreshWardrobeForm(player);
+  characterRegistry.form('player',player);
 }
 state.outfit='normal';
 
@@ -165,6 +169,7 @@ const eagleFeet=[H.hipL,H.hipR].map(hp=>{ const foot=part(new THREE.ConeGeometry
 /** 永久變成雄鷹（校長的任務獎勵）：藏起人類的頭髮、臉、書包，換上雄鷹頭、翅膀、鳥爪 */
 function becomeEagle(){
   if(state.isEagle) return;
+  characterRegistry.beginForm('player',player);
   deactivateWardrobe(player);
   deactivateArticulatedArms(player);
   state.isEagle=true; state.outfit='normal';
@@ -179,8 +184,11 @@ function becomeEagle(){
   limbParts.legL.shoe.visible=false; limbParts.legR.shoe.visible=false;   // 原本的鞋子藏起來
   limbParts.legL.sole.visible=false; limbParts.legR.sole.visible=false;   // 鞋底
   eagleFeet.forEach(m=>{ m.visible=true; });
+  characterRegistry.form('player',player);
 }
 
 registerTrialPlayer(player,rig,H,hc,limbParts,()=>!state.isEagle,{hairTop:HAIR.filter(node=>node!==back),backpack:PACK});
+
+registerPlayerCharacter({model,appearance:{hair:HAIR,body:EARS,top:PACK.slice(0,2),accessory:PACK.slice(2)},form:()=>state.isEagle?'eagle':state.outfit,supported:()=>!state.isEagle&&state.outfit==='normal'});
 
 export { hc as headCenter, limbParts, H, HC, animateHero, becomeEagle, outlineU, part, player, rig, setOutfit, shadowBlob };

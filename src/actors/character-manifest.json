@@ -1,0 +1,807 @@
+[
+  {
+    "id": "player",
+    "label": "主角",
+    "kind": "humanoid",
+    "source": "src/actors/player.js",
+    "late": false
+  },
+  {
+    "id": "principal",
+    "label": "校長．李蔡彥",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "dean",
+    "label": "學務長．蔡炎龍",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "chiang",
+    "label": "外交系．蔣學長",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "koko",
+    "label": "新聞系．蔻蔻學姊",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "fang",
+    "label": "資管系．方同學",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "cop",
+    "label": "駐校警察",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "warn-track",
+    "label": "路過的學長",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "warn-lion",
+    "label": "緊張的學姊",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "pool-counter",
+    "label": "游泳館櫃檯",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "wen",
+    "label": "英文系．溫同學",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "lifeguard",
+    "label": "救生員",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "wenz",
+    "label": "遊戲製作人．Wenz",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "biz-liang",
+    "label": "資管系．梁同學",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "biz-huang",
+    "label": "會計系．黃同學",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "biz-tsai",
+    "label": "國貿系．蔡同學",
+    "kind": "capybara",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-jamal",
+    "label": "Jamal",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-azhe",
+    "label": "阿哲",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-kofi",
+    "label": "Kofi",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-boyu",
+    "label": "柏宇",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-andre",
+    "label": "Andre",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-lin",
+    "label": "小林",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-captain",
+    "label": "政大雄鷹隊長．Marcus",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-daniel",
+    "label": "Daniel",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-yuxiang",
+    "label": "宇翔",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-tunde",
+    "label": "Tunde",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-mei",
+    "label": "小美",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-staff",
+    "label": "場館管理員",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "gym-tall",
+    "label": "量身高的同學",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-0",
+    "label": "校園學生 1",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-1",
+    "label": "校園學生 2",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-2",
+    "label": "校園學生 3",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-3",
+    "label": "校園學生 4",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-4",
+    "label": "校園學生 5",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "students-5",
+    "label": "校園學生 6",
+    "kind": "humanoid",
+    "source": "src/actors/npc.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D01",
+    "label": "走讀小記者",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D02",
+    "label": "檔案庫偵探",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D03",
+    "label": "愛問為什麼的貓頭鷹",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D04",
+    "label": "民調主播",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D05",
+    "label": "街角觀察員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D06",
+    "label": "稅務小管家・阿錢學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D07",
+    "label": "市政服務處・陳情窗口的小編學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D08",
+    "label": "扛腳架的測量組學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D09",
+    "label": "愛算機會成本的經濟系學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D10",
+    "label": "背著田野筆記本的民族系學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D11",
+    "label": "國貿系分工領航員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D12",
+    "label": "金融系數字觀測員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D13",
+    "label": "會計系帳本偵探",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D14",
+    "label": "樣本偵探",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D15",
+    "label": "排隊救火隊長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D16",
+    "label": "需求翻譯員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D17",
+    "label": "現金流記帳員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D18",
+    "label": "風險巡檢員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D19",
+    "label": "新聞系學姐（大學報總編輯）",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D20",
+    "label": "廣告系學長（創意總監）",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D21",
+    "label": "廣電系學長（畢製導演）",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D22",
+    "label": "不分系學姐（大二迷途探險家）",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D23",
+    "label": "英文系戲精學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D24",
+    "label": "阿語系學姐",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D25",
+    "label": "斯語系冷面學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D26",
+    "label": "日文系元氣學妹",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D27",
+    "label": "韓語系學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D28",
+    "label": "土語系學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D29",
+    "label": "歐語系戲劇社學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D30",
+    "label": "東南亞系學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D31",
+    "label": "證據整理員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D32",
+    "label": "應數系學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D33",
+    "label": "心理系學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D34",
+    "label": "協商桌主持人",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D35",
+    "label": "教案拼圖員",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D36",
+    "label": "創國院學姊",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-D37",
+    "label": "資科系學長",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C01",
+    "label": "文學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C02",
+    "label": "社會科學學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C03",
+    "label": "商學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C04",
+    "label": "傳播學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C05",
+    "label": "外國語文學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C06",
+    "label": "法學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C07",
+    "label": "理學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C08",
+    "label": "國際事務學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C09",
+    "label": "教育學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C10",
+    "label": "創新國際學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-C11",
+    "label": "資訊學院關主",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-host",
+    "label": "bz26-host",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-F01",
+    "label": "bz26-F01",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-F02",
+    "label": "bz26-F02",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-F03",
+    "label": "bz26-F03",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "bz26-radio-dj1",
+    "label": "bz26-radio-dj1",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/entry-radio.js",
+    "late": true
+  },
+  {
+    "id": "bz26-radio-dj2",
+    "label": "bz26-radio-dj2",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/entry-radio.js",
+    "late": true
+  },
+  {
+    "id": "bz26-radio-dj3",
+    "label": "bz26-radio-dj3",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/entry-radio.js",
+    "late": true
+  },
+  {
+    "id": "bz26-radio-dj4",
+    "label": "bz26-radio-dj4",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/entry-radio.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pg-P01",
+    "label": "bz26-pg-P01",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pg-P02",
+    "label": "bz26-pg-P02",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pg-P03",
+    "label": "bz26-pg-P03",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pg-P04",
+    "label": "bz26-pg-P04",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pt-NTHU",
+    "label": "bz26-pt-NTHU",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pt-NYCU",
+    "label": "bz26-pt-NYCU",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pt-NCU",
+    "label": "bz26-pt-NCU",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "bz26-pt-TNUA",
+    "label": "bz26-pt-TNUA",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
+    "id": "missionary-a",
+    "label": "missionary-a",
+    "kind": "humanoid",
+    "source": "src/systems/missionaries/index.js",
+    "late": false
+  },
+  {
+    "id": "missionary-b",
+    "label": "missionary-b",
+    "kind": "humanoid",
+    "source": "src/systems/missionaries/index.js",
+    "late": false
+  },
+  {
+    "id": "old-principal",
+    "label": "old-principal",
+    "kind": "humanoid",
+    "source": "src/systems/old-principal/index.js",
+    "late": false
+  },
+  {
+    "id": "fountain-crowd-0",
+    "label": "fountain-crowd-0",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-1",
+    "label": "fountain-crowd-1",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-2",
+    "label": "fountain-crowd-2",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-3",
+    "label": "fountain-crowd-3",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-4",
+    "label": "fountain-crowd-4",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-5",
+    "label": "fountain-crowd-5",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-6",
+    "label": "fountain-crowd-6",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "fountain-crowd-7",
+    "label": "fountain-crowd-7",
+    "kind": "humanoid",
+    "source": "src/systems/fountain-swim/index.js",
+    "late": true
+  },
+  {
+    "id": "bz26-EXAM",
+    "label": "茶香大會考主持人",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/index.js",
+    "late": false
+  },
+  {
+    "id": "library-lion-left",
+    "label": "圖書館左石獅",
+    "kind": "lion",
+    "source": "src/world/buildings/library/index.js",
+    "late": false
+  },
+  {
+    "id": "library-lion-right",
+    "label": "圖書館右石獅",
+    "kind": "lion",
+    "source": "src/world/buildings/library/index.js",
+    "late": false
+  },
+  {
+    "id": "pangolin",
+    "label": "穿山甲小穿",
+    "kind": "pangolin",
+    "source": "src/actors/pangolin.js",
+    "late": false
+  },
+  {
+    "id": "old-principal.horse",
+    "label": "老校長的馬",
+    "kind": "horse",
+    "source": "src/systems/old-principal/index.js",
+    "late": false
+  }
+]

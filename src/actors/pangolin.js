@@ -7,6 +7,7 @@ import { late } from '../core/late.js';
 import { scene } from '../core/engine.js';
 import { OUT, SPH, basic, canvasTex, mk, toon } from '../render/kit.js';
 import { outlineU, player } from './player.js';
+import { registerNativeCharacter } from './character-part-sources.js';
 
 /* ---------- 穿山甲小穿：在四維道上來回散步 ---------- */
 const pang=new THREE.Group();
@@ -62,6 +63,7 @@ const bubble=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(g
 bubble.scale.set(0.5,0.5,1);
 bubble.position.set(0,0.95,0.1);
 pang.add(bubble);
+registerNativeCharacter({id:'pangolin',label:'穿山甲小穿',kind:'pangolin',root:pang,body:pBody,anchors:{head:pHead}});
 const pPath=[[-3,8],[3,0],[3,-16],[-9,-25],[-9,-39],[0,-45],[9,-39],[9,-25],[-3,-14],[-3,-2]];
 let pIdx=1, pWalk=0;
 function updatePangolin(dt){

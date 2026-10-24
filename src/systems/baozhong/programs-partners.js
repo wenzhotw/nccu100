@@ -1,3 +1,4 @@
+import { readyNpcCharacter } from '../../actors/character-part-sources.js';
 // src/systems/baozhong/programs-partners.js（v1.70，Claude，依 Wenzel 2026-10-22 指示）：跨域學程帳篷與友校交流的整合層。
 // 1. 跨域學程帳篷：會場開時出現在噴水池看板與友校交流帳篷之間（大道西側），4 格各站一位學程代表。
 //    每次對話第一句都說明「校內雙主修，不是正式科系，不能考進來；進政大以後才能申請」。
@@ -130,6 +131,7 @@ function createNpcs() {
     const w = P.toWorld(placement, P.BAY_X[i], P.NPC_Z);
     const n = addNPC({ id: `bz26-pg-${p.id}`, title: npcTitle(p), tag: p.short || p.name, home: w, face: placement.rotY, look: p.npc.look, tagCol: '#d1c4e9', dialog: [{ lines: ['……'] }] });
     gate(n, () => onProgram(p), '了解學程');
+    readyNpcCharacter(n);
     programNpcs.push(n);
   });
   for (const at of P.PARTNER_SPOTS) {
@@ -139,6 +141,7 @@ function createNpcs() {
     const n = addNPC({ id: `bz26-pt-${s.id}`, title: `${s.name}・交流大使`, tag: s.name, home: { x: at.x, z: at.z }, face: P.PARTNER_FACE, look, tagCol: '#ffcdd2', dialog: [{ lines: ['……'] }] });
     if (s.tee) mountCollegeTee(n, s.tee, { toon, canvasTex });
     gate(n, () => onPartner(s), '和交流大使聊聊');
+    readyNpcCharacter(n);
     partnerNpcs.push(n);
   }
 }

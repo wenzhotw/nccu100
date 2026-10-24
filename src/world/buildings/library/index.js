@@ -11,9 +11,11 @@ import { tree } from '../../vegetation.js';
 import { mbox } from '../../building-kit.js';
 import { defineBuilding } from '../../registry.js';
 import { asPrefab } from '../../prefabs/index.js';
+import { registerNativeCharacter } from '../../../actors/character-part-sources.js';
 
 // 這棟建築的位置與尺寸（地圖、碰撞、高度判斷都會用到）
 const LBX=-46;
+const lionSources=new WeakMap();
 const LAMP_POLE=new THREE.CylinderGeometry(0.07,0.09,4,8), LAMP_HEAD=new THREE.ConeGeometry(0.42,0.22,12);
 
 /**
@@ -36,7 +38,7 @@ function makeLion(s){
   else { sp(-0.17,0.12,0.42,0.1,0.1,0.11); sp(-0.17,0.24,0.47,0.08,0.08,0.08); }
   // 頸圈和鈴鐺
   const col=mk(new THREE.TorusGeometry(0.2,0.035,6,18),CURL,0,0.8,0.12,{parent:g}); col.rotation.x=Math.PI/2-0.25;
-  sp(0,0.7,0.33,0.065,0.065,0.065,CURL);
+  const bell=sp(0,0.7,0.33,0.065,0.065,0.065,CURL);
   // 頭：大大的，一圈捲毛
   const head=new THREE.Group(); head.position.set(0,1.02,0.2); g.add(head); g.userData.head=head;
   const hp=(x,y,z,sx,sy,sz,mat,out)=>{ const m=mk(SPH,mat||ST,x,y,z,{parent:head,out:out??0.025}); m.scale.set(sx,sy??sx,sz??sx); return m; };
@@ -53,6 +55,7 @@ function makeLion(s){
   [-1,1].forEach(k=>hp(k*0.07,-0.12,0.255,0.025,0.03,0.02,toon('#ffffff'),0));
   // 捲尾巴
   [[0,0.42,-0.48,0.1],[0,0.6,-0.5,0.11],[0.02,0.76,-0.44,0.1]].forEach(([x,y,z,r])=>sp(x,y,z,r,r,r,CURL,0.015));
+  lionSources.set(g,{accessory:[col,bell]});
   return g;
 }
 
@@ -148,6 +151,7 @@ function build() {
     // 獅子會變成看起來不會動；用 noOcc 讓烘焙整棵跳過，就能跟原本一樣用群組本身做動畫。
     const lion=makeLion(s); lion.name=s>0?'石獅-右':'石獅-左'; lion.userData.noOcc=true;
     lion.position.set(x,y0+1.1,z); scene.add(lion); circC(x,z,0.6);
+    registerNativeCharacter({id:s>0?'library-lion-right':'library-lion-left',label:lion.name,kind:'lion',root:lion,sources:lionSources.get(lion),anchors:{head:lion.userData.head}});
     /* 紅磚邊帶與草坪上的細磚步道 */
     flat(1.1,18,brickMat(1,9),LBX+s*11.6,0.03,-85);
     [14.5,17.5].forEach(d=>block(LBX+s*d,0.08,-86,0.7,0.16,16,brickMat(1,8),0.01));

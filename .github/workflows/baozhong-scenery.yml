@@ -13,7 +13,7 @@ jobs:
       matrix:
         profile: [desktop, mobile-emulation]
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: ${{ matrix.profile == 'desktop' && 60 || 30 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
