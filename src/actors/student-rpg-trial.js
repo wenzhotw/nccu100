@@ -5,10 +5,13 @@ const C=Object.freeze({skin:'#ffe1cc',jacket:'#4b8d8c',shirt:'#d7c9b0',pants:'#3
 let geometry;
 const power=(n,e)=>Math.sign(n)*Math.pow(Math.abs(n),e);
 function mapVertices(g,fn){const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,...fn(p.getX(i),p.getY(i),p.getZ(i)));g.computeVertexNormals();return g;}
-function jaw(g,r){return mapVertices(g,(x,y,z)=>{const lower=Math.max(0,-y/r);return [x*(1-.24*lower),y,z*(1-.1*lower)];});}
+function jaw(g,r){return mapVertices(g,(x,y,z)=>{const lower=Math.max(0,-y/r),blend=lower*lower*(3-2*lower);return [x*(1-.28*blend),y*(1-.045*blend),z*(1-.08*blend)];});}
 function shapes(){
  if(geometry)return geometry;
  const torso=mapVertices(new THREE.CapsuleGeometry(.145,.09,6,14),(x,y,z)=>[x*(y>0?1.18:1.02),Math.max(-.12,y),z]);
+ // 一體前臂到手掌，避免腕部兩個描邊球相接；仍獨立於可拆上衣袖。
+ const forearm=mapVertices(new THREE.CapsuleGeometry(.037,.18,6,12),(x,y,z)=>{const palm=Math.max(0,Math.min(1,(-y-.035)/.07));return [x*(1+.10*palm),y,z*(1-.12*palm)];});
+ const waist=mapVertices(new THREE.CylinderGeometry(.13,.135,.10,14,1),(x,y,z)=>[x*(y<0?.94:1),y+(y<0?.018*(1-Math.abs(x)/.135):0),z*.97]);
  const skull=jaw(new THREE.SphereGeometry(.19,28,20),.19);
  const face=jaw(new THREE.SphereGeometry(.1913,32,20,Math.PI/2-.8,1.6,Math.PI*.38,Math.PI*.42),.1913);
  const cap=mapVertices(new THREE.SphereGeometry(.205,16,12,0,Math.PI*2,0,Math.PI*.53),(x,y,z)=>{
@@ -27,30 +30,31 @@ function shapes(){
   const shirtY=.765+y-.72,capY=Math.max(0,Math.abs(shirtY)-.045),wide=shirtY>0?1.18:1.02;
   return [x,y,Math.sqrt(Math.max(0,.145*.145-capY*capY-(x/wide)**2))*.78+.002];
  });
- geometry={torso,skull,face,cap,bang,bag,shoe,sole,inner,
+ geometry={torso,forearm,waist,skull,face,cap,bang,bag,shoe,sole,inner,
   back:new THREE.SphereGeometry(.207,16,12,Math.PI/2+1.05,Math.PI*2-2.1,0,Math.PI*.72),
-  neck:new THREE.CylinderGeometry(.05,.055,.08,12),cuff:new THREE.TorusGeometry(.05,.006,6,18),
-  strap:new THREE.CapsuleGeometry(.012,.20,4,8),hand:new THREE.SphereGeometry(1,12,8)};
+  neck:new THREE.CylinderGeometry(.045,.055,.12,12),cuff:new THREE.TorusGeometry(.05,.006,6,18),
+  strap:new THREE.CapsuleGeometry(.012,.20,4,8)};
  return geometry;
 }
 const spec=(geometry,color,position,scale=null,outlineScale=null)=>({geometry,color,position,scale,outlineScale});
 function profile(){return {kind:'npc',scale:1.1,noOcc:true,
  torso:spec(['capsule',.145,.09,6,14],C.jacket,[0,.72,0],[1,1,.78],1.035),
  bottom:spec(['cylinder',.13,.135,.10,14],C.pants,[0,.565,0],[1,1,.78],1.03),
- arm:{pivot:[.17,.86,0],upper:spec(['capsule',.052,.13,4,12],C.jacket,[0,-.095,0],null,1.06),forearm:spec(['capsule',.039,.12,4,10],C.skin,[0,-.24,0],null,1.09),hand:spec(['sphere',1,12,8],C.skin,[0,-.345,0],[.037,.046,.034],1.09)},
+ arm:{pivot:[.155,.86,0],upper:spec(['capsule',.052,.13,4,12],C.jacket,[0,-.095,0],null,1.06),forearm:spec(['capsule',.037,.18,6,12],C.skin,[0,-.27,0],null,1.085),hand:null},
  leg:{pivot:[.075,.55,0],upper:spec(['capsule',.064,.29,4,12],C.pants,[0,-.22,0],null,1.04),shoe:spec(['sphere',1,12,8],C.shoe,[0,-.46,.04],[.075,.052,.135],1.04),sole:spec(['sphere',1,12,8],C.sole,[0,-.495,.04],[.078,.016,.14],1.035)},
- head:{pivot:[0,1.07,0],center:null,skull:spec(['sphere',.19,28,20],C.skin,[0,0,0],[1.02,1.05,1],1.035)}};
+ head:{pivot:[0,1.10,0],center:null,skull:spec(['sphere',.19,28,20],C.skin,[0,0,0],[1.02,1.05,1],1.035)}};
 }
 function replaceShape(mesh,g){const old=mesh.geometry;mesh.geometry=g;for(const child of mesh.children)if(child.isMesh&&child.geometry===old)child.geometry=g;}
 export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,faceTexture}){
  const G=shapes(),appearance={hair:[],hairTop:[],headwear:[],accessory:[],body:[],top:[],protected:[]};
  const model=createHumanoid(profile(),{parent,part,outlineU,BOX,SPH});
  const {root:g,body:rig,joints:P,headCenter:hc,limbParts}=model;
- replaceShape(model.parts.torso,G.torso);replaceShape(model.parts.skull,G.skull);
- const neck=part(G.neck,C.skin,0,.90,0,rig);appearance.body.push(neck);
+ replaceShape(model.parts.bottom,G.waist);replaceShape(model.parts.torso,G.torso);replaceShape(model.parts.skull,G.skull);
+ hc.scale.setScalar(.83);
+ const neck=part(G.neck,C.skin,0,.945,0,rig);appearance.body.push(neck);
  const inner=part(G.inner,C.shirt,0,.765,0,rig);appearance.top.push(inner);
  for(const side of ['L','R']){
-  replaceShape(limbParts[`arm${side}`].hand,G.hand);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
+  replaceShape(limbParts[`arm${side}`].forearm,G.forearm);replaceShape(limbParts[`leg${side}`].shoe,G.shoe);replaceShape(limbParts[`leg${side}`].sole,G.sole);
   const cuff=part(G.cuff,C.shirt,0,-.19,0,P[`sh${side}`]);cuff.rotation.x=Math.PI/2;appearance.top.push(cuff);
  }
  const pack=part(G.bag,C.bag,0,.735,-.16,rig);pack.scale.set(.23,.29,.11);outlineU(pack,1.045);appearance.accessory.push(pack);
@@ -62,7 +66,7 @@ export function createRpgStudentTrial({parent,part,outlineU,BOX,SPH,toon,basic,f
  const cap=part(G.cap,hm,0,.006,-.005,hc);cap.scale.copy(model.parts.skull.scale);outlineU(cap,1.035);
  const back=part(G.back,hm,0,0,-.008,hc);back.scale.copy(model.parts.skull.scale);appearance.hair.push(cap,back);appearance.hairTop.push(cap);
  // 三片大瀏海而非一頂球帽。共用葉片式球面拓撲，輪廓由大小／角度構成。
- for(const [x,y,z,sx,sy,sz,rx,rz]of [[-.10,.06,.14,.070,.10,.035,-.60,-.25],[-.02,.10,.165,.073,.105,.032,-.65,-.38],[.085,.10,.13,.060,.085,.033,-.60,-.45]]){
+ for(const [x,y,z,sx,sy,sz,rx,rz]of [[-.105,.035,.15,.058,.13,.035,-.45,-.38],[-.025,.10,.165,.080,.13,.032,-.60,-.62],[.095,.11,.13,.052,.09,.033,-.55,-.50]]){
   const lock=part(G.bang,hm,x,y,z,hc);lock.scale.set(sx,sy,sz);lock.rotation.set(rx,0,rz);outlineU(lock,1.03);appearance.hair.push(lock);appearance.hairTop.push(lock);
  }
  for(const s of [-1,1]){const lock=part(G.bang,hm,s*.177,-.035,.025,hc);lock.scale.set(.038,.105,.055);lock.rotation.z=s*.12;appearance.hair.push(lock);}
