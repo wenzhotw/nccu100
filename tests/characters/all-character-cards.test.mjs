@@ -19,10 +19,10 @@ function fixture(id='principal') {const root=new Group(),pivot=new Group(),a=new
 function memory(){const data=new Map();let failure=false,writes=0;return {data,set failure(v){failure=v;},get writes(){return writes;},storage:{getItem:k=>data.get(k)??null,setItem(k,v){if(failure)throw Error('quota');writes++;data.set(k,v);},removeItem(k){if(failure)throw Error('quota');writes++;data.delete(k);}}};}
 function live(registry,descriptor){registry.register(descriptor);return registry.ready(descriptor.id,descriptor.root);}
 
-test('manifest is 115 unique identities including EXAM, six stable anonymous and twenty late NPCs',()=>{
- assert.equal(MANIFEST.length,115);assert.equal(new Set(MANIFEST.map(x=>x.id)).size,115);
+test('manifest is 116 unique identities including EXAM, six stable anonymous and twenty-one late NPCs',()=>{
+ assert.equal(MANIFEST.length,116);assert.equal(new Set(MANIFEST.map(x=>x.id)).size,116);
  for(const id of ['bz26-EXAM','player','library-lion-left','library-lion-right','pangolin','old-principal.horse','biz-tsai'])assert.ok(MANIFEST.some(x=>x.id===id),id);
- assert.equal(MANIFEST.filter(x=>x.id.startsWith('students-')).length,6);assert.equal(MANIFEST.filter(x=>x.late).length,20);
+ assert.equal(MANIFEST.filter(x=>x.id.startsWith('students-')).length,6);assert.equal(MANIFEST.filter(x=>x.late).length,21);
 });
 test('strict actor card schema, UTF-8 limit, mandatory sources and registry generation reject stale operations',()=>{
  const r=createCharacterRegistry(),d=fixture(),entry=live(r,d),card=defaultActorPartsCard(entry),raw=JSON.stringify(card);
@@ -107,5 +107,5 @@ test('true snapshot constructors: every available actor supports real native app
   assert.deepEqual(characterRegistry.list().map(e=>e.id).sort(),MANIFEST.map(e=>e.id).sort());
 
  }finally{fs.rmSync(dir,{recursive:true,force:true});delete globalThis[hook];}
- assert.equal(seen.length,115,'110 corpus roots plus EXAM and four explicit special constructors');assert.equal(new Set(seen).size,115);
+ assert.equal(seen.length,116,'111 corpus roots plus EXAM and four explicit special constructors');assert.equal(new Set(seen).size,116);
 });

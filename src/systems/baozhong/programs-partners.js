@@ -1,9 +1,9 @@
 import { readyNpcCharacter } from '../../actors/character-part-sources.js';
-// src/systems/baozhong/programs-partners.js（v1.70，Claude，依 Wenzel 2026-10-22 指示）：跨域學程帳篷與友校交流的整合層。
-// 1. 跨域學程帳篷：會場開時出現在噴水池看板與友校交流帳篷之間（大道西側），4 格各站一位學程代表。
+// src/systems/baozhong/programs-partners.js（v1.70，Claude，依 Wenzel 2026-10-22 指示；v2.02 依 Wenzel 2026-10-27 指示改版）：跨域學程帳篷與友校交流的整合層。
+// 1. 跨域學程帳篷：會場開時出現在噴水池看板南邊（大道西側），5 格各站一位學程代表（v2.02 加運動學程）。
 //    每次對話第一句都說明「校內雙主修，不是正式科系，不能考進來；進政大以後才能申請」。
 //    初訪玩小遊戲蓋學程章，回訪可挑戰 3 題進階（全對才過）。不算學院勳章、不進大會考、不加茶葉點數。
-// 2. 友校交流：F03 帳篷前一排 4 位交流大使（清華、陽明交大、中央、北藝大），可翻看開放雙主修／輔系的學系清單；
+// 2. 友校交流：v2.02 搬到中文系東邊，兩頂並排（F03、F04），帳篷前一排 4 位交流大使（清華、陽明交大、中央、北藝大），可翻看開放雙主修／輔系的學系清單；
 //    F03 原本的引路人改成主持「友校配對」小遊戲。
 // 不改有鎖檔保護的 index.js、tents.js：同 entry-radio.js，用 0.5 秒計時同步會場狀態，覆寫 F03 引路人的 spot.fn。
 import { scene } from '../../core/engine.js';
@@ -16,11 +16,14 @@ import { openFeedbackRound, openSortRound } from './stage2/stage-ui.js';
 import { stepsFromGame } from './stage2/rounds.js';
 import { AU, FOLIAGE, NPCS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
 import * as P from './programs-logic.js';
+// 四維道旁陽傘桌登記表（v2.02）：deps.js 有鎖檔保護，所以直接從 campus-roads.js 拿。
+import { UMBRELLAS } from '../../world/terrain/campus-roads.js';
 import { buildProgramsTent } from './programs-tent-model.js';
 import { mountCollegeTee } from './college-tee.js';
 import { countTriangles } from './radio-booth-model.js';
 
 const flags = () => state.flags || (state.flags = new Set());
+const PARTNER_LAYOUT = LAYOUT.tents.filter(t => P.PARTNER_TENTS.includes(t.id));
 const isActive = () => flags().has('bz26_active');
 const DEBUG = import.meta.env.DEV || new URLSearchParams(location.search).has('debug');
 const NOTICE = DATA.notice;
@@ -163,7 +166,9 @@ function setVenueActive(on) {
   }
   if (tent) tent.group.visible = on;
   if (on && tent) {
-    hidden = P.foliageUnder(placement, FOLIAGE).filter(f => typeof f.setVisible === 'function').map(f => ({ f, visible: f.isVisible?.() ?? true, collider: f.collider && colliders.includes(f.collider) ? f.collider : null }));
+    // 跨域學程帳篷底下的植栽，加上友校交流兩頂帳篷（F03、F04）底下的樹與陽傘桌，一起暫收。
+    const under = new Set([...P.foliageUnder(placement, FOLIAGE), ...P.underLayoutTents(PARTNER_LAYOUT, [...FOLIAGE, ...UMBRELLAS])]);
+    hidden = [...under].filter(f => typeof f.setVisible === 'function').map(f => ({ f, visible: f.isVisible?.() ?? true, collider: f.collider && colliders.includes(f.collider) ? f.collider : null }));
     for (const h of hidden) { h.f.setVisible(false); if (h.collider) colliders.splice(colliders.indexOf(h.collider), 1); }
   } else if (!on) {
     for (const h of hidden) { h.f.setVisible(h.visible); if (h.collider && !colliders.includes(h.collider)) colliders.push(h.collider); }

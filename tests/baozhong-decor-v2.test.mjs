@@ -34,7 +34,7 @@ const tents = buildTents(LAYOUT, CONTENT.colleges, { content: CONTENT });
 tents.group.updateMatrixWorld(true);
 const warnings = [];
 
-test('40 個佈景檔都在（D01 至 D37、F01 至 F03）', () => { assert.equal(IDS.length, 40); });
+test('41 個佈景檔都在（D01 至 D37、F01 至 F04）', () => { assert.equal(IDS.length, 41); });
 
 for (const id of IDS) {
   test(`${id}：真實帳篷 v2 內建模`, async () => {

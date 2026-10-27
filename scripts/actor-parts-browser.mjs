@@ -39,7 +39,7 @@ try{
   async function close(){await page.keyboard.press('Escape');await page.locator('#actor-parts-panel').waitFor({state:'hidden'});const restored=await page.evaluate(()=>window.__game.state.bzBoothBrowsing);assert.equal(restored,previousLock,'Escape exactly restores the pre-open lock value');assert.equal(Boolean(restored),false,'Escape releases the reading lock');assert.equal(await page.evaluate(()=>document.activeElement.id),'actor-parts-open');}
   try{
    await start();assert.equal(await page.evaluate(()=>window.__game.renderer.getContext().isContextLost()),false,'live WebGL context');
-   await open();assert.equal(await page.locator('#actor-parts-panel').getAttribute('data-actor-parts-known-count'),'115');await layout();
+   await open();assert.equal(await page.locator('#actor-parts-panel').getAttribute('data-actor-parts-known-count'),'116');await layout();
    const beforeOld=await oldStore(),beforeProgress=await progress(),beforePreview=await previewStore();assert.equal(beforeProgress.v,1);assert.deepEqual(await clones(),[]);
    // Capture the actual originals, not only JSON values. Only the newly hidden source nodes are asserted below.
    await page.evaluate(()=>{window.__partsBefore=new Map();window.__game.scene.traverse(n=>window.__partsBefore.set(n.uuid,{node:n,visible:n.visible}));});

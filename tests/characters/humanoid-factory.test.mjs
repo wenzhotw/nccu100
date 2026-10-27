@@ -63,7 +63,7 @@ try{
 test('全人形角色走共用幾何，四代表頭部語意與既有引用不變，水豚保留專用形體',()=>{
  assert.deepEqual(seen.sort(),[...TRIAL_IDS].sort());
  assert.deepEqual(forms,['player#swim','player#eagle']);
- assert.equal(humanoids.length,109);assert.deepEqual(nonHumanoids,['biz-tsai']);
+ assert.equal(humanoids.length,110);assert.deepEqual(nonHumanoids,['biz-tsai']);
  for(const id of ['old-principal','dean','students-0','bz26-D11','bz26-D24'])assert.ok(humanoids.includes(id));
  assert.equal(fs.existsSync(dir),false);
 });

@@ -1,6 +1,6 @@
 {
   "src/systems/baozhong/deps.js": "9a08095c4c8020c1831d91ecebd95ea826c98029201e1b7e3565513a78481b35",
   "src/systems/baozhong/index.js": "085279a1c518e513591d2cfa5d602ec8fcdeb0a86a448bd2ffebbf49b3d08175",
-  "src/systems/baozhong/tents-logic.js": "d5801820324f80b5466f12a10558f2e158e6c50a1ca1502d2efd596ec705bc1c",
+  "src/systems/baozhong/tents-logic.js": "54f446caaeafae429e31c640613e52f94b5c0edc540c49090f911ecef3cb95ae",
   "src/systems/baozhong/tents.js": "0cfed4d8af4723351968f331d8f3b5f509d77b348a81a4cb1bde767ae187e79d"
 }

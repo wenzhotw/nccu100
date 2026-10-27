@@ -32,18 +32,18 @@ test('D26 continuous outside → actual open entrance → interior → talk rang
  // Return along the same continuous path to a talk point, not teleport to NPC.
  const talk=world(t,...route[0]);assert.ok(Math.hypot(talk.x-t.layout.anchor[0],talk.z-t.layout.anchor[1])<=2.4,'Entry path must connect to existing NPC interaction radius');
 });
-test('all 40 layouts: render transforms and resolver preserve physical wall/counter/pillar exclusion',()=>{
- const {api}=setup();assert.equal(api.tents.size,40);const errors=[];
+test('all 41 layouts: render transforms and resolver preserve physical wall/counter/pillar exclusion',()=>{
+ const {api}=setup();assert.equal(api.tents.size,41);const errors=[];
  for(const [id,t] of api.tents){const l=t.layout;const p=world(t,.37,.61);const expected=[l.x+.37*Math.cos(l.rotY)+.61*Math.sin(l.rotY),l.z-.37*Math.sin(l.rotY)+.61*Math.cos(l.rotY)];assert.ok(Math.hypot(p.x-expected[0],p.z-expected[1])<eps,`${id} render transform`);
  for(const [i,b] of solids(t).entries()){const x=(b.min.x+b.max.x)/2,z=(b.min.z+b.max.z)/2;const q=world(t,x,z);resolve(q,R);const local=t.group.worldToLocal(new THREE.Vector3(q.x,q.y,q.z));if(!clears([b],local.x,local.z))errors.push({id,solid:i,local:local.toArray()});}}
  assert.deepEqual(errors,[],'Resolver must eject player from real rotated solid footprint');
 });
-test('all 40 layouts: centred interior free space is not filled by whole-tent collision',()=>{const {api}=setup();const blocked=[];for(const [id,t] of api.tents)if(displacement(t,0,0)>eps)blocked.push(id);assert.deepEqual(blocked,[]);});
+test('all 41 layouts: centred interior free space is not filled by whole-tent collision',()=>{const {api}=setup();const blocked=[];for(const [id,t] of api.tents)if(displacement(t,0,0)>eps)blocked.push(id);assert.deepEqual(blocked,[]);});
 test('exit clears owned colliders, preserves foreign collider; reentry never duplicates',()=>{
  const foreign={x0:150,x1:151,z0:-100,z1:-99};const {api,colliders}=setup();colliders.push(foreign);const first=[...api.colliders];assert.ok(first.length>0);for(let i=0;i<3;i++){api.setActive(false);assert.deepEqual(colliders,[foreign]);assert.equal(displacement(api.tents.get('D26'),0,0),0);api.setActive(true);api.setActive(true);assert.equal(new Set(colliders).size,colliders.length);assert.equal(colliders.length,first.length+1);assert.ok(first.every(c=>colliders.includes(c)));}
  api.setActive(false);setActiveColliders([]);
 });
-test('actual mounted 40 decor: all final poster faces unobscured on 7×7 geometric sightline grid',async()=>{
+test('actual mounted 41 decor: all final poster faces unobscured on 7×7 geometric sightline grid',async()=>{
  const {api}=setup();const files=Object.fromEntries(layout.tents.map(t=>[`./decor/${t.id}.js`,()=>load(`decor/${t.id}.js`)]));
  const deps={THREE,toon:c=>new THREE.MeshBasicMaterial({color:c}),outlineMat:new THREE.MeshBasicMaterial({side:THREE.BackSide}),makeSignTexture:()=>null};
  const loader=createDecorLoader({THREE,files,createCtx:(g,c)=>createDecorCtx(deps,g,c),warn:(...x)=>{throw Error(x.join(' '));}});const problems=[];let checked=0;
@@ -52,7 +52,7 @@ test('actual mounted 40 decor: all final poster faces unobscured on 7×7 geometr
  for(let a=0;a<7;a++)for(let b=0;b<7;b++){const point=new THREE.Vector3(THREE.MathUtils.lerp(box.min.x,box.max.x,(a+.5)/7),THREE.MathUtils.lerp(box.min.y,box.max.y,(b+.5)/7),0).applyMatrix4(p.matrixWorld);const normal=new THREE.Vector3(0,0,1).transformDirection(p.matrixWorld);const origin=point.clone().addScaledVector(normal,2);const ray=new THREE.Raycaster(origin,normal.clone().negate(),0,2-1e-4);const obstacles=ray.intersectObject(entry.root,true).filter(h=>{for(let n=h.object;n;n=n.parent)if(!n.visible)return false;return true;});if(obstacles.length){hits++;samples.push([a,b,Number(obstacles[0].distance.toFixed(4))]);}}
  if(hits)problems.push({id,poster:p.userData.bz26Poster,blockedSamples:hits,totalSamples:49,posterWorld:p.getWorldPosition(new THREE.Vector3()).toArray(),samples});}
  loader.unmountAllDecor();}
- assert.equal(checked,120);fs.writeFileSync(new URL('./poster-sightline-results.json',import.meta.url),JSON.stringify({source:SOURCE,checked,problems},null,2));assert.deepEqual(problems.map(({samples,...p})=>p),[],'Real triangle ray intersections ahead of final poster surfaces, including outlines');
+ assert.equal(checked,123);fs.writeFileSync(new URL('./poster-sightline-results.json',import.meta.url),JSON.stringify({source:SOURCE,checked,problems},null,2));assert.deepEqual(problems.map(({samples,...p})=>p),[],'Real triangle ray intersections ahead of final poster surfaces, including outlines');
 });
 test('D26 front service approach reaches counter without phantom shell or physical penetration',()=>{
  const {api}=setup(),t=api.tents.get('D26'),boxes=solids(t);const errors=[];

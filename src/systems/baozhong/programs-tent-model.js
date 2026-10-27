@@ -11,7 +11,7 @@ const font = (w, s, f = '"Noto Sans TC", sans-serif') => `${w} ${s}px ${f}`;
 
 /**
  * 本地座標：正面朝 +z，長沿 x（TENT.L），深沿 z（TENT.D），地面 y = 0。
- * programs：[{ id, name, short, color, prop }]，依 BAY_X 的順序放進 4 格。
+ * programs：[{ id, name, short, color, prop }]，依 BAY_X 的順序放進各格（v2.02 起 5 格）。
  */
 export function buildProgramsTent({ toon, basic, canvasTex, programs, notice }) {
   const { L, D, H } = TENT;
@@ -86,6 +86,13 @@ export function buildProgramsTent({ toon, basic, canvasTex, programs, notice }) 
       [-0.06, 0.06].forEach(dx => part(G.ball, toon('#00897b', { emissive: '#00897b', emissiveIntensity: 0.5 }), x + dx, y + 0.35, z + 0.105, 0.03, 0.03, 0.01));
       part(G.post, C.dark, x, y + 0.47, z, 0.008, 0.1, 0.008, 0.004);
       part(G.ball, '#ef5350', x, y + 0.53, z, 0.025, 0.025, 0.025, 0.004);
+    } else if (kind === 'ball') {   // 運動學程：小木座上一顆籃球，旁邊一面迷你號碼布
+      box(x, y + 0.03, z, 0.26, 0.06, 0.26, '#a1887f', 0.008);
+      part(G.ball, '#ef6c00', x, y + 0.2, z, 0.12, 0.12, 0.12, 0.012);
+      part(G.ball, C.dark, x, y + 0.2, z, 0.124, 0.01, 0.124, 0);   // 籃球中線
+      part(G.ball, C.dark, x, y + 0.2, z, 0.01, 0.124, 0.124, 0);
+      box(x + 0.27, y + 0.1, z + 0.02, 0.18, 0.16, 0.01, '#ffffff', 0.006).rotation.x = -0.25;
+      box(x + 0.27, y + 0.1, z + 0.026, 0.1, 0.05, 0.004, '#d84315', 0).rotation.x = -0.25;
     }
   }
   return { group, dispose() { group.removeFromParent(); for (const o of owned) o.dispose?.(); } };

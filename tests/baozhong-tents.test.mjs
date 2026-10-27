@@ -42,13 +42,17 @@ function localBox(tentGroup, mesh) {
 }
 const near = (a, b, e = 1e-6) => Math.abs(a - b) < e;
 
-test('layout.json：40 頂（D01 至 D37、F01 至 F03）＋11 位關主＋大會考，座標照 A25', () => {
+test('layout.json：41 頂（D01 至 D37、F01 至 F04）＋11 位關主＋大會考，座標照 A25（v2.02 友校交流搬到中文系東邊、兩頂並排）', () => {
   const ids = LAYOUT.tents.map(t => t.id).sort();
-  const want = [...Array.from({ length: 37 }, (_, i) => `D${String(i + 1).padStart(2, '0')}`), 'F01', 'F02', 'F03'].sort();
+  const want = [...Array.from({ length: 37 }, (_, i) => `D${String(i + 1).padStart(2, '0')}`), 'F01', 'F02', 'F03', 'F04'].sort();
   assert.deepEqual(ids, want);
   const by = Object.fromEntries(LAYOUT.tents.map(t => [t.id, t]));
   assert.deepEqual([by.D01.x, by.D01.z, by.D01.rotY], [-27, -71.96, -0.1781]);
-  assert.deepEqual([by.F03.x, by.F03.z, by.F03.rotY], [-9.5, -46, 1.5708]);
+  assert.deepEqual([by.F03.x, by.F03.z, by.F03.rotY], [-23.46, -71.32, -0.1781]);
+  assert.deepEqual([by.F04.x, by.F04.z, by.F04.rotY, by.F04.partOf], [-20.5, -70.79, -0.1781, 'F03']);
+  // 兩頂沿中文系那一排並排：中心相距 3 公尺（剛好貼齊），和 D01 同一條線。
+  assert.ok(near(Math.hypot(by.F04.x - by.F03.x, by.F04.z - by.F03.z), 3, 0.01));
+  assert.ok(near((by.F03.z - by.D01.z) / (by.F03.x - by.D01.x), 0.18, 0.005) && near((by.F04.z - by.D01.z) / (by.F04.x - by.D01.x), 0.18, 0.005));
   assert.deepEqual(by.D37.anchor, [7.3, -27.5]);
   for (const t of LAYOUT.tents) {   // A25 碰撞框就是中心 ±1.5、高 2.6
     assert.ok(near(t.box[0], t.x - 1.5, 1e-9) && near(t.box[1], t.x + 1.5, 1e-9) && near(t.box[2], t.z - 1.5, 1e-9) && near(t.box[3], t.z + 1.5, 1e-9) && t.box[4] === 2.6, t.id);
@@ -57,18 +61,20 @@ test('layout.json：40 頂（D01 至 D37、F01 至 F03）＋11 位關主＋大�
   assert.deepEqual([LAYOUT.hall.exam.x, LAYOUT.hall.exam.z], [303.5, -20.5]);
 });
 
-test('(a) 帳篷色：紅、白、藍、紅白間隔、色碼；F03 一律白；沒資料時輪流', () => {
+test('(a) 帳篷色：紅、白、藍、紅白間隔、色碼；友校交流 F03、F04 一律白；沒資料時輪流', () => {
   assert.deepEqual(faceColors('D01', 'red'), Array(4).fill('#d32f2f'));
   assert.deepEqual(faceColors('D01', '藍'), Array(4).fill('#1565c0'));
   assert.deepEqual(faceColors('D01', '紅白間隔'), ['#d32f2f', '#f5f5f5', '#d32f2f', '#f5f5f5']);
   assert.deepEqual(faceColors('D01', '#123abc'), Array(4).fill('#123abc'));
   assert.deepEqual(faceColors('F03', 'red'), Array(4).fill('#f5f5f5'));
+  assert.deepEqual(faceColors('F04', 'red'), Array(4).fill('#f5f5f5'));
   assert.deepEqual([0, 1, 2, 3].map(i => faceColors('D02', undefined, i)[0]), ['#d32f2f', '#f5f5f5', '#1565c0', '#d32f2f']);
   assert.equal(faceColors('D02', undefined, 3)[1], '#f5f5f5');
   assert.equal(normTent('purple'), null);
   assert.equal(clothColor('D01', '#800020'), '#800020');
   assert.equal(clothColor('F01', null), '#f5a623');
   assert.equal(clothColor('F03', null), '#c62828');
+  assert.equal(clothColor('F04', null), '#c62828');
 });
 
 test('(c) 主招牌自動移位：(0,3.25,0) 移到 (0,2.22,1.50)，其他牌子不動', () => {
@@ -93,7 +99,7 @@ test('(e) 沒有 baozhong-booths.json 時：中文名取凍結內容、英文留
 
 test('(a)(b)(d) 建模：柱子、四角錐頂、垂邊、官方招牌、桌巾與 3 張海報的位置尺寸', () => {
   const { api } = build();
-  assert.equal(api.tents.size, 40);
+  assert.equal(api.tents.size, 41);
   for (const T of api.tents.values()) {
     const g = T.group, P = T.parts;
     assert.equal(P.frame.filter(m => m.geometry.type === 'CylinderGeometry').length, 4);
@@ -123,6 +129,7 @@ test('(a)(b)(d) 建模：柱子、四角錐頂、垂邊、官方招牌、桌巾�
   assert.equal('#' + d01.parts.counter[0].material.color.getHexString(), '#800020');
   const f03 = api.tents.get('F03');
   for (const r of f03.parts.canopy) assert.equal('#' + r.material.color.getHexString(), '#f5f5f5');
+  for (const r of api.tents.get('F04').parts.canopy) assert.equal('#' + r.material.color.getHexString(), '#f5f5f5');
 });
 
 test('帳篷正面（本地 +z）朝向 A25 的 NPC 錨點，旋轉與位置照 layout', () => {
@@ -140,12 +147,12 @@ test('會場開關：碰撞用物件比對放回與拿掉、不重複、不動�
   const other = colliders[0];
   assert.equal(api.group.visible, false); assert.equal(colliders.length, 1);
   api.setActive(true); api.setActive(true);
-  assert.equal(colliders.length, 321); // GPT repair: 8 physical OBBs per tent, no filled shell.
+  assert.equal(colliders.length, 329); // GPT repair: 8 physical OBBs per tent, no filled shell.
   assert.equal(api.group.visible, true);
   colliders.push({ x0: 5, x1: 6, z0: 5, z1: 6 });
   api.setActive(false);
   assert.equal(colliders.length, 2); assert.equal(colliders[0], other);
-  assert.equal(api.colliders.length, 40 * 8);
+  assert.equal(api.colliders.length, 41 * 8);
   assert.ok(api.colliders.every(c => c.obb && Number.isFinite(c.top)));
   assert.equal(new Set(api.colliders).size, api.colliders.length);
 });

@@ -1,14 +1,17 @@
-// src/systems/baozhong/programs-logic.js（v1.70，Claude，依 Wenzel 2026-10-22 指示）：跨域學程帳篷與友校交流的純邏輯，可在 Node 測。
-// 跨域學程帳篷：大道西側、噴水池看板與友校交流帳篷（F03）之間，一頂約 7.2 × 3.2 公尺、分 4 格的長帳篷，正面朝大道（+x）。
-// 友校：4 位交流大使站在 F03 前面一排；F03 原本的引路人改成主持友校配對小遊戲。
+// src/systems/baozhong/programs-logic.js（v1.70，Claude，依 Wenzel 2026-10-22 指示；v2.02 依 Wenzel 2026-10-27 指示改版）：跨域學程帳篷與友校交流的純邏輯，可在 Node 測。
+// 跨域學程帳篷：大道西側、噴水池看板南邊，一頂約 9 × 3.2 公尺、分 5 格的長帳篷，正面朝大道（+x）。
+//   v2.02 加第 5 格「運動學程」（運動產業與文化學士學位學程，SportX）；友校交流搬走後南邊空出來，帳篷往南加長。
+// 友校交流：v2.02 搬到四維道北側、中文系（D01）東邊，兩頂白帳篷 F03、F04 並排（layout.json），
+//   4 位交流大使和 F03 引路人在兩頂帳篷前面站成一排；壓在帳篷底下的樹和陽傘桌會場開時暫收。
 // 旗標：學程章 bz26_pg_<P0x>、全對 bz26_pgpf_<P0x>、進階 bz26_pgadv_<P0x>；友校小遊戲章 bz26_pt_F03、全對 bz26_ptpf_F03。
 // 這些章不算學院勳章、不進大會考，也不進茶葉點數公式（passport-logic.js 只認既有旗標）。
 
-export const TENT = Object.freeze({ L: 7.2, D: 3.2, H: 2.5, BAYS: 4 });
+export const TENT = Object.freeze({ L: 9.0, D: 3.2, H: 2.5, BAYS: 5 });
 export const ROT_Y = Math.PI / 2;
-// 中心 z 的空間：北邊是噴水池旁活動看板（z 約 −36 到 −35.4），南邊是 F03（z −47.5 起），兩邊各留 0.45 公尺。
+// 中心 z 的空間：北邊是噴水池旁活動看板（z 約 −36 到 −35.4），南邊是政大之聲電台棚（首選 z −49.0 起），兩邊各留 0.45 公尺，
+// 所以 9 公尺長的帳篷中心只能在約 −44.0 到 −40.95 之間；首選靠北，離電台遠一點。
 export const CANDIDATES = Object.freeze([
-  { x: -9.9, z: -40.25 }, { x: -9.3, z: -40.25 }, { x: -10.5, z: -40.25 }, { x: -9.9, z: -40.6 }, { x: -9.9, z: -39.9 },
+  { x: -9.9, z: -41.2 }, { x: -9.3, z: -41.2 }, { x: -10.5, z: -41.2 }, { x: -9.9, z: -41.8 }, { x: -9.9, z: -42.4 },
 ]);
 
 export function tentFootprint({ x, z }) {
@@ -24,8 +27,8 @@ export function toWorld(fp, lx, lz) {
   const c = Math.cos(fp.rotY), s = Math.sin(fp.rotY);
   return { x: +(fp.x + lx * c + lz * s).toFixed(3), z: +(fp.z - lx * s + lz * c).toFixed(3) };
 }
-/** 4 格的中心（本地 x）與學程 NPC 站位（本地 z，站在櫃台後面）。第 1 格最靠噴水池。 */
-export const BAY_X = Object.freeze([-2.7, -0.9, 0.9, 2.7]);
+/** 5 格的中心（本地 x，每格 1.8 公尺）與學程 NPC 站位（本地 z，站在櫃台後面）。第 1 格最靠噴水池。 */
+export const BAY_X = Object.freeze([-3.6, -1.8, 0, 1.8, 3.6]);
 export const NPC_Z = 0.35;
 
 const MARGIN = 0.45;
@@ -68,15 +71,25 @@ export function foliageUnder(fp, foliage, margin = 0.9) {
 export const tentColliders = fp => [{ x0: fp.box.x0, x1: fp.box.x1, z0: fp.box.z0, z1: fp.box.z1, owner: 'bz26-programs' }];
 
 /**
- * 4 位友校交流大使與 F03 引路人：在 F03 正面、大道邊站成一排（間隔 0.85 公尺），引路人站中間。
- * 排在 x −5.6（不是貼著 F03 的 −6.9），是為了讓站在學程第 4 格前的玩家（約 x −7.7, z −43）
- * 不會因為交流大使比較近而對錯人：最近的大使離那裡超過交談半徑 2.4。
+ * 友校交流兩頂帳篷（layout.json 的 F03、F04）沿四維道並排，正面朝四維道（rotY −0.1781，同中文系那一排）。
+ * 4 位交流大使和 F03 引路人在兩頂帳篷正面外 0.5 公尺站成一排，間隔 1.2 公尺，引路人站在兩頂帳篷交界的正前方。
+ * 座標由 D01 中心沿那一排的方向（每公尺 x 增 0.9842、z 增 0.1772）算出；排列與帳篷要一起改。
  */
+export const PARTNER_TENTS = Object.freeze(['F03', 'F04']);
 export const PARTNER_SPOTS = Object.freeze([
-  { id: 'NTHU', x: -5.6, z: -44.3 }, { id: 'NYCU', x: -5.6, z: -45.15 }, { id: 'NCU', x: -5.6, z: -46.85 }, { id: 'TNUA', x: -5.6, z: -47.7 },
+  { id: 'NTHU', x: -24.7, z: -69.51 }, { id: 'NYCU', x: -23.52, z: -69.3 }, { id: 'NCU', x: -21.15, z: -68.88 }, { id: 'TNUA', x: -19.97, z: -68.66 },
 ]);
-export const GUIDE_SPOT = Object.freeze({ x: -5.6, z: -46.0 });
-export const PARTNER_FACE = Math.PI / 2;
+export const GUIDE_SPOT = Object.freeze({ x: -22.33, z: -69.09 });
+export const PARTNER_FACE = -0.1781;
+
+/** layout 帳篷（x, z, rotY，3 × 3 公尺）底下的東西：點在帳篷的旋轉方形內（外擴 margin）。給會場開時暫收樹與陽傘桌用。 */
+export function underLayoutTents(tents, items, margin = 0.9, half = 1.5) {
+  return items.filter(f => Number.isFinite(f.x) && Number.isFinite(f.z) && tents.some(t => {
+    const dx = f.x - t.x, dz = f.z - t.z, c = Math.cos(t.rotY), s = Math.sin(t.rotY);
+    const lx = dx * c - dz * s, lz = dx * s + dz * c;   // 世界轉帳篷本地（rotation.y = rotY 的反轉）
+    return Math.abs(lx) < half + margin && Math.abs(lz) < half + margin;
+  }));
+}
 
 /* ---------- 旗標 ---------- */
 export const pgFlag = id => `bz26_pg_${id}`;

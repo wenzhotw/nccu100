@@ -11,7 +11,8 @@ import {createHumanoid,getHumanoidGeometryStats,getHumanoidAssembly} from '../..
 // Baseline: main 080213a, tree f0916cf (same actor/build blobs as 7780b813).
 // Capture each actual root once: player normal/swim/eagle are three views of ONE root.
 const {createCapybara,getCapybaraAssembly}=await import('../../src/actors/capybara-factory.js');
-const baseline={roots:110,nodes:5929,meshes:4737,geometries:1522,materials:613,textures:246,attributeBytes:19774624};
+// v2.02 加運動學程代表 bz26-pg-P05（Claude，經 wenzhotw 核可）：多 1 個角色根、36 個節點、28 個網格、3 種材質、2 張貼圖；geometries 與 attributeBytes 仍沿用原基線比大小。
+const baseline={roots:111,nodes:5965,meshes:4765,geometries:1522,materials:616,textures:248,attributeBytes:19774624};
 const roots=new Set(),geometries=new Set(),materials=new Set(),textures=new Set();
 const routed=[],exceptions=[],ids=[];let nodes=0,meshes=0;
 const hook=Symbol.for('nccu100.all-npc-resource-audit');
@@ -48,8 +49,8 @@ try{
  await import(pathToFileURL(path.join(dir,'build.mjs')).href);
 }finally{fs.rmSync(dir,{recursive:true,force:true});delete globalThis[hook];}
 
-test('all 108 human NPCs plus player use actual factory, capybara stays explicit exception',()=>{
- assert.equal(ids.length,112);assert.equal(roots.size,110);assert.equal(routed.length,109);
+test('all 109 human NPCs plus player use actual factory, capybara stays explicit exception',()=>{
+ assert.equal(ids.length,113);assert.equal(roots.size,111);assert.equal(routed.length,110);
  assert.equal(routed.filter(id=>id.startsWith('students-')).length,6,'anonymous students also migrate');
  assert.deepEqual(exceptions,['biz-tsai']);
  for(const id of ['principal','dean','old-principal','missionary-a','missionary-b','fountain-crowd-7','bz26-D12','bz26-D23'])assert.ok(routed.includes(id));
