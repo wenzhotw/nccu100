@@ -17,7 +17,8 @@ function layoutEntries(layout, content) {
   const departments = new Map(content.booths.map(b => [b.id, b]));
   const colleges = new Map(content.colleges.map(c => [c.id, c]));
   const functions = new Map((content.functions || []).map(f => [f.id, f]));
-  return layout.tents.map(t => {
+  // partOf：和另一頂並排成一組的帳篷（友校交流 F04 跟著 F03），導覽只列一筆。
+  return layout.tents.filter(t => !t.partOf).map(t => {
     const b = departments.get(t.id), c = colleges.get(b?.college);
     return { id: t.id, x: t.x, z: t.z, anchor: [...t.anchor], segment: t.seg,
       name: b?.dept || (t.id === 'F01' ? content.service.title : functions.get(t.id)?.title) || t.id,

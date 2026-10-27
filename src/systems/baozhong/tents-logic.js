@@ -37,11 +37,11 @@ export function normTent(v) {
 
 /**
  * 四面頂棚與垂邊的顏色 [前(+z), 右(+x), 後(−z), 左(−x)]。
- * tent：booths 資料的 tent；沒有資料時依 index 輪流（紅、白、藍、紅白），F03 一律白色（規格 (a)）。
+ * tent：booths 資料的 tent；沒有資料時依 index 輪流（紅、白、藍、紅白），友校交流兩頂（F03、F04）一律白色（規格 (a)）。
  */
 export function faceColors(id, tent, index = 0) {
   let t = normTent(tent);
-  if (id === 'F03') t = 'white';
+  if (id === 'F03' || id === 'F04') t = 'white';
   if (!t) t = ORDER[((index % 4) + 4) % 4];
   if (HEX.test(t)) return [t, t, t, t];
   if (t === 'redwhite') return [TENT_COLORS.red, TENT_COLORS.white, TENT_COLORS.red, TENT_COLORS.white];
@@ -52,11 +52,11 @@ export function faceColors(id, tent, index = 0) {
 /** 桌巾色：學院色；服務台與醫護站黃色；友校紅色。 */
 export function clothColor(id, collegeColor) {
   if (id === 'F01' || id === 'F02') return SERVICE_CLOTH;
-  if (id === 'F03') return FRIEND_CLOTH;
+  if (id === 'F03' || id === 'F04') return FRIEND_CLOTH;
   return HEX.test(collegeColor || '') ? collegeColor : '#9e9e9e';
 }
 
-const FN_NAME = { F01: '服務台', F02: '醫護站', F03: '友校交流' };
+const FN_NAME = { F01: '服務台', F02: '醫護站', F03: '友校交流', F04: '友校交流' };
 
 /**
  * 合併一攤要畫的資料。booth：baozhong-booths.json 的一筆（可缺）；dept：凍結 baozhong.json 的 booths[]（可缺）。

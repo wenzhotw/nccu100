@@ -114,6 +114,32 @@
         { "q": "雙主修完成後，多拿到哪一種學士學位？", "options": ["資訊學士", "文學士", "法學士"], "answer": 0, "explain": "畢業多拿一個資訊學士。", "source": "bpai-2025" }
       ],
       "sources": ["bpai-2025", "quota-114"]
+    },
+    {
+      "id": "P05", "name": "運動產業與文化學士學位學程", "short": "運動學程", "unit": "校級學位學程", "color": "#d84315",
+      "npc": { "title": "賽會管理學長", "look": { "top": "#d84315", "pants": "#263238", "hair": "#2a2220", "hairStyle": "short" } },
+      "prop": "ball",
+      "intro": [
+        "我們是運動學程，也叫 SportX，是政大第一個校級學位學程，以運動為中心跨領域學習。",
+        "最少 45 學分，其中專業必修 15 學分。",
+        "115 學年雙主修預定錄取 15 名，先書面審查，再擇優面試。"
+      ],
+      "game": {
+        "type": "matching",
+        "title": "運動學程：課名對內容",
+        "intro": ["運動學程的課不只在教室，也會走進政大自己的賽事。", "把課名和它做的事配成一組。"],
+        "pairs": [
+          { "id": "event", "left": "運動賽會管理", "right": "參與籌辦校園馬拉松與校慶運動會", "explain": "運動賽會管理讓學生實際參與政大校園馬拉松和校慶運動會的管理。", "source": "nccu-sportx-111" },
+          { "id": "eagles", "left": "雄鷹專題", "right": "記錄雄鷹籃球隊從無到有", "explain": "雄鷹專題整理政大雄鷹籃球隊一路成立的過程。", "source": "nccu-sportx-111" },
+          { "id": "leader", "left": "領袖講座", "right": "邀業界人士分享經驗", "explain": "領袖講座邀請業界人士來分享。", "source": "nccu-sportx-111" }
+        ]
+      },
+      "advanced": [
+        { "q": "運動學程最少要修幾學分才能取得學位？", "options": ["45 學分", "15 學分", "9 學分"], "answer": 0, "explain": "最低 45 學分；其中 15 學分是專業必修。", "source": "sportx-required-113" },
+        { "q": "申請運動學程雙主修，除了自傳和成績單，還要交哪一份特別的資料？", "options": ["身體實踐構想書", "托福成績單", "高中社團證明"], "answer": 0, "explain": "要交身體實踐構想書，寫目標、執行方式、進度和成果怎麼發表。", "source": "sportx-apply-115" },
+        { "q": "上「運動賽會管理」會實際參與哪些活動？", "options": ["校園馬拉松與校慶運動會", "奧運聖火傳遞", "世界盃足球賽轉播"], "answer": 0, "explain": "課程讓學生參與政大校園馬拉松與校慶運動會的管理。", "source": "nccu-sportx-111" }
+      ],
+      "sources": ["nccu-sportx-111", "sportx-required-113", "sportx-apply-115"]
     }
   ],
   "partners": {
@@ -192,6 +218,9 @@
     "dct-required-115": { "title": "數位內容與科技學士學位學程 115 級必修科目表", "url": "https://dct.nccu.edu.tw/upload/84/doc/24670/115級新生課程必修科目表.pdf", "year": "115" },
     "dct-handbook-110": { "title": "數位內容與科技學士學位學程 110 學年度課程手冊", "url": "https://dct.nccu.edu.tw/upload/84/doc/25116/%E6%94%BF%E6%B2%BB%E5%A4%A7%E5%AD%B8%E6%95%B8%E4%BD%8D%E5%85%A7%E5%AE%B9%E8%88%87%E7%A7%91%E6%8A%80%E5%AD%B8%E5%A3%AB%E5%AD%B8%E7%A8%8B%E8%AA%B2%E7%A8%8B%E6%89%8B%E5%86%8A_110_V1.pdf", "year": "110" },
     "bpai-2025": { "title": "人工智慧應用學位學程 2025 招生說明會簡報", "url": "https://bpai.nccu.edu.tw/upload/80/doc/33231/20250423招說會-AI學程簡介-F.pdf", "year": "114" },
+    "nccu-sportx-111": { "title": "政大新聞：學術 ╳「運動 DNA」 政大運動學程誕生", "url": "https://www.nccu.edu.tw/p/406-1000-14109,r129.php?Lang=zh-tw", "year": "111" },
+    "sportx-required-113": { "title": "運動學程：專業必修科目一覽表（113 級以後，最低 45 學分、專業必修 15 學分）", "url": "https://sportx.nccu.edu.tw/student/information/414", "year": "113" },
+    "sportx-apply-115": { "title": "運動學程（SportX）115 學年度雙主修申請", "url": "https://sportx.nccu.edu.tw/news/taxonomy/422", "year": "115" },
     "ust-double": { "title": "政大教務處：跨校修讀雙主修輔系（台聯大）", "url": "https://aca.nccu.edu.tw/zh/%E5%B0%88%E5%8D%80%E6%A5%AD%E5%8B%99/newbie-2/150-%E8%B7%A8%E6%A0%A1%E4%BF%AE%E8%AE%80%E9%9B%99%E4%B8%BB%E4%BF%AE%E8%BC%94%E7%B3%BB", "year": "115" },
     "ust-fulltime": { "title": "政治大學參與台灣聯合大學系統全時選讀生實施細則", "url": "https://rtv.nccu.edu.tw/upload/22/doc/33278/114-1%20政治大學參與台灣聯合大學系統全時選讀生實施細則.pdf", "year": "114" },
     "ust-join": { "title": "中時：政大加入台灣聯合大學系統", "url": "https://www.chinatimes.com/campus/20211014000006-262307", "year": "110" },

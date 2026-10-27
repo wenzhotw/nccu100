@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { scene } from '../../core/engine.js';
 import { GRAD, canvasTex, flat, mk, toon } from '../../render/kit.js';
-import { circC } from '../../core/collision.js';
+import { circC, colliders } from '../../core/collision.js';
 import { SIWEI, bdZ, swZ } from '../layout.js';
 import { stoneMat } from '../props.js';
 
@@ -38,11 +38,21 @@ roadSeg(0,12,bdZ,4.4,true);
 roadSeg(12,92.5,bdZ,4.4,true);
 for(let x=-4.5;x<=4.6;x+=1) flat(0.5,3.6,'#f4f4ee',x,0.026,bdZ(x));
 { const t=diaTex.clone(); t.repeat.set(4,1); t.needsUpdate=true; flat(34,8,new THREE.MeshToonMaterial({map:t,gradientMap:GRAD}),45,0.017,-62); }
+/**
+ * 四維道旁的陽傘桌。v2.02 起收進具名 Group（userData.noOcc，不參與靜態烘焙），並登記在 UMBRELLAS，
+ * 讓包種茶節會場把壓在帳篷底下的那幾張暫時收起（同 FOLIAGE 的 setVisible／collider 介面），離場再放回來。
+ * 外觀與碰撞和原本相同。
+ */
+const UMBRELLAS=[];
 function umbrella(x,z,col){
-  mk(new THREE.CylinderGeometry(0.04,0.04,2.4,6),toon('#dddddd'),x,1.2,z,{out:0.01});
-  mk(new THREE.ConeGeometry(1.3,0.6,8),toon(col),x,2.55,z,{out:0.03});
-  mk(new THREE.CylinderGeometry(0.5,0.5,0.05,12),toon('#f2f2f2'),x,0.75,z,{out:0.02});
-  mk(new THREE.CylinderGeometry(0.05,0.05,0.75,6),toon('#999999'),x,0.37,z);
-  circC(x,z,0.6);
+  const g=new THREE.Group(); g.name='umbrella-table'; g.userData.noOcc=true; scene.add(g);
+  mk(new THREE.CylinderGeometry(0.04,0.04,2.4,6),toon('#dddddd'),x,1.2,z,{out:0.01,parent:g});
+  mk(new THREE.ConeGeometry(1.3,0.6,8),toon(col),x,2.55,z,{out:0.03,parent:g});
+  mk(new THREE.CylinderGeometry(0.5,0.5,0.05,12),toon('#f2f2f2'),x,0.75,z,{out:0.02,parent:g});
+  mk(new THREE.CylinderGeometry(0.05,0.05,0.75,6),toon('#999999'),x,0.37,z,{parent:g});
+  circC(x,z,0.6); const collider=colliders[colliders.length-1];
+  UMBRELLAS.push({ x, z, collider, setVisible: v => { g.visible = !!v; }, isVisible: () => g.visible });
 }
 [[-19,-66.5],[-23,-70.5],[-27,-66.5],[-31,-70.5],[-35,-66.5]].forEach((p,i)=>umbrella(p[0],p[1],i%2?'#f4f1ea':'#d8433f'));
+
+export { UMBRELLAS };

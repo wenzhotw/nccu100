@@ -142,6 +142,7 @@ try {
   // v1.70 跨域學程帳篷：第一句說明校內雙主修；人工智慧應用的排序小遊戲全對蓋學程章。
   const pg = await page.evaluate(() => { const r = window.__bz26programs; return { conflicts: r.placement.conflicts.length, box: r.placement.box, npcs: r.programNpcs.map(n => ({ id: n.id, x: n.spot.x, z: n.spot.z })) }; });
   assert.equal(pg.conflicts, 0, '跨域學程帳篷位置不能壓到既有物件');
+  assert.deepEqual(pg.npcs.map(n => n.id), ['P01', 'P02', 'P03', 'P04', 'P05'].map(id => `bz26-pg-${id}`), 'v2.02 五格（含運動學程）');
   const p04 = pg.npcs.find(n => n.id === 'bz26-pg-P04');
   await page.evaluate(([x, z]) => { window.__game.teleport(x + 0.6, z); window.__game.state.yaw = Math.PI / 2; }, [pg.box.x1, p04.z]);
   await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.programNpcs[3].spot);
@@ -156,8 +157,10 @@ try {
   await page.getByRole('button', { name: '完成', exact: true }).click();
   await page.waitForFunction(() => window.__bz26.flags().has('bz26_pg_P04') && window.__bz26.flags().has('bz26_pgpf_P04'));
   await finishDialog();
-  // 友校：清華交流大使翻開學系清單；F03 引路人主持友校配對。
-  await page.evaluate(() => { window.__game.teleport(-4.6, -44.3); window.__game.state.yaw = Math.PI / 2; });
+  // 友校（v2.02 搬到中文系東邊，F03、F04 並排）：清華交流大使翻開學系清單；F03 引路人主持友校配對。
+  // 站在交流大使正前方 1 公尺、面向他（帳篷正面朝向 rotY −0.1781）。
+  const facePartner = s => { const th = -0.1781; window.__game.teleport(s.x + Math.sin(th), s.z + Math.cos(th)); window.__game.state.yaw = th; };
+  await page.evaluate(`(${facePartner})(window.__bz26programs.partnerNpcs[0].spot)`);
   await page.waitForFunction(() => window.__game.state.near === window.__bz26programs.partnerNpcs[0].spot);
   await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
   await finishDialog();
@@ -165,7 +168,7 @@ try {
   await page.locator('#dlg').waitFor({ state: 'visible' });
   await page.waitForFunction(() => document.getElementById('dlg').innerText.includes('清華大學 115 學年'));
   await finishDialog();
-  await page.evaluate(() => { window.__game.teleport(-4.6, -46.0); window.__game.state.yaw = Math.PI / 2; });
+  await page.evaluate(`(${facePartner})(window.__game.spots.find(s => s.label === '友校配對'))`);
   await page.waitForFunction(() => window.__game.state.near?.label === '友校配對');
   await page.keyboard.press('e'); await page.locator('#dlg').waitFor({ state: 'visible' });
   await finishDialog();
