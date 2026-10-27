@@ -61,7 +61,7 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.host.bubble), '你想要來包種茶節嗎？我帶你去吧。');
   await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().active && window.__bz26.counts().decorRoots === 4 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const active = await page.evaluate(() => window.__bz26.counts());
   assert.equal(active.passportButtons, 1);
   const hiddenTreeColliders = await page.evaluate(() => window.__bz26.venueFocus.counts().treeColliders);
@@ -201,12 +201,12 @@ try {
   assert.equal(await page.evaluate(() => window.__bz26.flags().has('bz26_st_D26')), true);
   await approach('host'); await finishDialog();
   await page.getByRole('button', { name: '好，我要參加', exact: true }).click();
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26radio?.active && window.__bz26programs?.active && window.__bz26.counts().decorRoots === 4 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   const reentered = await page.evaluate(() => window.__bz26.counts());
   assert.equal(await archColliderCount(), 2, '重入不重複拱門碰撞');
   assert.equal(await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-radio').length), 2, '重入不重複電台棚碰撞');
   assert.equal(await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-programs').length), 1, '重入不重複跨域學程帳篷碰撞');
-  assert.deepEqual(await page.evaluate(() => [window.__bz26programs.programNpcs.length, window.__bz26programs.partnerNpcs.length, window.__game.spots.filter(s => s.label === '了解學程' || s.label === '和交流大使聊聊').length]), [4, 4, 8], '重入不重複建學程代表與交流大使');
+  assert.deepEqual(await page.evaluate(() => [window.__bz26programs.programNpcs.length, window.__bz26programs.partnerNpcs.length, window.__game.spots.filter(s => s.label === '了解學程' || s.label === '和交流大使聊聊').length]), [5, 4, 9], '重入不重複建學程代表與交流大使');
   assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '重入沿用單一拱門模型');
   assert.deepEqual(reentered, active, '重入不能重複建立 NPC、帳篷、碰撞與護照');
   await page.waitForFunction(() => {
@@ -216,7 +216,7 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__bz26?.counts().active && window.__bz26.flags().has('bz26_st_D26'));
   await page.click('#go');
-  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().decorRoots === 3 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
+  await page.waitForFunction(() => window.__bz26arch.arch.active && window.__bz26.counts().decorRoots === 4 && [...window.__bz26.tents.tents.values()].filter(t => t.parts.smallProp?.length).length === 37);
   assert.equal(await page.locator('#bz-passport-button').count(), 1);
   assert.equal(await archColliderCount(), 2, '讀檔仍恰有兩根拱門柱碰撞');
   assert.equal(await page.evaluate(() => window.__bz26arch.arch.builds), 1, '讀檔只建立一座拱門');
