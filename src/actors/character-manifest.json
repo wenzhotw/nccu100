@@ -665,6 +665,13 @@
     "late": true
   },
   {
+    "id": "bz26-pg-P05",
+    "label": "bz26-pg-P05",
+    "kind": "humanoid",
+    "source": "src/systems/baozhong/programs-partners.js",
+    "late": true
+  },
+  {
     "id": "bz26-pt-NTHU",
     "label": "bz26-pt-NTHU",
     "kind": "humanoid",

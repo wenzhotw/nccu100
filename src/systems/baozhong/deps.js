@@ -16,4 +16,3 @@ export { mountDecor, updateDecor, unmountAllDecor } from './decor-loader.js';
 export { player, shadowBlob } from '../../actors/player.js';
 
 export { FOLIAGE } from '../../world/vegetation.js';
-export { UMBRELLAS } from '../../world/terrain/campus-roads.js';

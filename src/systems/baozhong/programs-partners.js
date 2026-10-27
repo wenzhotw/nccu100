@@ -14,8 +14,10 @@ import { addPassportViewDecorator, refreshPassport } from './passport-ui.js';
 import { openMatching } from './matching.js';
 import { openFeedbackRound, openSortRound } from './stage2/stage-ui.js';
 import { stepsFromGame } from './stage2/rounds.js';
-import { AU, FOLIAGE, NPCS, UMBRELLAS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
+import { AU, FOLIAGE, NPCS, addNPC, colliders, groundH, openChoice, openDialog, setFlag, spots, state, toast } from './deps.js';
 import * as P from './programs-logic.js';
+// 四維道旁陽傘桌登記表（v2.02）：deps.js 有鎖檔保護，所以直接從 campus-roads.js 拿。
+import { UMBRELLAS } from '../../world/terrain/campus-roads.js';
 import { buildProgramsTent } from './programs-tent-model.js';
 import { mountCollegeTee } from './college-tee.js';
 import { countTriangles } from './radio-booth-model.js';
