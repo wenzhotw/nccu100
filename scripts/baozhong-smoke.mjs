@@ -74,7 +74,7 @@ try {
   const programsColliders = await page.evaluate(() => window.__game.colliders.filter(c => c.owner === 'bz26-programs').length);
   assert.equal(programsColliders, 1, '跨域學程帳篷只有一個碰撞');
   const programsHidden = await page.evaluate(() => window.__bz26programs.hiddenTreeColliders);
-  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders + programsHidden - archColliders - radioColliders - programsColliders, 323, '保留原帳篷320＋鳥居2＋活動看板1基線，另計拱門兩柱、電台棚兩個與跨域學程帳篷一個碰撞，扣除活動暫收植栽（含學程帳篷底下）');
+  assert.equal(active.colliders - initial.colliders + hiddenTreeColliders + programsHidden - archColliders - radioColliders - programsColliders, 331, '保留原帳篷328（v2.02 起 41 頂，含友校 F04）＋鳥居2＋活動看板1基線，另計拱門兩柱、電台棚兩個與跨域學程帳篷一個碰撞，扣除活動暫收植栽與陽傘桌（含學程與友校帳篷底下）');
   assert.equal(await page.evaluate(() => window.__bz26.activitySign.group.visible && window.__game.spots.includes(window.__bz26.activitySign.spot)), true);
   await approach('bz26-D26');
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });

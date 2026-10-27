@@ -18,7 +18,7 @@ const world = (t, x, z, y = 0) => ({ x: t.x + x * Math.cos(t.rotY) + z * Math.si
 
 test('D26 opt-in removes three curtains only, keeps four canopy posts, roof, counter and official name', () => {
   const old = build(false).api, api = build().api;
-  assert.equal(api.tents.size, 40);
+  assert.equal(api.tents.size, 41);
   for (const [id, tent] of api.tents) {
     const original = old.tents.get(id);
     assert.deepEqual(tent.info, original.info);
@@ -32,7 +32,7 @@ test('D26 opt-in removes three curtains only, keeps four canopy posts, roof, cou
   }
   assert.equal(api.tents.get('D26').info.zh, '日本語文學系');
   assert.equal(old.tents.get('D26').parts.landmark, undefined);
-  assert.equal(api.colliders.length, 39 * 8 + 7);
+  assert.equal(api.colliders.length, 40 * 8 + 7);
 });
 
 test('D26 ground torii has two full-height posts and clear sign/counter envelope', () => {
