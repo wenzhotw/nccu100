@@ -1,7 +1,7 @@
 // 驗證三層地形的座標查詢與分區空隙備援，供後續階梯和坡道共用。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { pointInPoly, regionAt, heightAt } from '../terrain.js';
+import { pointInPoly, regionAt, heightAt, landscapeAt } from '../terrain.js';
 import { R } from '../layout.js';
 
 test('三個地標回傳核可的平台高度', () => {
@@ -43,7 +43,9 @@ test('地圖內每兩公尺取樣都回傳有限高度，階梯與坡道外維�
       const along = ((x - ax) * dx + (z - az) * dz) / l;
       return along >= 0 && along <= l && Math.abs((x - ax) * dz - (z - az) * dx) / l < 5;
     });
-    if (!inPassage(x, z) && !inLandscape && !nearJiu) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
+    // 2026-10-28：五六七八舍山丘西、北、南側是手工塑形的山坡（hillside.js），高度連續變化。
+    const hill = landscapeAt(x, z)?.kind === 'hillside';
+    if (!inPassage(x, z) && !inLandscape && !nearJiu && !hill) assert.ok([0, 12, 15].includes(height), `平台（${x}，${z}）`);
   };
   for (let x = R.x0; x <= R.x1; x += 2) {
     for (let z = R.z0; z <= R.z1; z += 2) {
@@ -68,8 +70,9 @@ test('分區空隙採用最近多邊形邊的層高', () => {
 });
 
 test('共用邊與頂點仍有有限的平台高度', () => {
+  // 2026-10-28：（-84.1，-21.8）改在山坡坡腳線上，高度是 3.2 公尺擋土牆頂（照片 9131、9132）。
   for (const [x, z] of [[55.5, -6], [52, -10.9], [-84.1, -21.8], [53.75, -8.45]]) {
-    assert.ok([0, 12, 15].includes(heightAt(x, z)), `交界（${x}，${z}）`);
+    assert.ok([0, 3.2, 12, 15].includes(heightAt(x, z)), `交界（${x}，${z}）`);
   }
 });
 

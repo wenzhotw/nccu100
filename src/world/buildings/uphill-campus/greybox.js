@@ -8,6 +8,8 @@ import { addLobbyExterior } from './lobby-exterior.js';
 import { addCourtyard, courtyardColliders, dTowerGeometries } from './courtyard.js';
 import {createLobby,lobbyColliders} from './lobby.js';
 import { zq10Colliders, deckGeometry } from './zq10-model.js';
+import { HILL_ZONE, HILL_SIDE } from './hillside.js';
+import { hillsideGeometry, hillColliders, stairBoxes } from './hillside-model.js';
 
 const CELL = 0.25;
 /** 每兩根木樁之間兩條橫木，跨懸崖時留空。 */
@@ -44,6 +46,7 @@ SIDES.setAttribute('position', new THREE.Float32BufferAttribute(sideVertices, 3)
 SIDES.computeVertexNormals();
 boxFaces.dispose();
 const grass = new THREE.MeshToonMaterial({ color: '#8fca6c' });
+const groundMaterial = new THREE.MeshToonMaterial({ vertexColors: true });
 const concrete = new THREE.MeshToonMaterial({ color: '#c9b98f' });
 const buildingMaterial = new THREE.MeshToonMaterial({ color: '#d8d4cc' });
 const wallMaterial = new THREE.MeshToonMaterial({ color: '#a9a49a' });
@@ -66,6 +69,8 @@ function addRoads(group) {
       const t = Math.max(0, Math.min(1, ((cx - ax) * dx + (cz - az) * dz) / squared));
       if ((cx - ax - t * dx) ** 2 + (cz - az - t * dz) ** 2 > 9) continue;
       if (RAMPS.some(ramp => projectToPath(cx, cz, ramp.path).distance <= (ramp.width / 2) ** 2)) continue;
+      // 山坡上的道路由 hillside-model.js 沿坡度鋪成整條路面。
+      if (landscapeAt(cx, cz)?.kind === 'hillside') continue;
       const key = `${x},${z}`;
       if (cells.has(key)) continue;
       const h = heightAt(cx, cz);
@@ -88,7 +93,8 @@ function addRoads(group) {
   }
   // 核可柏油路中線保留完整水平窄帶，補足階梯與坡道挖槽邊緣的小格。
   for (const road of LAYOUT.roads.filter(r => [510739837,1313447898,1313447899].includes(r.osm))) {
-    const points = road.osm === 1313447899 ? road.pts.slice(-2) : road.pts;
+    // 五六舍之間往西從 x = -47 開始下坡，水平窄帶只鋪到坡頂。
+    const points = road.osm === 1313447899 ? road.pts.slice(-2) : road.osm === 510739837 ? [road.pts[0], [-47, -8]] : road.pts;
     for (let i = 1; i < points.length; i++) {
       const a = points[i - 1], b = points[i], dx = b[0] - a[0], dz = b[1] - a[1];
       geometries.push(TOP.clone().scale(Math.hypot(dx, dz), 1, 1.6)
@@ -250,14 +256,20 @@ function addBuildingsAndWalls(group) {
     const theta = -Math.atan2(b[1] - a[1], b[0] - a[0]);
     const along = p => ((p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1])) / length;
     const bottom = segments.flatMap(s => [[along(s.a), s.low], [along(s.b), s.low]]);
-    const top = segments.flatMap(s => [[along(s.a), s.high + 1.1], [along(s.b), s.high + 1.1]]).reverse();
-    const shape = new THREE.Shape([...bottom, ...top].map(([x, y]) => new THREE.Vector2(x, y)));
+    const top = segments.flatMap(s => [[along(s.a), s.high + (s.cap ?? 1.1)], [along(s.b), s.high + (s.cap ?? 1.1)]]).reverse();
+    // 相鄰取樣段共用端點；重複與共線的輪廓點去掉，外形不變、三角形較少。
+    const outline = [...bottom, ...top].filter((p, i, all) => {
+      const prev = all[(i + all.length - 1) % all.length], next = all[(i + 1) % all.length];
+      if (Math.hypot(p[0] - prev[0], p[1] - prev[1]) < 1e-6) return false;
+      return Math.abs((p[0] - prev[0]) * (next[1] - p[1]) - (p[1] - prev[1]) * (next[0] - p[0])) > 1e-6;
+    });
+    const shape = new THREE.Shape(outline.map(([x, y]) => new THREE.Vector2(x, y)));
     const g = new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false, steps: 1 });
     g.translate(0, 0, -0.25).rotateY(theta).translate(a[0], 0, a[1]);
     walls.push(g);
     g.computeBoundingBox();
     const center = g.boundingBox.getCenter(new THREE.Vector3());
-    const low = Math.min(...segments.map(s => s.low)), high = Math.max(...segments.map(s => s.high)) + 1.1;
+    const low = Math.min(...segments.map(s => s.low)), high = Math.max(...segments.map(s => s.high + (s.cap ?? 1.1)));
     // 整串只有一份背面描邊，避免畫出每個取樣段的接縫。
     wallEdges.push(g.clone().translate(-center.x, -center.y, -center.z).rotateY(-theta)
       .scale(1 + 0.06 / length, 1 + 0.06 / (high - low), 1.12)
@@ -268,7 +280,8 @@ function addBuildingsAndWalls(group) {
 }
 
 /** 只在通路包圍框附近作精確投影，其餘直接取平台，避免整圖重算階梯。 */
-const passages = [...STAIRS.map(p => ({ ...p, kind: p.id === 'jiu-plaza' ? 'jiu-stairs' : 'stairs' })),
+// 好漢坡兩條支線改由 hillside-model.js 的整塊踏板建模（kind 'hill-stairs' 不再用小格實例）。
+const passages = [...STAIRS.map(p => ({ ...p, kind: p.id === 'jiu-plaza' ? 'jiu-stairs' : HILL_SIDE[p.id] ? 'hill-stairs' : 'stairs' })),
   ...RAMPS.map(p => ({ ...p, kind: 'ramp' }))].map(p => ({ ...p,
   x0: Math.min(...p.path.map(v => v[0])) - p.width / 2,
   x1: Math.max(...p.path.map(v => v[0])) + p.width / 2,
@@ -282,13 +295,20 @@ function surfaceAt(x, z) {
     for (let i = 1; i < p.path.length; i++) {
       const [ax, az] = p.path[i - 1], [bx, bz] = p.path[i];
       const dx = bx - ax, dz = bz - az;
-      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz)));
+      const raw = ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), t = Math.max(0, Math.min(1, raw));
+      // 好漢坡整塊踏板從起點開始、到終點為止，兩端外的半圓由一般地面負責。
+      if (p.kind === 'hill-stairs' && ((i === 1 && raw < 0) || (i === p.path.length - 1 && raw > 1))) continue;
       if (Math.hypot(x - ax - dx * t, z - az - dz * t) <= p.width / 2) {
+        // 好漢坡頂落在柏油路面上的部分由山坡路面蓋住，不另外畫台階。
+        if (p.id === 'haohanpo' && landscapeAt(x, z)?.road && Math.abs(heightAt(x, z) - landscapeAt(x, z).h) < 1e-9) return { kind: 'hillside', h: 0 };
         return { kind: p.kind, h: heightAt(x, z) };
       }
     }
   }
-  return landscapeAt(x, z) ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
+  const land = landscapeAt(x, z);
+  // 山坡另由 1 公尺網格建模；這裡只標記範圍，讓整片併成大長條。
+  if (land?.kind === 'hillside') return { kind: 'hillside', h: 0 };
+  return land ?? { kind: 'platform', h: LEVELS[platformLevel(x, z)] };
 }
 
 /** 等高網格先合併成水平長條，再合併上下相同長條，通路自動挖槽。 */
@@ -309,7 +329,7 @@ function surfaceRects() {
     const cuts = new Set([R.x0, R.x1]), cz = z + CELL / 2;
     const cut = x => cuts.add(Math.max(R.x0, Math.min(R.x1,
       R.x0 + Math.ceil((x - R.x0) / CELL - 0.5) * CELL)));
-    for (const region of [...REGIONS, ...FILL_REGIONS]) region.poly.forEach(([ax, az], i) => {
+    for (const region of [...REGIONS, ...FILL_REGIONS, { poly: HILL_ZONE }]) region.poly.forEach(([ax, az], i) => {
       const [bx, bz] = region.poly[(i + 1) % region.poly.length];
       if ((az > cz) !== (bz > cz)) cut(ax + (bx - ax) * (cz - az) / (bz - az));
     });
@@ -354,13 +374,25 @@ export function createGreybox() {
     }
   }
   addMerged(group, '平台側面', sides, concrete);
+  const hill = hillsideGeometry();
+  tops.push(...hill.grass);
+  // 平台草地與山坡（含擋土牆上方的灰色噴漿坡面）共用一份有頂點顏色的網格。
+  const grassTint = new THREE.Color(grass.color);
+  for (const g of tops) if (!g.attributes.color) {
+    g.setAttribute('color', new THREE.Float32BufferAttribute(Array.from({ length: g.attributes.position.count }, () => [grassTint.r, grassTint.g, grassTint.b]).flat(), 3));
+  }
   const platformGeometry = mergeBufferGeometries(tops);
   tops.forEach(g => g.dispose());
-  const platform = new THREE.Mesh(platformGeometry, grass);
+  const platform = new THREE.Mesh(platformGeometry, groundMaterial);
   platform.name = '平台'; platform.userData.surface = true; group.add(platform);
   {
-    const parts = rects.filter(r => r.kind === 'stairs');
-    const inst = new THREE.InstancedMesh(BOX, concrete, parts.length), o = new THREE.Object3D();
+    const parts = rects.filter(r => r.kind === 'stairs'), steps = stairBoxes();
+    const inst = new THREE.InstancedMesh(BOX, concrete, parts.length + steps.length), o = new THREE.Object3D();
+    steps.forEach((b, i) => {
+      o.position.set(b.x, b.y, b.z); o.rotation.set(0, b.rot, 0); o.scale.set(b.length, b.height, b.width);
+      o.updateMatrix(); inst.setMatrixAt(parts.length + i, o.matrix);
+    });
+    o.rotation.set(0, 0, 0);
     parts.forEach((r, i) => {
       const depth = 0.3;
       o.position.set((r.x0 + r.x1) / 2, r.h - depth / 2, (r.z0 + r.z1) / 2);
@@ -383,7 +415,7 @@ export function createGreybox() {
     geometry.computeVertexNormals();
     return geometry;
   });
-  addMerged(group, '坡道斜面', slopes, roadMaterial).userData.surface = true;
+  addMerged(group, '坡道斜面', [...slopes, ...hill.roads], roadMaterial).userData.surface = true;
   addBuildingsAndWalls(group);
   addRoads(group);
   addLobbyExterior(group, { addMerged, BOX, buildingMaterial, edgeMaterial });
@@ -415,7 +447,7 @@ export function greyboxColliders() {
       hx: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, hz: 0.25,
       th, cs: Math.cos(th), sn: Math.sin(th) };
   });
-  return [...walls, ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...zq10Colliders(), ...shanjuColliders(), ...buildings().map(withoutShanju).flatMap(b => {
+  return [...walls, ...hillColliders(), ...rampDetailColliders(), ...courtyardColliders(), ...lobbyColliders(), ...zq10Colliders(), ...shanjuColliders(), ...buildings().map(withoutShanju).flatMap(b => {
     // 架空層可以走，改由 zq10Colliders 的柱子與邊沿擋人；部分架空只留切線西側實心段。
     const lift = ZQ10.lifted.find(l => l.building === b.osm);
     if (lift && lift.fromX === undefined) return [];

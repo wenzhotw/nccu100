@@ -102,7 +102,9 @@ test('平台挖槽後，射線地表高度符合平台、階梯與坡道查詢',
     // 樓梯旁草坡是平滑曲面，以 0.5 公尺格線性內插，最多差約 0.1 公尺。
     // 草坡格與平台交界的那一格會略為跨出地景範圍，半公尺內也比照曲面容差。
     const bank = [[0,0],[0.5,0],[-0.5,0],[0,0.5],[0,-0.5]].some(([dx,dz]) => ['bank', 'grass-slope'].includes(landscapeAt(x + dx, z + dz)?.kind));
-    const tolerance = stair ? 0.31 : bank ? 0.1 : ramp ? 0.06 : 0.01;
+    // 2026-10-28 山坡（hillside.js）以 2 公尺網格建模，查詢用同一份網格雙線性內插；格內對角切成三角形最多差約 0.15 公尺。
+    const hill = landscapeAt(x, z)?.kind === 'hillside';
+    const tolerance = stair ? 0.31 : hill ? 0.15 : bank ? 0.1 : ramp ? 0.06 : 0.01;
     assert(Math.abs((hits[0].point.y - (hits[0].object.userData.surfaceOffset ?? 0)) - heightAt(x, z)) <= tolerance,
       `地表不合：${x},${z}，模型 ${hits[0].point.y}，高度 ${heightAt(x, z)}`);
     samples++;
@@ -156,11 +158,11 @@ test('道路只鋪在圖內，頂面貼合地形且不產生垂直路面', async
     const center = vertices.reduce((sum, v) => sum.add(v), new THREE.Vector3()).divideScalar(3);
     assert(Math.abs(center.y - heightAt(center.x, center.z) - 0.03) < 0.051, `道路懸空：${center.toArray()}`);
   }
-  // 這段核可道路在 L2，距中線 2.5 m 仍有路面，3.6 m 已在路外。
-  const ray = new THREE.Raycaster();
+  // 這段核可道路從五六舍之間（x = -47）往西緩降，坡段由「坡道斜面」鋪；距中線 2.5 m 仍有路面，3.6 m 已在路外。
+  const ray = new THREE.Raycaster(), roads = [road, model.getObjectByName('坡道斜面')];
   for (const [z, expected] of [[-8.03, true], [-5.53, true], [-4.43, false]]) {
     ray.set(new THREE.Vector3(-50, 40, z), new THREE.Vector3(0, -1, 0));
-    const hit = ray.intersectObject(road, false)[0];
+    const hit = ray.intersectObjects(roads, false)[0];
     assert.equal(Boolean(hit), expected, `道路寬度：-50,${z}`);
   }
 });
@@ -258,7 +260,8 @@ test('D3 每段牆外觀至少厚 0.45，碰撞包住可見牆', async () => {
   for (const w of wallSegments()) {
     const dx = w.b[0] - w.a[0], dz = w.b[1] - w.a[1], length = Math.hypot(dx, dz);
     const normal = new THREE.Vector3(-dz / length, 0, dx / length);
-    const center = new THREE.Vector3((w.a[0] + w.b[0]) / 2, w.high + 0.5, (w.a[1] + w.b[1]) / 2);
+    // 山坡的擋土牆牆頂只比高側地面高 0.15（w.cap），射線改打在牆頂下方。
+    const center = new THREE.Vector3((w.a[0] + w.b[0]) / 2, w.high + Math.min(0.5, (w.cap ?? 1.1) - 0.3), (w.a[1] + w.b[1]) / 2);
     const hits = new THREE.Raycaster(center.clone().add(normal), normal.clone().negate()).intersectObject(mesh);
     assert(hits.length && hits[0].distance <= 1 - 0.45 / 2 + 1e-4, `牆太薄：${JSON.stringify(w)}，射線 ${hits[0]?.distance}`);
     assert(boxes.some(c => distance({ x: center.x, z: center.z }, c) < 1e-6 && c.hz >= 0.25));
@@ -360,21 +363,23 @@ test('7a elevated connection leaves the asphalt route clear at ground level', as
   const { createGreybox, greyboxColliders } = await import('../greybox.js');
   const model = createGreybox(); model.updateMatrixWorld(true);
   const boxes = greyboxColliders();
+  // 2026-10-28 照片 9101、9102：五六舍之間（x = -47）以西一路緩降到髮夾彎 8.4 公尺，坡段由「坡道斜面」鋪路面。
   const route = [[-92,18.1],[-84.6,9.4],[-73.7,-1.3],[-68.3,-5.2],[-60.5,-8.1],[-45.5,-8],[-39.6,-7.9],[-11.8,-8.1]];
+  const slope = model.getObjectByName('坡道斜面');
   for (let i = 1; i < route.length; i++) {
     const [a,b] = [route[i-1],route[i]], n = Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/0.25);
     for (let j = 0; j <= n; j++) {
-      const x = a[0]+(b[0]-a[0])*j/n, z = a[1]+(b[1]-a[1])*j/n;
-      assert.equal(heightAt(x,z),12);
+      const x = a[0]+(b[0]-a[0])*j/n, z = a[1]+(b[1]-a[1])*j/n, flat = x >= -47, h = heightAt(x,z);
+      if (flat) assert.equal(h,12); else assert(h >= 8.4 && h <= 12, `坡段高度：${x},${z}`);
       assert(boxes.every(c => distance({x,z},c) >= 0.4), `road blocked: ${x},${z}`);
-      const hits = new THREE.Raycaster(new THREE.Vector3(x,12.5,z),new THREE.Vector3(0,-1,0))
-        .intersectObject(model.getObjectByName('道路'));
-      assert(hits.length && Math.abs(hits[0].point.y-12.03)<1e-4, `road missing: ${x},${z}`);
+      const hits = new THREE.Raycaster(new THREE.Vector3(x,h+0.5,z),new THREE.Vector3(0,-1,0))
+        .intersectObject(flat ? model.getObjectByName('道路') : slope);
+      assert(hits.length && Math.abs(hits[0].point.y-(flat ? 12.03 : h))<(flat ? 1e-4 : 0.05), `road missing: ${x},${z}`);
     }
   }
   const {p,visited} = path(route,boxes);
   assert(Math.hypot(p.x+11.8,p.z+8.1)<0.01);
-  assert(visited.every(v=>Math.abs(heightAt(v.x,v.z)-12)<1e-9));
+  assert(visited.every(v=>v.x < -47 || Math.abs(heightAt(v.x,v.z)-12)<1e-9));
   const bridge = model.getObjectByName('高架連通段'); assert(bridge);
   const hits = new THREE.Raycaster(new THREE.Vector3(-42.5,40,-8), new THREE.Vector3(0,-1,0))
     .intersectObjects([bridge,model.getObjectByName('道路')]);

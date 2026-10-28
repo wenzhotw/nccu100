@@ -1,5 +1,6 @@
 // 依三層分區查詢地面高度，保持純函式，供後續階梯、坡道與場景共用。
 import { REGIONS, FILL_REGIONS, LEVELS, STAIRS, RAMPS, R, LAYOUT, PLAZA, ZQ10 } from './layout.js';
+import { hillsideAt, hillRoadAt, bindStairHeight, HILL_SEAMS, HILL_SIDE, inHill, jointAt } from './hillside.js';
 
 /** 投影到最近的折線段，等距時保留較小的沿線距離。 */
 export function projectToPath(x, z, path) {
@@ -196,7 +197,25 @@ export function landscapeAt(x, z) {
   // 紅磚廣場是平整鋪面，維持平台高度，不跟著草坡起伏。
   // 人行道與路面照常延伸到廣場邊，廣場從人行道外緣開始。
   if (inPlaza(x, z)) return { kind: 'plaza', h: LEVELS.L3 };
-  return stairBank(x, z) ?? rampLandscape(x, z);
+  // 五六七八舍山丘西、北、南側的手工塑形山坡（hillside.js）。
+  return stairBank(x, z) ?? rampLandscape(x, z) ?? hillsideAt(x, z);
+}
+
+bindStairHeight(stairHeight);
+
+/** 好漢坡各段踏板矩形（不含端點外半圓）在此點的最高踏面高度。 */
+function hillStairTop(x, z) {
+  let top = null;
+  for (const stair of STAIRS.filter(st => HILL_SIDE[st.id])) {
+    let base = 0;
+    for (let i = 1; i < stair.path.length; i++) {
+      const [ax, az] = stair.path[i - 1], [bx, bz] = stair.path[i], dx = bx - ax, dz = bz - az, l = Math.hypot(dx, dz);
+      const t = ((x - ax) * dx + (z - az) * dz) / (l * l);
+      if (t >= 0 && t <= 1 && Math.abs((x - ax) * dz - (z - az) * dx) / l <= stair.width / 2) top = Math.max(top ?? -Infinity, stairHeight(stair, base + t * l));
+      base += l;
+    }
+  }
+  return top;
 }
 
 /** 高度依階梯、坡道、平台順序查詢。 */
@@ -214,9 +233,11 @@ export function heightAt(x, z) {
   }
   if (nearestStair) {
     const h = stairHeight(nearestStair, nearestProjection.s);
-    // 柏油路穿過主線最後一階的側緣，保留水平路口，不改主線階高與踏面。
-    if (nearestStair.id === 'haohanpo' && h >= 11.7 && LAYOUT.roads.some(road =>
-      road.osm === 510739837 && projectToPath(x, z, road.pts).distance <= 0.8 ** 2)) return 12;
+    // 好漢坡頂止於路邊：落在柏油路面（中線 3 公尺內）的部分以往西緩降的路面為準，不改主線階高與踏面。
+    if (nearestStair.id === 'haohanpo' && LAYOUT.roads.some(road =>
+      road.osm === 510739837 && projectToPath(x, z, road.pts).distance <= 3 ** 2)) return hillRoadAt(x, z) ?? h;
+    // 好漢坡的整塊踏板在急轉彎與支線交會處會互相重疊，站在畫面上最高的那一塊上（與 hillside-model.js 的踏板一致）。
+    if (HILL_SIDE[nearestStair.id]) return Math.max(h, hillStairTop(x, z) ?? h, jointAt(x, z)?.h ?? h);
     return h;
   }
 
@@ -310,7 +331,7 @@ export function wallSegments() {
       // 照片修正區由草坡與磁磚矮牆承接，不再沿舊分區或新樓梯長出高牆。
       const jiu = STAIRS.find(stair => stair.id === 'jiu-plaza');
       if ((jiu && projectToPath(...middle,jiu.path).distance <= 2.2 ** 2)
-        || (source === 'region' && landscapeAt(...middle))) { run=null;continue; }
+        || (source === 'region' && ['sidewalk','grass-slope','bank','plaza'].includes(landscapeAt(...middle)?.kind))) { run=null;continue; }
       // 保留整個取樣小段的開口，避免小段端點伸入通路。
       const blocked = passages.some(passage => passage !== owner
         && projectToPath(...middle, passage.path).distance <= (passage.width / 2 + length / count / 2) ** 2);
@@ -330,7 +351,9 @@ export function wallSegments() {
       } else {
         const ramp = RAMPS.includes(owner) ? owner.id : null;
         const atA = wallHeights(start, end, 0), atB = wallHeights(start, end, 1);
-        run = { a: start, b: end, ...heights, source,
+        // 山坡的擋土牆（坡腳、石砌牆、平台接縫）牆頂與地面齊平，不加 1.1 公尺女兒牆。
+        const cap = [start, end].some(p => [-0.3, 0.3].some(o => hillsideAt(p[0] + o, p[1]) || hillsideAt(p[0], p[1] + o))) ? 0.15 : 1.1;
+        run = { a: start, b: end, ...heights, source, cap,
           ...(ramp ? { ramp, side, lowA: atA.low, highA: atA.high, lowB: atB.low, highB: atB.high } : {}) };
         walls.push(run);
       }
@@ -339,6 +362,8 @@ export function wallSegments() {
   for (const region of [...REGIONS, ...FILL_REGIONS]) {
     region.poly.forEach((a, i) => sampleLine(a, region.poly[(i + 1) % region.poly.length], 'region'));
   }
+  // 山坡與平台交界（例如好漢坡東側的接縫）也依高差長牆。
+  for (const seam of HILL_SEAMS) seam.slice(1).forEach((b, i) => sampleLine(seam[i], b, 'region'));
   for (const passage of passages) for (const sign of [-1, 1]) {
     // 九舍樓梯與十舍兩座樓梯的擋牆各自建模，碰撞由各自模組提供。
     if(passage.id === 'jiu-plaza' || passage.id.startsWith('zq10')) continue;
@@ -358,6 +383,9 @@ export function wallSegments() {
         // 階梯維持原有逐段偏移，避免改動好漢坡的既有開口。
         const offset = p => [p[0] + sign * normals[i - 1][0] * passage.width / 2,
           p[1] + sign * normals[i - 1][1] * passage.width / 2];
+        // 好漢坡在山坡上的兩側另行建模（hillside-model.js）：外側扶手、靠山側連續石砌擋土牆，不再沿踏面自動長牆。
+        const mid = offset(passage.path[i - 1].map((v, k) => (v + passage.path[i][k]) / 2));
+        if (HILL_SIDE[passage.id] && inHill(...mid)) continue;
         sampleLine(offset(passage.path[i - 1]), offset(passage.path[i]), 'passage', passage);
       }
     }
