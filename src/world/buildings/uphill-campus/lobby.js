@@ -12,7 +12,7 @@ const material=color=>{if(!materials.has(color))materials.set(color,new THREE.Me
 const edge=new THREE.MeshBasicMaterial({color:'#2a2c4a',side:THREE.BackSide});
 const palette=new THREE.MeshToonMaterial({color:'#ffffff',vertexColors:true});
 /** 小物保留具名來源供驗收，可見幾何按色票合成一份，避免每根扶手各畫一次。 */
-function mergeParts(root) {
+export function mergeParts(root) {
   root.updateMatrixWorld(true);const batches=new Map(),sources=[];
   root.traverseVisible(o=>{
     if(!o.isMesh||o.userData.sign||o.userData.signAtlas||o.name==='米白方磚地板')return;

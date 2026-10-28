@@ -23,8 +23,50 @@ import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
 import { buildZq10 } from './zq10.js';
 import { buildShanju } from './shanju.js';
 
+/** 安九食堂：純模型加上招牌圖集、城市壁畫與方磚地板三張畫布貼圖。 */
 export function buildAnjiu() {
-  const group=createAnjiu();group.traverse(o=>{if(o.isMesh&&o.material.isMeshToonMaterial)o.material.gradientMap=GRAD;});
+  const group=createAnjiu();
+  const font=size=>`900 ${size}px "Noto Sans TC",sans-serif`;
+  group.traverse(o=>{
+    if(!o.isMesh)return;
+    if(o.material.isMeshToonMaterial)o.material.gradientMap=GRAD;
+    if(o.name==='安九方磚地板') {
+      // 米白方磚加淡淡的粉色雜磚（照片 9052）；貼圖座標依世界座標，每格 0.6 公尺。
+      const tile=canvasTex(256,256,(g,w,h)=>{
+        g.fillStyle='#ece7dc';g.fillRect(0,0,w,h);
+        for(let i=0;i<4;i++)for(let j=0;j<4;j++){if((i*3+j)%7===2){g.fillStyle='#e8d5cf';g.fillRect(i*64,j*64,64,64);}}
+        g.strokeStyle='#c9c3b6';g.lineWidth=3;for(let k=0;k<=4;k++){g.beginPath();g.moveTo(k*64,0);g.lineTo(k*64,h);g.moveTo(0,k*64);g.lineTo(w,k*64);g.stroke();}
+      });
+      tile.wrapS=tile.wrapT=THREE.RepeatWrapping;o.material=toon('#ffffff',{map:tile});
+      const p=o.geometry.attributes.position,uv=o.geometry.attributes.uv;
+      for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/2.4,p.getZ(i)/2.4);uv.needsUpdate=true;
+    }
+    if(o.userData.anjiuAtlas) {
+      const tex=canvasTex(2048,1024,g=>o.userData.anjiuAtlas.forEach(({text,bg,fg,atlas,vertical})=>{
+        g.fillStyle=bg;g.fillRect(atlas.x,atlas.y,atlas.w,atlas.h);
+        g.strokeStyle='rgba(0,0,0,.25)';g.lineWidth=6;g.strokeRect(atlas.x+3,atlas.y+3,atlas.w-6,atlas.h-6);
+        if(vertical) {
+          // 直式招牌：一字一格由上往下排。
+          const cell=atlas.h/text.length,size=Math.min(atlas.w*0.75,cell*0.8);
+          g.font=font(size);g.textAlign='center';g.textBaseline='middle';g.fillStyle=fg;
+          [...text].forEach((ch,i)=>g.fillText(ch,atlas.x+atlas.w/2,atlas.y+cell*(i+0.5)));return;
+        }
+        const layout=signTextLayout(text,atlas,(t,size)=>{g.font=font(size);return g.measureText(t).width;});
+        g.font=font(layout.size);g.textAlign='center';g.textBaseline='middle';g.fillStyle=fg;g.fillText(layout.text,layout.x,layout.y);
+      }));
+      o.material=basic({map:tex});
+    }
+    if(o.userData.anjiuMural) {
+      // 灰階城市天際線壁畫加水面倒影（照片 9064）。
+      const tex=canvasTex(2048,320,(g,w,h)=>{
+        g.fillStyle='#eef0ef';g.fillRect(0,0,w,h);let x=0,k=0;
+        while(x<w){const bw=30+(k*37)%60,bh=60+(k*53)%150;g.fillStyle=['#9aa2a6','#7f878c','#b3b9bc','#6d757a'][k%4];
+          g.fillRect(x,200-bh,bw,bh);g.globalAlpha=0.25;g.fillRect(x,200,bw,bh*0.5);g.globalAlpha=1;
+          g.fillStyle='#e6ebec';for(let wy=210-bh;wy<190;wy+=14)for(let wx=x+5;wx<x+bw-6;wx+=10)g.fillRect(wx,wy,4,6);x+=bw+4;k++;}
+      });
+      o.material=basic({map:tex});
+    }
+  });
   scene.add(group);for(const c of anjiuColliders())obbC(c.cx,c.cz,c.hx,c.hz,c.th);
 }
 
