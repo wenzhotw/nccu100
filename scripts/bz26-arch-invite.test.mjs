@@ -94,7 +94,7 @@ function kitStub() {
 }
 test('模型：橫幅字正確、藍鵲在左柱頂、穿山甲在右柱頂、三角形數量有上限、dispose 只放自己的資源', () => {
   const kit = kitStub(), m = buildBalloonArch({ ...kit, placement: P });
-  assert.equal(BANNER_TEXT, '2026政治大學數位包種茶節');
+  assert.equal(BANNER_TEXT, '蓋亞造界虛擬包種茶節');
   assert.ok(kit.texts.includes(BANNER_TEXT));
   const banners = []; m.group.traverse(o => { if (o.name === 'bz26-arch-banner') banners.push(o); });
   assert.equal(banners.length, 2, '正反兩面');
