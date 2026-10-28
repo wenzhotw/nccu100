@@ -24,6 +24,8 @@ import { buildZq10 } from './zq10.js';
 import { buildShanju } from './shanju.js';
 import { buildDorms } from './dorms.js';
 import { createTaipeiView, VIEW, valleyDrop } from './taipei-view.js';
+import { createSkyClock } from './day-night.js';
+import { SIGN, createFireworks } from './fireworks.js';
 
 /** 安九食堂：純模型加上招牌圖集、城市壁畫與方磚地板三張畫布貼圖。 */
 export function buildAnjiu() {
@@ -234,12 +236,76 @@ function taipei() {
     g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); g.fillStyle = '#c9d2d8';
     for (let y = 6; y < h - 4; y += 12) for (let x = 5; x < w - 4; x += 14) g.fillRect(x, y, 9, 6);
   });
+  // 夜裡亮燈的窗：黑底上大約一半的窗格是暖黃色，當自發光貼圖，天黑時調亮。
+  const lit = canvasTex(64, 128, (g, w, h) => {
+    g.fillStyle = '#000000'; g.fillRect(0, 0, w, h);
+    let k = 0;
+    for (let y = 6; y < h - 4; y += 12) for (let x = 5; x < w - 4; x += 14) {
+      if ((k++ * 7) % 11 < 6) { g.fillStyle = k % 3 ? '#ffd98a' : '#fff1c8'; g.fillRect(x, y, 9, 6); }
+    }
+  });
   group.traverse(o => {
     if (!o.isMesh) return;
     o.material.gradientMap = GRAD;
-    if (o.userData.cityWindows) o.material.map = windows;
+    if (o.userData.cityWindows) {
+      o.material.map = windows; o.material.emissive = new THREE.Color('#ffffff'); o.material.emissiveMap = lit;
+      o.material.emissiveIntensity = 0; night.city = o.material;
+    }
+    if (o.name === '台北101') { o.material.emissive = new THREE.Color('#4fd1c5'); o.material.emissiveIntensity = 0; night.tower = o.material; }
   });
   scene.add(group);
+}
+
+/* ---------- 日夜與跨年煙火 ---------- */
+/** 山上校區的天色時鐘（index.js 的天色按鈕也用這一個）。 */
+export const skyClock = createSkyClock();
+/** 夜裡要調亮的材質與場景燈光，建好場景後才填入。 */
+const night = { city: null, tower: null, scene: null, hemi: null, sun: null };
+export const fireworks = createFireworks();
+
+/** 觀景步道告示牌：兩根木柱夾一塊深綠板，雙面寫煙火說明，立在路的上坡側。 */
+function fireworksSign() {
+  const g = new THREE.Group(); g.name = '跨年煙火告示牌';
+  g.position.set(SIGN.x, heightAt(SIGN.x, SIGN.z), SIGN.z); g.rotation.y = SIGN.yaw; scene.add(g);
+  // 木柱夾在板子左右兩側，不擋到雙面的字。
+  for (const dx of [-0.97, 0.97]) block(dx, 1.0, 0, 0.12, 2.0, 0.12, '#8a6a42', 0.015, g);
+  block(0, 1.45, 0, 1.8, 1.05, 0.08, '#24563e', 0.02, g);
+  const tex = canvasTex(512, 300, (c, w, h) => {
+    c.fillStyle = '#24563e'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = '#f2c94c'; c.lineWidth = 8; c.strokeRect(10, 10, w - 20, h - 20);
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillStyle = '#ffe9a8'; c.font = '900 56px "Noto Sans TC",sans-serif'; c.fillText('台北 101 跨年煙火', w / 2, 82, w - 60);
+    c.fillStyle = '#fff8df'; c.font = '700 34px "Noto Sans TC",sans-serif';
+    c.fillText('天黑以後在這裡按互動', w / 2, 170, w - 60); c.fillText('就能看 101 施放煙火', w / 2, 222, w - 60);
+  });
+  for (const side of [1, -1]) {
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.96), basic({ map: tex }));
+    face.position.set(0, 1.45, side * 0.045); face.rotation.y = side > 0 ? 0 : Math.PI; g.add(face);
+  }
+  obbC(SIGN.x, SIGN.z, 1.05, 0.12, SIGN.yaw);
+}
+
+/** 煙火亮點畫成中心亮、外圈淡的圓點。 */
+function fireworksShow() {
+  fireworks.points.material.map = canvasTex(64, 64, (c, w, h) => {
+    const r = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+    r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,.7)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = r; c.fillRect(0, 0, w, h);
+  });
+  scene.add(fireworks.points);
+}
+
+/** 每一幀依遊戲時間更新天色、台北夜景亮度與煙火（index.js 的 update 呼叫）。 */
+export function updateMap(time) {
+  const k = skyClock.sample(time);
+  if (night.scene) {
+    night.scene.background.set(k.sky); night.scene.fog.color.set(k.fog);
+    night.hemi.color.set(k.hemiSky); night.hemi.groundColor.set(k.hemiGround); night.hemi.intensity = k.hemi;
+    night.sun.color.set(k.sunColor); night.sun.intensity = k.sun;
+  }
+  if (night.city) night.city.emissiveIntensity = k.night * 0.95;
+  if (night.tower) night.tower.emissiveIntensity = k.night * 0.45;
+  fireworks.update(time);
 }
 
 /** 建立山上校區（第一次搭公車上山時呼叫一次） */
@@ -254,6 +320,8 @@ export function buildMap() {
   buildShanju();
   buildDorms();
   taipei();
+  fireworksSign();
+  fireworksShow();
   const scenery=buildCourtyardScenery();
   batchCourtyardScene(scene.getObjectByName('山上校區灰盒'),scenery);
 }
@@ -263,9 +331,12 @@ export function mapLight(s) {
   installLobbyRoof(s);
   s.background = new THREE.Color(SKY);
   s.fog = new THREE.Fog(SKY, 90, 320);
-  s.add(new THREE.HemisphereLight('#eaf6ff', '#7aa060', 0.95));
+  const hemi = new THREE.HemisphereLight('#eaf6ff', '#7aa060', 0.95);
+  s.add(hemi);
   const sun = new THREE.DirectionalLight('#fff4e2', 0.85);
   sun.position.set(40, 80, 30); s.add(sun);
+  // 日夜時鐘每一幀改這兩盞既有的燈與天空、霧的顏色，不另外加燈（updateMap）。
+  Object.assign(night, { scene: s, hemi, sun });
 }
 
 /** 角色腳底與灰盒使用同一份地形高度。 */

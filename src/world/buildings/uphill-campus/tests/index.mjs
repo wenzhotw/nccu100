@@ -13,3 +13,4 @@ import './anjiu-interior.test.mjs';
 import './photo-audit.test.mjs';
 import './hillside.test.mjs';
 import './dorms.test.mjs';
+import './fireworks.test.mjs';

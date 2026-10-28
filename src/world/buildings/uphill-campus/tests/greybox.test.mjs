@@ -176,7 +176,7 @@ test('地圖入口登記灰盒與碰撞，公車站及圍籬跟隨地形高度',
     return next(specifier, context);
   } });
   const savedDocument = globalThis.document, savedColliders = colliders.slice();
-  const context = new Proxy({ measureText() { return { width: 20 }; }, createLinearGradient() { return {addColorStop(){}}; } }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} });
+  const context = new Proxy({ measureText() { return { width: 20 }; }, createLinearGradient() { return {addColorStop(){}}; }, createRadialGradient() { return {addColorStop(){}}; } }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} });
   globalThis.document = { createElement() { return { width: 0, height: 0, getContext() { return context; } }; } };
   try {
     const { buildMap, mapHeight, mapZone, mapLight } = await import('../map.js');

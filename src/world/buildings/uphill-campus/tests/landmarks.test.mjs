@@ -227,7 +227,7 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
     }});
     const text = [];
     globalThis.document = { createElement() { const canvas = { width: 0, height: 0, drawnText: [], getContext() { return new Proxy({
-      fillRect() {}, clearRect() {}, strokeRect() {}, measureText() { return { width:20 }; }, createLinearGradient() { return { addColorStop(){} }; }, fillText(value) { text.push(value); canvas.drawnText.push(value); }
+      fillRect() {}, clearRect() {}, strokeRect() {}, measureText() { return { width:20 }; }, createLinearGradient() { return { addColorStop(){} }; }, createRadialGradient() { return { addColorStop(){} }; }, fillText(value) { text.push(value); canvas.drawnText.push(value); }
     }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} }); } }; return canvas; } };
     const { buildMap, mapLight } = await import('./src/world/buildings/uphill-campus/map.js');
     const { landmarkSigns, landmarkColliders } = await import('./src/world/buildings/uphill-campus/landmarks.js');
@@ -240,7 +240,8 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
     const root = __landmarkScene.getObjectByName('山上校區地標'); assert(root, 'buildMap 未接入地標');
     const { shanjuColliderCount } = await import('./src/world/buildings/uphill-campus/shanju.js');
     const { dormsColliderCount } = await import('./src/world/buildings/uphill-campus/dorms.js');
-    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1 + shanjuColliderCount() + dormsColliderCount());
+    // 最後的 1 是觀景步道的跨年煙火告示牌（map.js 的 fireworksSign）。
+    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1 + shanjuColliderCount() + dormsColliderCount() + 1);
     for (const c of landmarkColliders()) assert(colliders.some(v => v.obb && v.cx === c.cx && v.cz === c.cz && v.hx === c.hx && v.hz === c.hz && Math.abs(v.sn - Math.sin(c.th)) < 1e-9));
     for (const s of landmarkSigns()) {
       if(s.anchor==='九舍樓梯下') { for(const c of s.text.replace(/[ ・]/g,'')) assert(text.includes(c)); }
