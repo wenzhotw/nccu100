@@ -14,8 +14,6 @@ const glass = new THREE.MeshToonMaterial({ color: '#c6e5ec', transparent: true, 
 const canopyWhite = new THREE.MeshToonMaterial({ color: '#e7e4dc' });
 const canopyUnder = new THREE.MeshToonMaterial({ color: '#d4d0c7' });
 const signMaterial = new THREE.MeshToonMaterial({ color: '#24563e' });
-const cityMaterial = new THREE.MeshToonMaterial({ color: '#7fabb4', fog: false });
-const towerMaterial = new THREE.MeshToonMaterial({ color: '#528e97', fog: false });
 
 /** 位置為核可錨點的局部偏移，牌面與通路保留半公尺淨空。 */
 export function landmarkSigns() {
@@ -130,23 +128,5 @@ export function createLandmarks() {
     boxes(g, '指路牌柱', steel, [[0, 1.1, 0, 0.12, 2.2, 0.12]]);
     boxes(g, '指路牌板', s.anchor === '九舍樓梯下' ? blue : signMaterial, [[0, 2.05, 0, s.width, s.height, 0.14]]);
   }
-  const viewpoint = ANCHORS['觀景步道'], city = new THREE.Group(); city.name = '台北市區遠景';
-  const cx = viewpoint.x - 285, cz = viewpoint.z - 285;
-  city.position.set(cx, heightAt(cx, cz), cz); city.userData.noOcc = true; root.add(city);
-  const blocks = Array.from({ length: 18 }, (_, i) => {
-    const h = 12 + i % 5 * 6;
-    return [(i % 9 - 4) * 17, h / 2, Math.floor(i / 9) * 22, 10 + i % 3 * 2, h, 12];
-  });
-  boxes(city, '台北市區方塊群', cityMaterial, blocks);
-  const tower = new THREE.Group(); tower.name = '台北101'; city.add(tower);
-  boxes(tower, '101基座與尖塔', towerMaterial, [[0, 10, 0, 18, 20, 18], [0, 132, 0, 7, 14, 7], [0, 146, 0, 1.2, 18, 1.2]]);
-  const tiers = new THREE.InstancedMesh(new THREE.CylinderGeometry(10, 7, 13, 4), towerMaterial, 8);
-  const o = new THREE.Object3D();
-  for (let i = 0; i < 8; i++) {
-    o.position.set(0, 26.5 + i * 13, 0); o.rotation.y = Math.PI / 4;
-    const width = 1 - i * 0.025; o.scale.set(width, 1, width); o.updateMatrix(); tiers.setMatrixAt(i, o.matrix);
-  }
-  tiers.name = '101節狀塔身'; tower.add(tiers);
-  city.traverse(o => { o.userData.noOcc = true; });
   return root;
 }

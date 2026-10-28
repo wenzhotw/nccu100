@@ -22,6 +22,8 @@ import {installLobbyRoof,signTextLayout} from './lobby.js';
 import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
 import { buildZq10 } from './zq10.js';
 import { buildShanju } from './shanju.js';
+import { buildDorms } from './dorms.js';
+import { createTaipeiView, VIEW, valleyDrop } from './taipei-view.js';
 
 /** 安九食堂：純模型加上招牌圖集、城市壁畫與方磚地板三張畫布貼圖。 */
 export function buildAnjiu() {
@@ -74,8 +76,12 @@ const SKY = '#bfe4f6';
 
 /* ---------- 外圍山坡，校區地面由灰盒建立 ---------- */
 function ground() {
-  // 外圍（看得到但走不到）：比校區暗一點的山坡綠
-  flat(SIZE.w + 600, SIZE.d + 600, '#6fae5c', 0, -0.05, 0);
+  // 外圍（看得到但走不到）：比校區暗一點的山坡綠。
+  // 北邊圖外是往台北市區下降的山谷（照片 9088、9100），地面一路往下掉，市景才會在腳下展開。
+  const g = new THREE.PlaneGeometry(SIZE.w + 600, SIZE.d + 600, 48, 48).rotateX(-Math.PI / 2), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, -0.05 - valleyDrop(p.getX(i), p.getZ(i)));
+  g.computeVertexNormals();
+  const m = new THREE.Mesh(g, toon('#6fae5c')); m.receiveShadow = true; m.name = '圖外山坡'; scene.add(m);
 }
 
 /* ---------- 四周圍籬：木樁加兩條橫木（木樁用 InstancedMesh，手機也順） ---------- */
@@ -104,6 +110,9 @@ function hills() {
   for (let i = 0; i < 14; i++) {
     const a = i / 14 * Math.PI * 2, north = -Math.cos(a);           // a = 0 在南邊，往北越來越高
     const dist = Math.max(SIZE.w, SIZE.d) / 2 + 110 + (i % 3) * 20;
+    // 觀景步道往北看是往台北市區下降的山谷與樹林（taipei-view.js），這個方向不放遠山，不擋住市景。
+    const bearing = Math.atan2(Math.sin(a), -Math.cos(a)), city = Math.abs(bearing - VIEW.tower.bearing) < 80 * Math.PI / 180;
+    if (city) continue;
     const h = 18 + Math.max(0, north) * 34 + (i % 2) * 8;
     const m = new THREE.Mesh(geo, new THREE.MeshToonMaterial({ color: cols[i % cols.length], gradientMap: GRAD }));
     m.position.set(Math.sin(a) * dist, -1, Math.cos(a) * dist);
@@ -218,6 +227,21 @@ export function buildLandmarks() {
   }
 }
 
+/** 台北市景：純模型接上卡通光階，大樓貼一張窗格貼圖（每棟各自拉伸，遠看就是一排排窗）。 */
+function taipei() {
+  const group = createTaipeiView();
+  const windows = canvasTex(64, 128, (g, w, h) => {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); g.fillStyle = '#c9d2d8';
+    for (let y = 6; y < h - 4; y += 12) for (let x = 5; x < w - 4; x += 14) g.fillRect(x, y, 9, 6);
+  });
+  group.traverse(o => {
+    if (!o.isMesh) return;
+    o.material.gradientMap = GRAD;
+    if (o.userData.cityWindows) o.material.map = windows;
+  });
+  scene.add(group);
+}
+
 /** 建立山上校區（第一次搭公車上山時呼叫一次） */
 export function buildMap() {
   ground();
@@ -228,6 +252,8 @@ export function buildMap() {
   buildLandmarks();
   buildZq10();
   buildShanju();
+  buildDorms();
+  taipei();
   const scenery=buildCourtyardScenery();
   batchCourtyardScene(scene.getObjectByName('山上校區灰盒'),scenery);
 }
