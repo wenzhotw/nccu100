@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { ARCH } from './festival-arch-logic.js';
-export const BANNER_TEXT = '2026政治大學數位包種茶節';
+export const BANNER_TEXT = '蓋亞造界虛擬包種茶節';
 export const MODEL_BUDGET = Object.freeze({ triangles: 12000, meshes: 12, shadowCasters: 4 });
 // 貼背盾片：中央只微微隆起，尾端鈍尖，不用會形成尖刺的圓錐。
 function shieldGeometry() {
