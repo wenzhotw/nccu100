@@ -19,7 +19,8 @@ function pointAt(path, s) {
   return path.at(-1);
 }
 
-test('主線每次升高 0.3，四十階踏面至少 0.8 公尺', () => {
+// 2026-10-28：頂端接在往西緩降的路面 11.1 公尺處（照片 9101、9102），共 37 階。
+test('主線每次升高 0.3，三十七階踏面至少 0.8 公尺', () => {
   assert.ok(layout.STAIRS, '需匯出階梯資料');
   assert.equal(typeof terrain.stairHeight, 'function');
   const stair = layout.STAIRS[0];
@@ -28,8 +29,8 @@ test('主線每次升高 0.3，四十階踏面至少 0.8 公尺', () => {
   assert.equal(stair.width, 3.2);
   assert.equal(terrain.stairHeight(stair, -1), 0);
   assert.equal(terrain.stairHeight(stair, 0), 0);
-  assert.equal(terrain.stairHeight(stair, length), 12);
-  assert.equal(terrain.stairHeight(stair, length + 1), 12);
+  close(terrain.stairHeight(stair, length), 11.1);
+  close(terrain.stairHeight(stair, length + 1), 11.1);
   let previous = 0, rises = 0;
   for (let i = 1; i <= Math.ceil(length * 10); i++) {
     const s = Math.min(i / 10, length);
@@ -41,11 +42,11 @@ test('主線每次升高 0.3，四十階踏面至少 0.8 公尺', () => {
     }
     previous = h;
   }
-  assert.equal(rises, 40);
+  assert.equal(rises, 37);
   // 最後一個取樣間距不足 0.1，不能拿取樣位置差當實際踏面深度。
   // 以高度轉換的二分定位量踏面，另用第一階 0.8 公尺校準。
   let lastRise = 0;
-  for (let step = 1; step <= 40; step++) {
+  for (let step = 1; step <= 37; step++) {
     let low = 0, high = length;
     for (let i = 0; i < 45; i++) {
       const mid = (low + high) / 2;
@@ -64,8 +65,9 @@ test('主線範圍優先於平台，兩端往外半公尺沒有高度跳躍', ()
   close(terrain.heightAt(...pointAt(stair.path, 1)), 0.3);
   close(terrain.heightAt(...pointAt(stair.path, -0.5)), 0);
   const reverse = [...stair.path].reverse();
-  close(terrain.heightAt(...pointAt(reverse, -0.5)), 12);
-  close(terrain.heightAt(...pointAt(stair.path, length)), 12);
+  // 頂端外半公尺是往西緩降的路面，只差路面坡度（約 0.04 公尺）。
+  assert.ok(Math.abs(terrain.heightAt(...pointAt(reverse, -0.5)) - 11.1) < 0.05);
+  close(terrain.heightAt(...pointAt(stair.path, length)), 11.1);
   // 第一段北側，距中線 1.59 公尺仍在範圍，1.61 公尺已在 L1 平台。
   const [x, z] = pointAt(stair.path, 2);
   const [a, b] = stair.path;
@@ -74,20 +76,21 @@ test('主線範圍優先於平台，兩端往外半公尺沒有高度跳躍', ()
   close(terrain.heightAt(x + dz / len * 1.61, z - dx / len * 1.61), 0);
 });
 
+// 2026-10-28：主線改為 37 階後，接點（第 20 階）高度由 6.3 變 6.0。
 test('東支線由主線接點的實際階高起步，依坡道接點階數接上斜坡', () => {
   const [main, east] = layout.STAIRS;
   const joinS = lengthOf(main.path.slice(0, 5));
-  close(terrain.stairHeight(main, joinS), 6.3);
+  close(terrain.stairHeight(main, joinS), 6);
   assert.equal(Object.hasOwn(east, 'from'), false);
-  close(terrain.stairHeight(east, -1), 6.3);
+  close(terrain.stairHeight(east, -1), 6);
   close(terrain.stairHeight(east, 0), terrain.stairHeight(main, joinS));
-  close(terrain.heightAt(...east.path[0]), 6.3);
+  close(terrain.heightAt(...east.path[0]), 6);
   const length = lengthOf(east.path);
   const ramp = layout.RAMPS[0];
   const top = terrain.rampHeight(ramp, terrain.projectToPath(...east.path.at(-1), ramp.path).s);
   close(terrain.stairHeight(east, length), top);
   close(terrain.heightAt(...east.path.at(-1)), top);
-  let previous = 6.3, rises = 0;
+  let previous = 6, rises = 0;
   for (let i = 1; i <= Math.ceil(length * 10); i++) {
     const s = Math.min(i / 10, length);
     const h = terrain.stairHeight(east, s);
@@ -95,8 +98,8 @@ test('東支線由主線接點的實際階高起步，依坡道接點階數接�
     if (h > previous) { assert.ok(h - previous <= 0.3 + 1e-9); rises++; }
     previous = h;
   }
-  assert.equal(rises, Math.round((top - 6.3) / 0.3));
-  close(terrain.heightAt(...pointAt(east.path, 2)), 6.9);
+  assert.equal(rises, Math.round((top - 6) / 0.3));
+  close(terrain.heightAt(...pointAt(east.path, 2)), 6.6);
 });
 
 test('路徑太短連踏面與最低休息平台都放不下時拒絕計算', () => {

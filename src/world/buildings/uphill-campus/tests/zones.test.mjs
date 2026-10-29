@@ -42,7 +42,9 @@ test('地圖區域入口回傳地標、通路、建築與空地的新名稱', as
 test('三層空地使用對應層名稱，無名建築不產生空名稱', async () => {
   const { zoneName } = await import('../zone-names.js');
   assert.equal(zoneName({ x: -110, z: -80 }), '環山一道');
-  assert.equal(zoneName({ x: -100, z: 60 }), '自強宿舍區');
+  // 2026-10-28：（-100，60）在環山一道西段旁，已改回第一層。
+  assert.equal(zoneName({ x: -100, z: 60 }), '環山一道');
+  assert.equal(zoneName({ x: -60, z: 60 }), '自強宿舍區');
   assert.equal(zoneName({ x: 110, z: 70 }), '自強九舍・十舍');
   assert.equal(zoneName({ x: 32, z: -13 }), '自強宿舍區');
 });

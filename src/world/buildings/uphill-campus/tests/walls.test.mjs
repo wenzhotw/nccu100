@@ -109,11 +109,13 @@ function sidesAt(passage, s) {
   throw new Error('取樣距離超過通路。');
 }
 
-test('A4-4 主線進入 L2 後，三十公尺處左右各有通路側牆', () => {
-  const walls = terrain.wallSegments().filter(w => w.source === 'passage');
-  for (const p of sidesAt(layout.STAIRS[0], 30)) {
-    assert.ok(walls.some(w => distanceToSegment(p, w.a, w.b) <= 0.5), `缺側牆：${p}`);
-  }
+// 2026-10-28 照片 9108 到 9115：好漢坡貼著山坡，靠山側是石砌擋土牆，外側是扶手（不再兩側都是溝牆）。
+test('A4-4 主線三十公尺處靠山側有擋土牆，外側有扶手擋住', async () => {
+  // sidesAt 先回傳行進方向左手邊；這一段（往西南爬）左手邊是靠山的東南側。
+  const [hill, outer] = sidesAt(layout.STAIRS[0], 30);
+  const { hillColliders } = await import('../hillside-model.js');
+  assert.ok(hillColliders().some(c => c.rail === 'stone' && Math.hypot(c.cx - hill[0], c.cz - hill[1]) <= 1.2), `靠山側缺擋土牆：${hill}`);
+  assert.ok(hillColliders().some(c => c.rail === 'stair' && Math.hypot(c.cx - outer[0], c.cz - outer[1]) <= 1.5), `外側缺扶手：${outer}`);
 });
 
 test('A4-5 坡道十公尺處西側保留牆、東側改草坡，全程中線與頂端接縫不被牆阻擋', () => {

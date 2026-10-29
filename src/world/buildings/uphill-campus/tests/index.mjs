@@ -11,3 +11,4 @@ import './spawn.test.mjs';
 import './lobby.test.mjs';
 import './anjiu-interior.test.mjs';
 import './photo-audit.test.mjs';
+import './hillside.test.mjs';

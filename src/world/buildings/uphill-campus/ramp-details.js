@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { LAYOUT, RAMPS, STAIRS } from './layout.js';
 import { CURB, heightAt, landscapeAt, pointInPoly, projectToPath, rampHeight, stairHeight } from './terrain.js';
 import { PLAZA } from './layout.js';
+import { hillProps } from './hillside-model.js';
 
 const silver = new THREE.MeshToonMaterial({ color: '#b9c7c9' });
 const brick = new THREE.MeshToonMaterial({ color: '#bd897a' });
@@ -250,6 +251,8 @@ export function addRampDetails(group, rects, {addMerged,TOP,BOX,grass,edgeMateri
     edge.translate(-p.x,-p.base-p.h/2,-p.z).scale(1.025,1.025,1.025).translate(p.x,p.base+p.h/2,p.z);edges.push(edge);
     const marker=new THREE.Group();marker.name=p.name;marker.position.set(p.x,p.base,p.z);group.add(marker);
   }
+  // 山坡欄杆、好漢坡扶手與髮夾彎路緣（hillside-model.js）併入同一份設施網格，不多佔一個網格。
+  for(const p of hillProps()) colored(p.geometry,p.color);
   addMerged(group,'坡道與樓梯設施',props,details);
   for(const g of fence) {
     const edge=g.clone(),p=edge.attributes.position,n=edge.attributes.normal;
