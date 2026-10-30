@@ -203,23 +203,10 @@ function counts(group) {
   return { meshes, triangles };
 }
 
-test('西北遠景在圖外約三百公尺，101 高過遠山且全批模型符合手機預算', async () => {
-  // 漏掉關霧、把遠景放到圖內、漏算實例或加燈光都會失敗。
-  const { createLandmarks, landmarkColliders } = await import('../landmarks.js');
-  const model = createLandmarks(), city = model.getObjectByName('台北市區遠景'); assert(city);
-  const tower = city.getObjectByName('台北101'); assert(tower);
-  const a = ANCHORS['觀景步道'];
-  assert(city.position.x < R.x0 && city.position.z < R.z0);
-  const boundaryDistance = Math.hypot(city.position.x - R.x0, city.position.z - R.z0);
-  assert(boundaryDistance > 250 && boundaryDistance < 350);
-  assert.equal(city.position.y, heightAt(city.position.x, city.position.z));
-  const top = modelBounds(tower).max.y;
-  const eye = heightAt(a.x, a.z) + 1.6;
-  assert((top - eye) / Math.hypot(city.position.x - a.x, city.position.z - a.z) > (52 - eye) / 160);
-  city.traverse(o => { if (o.isMesh) assert.equal(o.material.fog, false); });
-  assert(!landmarkColliders().some(c => c.cx < R.x0 || c.cz < R.z0));
-  const fixture = new THREE.Group(); fixture.add(new THREE.InstancedMesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial(), 3));
-  assert.deepEqual(counts(fixture), { meshes: 1, triangles: 36 });
+test('地標模型符合手機預算，沒有燈光與陰影（台北遠景已移到 taipei-view.js）', async () => {
+  const { createLandmarks } = await import('../landmarks.js');
+  const model = createLandmarks();
+  assert.equal(model.getObjectByName('台北市區遠景'), undefined);
   const budget = counts(model);
   // 地圖入口另有每面兩張文字平面，預留十個 Mesh、二十個三角形。
   assert(budget.meshes + 10 <= 40, JSON.stringify(budget));
@@ -240,7 +227,7 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
     }});
     const text = [];
     globalThis.document = { createElement() { const canvas = { width: 0, height: 0, drawnText: [], getContext() { return new Proxy({
-      fillRect() {}, clearRect() {}, strokeRect() {}, measureText() { return { width:20 }; }, createLinearGradient() { return { addColorStop(){} }; }, fillText(value) { text.push(value); canvas.drawnText.push(value); }
+      fillRect() {}, clearRect() {}, strokeRect() {}, measureText() { return { width:20 }; }, createLinearGradient() { return { addColorStop(){} }; }, createRadialGradient() { return { addColorStop(){} }; }, fillText(value) { text.push(value); canvas.drawnText.push(value); }
     }, { get(t,k) { return t[k] ?? (()=>{}); }, set(t,k,v) {t[k]=v;return true;} }); } }; return canvas; } };
     const { buildMap, mapLight } = await import('./src/world/buildings/uphill-campus/map.js');
     const { landmarkSigns, landmarkColliders } = await import('./src/world/buildings/uphill-campus/landmarks.js');
@@ -252,7 +239,9 @@ test('正式地圖入口接入地標、碰撞與雙面指路文字，貼圖不�
     buildMap();
     const root = __landmarkScene.getObjectByName('山上校區地標'); assert(root, 'buildMap 未接入地標');
     const { shanjuColliderCount } = await import('./src/world/buildings/uphill-campus/shanju.js');
-    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1 + shanjuColliderCount());
+    const { dormsColliderCount } = await import('./src/world/buildings/uphill-campus/dorms.js');
+    // 最後的 1 是觀景步道的跨年煙火告示牌（map.js 的 fireworksSign）。
+    assert.equal(colliders.length, greyboxColliders().length + landmarkColliders().length + 1 + shanjuColliderCount() + dormsColliderCount() + 1);
     for (const c of landmarkColliders()) assert(colliders.some(v => v.obb && v.cx === c.cx && v.cz === c.cz && v.hx === c.hx && v.hz === c.hz && Math.abs(v.sn - Math.sin(c.th)) < 1e-9));
     for (const s of landmarkSigns()) {
       if(s.anchor==='九舍樓梯下') { for(const c of s.text.replace(/[ ・]/g,'')) assert(text.includes(c)); }

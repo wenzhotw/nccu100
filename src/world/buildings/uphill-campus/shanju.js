@@ -7,7 +7,7 @@
  *   左邊玻璃門、右邊黑色雙開門。
  * - 安九：ABC 區南面一樓是食堂，橘色遮雨棚、藍底「安九食堂」招牌，樓上同樣是方磚窗牆。
  * - 停車場：塔樓前整片柏油，南緣一排停車格，後面是竹林、朱蕉與大樹，往外看是山谷。
- * - 六舍、七八舍：米灰色清水混凝土外牆、凹窗陽台，不是山居的粉色方磚，兩者不要混用。
+ * - 六舍、七八舍的外牆改由 dorms.js 依照片建模（米灰清水混凝土加深紅褐磚牆），不要混用山居的粉色方磚。
  */
 import * as THREE from 'three';
 import { scene } from '../../../core/engine.js';
@@ -99,16 +99,6 @@ function tex(name) {
     anjiuUpper: [256, 240, (g, w, h) => {
       tiles(g, w, h, 16, '#ead8d0', '#d4c1b8'); windowBay(g, w, h, 0.32, 0.86, 0.24, 0.7);
       g.fillStyle = '#e9e8e3'; g.fillRect(14, 140, 56, 40); g.fillStyle = '#b9bcbf'; g.beginPath(); g.arc(50, 160, 14, 0, 7); g.fill();
-    }],
-    // 六舍、七八舍：米灰清水混凝土、凹窗、陽台板、冷氣。
-    concrete: [256, 256, (g, w, h) => {
-      g.fillStyle = '#d6ccbd'; g.fillRect(0, 0, w, h);
-      g.fillStyle = '#c6baa9'; g.fillRect(0, 0, 18, h); g.fillRect(0, h - 26, w, 26);
-      g.fillStyle = '#5e6873'; g.fillRect(50, 46, 160, 120);
-      g.fillStyle = '#e6e3dc'; g.fillRect(50, 46, 160, 6); g.fillRect(126, 46, 6, 120); g.fillRect(50, 104, 160, 4);
-      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(56, 54, 66, 24);
-      g.fillStyle = '#bfb3a2'; g.fillRect(36, 166, 190, 30);
-      g.fillStyle = '#eceae4'; g.fillRect(150, 120, 46, 34); g.fillStyle = '#b5b8bb'; g.beginPath(); g.arc(180, 137, 11, 0, 7); g.fill();
     }],
     // 走廊平台：暖灰方磚，靠外緣一排紅磚。
     deck: [128, 128, (g, w, h) => { tiles(g, w, h, 32, '#cbbdad', '#b3a596'); g.fillStyle = '#b7614a'; g.fillRect(0, h - 18, w, 18); }],
@@ -332,24 +322,6 @@ function anjiu() {
 }
 
 /* ---------- 六舍、七八舍立面（米灰混凝土，和山居不同） ---------- */
-function neighbours() {
-  for (const osm of [230992374, 230992375]) {
-    const pts = LAYOUT.buildings.find(b => b.osm === osm).pts.slice(0, -1);
-    const inside = (x, z) => pts.reduce((yes, [ax, az], i) => {
-      const [bx, bz] = pts[(i + 1) % pts.length];
-      return (az > z) !== (bz > z) && x < ax + (bx - ax) * (z - az) / (bz - az) ? !yes : yes;
-    }, false);
-    pts.forEach((p, i) => {
-      let a = p, b = pts[(i + 1) % pts.length];
-      const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      if (L < 1.5) return;
-      // 法線朝建築外側：中點往左手邊走半公尺若落在輪廓內就反過來。
-      if (inside((a[0] + b[0]) / 2 - (b[1] - a[1]) / L * 0.5, (a[1] + b[1]) / 2 + (b[0] - a[0]) / L * 0.5)) [a, b] = [b, a];
-      facade(a, b, Y0, 24, mat('concrete', Math.max(1, Math.round(L / 3.2)), 4));
-    });
-  }
-}
-
 /* ---------- 停車場、標線、車 ---------- */
 const LOT = [[-9, 4], [-0.4, 4.4], [-0.4, 6.05], [8.8, 6.05], [16, 3.6], [21, 4], [22, 18.5], [-6, 18.5], [-9, 14]];
 function parking() {
@@ -373,7 +345,7 @@ function parking() {
 }
 const WHEEL = new THREE.CylinderGeometry(0.33, 0.33, 0.24, 12); WHEEL.rotateZ(Math.PI / 2);
 /** 車頭朝南停進格子：車身、深色車窗、四顆輪子；suv 高一點，cover 是罩著車罩的車。 */
-function car(x, z, color, suv, cover) {
+export function car(x, z, color, suv, cover) {
   const h = suv ? 0.85 : 0.72, y = Y0 + 0.33;
   block(x, y + h / 2, z, 1.72, h, 4.0, color, 0.03);
   block(x, y + h + 0.3, z + 0.15, 1.5, 0.6, 2.2, cover ? color : '#46525d', 0.02);
@@ -394,7 +366,7 @@ function instanced(geo, list, name) {
   m.name = name; m.userData.noOcc = true; scene.add(m); return m;
 }
 /** 花台：深色土面，朱蕉（紫紅與綠葉兩種）、姑婆芋與灌木隨機混種。 */
-function beds(list) {
+export function beds(list) {
   const leaves = [], bushes = [];
   const soil = (x0, z0, x1, z1) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0), toon('#6b5846')); m.rotation.x = -Math.PI / 2;
@@ -429,7 +401,7 @@ function bamboo(x0, z0, x1, z1, n) {
   boxC(x0, x1, z0, z1);
 }
 /** 共用樹先建在遠處再搬到地形高度，碰撞改在正確位置重新登記。 */
-function trees(list) {
+export function trees(list) {
   for (const [x, z, s] of list) {
     const n = scene.children.length, c = colliders.length, f = FOLIAGE.length;
     tree(1000, 1000, s);
@@ -454,7 +426,7 @@ function lamps() {
  * 這一區全是不會動的零件：建完後依材質合併成少數幾個網格（含描邊），
  * 單色材質再併成一個頂點色材質，繪製次數不隨零件數增加。InstancedMesh 本身已是一次繪製，保留原樣。
  */
-function mergeStatic(objects) {
+export function mergeStatic(objects, name = '山居一帶合併') {
   const groups = new Map(), palettes = new Map(), keep = [];
   for (const root of objects) {
     if (root.isInstancedMesh) { keep.push(root); continue; }
@@ -480,7 +452,7 @@ function mergeStatic(objects) {
   }
   for (const [material, parts] of groups) {
     const mesh = new THREE.Mesh(mergeBufferGeometries(parts), material);
-    mesh.name = '山居一帶合併'; scene.add(mesh); parts.forEach(g => g.dispose());
+    mesh.name = name; scene.add(mesh); parts.forEach(g => g.dispose());
   }
   return keep.length + groups.size;
 }
@@ -493,7 +465,6 @@ export function buildShanju() {
   const start = colliders.length, first = scene.children.length;
   tower();
   anjiu();
-  neighbours();
   parking();
   // 塔樓西側、停車場南緣、往安九的道路兩側與分岔口都是朱蕉花台。
   beds([

@@ -10,11 +10,42 @@
  */
 import { defineBuilding } from '../../registry.js';
 import { R, SPAWN, STOP } from './layout.js';
-import { buildMap, buildAnjiu, mapHeight, mapLight, mapZone } from './map.js';
+import { buildMap, buildAnjiu, mapHeight, mapLight, mapZone, updateMap, skyClock, fireworks } from './map.js';
+import { MODE_LABELS } from './day-night.js';
+import { SIGN } from './fireworks.js';
+import { state } from '../../../core/state.js';
 import {ANJIU} from './anjiu-interior.js';
 
 /** 山下乘車處：行政大樓左側騎樓的候車長椅與時刻表旁（校園座標） */
 const BOARD = { x: 32.2, z: -88.5 };
+
+/**
+ * 天色按鈕：只在山上校區顯示，依序切換自動日夜、白天、黃昏、夜晚（跟達賢的光線按鈕同一種樣式）。
+ * 告示牌互動點：夜晚施放 101 跨年煙火；白天按下只提示要等天黑。互動點與按鈕都在第一次上山時建立。
+ */
+let timeButton = null, spotsReady = false;
+function enterUphill() {
+  if (!timeButton) {
+    timeButton = document.createElement('button');
+    timeButton.id = 'uphill-time'; timeButton.className = 'chip'; timeButton.type = 'button';
+    const refresh = () => { timeButton.textContent = MODE_LABELS[skyClock.mode]; timeButton.ariaLabel = timeButton.textContent + '，按下切換下一個時段'; };
+    timeButton.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); });
+    timeButton.addEventListener('click', () => { skyClock.next(state.time); refresh(); });
+    document.getElementById('snd').after(timeButton); refresh();
+  }
+  timeButton.hidden = false;
+  if (spotsReady) return;
+  spotsReady = true;
+  Promise.all([import('../../../core/gameplay.js'), import('../../../ui/dialog.js')]).then(([{ spots }, { toast }]) => {
+    const at = { x: SIGN.x, z: SIGN.z, r: SIGN.reach, room: 'uphill-campus' };
+    spots.push({ ...at, id: 'uphill-fireworks', label: '施放跨年煙火',
+      ok: () => skyClock.isNight(state.time) && !fireworks.playing(state.time),
+      fn: () => { fireworks.start(state.time); toast('101 跨年煙火施放中，往北邊看！'); } });
+    spots.push({ ...at, id: 'uphill-fireworks-day', label: '看告示牌',
+      ok: () => !skyClock.isNight(state.time),
+      fn: () => toast('天黑以後再來，就能看 101 施放跨年煙火（右上角可以切換天色）') });
+  });
+}
 
 export default defineBuilding({
   id: 'uphill-campus',
@@ -26,6 +57,10 @@ export default defineBuilding({
     light: mapLight,
     heightAt: mapHeight,
     zone: mapZone,
+    // 日夜時鐘與跨年煙火每一幀更新；天色按鈕只在山上顯示。
+    update() { updateMap(state.time); },
+    onEnter() { enterUphill(); updateMap(state.time); },
+    onExit() { if (timeButton) timeButton.hidden = true; },
     // 搭公車的轉場畫面與小地圖文字（見 core/gameplay.js、systems/feel.js）
     ride: { up: '搭乘校園公車「一路」前往山上校區', down: '搭乘校園公車「一路」返回山下校區' },
     miniSub: '公車站在南邊',
