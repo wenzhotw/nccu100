@@ -34,6 +34,8 @@ export function insidePolygon(x, z, pts) {
 }
 const POLYS = DORMS.map(d => ({ ...d, pts: outline(d.osm) }));
 export const insideDorm = (x, z) => POLYS.some(d => insidePolygon(x, z, d.pts));
+/** 屋頂防水層：沿輪廓蓋在牆頂上方一點點，蓋掉灰盒的亮白頂面（2026-11-06）。 */
+export const dormRoofs = () => POLYS.map(d => ({ osm: d.osm, pts: d.pts, y: TOP + 0.04 }));
 
 /** 七八舍中段連接棟（大廳）的東、西兩面。 */
 const LOBBY_FACES = [[[-34.5, 32.6], [-34.7, 20.5], 'lobby'], [[-40.4, 21], [-40.2, 31.4], 'lobbyBack']];

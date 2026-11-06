@@ -23,6 +23,7 @@ import {createAnjiu,anjiuColliders} from './anjiu-interior.js';
 import { buildZq10 } from './zq10.js';
 import { buildShanju } from './shanju.js';
 import { buildDorms } from './dorms.js';
+import { buildDorm9 } from './dorm9.js';
 import { createTaipeiView, VIEW, valleyDrop } from './taipei-view.js';
 import { createSkyClock } from './day-night.js';
 import { SIGN, createFireworks } from './fireworks.js';
@@ -209,6 +210,15 @@ export function buildGreybox() {
 /** 純模型與碰撞接入場景，只有此處需要瀏覽器的文字畫布。 */
 export function buildLandmarks() {
   const group = createLandmarks(); scene.add(group);
+  group.getObjectByName('蔣公騎馬銅像').traverse(o => { if (o.isMesh && o.material.isMeshToonMaterial) o.material.gradientMap = GRAD; });
+  // 銅像正面銅牌：銅色底、深褐字，分兩行。
+  const plaque = group.getObjectByName('銅牌'), [title, year] = plaque.userData.text.split('　');
+  plaque.material = toon('#ffffff', { map: canvasTex(256, 144, (g, w, h) => {
+    g.fillStyle = '#a88a52'; g.fillRect(0, 0, w, h); g.strokeStyle = '#6e5630'; g.lineWidth = 6; g.strokeRect(6, 6, w - 12, h - 12);
+    g.fillStyle = '#3f2f1a'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '900 34px "Noto Serif TC",serif'; g.fillText(title, w / 2, 54, w - 30);
+    g.font = '700 20px "Noto Serif TC",serif'; g.fillText(year, w / 2, 100, w - 30);
+  }) });
   for (const c of landmarkColliders()) obbC(c.cx, c.cz, c.hx, c.hz, c.th);
   for (const sign of landmarkSigns()) {
     const board = group.getObjectByName(`指路牌：${sign.anchor}`);
@@ -319,6 +329,7 @@ export function buildMap() {
   buildZq10();
   buildShanju();
   buildDorms();
+  buildDorm9();
   taipei();
   fireworksSign();
   fireworksShow();
