@@ -3,10 +3,9 @@ import * as THREE from 'three';
 import { ANCHORS, LOBBY, STOP, STAIRS } from './layout.js';
 import { heightAt } from './terrain.js';
 import { CANOPY } from './zq10-model.js';
+import { createStatue, statueCollider } from './statue.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
-const stone = new THREE.MeshToonMaterial({ color: '#b4b0a2' });
-const bronze = new THREE.MeshToonMaterial({ color: '#514a36' });
 const hedge = new THREE.MeshToonMaterial({ color: '#447b42' });
 const steel = new THREE.MeshToonMaterial({ color: '#26343c' });
 const blue = new THREE.MeshToonMaterial({ color: '#216aaf' });
@@ -74,9 +73,9 @@ function placed(parent, name) {
 /** 碰撞只包住落地零件，圓環四周不設看不見的整圈障礙。 */
 export function landmarkColliders() {
   const a = ANCHORS['蔣公銅像'];
-  const statue = [[0, 0, 1.1, 0.9], [-2.2, 0, 0.3, 2.3], [2.2, 0, 0.3, 2.3],
+  const statue = [statueCollider(), ...[[-2.2, 0, 0.3, 2.3], [2.2, 0, 0.3, 2.3],
     [0, -2.2, 1.9, 0.3], [0, 2.2, 1.9, 0.3]].map(([x, z, hx, hz]) =>
-    ({ landmark: '蔣公銅像', cx: a.x + x, cz: a.z + z, hx, hz, th: 0 }));
+    ({ landmark: '蔣公銅像', cx: a.x + x, cz: a.z + z, hx, hz, th: 0 }))];
   const station = shelters().flatMap(s => [
     { landmark: '好漢坡站', cx: s.x, cz: s.z + 0.55, hx: 1.1, hz: 0.06, th: 0 },
     ...[-1.05, 1.05].map(dx => ({ landmark: '好漢坡站', cx: s.x + dx, cz: s.z - 0.5, hx: 0.06, hz: 0.06, th: 0 })),
@@ -90,12 +89,8 @@ export function landmarkColliders() {
 export function createLandmarks() {
   const root = new THREE.Group(); root.name = '山上校區地標';
   const statue = placed(root, '蔣公銅像');
-  boxes(statue, '石材基座', stone, [[0, 0.7, 0, 2.2, 1.4, 1.8]]);
-  boxes(statue, '騎馬像', bronze, [[0, 2.1, 0, 1.9, 0.65, 0.65],
-    [0.75, 2.6, 0, 0.45, 0.9, 0.5], [0.95, 3, 0, 0.65, 0.35, 0.45],
-    [-0.6, 1.65, -0.23, 0.18, 0.9, 0.18], [-0.6, 1.65, 0.23, 0.18, 0.9, 0.18],
-    [0.6, 1.65, -0.23, 0.18, 0.9, 0.18], [0.6, 1.65, 0.23, 0.18, 0.9, 0.18],
-    [-0.1, 2.85, 0, 0.45, 0.9, 0.5], [-0.1, 3.5, 0, 0.4, 0.4, 0.4]]);
+  // 2026-11-06 依公開報導復原的騎馬像、基座與雙層玻璃護欄（statue.js）。
+  statue.add(createStatue());
   boxes(statue, '圓環綠籬', hedge, [[-2.2, 0.5, 0, 0.6, 1, 4.6], [2.2, 0.5, 0, 0.6, 1, 4.6],
     [0, 0.5, -2.2, 3.8, 1, 0.6], [0, 0.5, 2.2, 3.8, 1, 0.6]]);
   const station = placed(root, '好漢坡站'), a = ANCHORS['好漢坡站'];

@@ -6,7 +6,7 @@ import { LAYOUT, R, STAIRS } from '../layout.js';
 import { heightAt, projectToPath } from '../terrain.js';
 import { hillRoadAt } from '../hillside.js';
 import { BASE, TOP, FLOORS, dormFaces, ledges, acUnits, pipes, STAIR_TOWERS, PAVED, STALLS, CARS, TANKS, LAMPS,
-  bedRects, treeSpots, insideDorm, dormColliders } from '../dorms-model.js';
+  bedRects, treeSpots, insideDorm, dormColliders, dormRoofs } from '../dorms-model.js';
 import { VIEW, TOWER_AT, TOWER_PARTS, RIDGES, cityBlocks, createTaipeiView, valleyDrop } from '../taipei-view.js';
 
 const roads = LAYOUT.roads.map(r => r.pts);
@@ -130,4 +130,10 @@ test('遠景整批模型符合手機預算', () => {
   });
   assert(meshes <= 6, `Mesh：${meshes}`);
   assert(triangles <= 12000, `三角形：${triangles}`);
+});
+
+test('2026-11-06 三棟屋頂蓋灰色防水層，空拍不再是一整片亮白灰盒頂', () => {
+  const roofs = dormRoofs();
+  assert.equal(roofs.length, 3);
+  for (const r of roofs) { assert(r.y > TOP && r.y < TOP + 0.1); assert(r.pts.length >= 6); }
 });
