@@ -1,6 +1,6 @@
 /** 山坡的網格、坡道路面、欄杆與碰撞（純幾何，可在 Node 測試）。 */
 import * as THREE from 'three';
-import { LAYOUT, R, STAIRS } from './layout.js';
+import { ANCHORS, LAYOUT, R, STAIRS } from './layout.js';
 import { FOOT, FOOT_H, HILL_ROADS, HAIRPIN, HILL_GRID, ROAD_HALF, hillNode, hillVertex, hillRoadAt, inHill, projectLine, HILL_SIDE, STONE, stairJoints } from './hillside.js';
 import { heightAt, stairHeight } from './terrain.js';
 
@@ -17,7 +17,8 @@ function surface(positions) {
 function grassGeometry() {
   const { x0, z0, step } = HILL_GRID, positions = [], normals = [], colors = [];
   // 照片 9126 到 9132：擋土牆上方是一段灰色噴漿坡面，再往上才是草坡。
-  const grassColor = new THREE.Color('#8fca6c'), shotcrete = new THREE.Color('#b8b4a6');
+  // 2026-11-06：原本 #b8b4a6 在卡通光階下被打成米白，像破圖，改深一階灰。
+  const grassColor = new THREE.Color('#8fca6c'), shotcrete = new THREE.Color('#99958b');
   const tint = ([x, y, z]) => {
     const d = projectLine(x, z, FOOT).d;
     return d < 6 && y < FOOT_H + 4.2 && y > 0.05 ? shotcrete : grassColor;
@@ -260,6 +261,7 @@ function ringSegments() {
   }
   return segs;
 }
+const STATUE_AT = ANCHORS['蔣公銅像'];
 const inMap = (x, z) => x >= R.x0 + 1 && x <= R.x1 - 1 && z >= R.z0 + 1 && z <= R.z1 - 1;
 
 export function ringRoadProps() {
@@ -275,9 +277,12 @@ export function ringRoadProps() {
     strip(g, 2.55, 0.12, '#f4f4ee'); strip(g, -2.55, 0.12, '#f4f4ee');
     strip(g, 2.85, 0.14, '#d65a4f'); strip(g, -2.85, 0.14, '#d65a4f');
     // 外側路燈每 20 公尺一盞。
-    for (let t = 6; t < g.l; t += 20) {
+    for (let t0 = 6; t0 < g.l; t0 += 20) {
+      // 2026-11-06：銅像圓環旁那盞會擋在銅像正面，順著路往前挪到 7 公尺外。
+      let t = t0;
+      while (t < g.l && Math.hypot(at(g, t, 4.2).x - STATUE_AT.x, at(g, t, 4.2).z - STATUE_AT.z) <= 7) t += 1;
       const p = at(g, t, 4.2);
-      if (!inMap(p.x, p.z)) continue;
+      if (t >= g.l || !inMap(p.x, p.z)) continue;
       parts.push({ geometry: new THREE.BoxGeometry(0.16, 5, 0.16).translate(p.x, 2.5, p.z), color: '#5d6470' });
       const head = at(g, t, 3.4);
       parts.push({ geometry: new THREE.BoxGeometry(0.5, 0.18, 0.32).rotateY(-Math.atan2(g.uz, g.ux)).translate(head.x, 4.95, head.z), color: '#fff1c4' });

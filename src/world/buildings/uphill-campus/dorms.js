@@ -10,7 +10,7 @@ import { BOX, GRAD, basic, block, canvasTex, mk, toon } from '../../../render/ki
 import { heightAt } from './terrain.js';
 import { beds, trees, car, mergeStatic } from './shanju.js';
 import { BASE, TOP, FLOOR, FLOORS, dormFaces, ledges, acUnits, pipes, STAIR_TOWERS, TOWER_TOP, LOBBY,
-  PAVED, STALLS, CARS, TANKS, LAMPS, SLOW_SIGN, bedRects, treeSpots, dormColliders } from './dorms-model.js';
+  PAVED, STALLS, CARS, TANKS, LAMPS, SLOW_SIGN, bedRects, treeSpots, dormColliders, dormRoofs } from './dorms-model.js';
 
 const CONCRETE = '#d4ccbf', SLAB = '#c1b8a9', BRICK = '#86584f', PIPE_RUST = '#b0744a';
 
@@ -117,6 +117,15 @@ function walls() {
 }
 
 const PIPE = new THREE.CylinderGeometry(0.07, 0.07, 1, 6);
+/** 屋頂：灰色防水層（形狀沿輪廓）。 */
+function roofs() {
+  for (const r of dormRoofs()) {
+    const shape = new THREE.Shape(r.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
+    const m = new THREE.Mesh(new THREE.ShapeGeometry(shape).rotateX(-Math.PI / 2), toon('#b3aca2'));
+    m.position.y = r.y; scene.add(m);
+  }
+}
+
 /** 冷氣：同一個方塊實例化，正面貼散熱扇圖。 */
 function acs() {
   const list = acUnits(), m = new THREE.InstancedMesh(BOX, mat('acFront'), list.length), o = new THREE.Object3D();
@@ -205,7 +214,7 @@ export const dormsColliderCount = () => added;
 /** 建立五六七八舍外觀與周圍環境（buildMap 呼叫一次）。 */
 export function buildDorms() {
   const first = scene.children.length, start = colliders.length;
-  walls(); acs(); towers(); lobby(); paving(); props();
+  walls(); acs(); roofs(); towers(); lobby(); paving(); props();
   // 牆腳花台只種在跟宿舍一樓同高的平地，坡上不放。
   beds(bedRects().filter(([x0, z0, x1, z1]) => [[x0, z0], [x1, z1], [x0, z1], [x1, z0]].every(p => Math.abs(heightAt(...p) - BASE) < 0.3))
     .map(r => [...r, Math.round((r[2] - r[0]) * (r[3] - r[1]) * 0.9)]));

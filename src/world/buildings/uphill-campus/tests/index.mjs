@@ -14,3 +14,5 @@ import './photo-audit.test.mjs';
 import './hillside.test.mjs';
 import './dorms.test.mjs';
 import './fireworks.test.mjs';
+import './statue.test.mjs';
+import './dorm9.test.mjs';
